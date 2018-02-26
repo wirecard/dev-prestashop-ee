@@ -56,9 +56,9 @@ class WirecardPaymentGateway extends PaymentModule
 
     public function install()
     {
-        if (!parent::install())
-
+        if (!parent::install()) {
             return false;
+        }
         return true;
     }
 
