@@ -31,5 +31,8 @@
 
 class ModuleFrontController
 {
-
+    public function getLanguages()
+    {
+        return new Language();
+    }
 }

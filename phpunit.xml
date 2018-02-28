@@ -12,6 +12,7 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./wirecardpaymentgateway/*</directory>
+            <file>wirecardpaymentgateway/wirecardpaymentgateway.php</file>
             <exclude>
                 <directory>wirecardpaymentgateway/vendor</directory>
                 <file>wirecardpaymentgateway/index.php</file>

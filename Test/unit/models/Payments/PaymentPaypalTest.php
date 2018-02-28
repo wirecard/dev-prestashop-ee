@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../../../../wirecardpaymentgateway/models/Payments/PaymentPaypal.php';
+require_once __DIR__ . '/../../../../wirecardpaymentgateway/models/Payments/PaymentPaypal.php';
 
 class PaymentPaypalTest extends PHPUnit_Framework_TestCase
 {

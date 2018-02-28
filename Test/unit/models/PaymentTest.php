@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../../../wirecardpaymentgateway/models/Payment.php';
+require_once __DIR__ . '/../../../wirecardpaymentgateway/models/Payment.php';
 
 use Wirecard\PaymentSdk\Config\Config;
 

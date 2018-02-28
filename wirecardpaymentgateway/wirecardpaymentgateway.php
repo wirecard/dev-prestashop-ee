@@ -28,7 +28,7 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-include(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'Payments'.DIRECTORY_SEPARATOR.'PaymentPaypal.php');
+include_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Payments' . DIRECTORY_SEPARATOR . 'PaymentPaypal.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
@@ -101,7 +101,7 @@ class WirecardPaymentGateway extends PaymentModule
             $this->_html .= '<br />';
         }
 
-        $this->_html .= $this->_displayWirecardPaymentGateway();
+        $this->_html .= $this->displayWirecardPaymentGateway();
         $this->_html .= $this->renderForm();
 
         return $this->_html;
@@ -118,7 +118,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->html .= $this->displayConfirmation($this->l('Settings updated'));
     }
 
-    protected function _displayWirecardPaymentGateway()
+    protected function displayWirecardPaymentGateway()
     {
         return $this->display(__FILE__, 'infos.tpl');
     }
