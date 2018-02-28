@@ -35,51 +35,63 @@ use Wirecard\PaymentSdk\Config\Config;
  * Basic Payment class
  *
  * Class Payment
+ *
+ * @since 1.0.0
  */
 class Payment
 {
     /**
      * @var string
+     * @since 1.0.0
      */
     protected $name;
 
     /**
      * @var array
+     * @since 1.0.0
      */
     protected $config;
 
     /**
      * @var \Wirecard\PaymentSdk\Transaction\Transaction
+     * @since 1.0.0
      */
     protected $transaction;
 
     /**
      * @var string
+     * @since 1.0.0
      */
     protected $baseUrl;
 
     /**
      * @var string
+     * @since 1.0.0
      */
     protected $httpUser;
 
     /**
      * @var string
+     * @since 1.0.0
      */
     protected $httpPass;
 
     /**
      * @var array
+     * @since 1.0.0
      */
     protected $transactionTypes;
 
     /**
      * @var array
+     * @sine 1.0.0
      */
     protected $formFields;
 
     /**
      * WirecardPayment constructor.
+     *
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -88,10 +100,14 @@ class Payment
     }
 
     /**
+     * Create config for transaction service
+     *
      * @param $baseUrl
      * @param $httpUser
      * @param $httpPass
      * @return array|\Wirecard\PaymentSdk\Config\Config
+     *
+     * @since 1.0.0
      */
     public function createConfig($baseUrl, $httpUser, $httpPass)
     {
@@ -103,6 +119,7 @@ class Payment
      * Get payment name
      *
      * @return string
+     * @since 1.0.0
      */
     public function getName()
     {
@@ -113,6 +130,7 @@ class Payment
      * Get payment config
      *
      * @return array
+     * @since 1.0.0
      */
     public function getConfig()
     {
@@ -123,6 +141,7 @@ class Payment
      * Get transaction types
      *
      * @return array
+     * @since 1.0.0
      */
     public function getTransactionTypes()
     {
@@ -133,6 +152,7 @@ class Payment
      * Get form fields for payment settings
      *
      * @return null|array
+     * @since 1.0.0
      */
     public function getFormFields()
     {
@@ -144,6 +164,7 @@ class Payment
      *
      * @param $paymentState
      * @return null
+     * @since 1.0.0
      */
     public function createRedirectUrl($paymentState)
     {
@@ -154,6 +175,7 @@ class Payment
      * Create notification Urls
      *
      * @return null
+     * @since 1.0.0
      */
     public function createNotificationUrl()
     {

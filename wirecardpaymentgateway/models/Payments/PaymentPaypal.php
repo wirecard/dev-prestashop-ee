@@ -33,11 +33,17 @@ include_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'model
 
 /**
  * Class PaymentPaypal
+ *
+ * @extends Payment
+ *
+ * @since 1.0.0
  */
 class PaymentPaypal extends Payment
 {
     /**
      * PaymentPaypal constructor.
+     *
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -45,6 +51,12 @@ class PaymentPaypal extends Payment
         $this->formFields = $this->getFormFields();
     }
 
+    /**
+     * Default form fields for paypal
+     *
+     * @return array|null
+     * @since 1.0.0
+     */
     public function getFormFields()
     {
         return array(
