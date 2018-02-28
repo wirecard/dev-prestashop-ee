@@ -28,6 +28,9 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
+
+require_once __DIR__ . '/vendor/autoload.php';
+
 include_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Payments' . DIRECTORY_SEPARATOR . 'PaymentPaypal.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;

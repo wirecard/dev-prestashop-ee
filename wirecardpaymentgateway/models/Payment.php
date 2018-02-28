@@ -29,6 +29,8 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
+use Wirecard\PaymentSdk\Config\Config;
+
 /**
  * Basic Payment class
  *
@@ -93,7 +95,7 @@ class Payment
      */
     public function createConfig($baseUrl, $httpUser, $httpPass)
     {
-        $this->config = new \Wirecard\PaymentSdk\Config\Config($baseUrl, $httpUser, $httpPass);
+        $this->config = new Config($baseUrl, $httpUser, $httpPass);
         return $this->config;
     }
 
