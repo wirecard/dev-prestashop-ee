@@ -231,9 +231,9 @@ class WirecardPaymentGateway extends PaymentModule
      */
     private function renderForm()
     {
-        $radio_type = 'switch';
+        $radioType = 'switch';
 
-        $radio_options = array(
+        $radioOptions = array(
             array(
                 'id' => 'active_on',
                 'value' => 1,
@@ -246,8 +246,32 @@ class WirecardPaymentGateway extends PaymentModule
             )
         );
 
+        $tempFields = $this->createInputFields($radioType, $radioOptions);
+        $inputFields = $tempFields['inputFields'];
+        $tabs = $tempFields['tabs'];
+
+        $fields = array(
+            'form' => array(
+                'tabs' => $tabs,
+                'legend' => array(
+                    'title' => $this->l('Payment method settings'),
+                    'icon' => 'icon-cogs'
+                ),
+                'input' => $inputFields,
+                'submit' => array(
+                    'title' => $this->l('Save')
+                )
+            ),
+        );
+
+        return $this->createForm($fields);
+    }
+
+    public function createInputFields($radioType, $radioOptions)
+    {
         $input_fields = array();
         $tabs = array();
+
         foreach ($this->config as $value) {
             $tabname = $value['tab'];
             $tabs[$tabname] = $tabname;
@@ -272,10 +296,10 @@ class WirecardPaymentGateway extends PaymentModule
                         break;
 
                     case 'onoff':
-                        $elem['type'] = $radio_type;
+                        $elem['type'] = $radioType;
                         $elem['class'] = 't';
                         $elem['is_bool'] = true;
-                        $elem['values'] = $radio_options;
+                        $elem['values'] = $radioOptions;
                         break;
 
                     case 'select':
@@ -313,22 +337,11 @@ class WirecardPaymentGateway extends PaymentModule
                 $input_fields[] = $elem;
             }
         }
+        return array('inputFields' => $input_fields, 'tabs' => $tabs);
+    }
 
-        $fields_form_settings = array(
-            'form' => array(
-                'tabs' => $tabs,
-                'legend' => array(
-                    'title' => $this->l('Payment method settings'),
-                    'icon' => 'icon-cogs'
-                ),
-                'input' => $input_fields,
-                'submit' => array(
-                    'title' => $this->l('Save')
-                )
-            ),
-        );
-
-
+    public function createForm($fields)
+    {
         /** @var HelperFormCore $helper */
         $helper = new HelperForm();
         $helper->show_toolbar = false;
@@ -354,6 +367,6 @@ class WirecardPaymentGateway extends PaymentModule
                 . '&tab_module=' . $this->tab . '&module_name=' . $this->name
         );
 
-        return $helper->generateForm(array($fields_form_settings));
+        return $helper->generateForm(array($fields));
     }
 }

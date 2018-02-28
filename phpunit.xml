@@ -6,7 +6,7 @@
 >
     <testsuites>
         <testsuite name="unit-tests">
-            <directory prefix="test-" suffix=".php">Test</directory>
+            <directory suffix="Test.php">Test</directory>
         </testsuite>
     </testsuites>
     <filter>
