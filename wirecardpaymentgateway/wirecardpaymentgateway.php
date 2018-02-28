@@ -37,8 +37,17 @@ use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
  */
 class WirecardPaymentGateway extends PaymentModule
 {
+    /**
+     * Payment fields for configuration
+     *
+     * @var array
+     * @since 1.0.0
+     */
     private $config;
 
+    /**
+     * WirecardPaymentGateway constructor.
+     */
     public function __construct()
     {
         $this->name = 'wirecardpaymentgateway';
@@ -58,6 +67,10 @@ class WirecardPaymentGateway extends PaymentModule
         $this->config = $this->getPaymentFields();
     }
 
+    /**
+     * @return bool
+     * @since 1.0.0
+     */
     public function install()
     {
         if (!parent::install()) {
@@ -66,6 +79,10 @@ class WirecardPaymentGateway extends PaymentModule
         return true;
     }
 
+    /**
+     * @return bool
+     * @since 1.0.0
+     */
     public function uninstall()
     {
         if (!parent::uninstall()) {
@@ -74,6 +91,10 @@ class WirecardPaymentGateway extends PaymentModule
         return true;
     }
 
+    /**
+     * @return array
+     * @since 1.0.0
+     */
     public function getPayments()
     {
         $payments = array(
@@ -83,6 +104,10 @@ class WirecardPaymentGateway extends PaymentModule
         return $payments;
     }
 
+    /**
+     * @return array
+     * @since 1.0.0
+     */
     public function getPaymentFields()
     {
         $payments = array();
@@ -93,6 +118,10 @@ class WirecardPaymentGateway extends PaymentModule
         return $payments;
     }
 
+    /**
+     * @return null|string
+     * @since 1.0.0
+     */
     public function getContent()
     {
         if (Tools::isSubmit('btnSubmit')) {
@@ -107,6 +136,9 @@ class WirecardPaymentGateway extends PaymentModule
         return $this->_html;
     }
 
+    /**
+     * @since 1.0.0
+     */
     private function postProcess()
     {
         if (Tools::isSubmit('btnSubmit')) {
@@ -118,11 +150,19 @@ class WirecardPaymentGateway extends PaymentModule
         $this->html .= $this->displayConfirmation($this->l('Settings updated'));
     }
 
+    /**
+     * @return string
+     * @since 1.0.0
+     */
     protected function displayWirecardPaymentGateway()
     {
         return $this->display(__FILE__, 'infos.tpl');
     }
 
+    /**
+     * @return array
+     * @since 1.0.0
+     */
     public function getConfigFieldsValues()
     {
         $values = array();
@@ -148,12 +188,13 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * build prestashop internal parameter name
+     * Build prefix for configuration entries
      *
      * @param $name
      * @param $field
      *
      * @return string
+     * @since 1.0.0
      */
     protected function buildParamName($name, $field)
     {
@@ -164,6 +205,10 @@ class WirecardPaymentGateway extends PaymentModule
         );
     }
 
+    /**
+     * @return array
+     * @since 1.0.0
+     */
     public function getAllConfigurationParameters()
     {
         $params = array();
@@ -180,6 +225,10 @@ class WirecardPaymentGateway extends PaymentModule
         return $params;
     }
 
+    /**
+     * @return mixed
+     * @since 1.0.0
+     */
     private function renderForm()
     {
         $radio_type = 'switch';
