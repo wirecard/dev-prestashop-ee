@@ -28,12 +28,16 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-include_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Payments' . DIRECTORY_SEPARATOR . 'PaymentPaypal.php');
+include_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
+    'models' . DIRECTORY_SEPARATOR . 'Payments' . DIRECTORY_SEPARATOR . 'PaymentPaypal.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
 /**
  * Class WirecardPaymentGateway
+ *
+ * @extends PaymentModule
+ * @since 1.0.0
  */
 class WirecardPaymentGateway extends PaymentModule
 {
@@ -47,6 +51,8 @@ class WirecardPaymentGateway extends PaymentModule
 
     /**
      * WirecardPaymentGateway constructor.
+     *
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -68,6 +74,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Basic install routine
+     *
      * @return bool
      * @since 1.0.0
      */
@@ -80,6 +88,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Basic uninstall routine
+     *
      * @return bool
      * @since 1.0.0
      */
@@ -92,6 +102,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Basic array of payment models
+     *
      * @return array
      * @since 1.0.0
      */
@@ -105,6 +117,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Getter for paymentfields from every payment model
+     *
      * @return array
      * @since 1.0.0
      */
@@ -119,6 +133,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Create content on Wirecard Payment Processing Gateway settings page
+     *
      * @return null|string
      * @since 1.0.0
      */
@@ -137,6 +153,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Save edited configuration values
+     *
      * @since 1.0.0
      */
     private function postProcess()
@@ -147,10 +165,12 @@ class WirecardPaymentGateway extends PaymentModule
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
-        $this->html .= $this->displayConfirmation($this->l('Settings updated'));
+        $this->_html .= $this->displayConfirmation($this->l('Settings updated'));
     }
 
     /**
+     * Display info text for Wirecard Payment Processing Gateway page
+     *
      * @return string
      * @since 1.0.0
      */
@@ -160,6 +180,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Get values for configuration fields
+     *
      * @return array
      * @since 1.0.0
      */
@@ -206,6 +228,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Get configuration parameters from config
+     *
      * @return array
      * @since 1.0.0
      */
@@ -226,6 +250,8 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Render form including configuration values per payment
+     *
      * @return mixed
      * @since 1.0.0
      */
@@ -267,6 +293,14 @@ class WirecardPaymentGateway extends PaymentModule
         return $this->createForm($fields);
     }
 
+    /**
+     * Create input fields and tabs
+     *
+     * @param $radioType
+     * @param $radioOptions
+     * @return array
+     * @since 1.0.0
+     */
     public function createInputFields($radioType, $radioOptions)
     {
         $input_fields = array();
@@ -340,6 +374,13 @@ class WirecardPaymentGateway extends PaymentModule
         return array('inputFields' => $input_fields, 'tabs' => $tabs);
     }
 
+    /**
+     * Create form via HelperFormCore
+     *
+     * @param $fields
+     * @return mixed
+     * @since 1.0.0
+     */
     public function createForm($fields)
     {
         /** @var HelperFormCore $helper */

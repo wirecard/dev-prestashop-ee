@@ -11,7 +11,6 @@ class PaymentModule
     public function __construct()
     {
         $this->_html = null;
-        $this->html = null;
         $this->identifier = 1;
         $this->context = new Context();
     }
