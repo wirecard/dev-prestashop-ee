@@ -18,7 +18,7 @@ class PaymentModule
 
     public function install()
     {
-        if(!strlen($this->name)){
+        if (!strlen($this->name)) {
             return false;
         }
         return true;
@@ -26,7 +26,7 @@ class PaymentModule
 
     public function uninstall()
     {
-        if(!strlen($this->name)){
+        if (!strlen($this->name)) {
             return false;
         }
         return true;
