@@ -29,7 +29,7 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-include(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'Payment.php');
+include_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'Payment.php');
 
 /**
  * Class PaymentPaypal

@@ -82,6 +82,7 @@ class Payment
     public function __construct()
     {
         $this->name = 'Wirecard Payment Processing Gateway';
+        $this->transactionTypes = array('authorization', 'capture');
     }
 
     /**
