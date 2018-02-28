@@ -4,7 +4,7 @@ class Configuration
 {
     public static function updateValue($param, $value)
     {
-        return;
+        return true;
     }
 
     public static function get($param)

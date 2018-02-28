@@ -68,7 +68,78 @@ class PaymentPaypal extends Payment
                     'type' => 'onoff',
                     'doc' => 'Enable Wirecard Payment Processing Gateway PayPal',
                     'default' => 0,
-                )
+                ),
+                array(
+                    'name' => 'title',
+                    'label' => 'Title',
+                    'type' => 'text',
+                    'default' => 'Wirecard Payment Processing Gateway PayPal',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'merchant_account_id',
+                    'label'   => 'Merchant Account ID',
+                    'type'    => 'text',
+                    'default' => '2a0e9351-24ed-4110-9a1b-fd0fee6bec26',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'secret',
+                    'label'   => 'Secret Key',
+                    'type'    => 'text',
+                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'base_url',
+                    'label'       => 'Base Url',
+                    'type'        => 'text',
+                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'default'     => 'https://api-test.wirecard.com',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'http_user',
+                    'label'   => 'Http User',
+                    'type'    => 'text',
+                    'default' => '70000-APITEST-AP',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'http_pass',
+                    'label'   => 'Http Password',
+                    'type'    => 'text',
+                    'default' => 'qD2wzQ_hrc!8',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'payment_action',
+                    'type'    => 'select',
+                    'default' => 'authorization',
+                    'label'   => 'Payment Action',
+                    'options' => array(
+                        array('key' => 'reserve', 'value' => 'Authorization'),
+                        array('key' => 'pay', 'value' => 'Capture'),
+                    ),
+                ),
+                array(
+                    'name' => 'shopping_basket',
+                    'label'   => 'Enable/Disable Shopping Basket',
+                    'type'    => 'onoff',
+                    'default' => 0,
+                ),
+                array(
+                    'name' => 'descriptor',
+                    'label'   => 'Enable/Disable Descriptor',
+                    'type'    => 'onoff',
+                    'default' => 0,
+                ),
+                array(
+                    'name' => 'send_additional',
+                    'label'   => 'Enable/Disable send additional information',
+                    'type'    => 'onoff',
+                    'default' => 1,
+                ),
             )
         );
     }

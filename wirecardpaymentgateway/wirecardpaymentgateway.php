@@ -81,7 +81,8 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function install()
     {
-        if (!parent::install()) {
+        if (!parent::install()
+        || !$this->setDefaults()) {
             return false;
         }
         return true;
@@ -190,20 +191,7 @@ class WirecardPaymentGateway extends PaymentModule
         $values = array();
         foreach ($this->getAllConfigurationParameters() as $parameter) {
             $val = Configuration::get($parameter['param_name']);
-            if (isset($parameter['multiple']) && $parameter['multiple']) {
-                if (!is_array($val)) {
-                    $val = Tools::strlen($val) ? Tools::jsonDecode($val) : array();
-                }
-
-                $x = array();
-                foreach ($val as $v) {
-                    $x[$v] = $v;
-                }
-                $pname = $parameter['param_name'] . '[]';
-                $values[$pname] = $x;
-            } else {
-                $values[$parameter['param_name']] = $val;
-            }
+            $values[$parameter['param_name']] = $val;
         }
 
         return $values;
@@ -350,9 +338,7 @@ class WirecardPaymentGateway extends PaymentModule
                             $options = array();
                             if (is_array($optfunc)) {
                                 $options = $optfunc;
-                            }
-
-                            if (method_exists($this, $optfunc)) {
+                            } elseif (method_exists($this, $optfunc)) {
                                 $options = $this->$optfunc();
                             }
 
@@ -409,5 +395,27 @@ class WirecardPaymentGateway extends PaymentModule
         );
 
         return $helper->generateForm(array($fields));
+    }
+
+    private function setDefaults()
+    {
+        foreach ($this->config as $groupKey => $group) {
+            foreach ($group['fields'] as $f) {
+                if (array_key_exists('default', $f)) {
+                    $configGroup = $group['tab'];
+                    $p = $this->buildParamName($configGroup, $f['name']);
+                    $defVal = $f['default'];
+                    if (is_array($defVal)) {
+                        $defVal = Tools::jsonEncode($defVal);
+                    }
+
+                    if (!Configuration::updateValue($p, $defVal)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 }
