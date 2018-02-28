@@ -29,12 +29,35 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+include(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'Payment.php');
 
-header('Cache-Control: no-store, no-cache, must-revalidate');
-header('Cache-Control: post-check=0, pre-check=0', false);
-header('Pragma: no-cache');
+/**
+ * Class PaymentPaypal
+ */
+class PaymentPaypal extends Payment
+{
+    /**
+     * PaymentPaypal constructor.
+     */
+    public function __construct()
+    {
+        $this->name = 'Wirecard Payment Processing Gateway Paypal';
+        $this->formFields = $this->getFormFields();
+    }
 
-header('Location: ../../../../../');
-exit;
+    public function getFormFields()
+    {
+        return array(
+            'tab' => 'PayPal',
+            'fields' => array(
+                array(
+                    'name' => 'enabled',
+                    'label' => 'Enable/Disable',
+                    'type' => 'onoff',
+                    'doc' => 'Enable Wirecard Payment Processing Gateway PayPal',
+                    'default' => 0,
+                )
+            )
+        );
+    }
+}

@@ -28,7 +28,6 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  *}
 
-<div>
-<img src="../modules/wirecardpaymentgateway/logo.png" style="float:left; margin-right:15px;" height="60">
+<img src="../modules/wirecardpaymentgateway/logo.png">
+<br>
 <p><strong>{l s="Pay with Wirecard Payment Processing Gateway." d='Modules.Wirecardpaymentgateway.Admin'}</strong></p>
-</div>
