@@ -103,21 +103,6 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Basic array of payment models
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    public function getPayments()
-    {
-        $payments = array(
-            'paypal' => new PaymentPaypal()
-        );
-
-        return $payments;
-    }
-
-    /**
      * Getter for paymentfields from every payment model
      *
      * @return array
@@ -154,33 +139,6 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Save edited configuration values
-     *
-     * @since 1.0.0
-     */
-    private function postProcess()
-    {
-        if (Tools::isSubmit('btnSubmit')) {
-            foreach ($this->getAllConfigurationParameters() as $parameter) {
-                $val = Tools::getValue($parameter['param_name']);
-                Configuration::updateValue($parameter['param_name'], $val);
-            }
-        }
-        $this->_html .= $this->displayConfirmation($this->l('Settings updated'));
-    }
-
-    /**
-     * Display info text for Wirecard Payment Processing Gateway page
-     *
-     * @return string
-     * @since 1.0.0
-     */
-    protected function displayWirecardPaymentGateway()
-    {
-        return $this->display(__FILE__, 'infos.tpl');
-    }
-
-    /**
      * Get values for configuration fields
      *
      * @return array
@@ -195,24 +153,6 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $values;
-    }
-
-    /**
-     * Build prefix for configuration entries
-     *
-     * @param $name
-     * @param $field
-     *
-     * @return string
-     * @since 1.0.0
-     */
-    protected function buildParamName($name, $field)
-    {
-        return sprintf(
-            'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-            Tools::strtoupper($name),
-            Tools::strtoupper($field)
-        );
     }
 
     /**
@@ -235,6 +175,66 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $params;
+    }
+
+    /**
+     * Build prefix for configuration entries
+     *
+     * @param $name
+     * @param $field
+     *
+     * @return string
+     * @since 1.0.0
+     */
+    protected function buildParamName($name, $field)
+    {
+        return sprintf(
+            'WIRECARD_PAYMENT_GATEWAY_%s_%s',
+            Tools::strtoupper($name),
+            Tools::strtoupper($field)
+        );
+    }
+
+    /**
+     * Display info text for Wirecard Payment Processing Gateway page
+     *
+     * @return string
+     * @since 1.0.0
+     */
+    protected function displayWirecardPaymentGateway()
+    {
+        return $this->display(__FILE__, 'infos.tpl');
+    }
+
+    /**
+     * Basic array of payment models
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    private function getPayments()
+    {
+        $payments = array(
+            'paypal' => new PaymentPaypal()
+        );
+
+        return $payments;
+    }
+
+    /**
+     * Save edited configuration values
+     *
+     * @since 1.0.0
+     */
+    private function postProcess()
+    {
+        if (Tools::isSubmit('btnSubmit')) {
+            foreach ($this->getAllConfigurationParameters() as $parameter) {
+                $val = Tools::getValue($parameter['param_name']);
+                Configuration::updateValue($parameter['param_name'], $val);
+            }
+        }
+        $this->_html .= $this->displayConfirmation($this->l('Settings updated'));
     }
 
     /**
@@ -289,7 +289,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @return array
      * @since 1.0.0
      */
-    public function createInputFields($radioType, $radioOptions)
+    private function createInputFields($radioType, $radioOptions)
     {
         $input_fields = array();
         $tabs = array();
@@ -325,14 +325,6 @@ class WirecardPaymentGateway extends PaymentModule
                         break;
 
                     case 'select':
-                        if (isset($f['multiple'])) {
-                            $elem['multiple'] = $f['multiple'];
-                        }
-
-                        if (isset($f['size'])) {
-                            $elem['size'] = $f['size'];
-                        }
-
                         if (isset($f['options'])) {
                             $optfunc = $f['options'];
                             $options = array();
@@ -367,7 +359,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @return mixed
      * @since 1.0.0
      */
-    public function createForm($fields)
+    private function createForm($fields)
     {
         /** @var HelperFormCore $helper */
         $helper = new HelperForm();
@@ -397,19 +389,25 @@ class WirecardPaymentGateway extends PaymentModule
         return $helper->generateForm(array($fields));
     }
 
+    /**
+     * Set default configuration values
+     *
+     * @return bool
+     * @since 1.0.0
+     */
     private function setDefaults()
     {
-        foreach ($this->config as $groupKey => $group) {
-            foreach ($group['fields'] as $f) {
-                if (array_key_exists('default', $f)) {
-                    $configGroup = $group['tab'];
-                    $p = $this->buildParamName($configGroup, $f['name']);
-                    $defVal = $f['default'];
-                    if (is_array($defVal)) {
-                        $defVal = Tools::jsonEncode($defVal);
+        foreach ($this->config as $config) {
+            foreach ($config['fields'] as $field) {
+                if (array_key_exists('default', $field)) {
+                    $name = $config['tab'];
+                    $configParam = $this->buildParamName($name, $field['name']);
+                    $defValue = $field['default'];
+                    if (is_array($defValue)) {
+                        $defValue = Tools::jsonEncode($defValue);
                     }
 
-                    if (!Configuration::updateValue($p, $defVal)) {
+                    if (!Configuration::updateValue($configParam, $defValue)) {
                         return false;
                     }
                 }
