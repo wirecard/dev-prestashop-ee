@@ -29,6 +29,8 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
+use Wirecard\PaymentSdk\Config\Config;
+
 /**
  * Basic Payment class
  *
@@ -45,10 +47,16 @@ class Payment
     protected $name;
 
     /**
-     * @var array
+     * @var Config
      * @since 1.0.0
      */
     protected $config;
+
+    /**
+     * @var string
+     * @since 1.0.0
+     */
+    protected $type;
 
     /**
      * @var \Wirecard\PaymentSdk\Transaction\Transaction
@@ -103,13 +111,12 @@ class Payment
      * @param $baseUrl
      * @param $httpUser
      * @param $httpPass
-     * @return array|\Wirecard\PaymentSdk\Config\Config
-     *
+     * @return Config
      * @since 1.0.0
      */
     public function createConfig($baseUrl, $httpUser, $httpPass)
     {
-        $this->config = new \Wirecard\PaymentSdk\Config\Config($baseUrl, $httpUser, $httpPass);
+        $this->config = new Config($baseUrl, $httpUser, $httpPass);
         return $this->config;
     }
 
@@ -127,12 +134,23 @@ class Payment
     /**
      * Get payment config
      *
-     * @return array
+     * @return Config
      * @since 1.0.0
      */
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * Get payment type
+     *
+     * @return string
+     * @since 1.0.0
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -154,7 +172,7 @@ class Payment
      */
     public function getFormFields()
     {
-        return null;
+        return $this->formFields;
     }
 
     /**
@@ -176,6 +194,17 @@ class Payment
      * @since 1.0.0
      */
     public function createNotificationUrl()
+    {
+        return null;
+    }
+
+    /**
+     * Create Default Transaction
+     *
+     * @return null
+     * @since 1.0.0
+     */
+    public function createTransaction()
     {
         return null;
     }

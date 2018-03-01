@@ -29,17 +29,29 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
+use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Transaction\Transaction;
+use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
+use Wirecard\PaymentSdk\Entity\CustomField;
+use Wirecard\PaymentSdk\TransactionService;
+use Wirecard\PaymentSdk\Response\InteractionResponse;
+
 /**
  * @property WirecardPaymentGateway module
+ *
+ * @since 1.0.0
  */
 class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontController
 {
     /**
-     * initiate payment
+     * Process payment via transaction service
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
         $cart = $this->context->cart;
+        $cartId = $cart->id;
 
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
@@ -47,10 +59,64 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             Tools::redirect('index.php?controller=order&step=1');
         }
 
-        try {
-            $this->module->initiatePayment(Tools::getValue('paymentType'));
-        } catch (Exception $e) {
-            echo $this->module->displayError($e->getMessage());
+        $paymentType = Tools::getValue('paymentType');
+        /** @var Payment $payment */
+        $payment = $this->module->getPaymentFromType($paymentType);
+        if ($payment) {
+            $config = $payment->createConfig();
+            $amount = new Amount(2, 'EUR');
+            $operation = Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'payment_action'));
+
+            /** @var Transaction $transaction */
+            $transaction = $payment->createTransaction();
+            $transaction->setNotificationUrl('test');
+            $transaction->setRedirect('test');
+            $transaction->setAmount($amount);
+
+            $customFields = new CustomFieldCollection();
+            $customFields->add(new CustomField('orderId', $cartId));
+            $transaction->setCustomFields($customFields);
+
+            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'shopping_basket'))) {
+                //TODO: Create shoppingbasket here
+            }
+
+            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'descriptor'))) {
+                //TODO: Create descriptor
+                $transaction->setDescriptor();
+            }
+
+            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'send_additional'))) {
+                //TODO: create additional information for fps
+            }
+
+            return $this->executeTransaction($transaction, $config, $operation);
         }
+    }
+
+    /**
+     * Execute reserve and pay operations
+     *
+     * @param $transaction
+     * @param $config
+     * @param $operation
+     * @return string
+     * @since 1.0.0
+     */
+    public function executeTransaction($transaction, $config, $operation)
+    {
+        $transactionService = new TransactionService($config);
+        try {
+            /** @var \Wirecard\PaymentSdk\Response\Response $response */
+            $response = $transactionService->process($transaction, $operation);
+        } catch (Exception $exception) {
+            //throw exceptions in prestashop
+        }
+
+        if ($response instanceof InteractionResponse) {
+            $redirect = $response->getRedirectUrl();
+        }
+
+        return $redirect;
     }
 }

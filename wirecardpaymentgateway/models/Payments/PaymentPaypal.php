@@ -31,6 +31,9 @@
 
 include_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'Payment.php');
 
+use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+
 /**
  * Class PaymentPaypal
  *
@@ -47,17 +50,18 @@ class PaymentPaypal extends Payment
      */
     public function __construct()
     {
+        $this->type = 'paypal';
         $this->name = 'Wirecard Payment Processing Gateway Paypal';
-        $this->formFields = $this->getFormFields();
+        $this->formFields = $this->createFormFields();
     }
 
     /**
-     * Default form fields for paypal
+     * Create form fields for paypal
      *
      * @return array|null
      * @since 1.0.0
      */
-    public function getFormFields()
+    public function createFormFields()
     {
         return array(
             'tab' => 'PayPal',
@@ -142,5 +146,47 @@ class PaymentPaypal extends Payment
                 ),
             )
         );
+    }
+
+    /**
+     * Create config for paypal transactions
+     *
+     * @param $baseUrl
+     * @param $httpUser
+     * @param $httpPass
+     * @return \Wirecard\PaymentSdk\Config\Config
+     * @since 1.0.0
+     */
+    public function createConfig($baseUrl = null, $httpUser = null, $httpPass = null)
+    {
+        if (is_null($baseUrl)) {
+            $baseUrl  = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'base_url'));
+            $httpUser = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'http_user'));
+            $httpPass = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'http_pass'));
+        }
+
+        $merchantAccountId = Configuration::get(
+            WirecardPaymentGateway::buildParamName($this->type, 'merchant_account_id')
+        );
+        $secret = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'secret'));
+
+        $config = parent::createConfig($baseUrl, $httpUser, $httpPass);
+        $paymentConfig = new PaymentMethodConfig(PayPalTransaction::NAME, $merchantAccountId, $secret);
+        $config->add($paymentConfig);
+
+        return $config;
+    }
+
+    /**
+     * Create PaypalTransaction
+     *
+     * @return PayPalTransaction
+     * @since 1.0.0
+     */
+    public function createTransaction()
+    {
+        $transaction = new PayPalTransaction();
+
+        return $transaction;
     }
 }

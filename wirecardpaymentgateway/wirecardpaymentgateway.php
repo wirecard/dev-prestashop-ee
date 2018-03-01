@@ -199,10 +199,15 @@ class WirecardPaymentGateway extends PaymentModule
 
         /** @var Payment $paymentMethod */
         foreach ($this->getPayments() as $paymentMethod) {
+            $paymentData = array(
+                'paymentType' => $paymentMethod->getType(),
+            );
             $payment = new PaymentOption();
-            $payment->setCallToActionText($this->l($paymentMethod->getName()));
+            $payment->setCallToActionText($this->l($paymentMethod->getName()))
+                ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
             $result[] = $payment;
         }
+        //Implement action validation before payment
 
         return count($result) ? $result : false;
     }
@@ -224,6 +229,23 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Get payment class from payment type
+     *
+     * @param $paymentType
+     * @return bool|Payment
+     * @since 1.0.0
+     */
+    public function getPaymentFromType($paymentType)
+    {
+        $payments = $this->getPayments();
+        if (array_key_exists($paymentType, $payments)) {
+            return $payments[$paymentType];
+        }
+
+        return false;
+    }
+
+    /**
      * Build prefix for configuration entries
      *
      * @param $name
@@ -232,7 +254,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @return string
      * @since 1.0.0
      */
-    protected function buildParamName($name, $field)
+    public static function buildParamName($name, $field)
     {
         return sprintf(
             'WIRECARD_PAYMENT_GATEWAY_%s_%s',
