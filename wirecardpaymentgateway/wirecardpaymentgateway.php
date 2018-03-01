@@ -49,6 +49,8 @@ class WirecardPaymentGateway extends PaymentModule
      */
     private $config;
 
+    private $html;
+
     /**
      * WirecardPaymentGateway constructor.
      *
@@ -58,11 +60,15 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '0.0.1';
+        $this->version = '1.0.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.2.4');
         $this->bootstrap = true;
+        $this->controllers = array('payment', 'validation');
+        $this->is_eu_compatible = 1;
+        $this->currencies = true;
+        $this->currencies_mode = 'checkbox';
 
         parent::__construct();
 
@@ -82,7 +88,10 @@ class WirecardPaymentGateway extends PaymentModule
     public function install()
     {
         if (!parent::install()
-        || !$this->setDefaults()) {
+            || !$this->registerHook('paymentOptions')
+            || !$this->registerHook('paymentReturn')
+            || !$this->registerHook('displayPaymentEU')
+            || !$this->setDefaults()) {
             return false;
         }
         return true;
@@ -128,14 +137,12 @@ class WirecardPaymentGateway extends PaymentModule
     {
         if (Tools::isSubmit('btnSubmit')) {
             $this->postProcess();
-        } else {
-            $this->_html .= '<br />';
         }
 
-        $this->_html .= $this->displayWirecardPaymentGateway();
-        $this->_html .= $this->renderForm();
+        $this->html .= $this->displayWirecardPaymentGateway();
+        $this->html .= $this->renderForm();
 
-        return $this->_html;
+        return $this->html;
     }
 
     /**
@@ -175,6 +182,45 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $params;
+    }
+
+    /**
+     * Payment options hook
+     *
+     * @param $params
+     * @return bool|void
+     * @since 1.0.0
+     */
+    public function hookPaymentOptions($params)
+    {
+        if (!$this->active) {
+            return;
+        }
+
+        /** @var Payment $paymentMethod */
+        foreach ($this->getPayments() as $paymentMethod) {
+            $payment = new PaymentOption();
+            $payment->setCallToActionText($this->l($paymentMethod->getName()));
+            $result[] = $payment;
+        }
+
+        return count($result) ? $result : false;
+    }
+
+    /**
+     * Display payment return hook
+     *
+     * @param $params
+     * @return string
+     * @since 1.0.0
+     */
+    public function hookDisplayPaymentReturn($params)
+    {
+        if (!$this->active) {
+            return '';
+        }
+
+        return $this->display(__FILE__, 'payment_return.tpl');
     }
 
     /**
@@ -234,7 +280,7 @@ class WirecardPaymentGateway extends PaymentModule
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
-        $this->_html .= $this->displayConfirmation($this->l('Settings updated'));
+        $this->html .= $this->displayConfirmation($this->l('Settings updated'));
     }
 
     /**
