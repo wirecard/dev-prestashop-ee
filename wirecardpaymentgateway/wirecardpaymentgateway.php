@@ -50,7 +50,7 @@ class WirecardPaymentGateway extends PaymentModule
      *
      * @var string
      */
-    private $_html = '';
+    protected $_html = '';
 
     /**
      * Payment fields for configuration
