@@ -46,6 +46,13 @@ use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 class WirecardPaymentGateway extends PaymentModule
 {
     /**
+     * Template html
+     *
+     * @var string
+     */
+    private $_html = '';
+
+    /**
      * Payment fields for configuration
      *
      * @var array
