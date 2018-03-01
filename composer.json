@@ -20,6 +20,11 @@
     "test": "phpunit --colors=always",
     "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
   },
+  "autoload": {
+    "psr-4": {
+      "Wirecard\\Prestashop\\": "wirecardpaymentgateway/"
+    }
+  },
   "config": {
     "vendor-dir": "wirecardpaymentgateway/vendor"
   }

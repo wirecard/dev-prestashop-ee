@@ -29,6 +29,8 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
+namespace Wirecard\Prestashop\Models;
+
 use Wirecard\PaymentSdk\Config\Config;
 
 /**

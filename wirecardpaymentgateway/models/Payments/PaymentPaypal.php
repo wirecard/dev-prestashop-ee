@@ -29,10 +29,11 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-include_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.'Payment.php');
+namespace Wirecard\Prestashop\Models\Payments;
 
 use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\Prestashop\Models\Payment;
 
 /**
  * Class PaymentPaypal
