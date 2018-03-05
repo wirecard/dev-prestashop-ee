@@ -28,10 +28,11 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-include_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-    'models' . DIRECTORY_SEPARATOR . 'Payments' . DIRECTORY_SEPARATOR . 'PaymentPaypal.php');
+require_once (_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use Wirecard\Prestashop\Models\Payments\PaymentPaypal;
+use Wirecard\Prestashop\Models\Payments\PaymentCreditCard;
 
 /**
  * Class WirecardPaymentGateway
@@ -66,7 +67,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->version = '1.0.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.2.4');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
         $this->controllers = array('payment', 'validation');
         $this->is_eu_compatible = 1;
@@ -286,7 +287,8 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'paypal' => new PaymentPaypal()
+            'paypal' => new PaymentPaypal(),
+            'creditcard' => new PaymentCreditCard()
         );
 
         return $payments;
