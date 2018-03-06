@@ -29,11 +29,10 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-namespace Wirecard\Prestashop\Models\Payments;
+namespace Wirecard\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\Prestashop\Models\Payment;
 
 /**
  * Class PaymentPaypal
@@ -152,26 +151,20 @@ class PaymentPaypal extends Payment
     /**
      * Create config for paypal transactions
      *
-     * @param $baseUrl
-     * @param $httpUser
-     * @param $httpPass
+     * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
      * @since 1.0.0
      */
-    public function createConfig($baseUrl = null, $httpUser = null, $httpPass = null)
+    public function createPaymentConfig($paymentModule)
     {
-        if (is_null($baseUrl)) {
-            $baseUrl  = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'base_url'));
-            $httpUser = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'http_user'));
-            $httpPass = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'http_pass'));
-        }
+        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
+        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
+        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
 
-        $merchantAccountId = Configuration::get(
-            WirecardPaymentGateway::buildParamName($this->type, 'merchant_account_id')
-        );
-        $secret = Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'secret'));
+        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
+        $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
-        $config = parent::createConfig($baseUrl, $httpUser, $httpPass);
+        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
         $paymentConfig = new PaymentMethodConfig(PayPalTransaction::NAME, $merchantAccountId, $secret);
         $config->add($paymentConfig);
 

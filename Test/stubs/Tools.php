@@ -1,4 +1,5 @@
 <?php
+namespace Wirecard\Prestashop;
 
 class Tools
 {

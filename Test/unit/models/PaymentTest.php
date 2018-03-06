@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../../wirecardpaymentgateway/models/Payment.php';
 
+use Wirecard\Prestashop\Models\Payment;
 use Wirecard\PaymentSdk\Config\Config;
 
 class PaymentTest extends PHPUnit_Framework_TestCase
@@ -11,7 +11,8 @@ class PaymentTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->payment = new Payment();
-        $this->config = new Wirecard\PaymentSdk\Config\Config('baseUrl', 'httpUser', 'httpPass');
+        $this->payment->context = new \Wirecard\Prestashop\Context();
+        $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
     }
 
     public function testName()
@@ -53,9 +54,9 @@ class PaymentTest extends PHPUnit_Framework_TestCase
 
     public function testCreateRedirectUrl()
     {
-        $actual = $this->payment->createRedirectUrl(null);
+        $actual = $this->payment->createRedirectUrl('1', 'paypal', 'success');
 
-        $expected = null;
+        $expected = array('id_cart','payment_type','payment_state');
 
         $this->assertEquals($expected, $actual);
     }

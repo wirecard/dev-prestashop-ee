@@ -28,7 +28,6 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-
 namespace Wirecard\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\Config;
@@ -175,29 +174,6 @@ class Payment
     public function getFormFields()
     {
         return $this->formFields;
-    }
-
-    /**
-     * Create redirect Urls
-     *
-     * @param $paymentState
-     * @return null
-     * @since 1.0.0
-     */
-    public function createRedirectUrl($paymentState)
-    {
-        return null;
-    }
-
-    /**
-     * Create notification Urls
-     *
-     * @return null
-     * @since 1.0.0
-     */
-    public function createNotificationUrl()
-    {
-        return null;
     }
 
     /**

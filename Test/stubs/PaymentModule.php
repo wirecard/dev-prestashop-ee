@@ -1,4 +1,6 @@
 <?php
+namespace Wirecard\Prestashop;
+
 class PaymentModule
 {
     protected $name;
@@ -49,5 +51,10 @@ class PaymentModule
     public function display($file, $path)
     {
         return $file . $path;
+    }
+
+    public function registerHook($string)
+    {
+        return true;
     }
 }

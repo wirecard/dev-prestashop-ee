@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
+use Wirecard\Prestashop\WirecardPaymentGateway;
 
 class WirecardPaymentGatewayTest extends PHPUnit_Framework_TestCase
 {

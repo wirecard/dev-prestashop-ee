@@ -28,10 +28,9 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-include_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-    'models' . DIRECTORY_SEPARATOR . 'Payments' . DIRECTORY_SEPARATOR . 'PaymentPaypal.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use Wirecard\Prestashop\Models\PaymentPaypal;
 
 /**
  * Class WirecardPaymentGateway
@@ -49,7 +48,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     private $config;
 
-    private $html;
+    protected $html;
 
     /**
      * WirecardPaymentGateway constructor.
@@ -257,13 +256,26 @@ class WirecardPaymentGateway extends PaymentModule
      * @return string
      * @since 1.0.0
      */
-    public static function buildParamName($name, $field)
+    public function buildParamName($name, $field)
     {
         return sprintf(
             'WIRECARD_PAYMENT_GATEWAY_%s_%s',
             Tools::strtoupper($name),
             Tools::strtoupper($field)
         );
+    }
+
+    /**
+     * Get Configuration value for specific field
+     *
+     * @param $name
+     * @param $field
+     * @return mixed
+     * @since 1.0.0
+     */
+    public function getConfigValue($name, $field)
+    {
+        return Configuration::get($this->buildParamName($name, $field));
     }
 
     /**
@@ -486,5 +498,47 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return true;
+    }
+
+    /**
+     * Create redirect Urls
+     *
+     * @param $paymentState
+     * @return null
+     * @since 1.0.0
+     */
+    public function createRedirectUrl($cartId, $paymentType, $paymentState)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'return',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+                'payment_state' => $paymentState,
+            )
+        );
+
+        return $returnUrl;
+    }
+
+    /**
+     * Create notification Urls
+     *
+     * @return null
+     * @since 1.0.0
+     */
+    public function createNotificationUrl($cartId, $paymentType)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'notify',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+            )
+        );
+
+        return $returnUrl;
     }
 }

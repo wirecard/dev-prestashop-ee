@@ -35,6 +35,7 @@ use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Entity\Redirect;
 
 /**
  * @property WirecardPaymentGateway module
@@ -63,34 +64,39 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
-            $config = $payment->createConfig();
-            $amount = new Amount(2, 'EUR');
-            $operation = Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'payment_action'));
+            $config = $payment->createPaymentConfig($this->module);
+            $amount = new Amount(2.00, 'EUR');
+            $operation = $this->module->getConfigValue($paymentType, 'payment_action');
+            $redirectUrls = new Redirect(
+                $this->module->createRedirectUrl($cartId, $paymentType, 'success'),
+                $this->module->createRedirectUrl($cartId, $paymentType, 'cancel'),
+                $this->module->createRedirectUrl($cartId, $paymentType, 'failure')
+            );
 
             /** @var Transaction $transaction */
             $transaction = $payment->createTransaction();
-            $transaction->setNotificationUrl('test');
-            $transaction->setRedirect('test');
+            $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
+            $transaction->setRedirect($redirectUrls);
             $transaction->setAmount($amount);
 
             $customFields = new CustomFieldCollection();
             $customFields->add(new CustomField('orderId', $cartId));
             $transaction->setCustomFields($customFields);
 
-            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'shopping_basket'))) {
+            if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
                 //TODO: Create shoppingbasket here
             }
 
-            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'descriptor'))) {
+            if ($this->module->getConfigValue($paymentType, 'descriptor')) {
                 //TODO: Create descriptor
-                $transaction->setDescriptor();
+                //$transaction->setDescriptor();
             }
 
-            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'send_additional'))) {
+            if ($this->module->getConfigValue($paymentType, 'send_additional')) {
                 //TODO: create additional information for fps
             }
 
-            return $this->executeTransaction($transaction, $config, $operation);
+            return $this->executeTransaction($transaction, $config, $operation, $paymentType);
         }
     }
 
@@ -103,13 +109,14 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @return string
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation)
+    public function executeTransaction($transaction, $config, $operation, $paymentType)
     {
-        $transactionService = new TransactionService($config);
+        $transactionService = new TransactionService($config, null, new \GuzzleHttp\Client());
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
         } catch (Exception $exception) {
+            throw $exception;
             //throw exceptions in prestashop
         }
 
