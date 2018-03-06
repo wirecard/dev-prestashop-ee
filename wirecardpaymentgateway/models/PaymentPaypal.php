@@ -144,6 +144,18 @@ class PaymentPaypal extends Payment
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
+                array(
+                    'name' => 'test_credentials',
+                    'label' => 'Test Credentials',
+                    'type' => 'linkbutton',
+                    'required' => false,
+                    'buttonText' => 'Test paypal configuration',
+                    'id' => 'paypalConfig',
+                    'method' => 'paypal',
+                    'send' => array(
+                        'type' => 'paypal'
+                    )
+                )
             )
         );
     }

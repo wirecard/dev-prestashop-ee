@@ -67,7 +67,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.2.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation');
+        $this->controllers = array('payment', 'validation', 'notify', 'return');
         $this->is_eu_compatible = 1;
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
@@ -140,6 +140,13 @@ class WirecardPaymentGateway extends PaymentModule
         if (Tools::isSubmit('btnSubmit')) {
             $this->postProcess();
         }
+
+        $this->context->smarty->assign(
+            array(
+                'module_dir' => $this->_path,
+                'ajax_configtest_url' => $this->context->link->getModuleLink('wirecardpaymentgateway', 'ajax')
+            )
+        );
 
         $this->html .= $this->displayWirecardPaymentGateway();
         $this->html .= $this->renderForm();
@@ -390,6 +397,19 @@ class WirecardPaymentGateway extends PaymentModule
                 );
 
                 switch ($f['type']) {
+                    case 'linkbutton':
+                        $elem['buttonText'] = $f['buttonText'];
+                        $elem['id'] = $f['id'];
+                        $elem['method'] = $f['method'];
+                        if(is_array($f['send']) && key_exists('type', $f['send'])) {
+                            $elem['send'] = array(
+                                $this->buildParamName($f['send']['type'], 'base_url'),
+                                $this->buildParamName($f['send']['type'], 'http_user'),
+                                $this->buildParamName($f['send']['type'], 'http_password')
+                            );
+                        }
+                        break;
+
                     case 'text':
                         if (!isset($elem['class'])) {
                             $elem['class'] = 'fixed-width-xl';

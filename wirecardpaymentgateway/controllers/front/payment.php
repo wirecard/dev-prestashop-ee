@@ -65,6 +65,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
             $config = $payment->createPaymentConfig($this->module);
+            //TODO: Get real amount
             $amount = new Amount(2.00, 'EUR');
             $operation = $this->module->getConfigValue($paymentType, 'payment_action');
             $redirectUrls = new Redirect(
@@ -111,7 +112,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function executeTransaction($transaction, $config, $operation, $paymentType)
     {
-        $transactionService = new TransactionService($config, null, new \GuzzleHttp\Client());
+        $transactionService = new TransactionService($config);
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
@@ -124,6 +125,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $redirect = $response->getRedirectUrl();
         }
 
-        return $redirect;
+        Tools::redirect($redirect);
     }
 }
