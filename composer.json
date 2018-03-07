@@ -24,7 +24,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Wirecard\\Prestashop\\": "wirecardpaymentgateway/"
+      "WirecardEE\\Prestashop\\": "wirecardpaymentgateway/"
     }
   },
   "config": {

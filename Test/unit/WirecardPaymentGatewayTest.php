@@ -1,5 +1,5 @@
 <?php
-use Wirecard\Prestashop\WirecardPaymentGateway;
+use WirecardEE\Prestashop\WirecardPaymentGateway;
 
 class WirecardPaymentGatewayTest extends PHPUnit_Framework_TestCase
 {

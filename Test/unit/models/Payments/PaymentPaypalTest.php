@@ -1,5 +1,5 @@
 <?php
-use Wirecard\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Models\PaymentPaypal;
 
 class PaymentPaypalTest extends PHPUnit_Framework_TestCase
 {

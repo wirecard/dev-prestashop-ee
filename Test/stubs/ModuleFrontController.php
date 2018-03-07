@@ -28,7 +28,7 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-namespace Wirecard\Prestashop;
+namespace WirecardEE\Prestashop;
 
 class ModuleFrontController
 {

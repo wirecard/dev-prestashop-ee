@@ -1,6 +1,6 @@
 <?php
 
-use Wirecard\Prestashop\Models\Payment;
+use WirecardEE\Prestashop\Models\Payment;
 use Wirecard\PaymentSdk\Config\Config;
 
 class PaymentTest extends PHPUnit_Framework_TestCase

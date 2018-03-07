@@ -36,6 +36,8 @@ use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Entity\Redirect;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\Logger;
 
 /**
  * @property WirecardPaymentGateway module
@@ -53,6 +55,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     {
         $cart = $this->context->cart;
         $cartId = $cart->id;
+        $additionalInformation = new AdditionalInformation();
 
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
@@ -65,8 +68,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
             $config = $payment->createPaymentConfig($this->module);
-            //TODO: Get real amount
-            $amount = new Amount(2.00, 'EUR');
+            $amount = round($cart->getOrderTotal(), 2);
+            $currency = new Currency($cart->id_currency);
             $operation = $this->module->getConfigValue($paymentType, 'payment_action');
             $redirectUrls = new Redirect(
                 $this->module->createRedirectUrl($cartId, $paymentType, 'success'),
@@ -78,14 +81,14 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $transaction = $payment->createTransaction();
             $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
             $transaction->setRedirect($redirectUrls);
-            $transaction->setAmount($amount);
+            $transaction->setAmount(new Amount($amount, $currency->iso_code));
 
             $customFields = new CustomFieldCollection();
             $customFields->add(new CustomField('orderId', $cartId));
             $transaction->setCustomFields($customFields);
 
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
-                //TODO: Create shoppingbasket here
+                $transaction->setBasket($additionalInformation->createBasket($cart, $transaction, $currency->iso_code));
             }
 
             if ($this->module->getConfigValue($paymentType, 'descriptor')) {
@@ -112,7 +115,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function executeTransaction($transaction, $config, $operation, $paymentType)
     {
-        $transactionService = new TransactionService($config);
+        $logger = new Logger();
+        $transactionService = new TransactionService($config, $logger);
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
@@ -123,8 +127,47 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
+            Tools::redirect($redirect);
         }
 
-        Tools::redirect($redirect);
+        echo "Something went wrong";
+        die();
+    }
+
+    public function getAddress($source, $type='billing')
+    {
+        switch ($type) {
+            case 'shipping':
+                $address = new \WirecardCEE_Stdlib_ConsumerData_Address(
+                    \WirecardCEE_Stdlib_ConsumerData_Address::TYPE_SHIPPING
+                );
+                break;
+
+            default:
+                $address = new \WirecardCEE_Stdlib_ConsumerData_Address(
+                    \WirecardCEE_Stdlib_ConsumerData_Address::TYPE_BILLING
+                );
+                break;
+        }
+
+        $country = new Country($source->id_country);
+        $state = new State($source->id_state);
+
+        $address->setFirstname($source->firstname);
+        $address->setLastname($source->lastname);
+        $address->setAddress1($source->address1);
+        $address->setAddress2($source->address2);
+        $address->setZipCode($source->postcode);
+        $address->setCity($source->city);
+        $address->setCountry($country->iso_code);
+        $address->setPhone($source->phone);
+
+        if ($country->iso_code == 'US' || $country->iso_code == 'CA') {
+            $address->setState($state->iso_code);
+        } else {
+            $address->setState($state->name);
+        }
+
+        return $address;
     }
 }

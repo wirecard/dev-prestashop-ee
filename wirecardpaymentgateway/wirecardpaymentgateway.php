@@ -30,7 +30,7 @@
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use Wirecard\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Models\PaymentPaypal;
 
 /**
  * Class WirecardPaymentGateway
