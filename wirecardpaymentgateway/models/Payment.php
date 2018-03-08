@@ -92,9 +92,15 @@ class Payment
 
     /**
      * @var array
-     * @sine 1.0.0
+     * @since 1.0.0
      */
     protected $formFields;
+
+    /**
+     * @var string
+     * @since 1.0.0
+     */
+    protected $additionalInformationTemplate;
 
     /**
      * WirecardPayment constructor.
@@ -209,5 +215,19 @@ class Payment
     public function createTransaction()
     {
         return null;
+    }
+
+    public function setAdditionalInformationTemplate($template)
+    {
+        $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
+    }
+
+    public function getAdditionalInformationTemplate()
+    {
+        if (isset($this->additionalInformationTemplate)) {
+            return $this->additionalInformationTemplate;
+        } else {
+            return false;
+        }
     }
 }

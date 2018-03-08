@@ -59,9 +59,6 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function __construct()
     {
-        require_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-            'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
-
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
         $this->version = '1.0.0';
@@ -95,6 +92,7 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('paymentOptions')
             || !$this->registerHook('paymentReturn')
             || !$this->registerHook('displayPaymentEU')
+            || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->setDefaults()) {
             return false;
         }
@@ -209,6 +207,9 @@ class WirecardPaymentGateway extends PaymentModule
             $payment = new PaymentOption();
             $payment->setCallToActionText($this->l($paymentMethod->getName()))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
+            if ($paymentMethod->getAdditionalInformationTemplate()) {
+                $payment->setAdditionalInformation($this->fetch('module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'));
+            }
             $result[] = $payment;
         }
         //Implement action validation before payment
@@ -488,5 +489,12 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return true;
+    }
+
+    public function hookActionFrontControllerSetMedia()
+    {
+        $this->context->controller->addJS(
+            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
+        );
     }
 }
