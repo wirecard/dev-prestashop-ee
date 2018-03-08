@@ -32,6 +32,7 @@
 namespace Wirecard\Prestashop\Models\Payments;
 
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
+use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\Prestashop\Models\Payment;
@@ -232,5 +233,11 @@ class PaymentCreditCard extends Payment
         $config->add($paymentConfig);
 
         return $config;
+    }
+
+    public function getRequestData() {
+        $config = $this->createConfig();
+        $transactionService = new TransactionService($config);
+        return $transactionService->getDataForCreditCardUi();
     }
 }
