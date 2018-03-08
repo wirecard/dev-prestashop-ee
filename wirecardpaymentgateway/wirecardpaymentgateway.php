@@ -401,7 +401,7 @@ class WirecardPaymentGateway extends PaymentModule
                         $elem['buttonText'] = $f['buttonText'];
                         $elem['id'] = $f['id'];
                         $elem['method'] = $f['method'];
-                        if(is_array($f['send']) && key_exists('type', $f['send'])) {
+                        if (is_array($f['send']) && key_exists('type', $f['send'])) {
                             $elem['send'] = array(
                                 $this->buildParamName($f['send']['type'], 'base_url'),
                                 $this->buildParamName($f['send']['type'], 'http_user'),

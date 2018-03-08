@@ -39,6 +39,9 @@ use Wirecard\PaymentSdk\Entity\Redirect;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
+ * Class WirecardPaymentGatewayPaymentModuleFrontController
+ *
+ * @extends ModuleFrontController
  * @property WirecardPaymentGateway module
  *
  * @since 1.0.0
@@ -91,12 +94,16 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             }
 
             if ($this->module->getConfigValue($paymentType, 'descriptor')) {
-                //TODO: Create descriptor
-                //$transaction->setDescriptor();
+                $transaction->setDescriptor($additionalInformation->createDescriptor($cartId));
             }
 
             if ($this->module->getConfigValue($paymentType, 'send_additional')) {
-                //TODO: create additional information for fps
+                $transaction = $additionalInformation->createAdditionalInformation(
+                    $cart,
+                    $cartId,
+                    $transaction,
+                    $currency->iso_code
+                );
             }
 
             return $this->executeTransaction($transaction, $config, $operation, $paymentType);
@@ -104,12 +111,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     }
 
     /**
-     * Execute reserve and pay operations
+     * Execute transactions with operation pay and reserve
      *
-     * @param $transaction
-     * @param $config
-     * @param $operation
-     * @return string
+     * @param Transaction $transaction
+     * @param \Wirecard\PaymentSdk\Config\Config $config
+     * @param string $operation
+     * @param string $paymentType
+     * @throws Exception
      * @since 1.0.0
      */
     public function executeTransaction($transaction, $config, $operation, $paymentType)

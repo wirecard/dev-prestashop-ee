@@ -32,10 +32,16 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Entity\AccountHolder;
+use Wirecard\PaymentSdk\Entity\Address;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use PrestaShop\PrestaShop\Adapter\Entity\Configuration;
 use PrestaShop\PrestaShop\Adapter\Entity\Tools;
+use PrestaShop\PrestaShop\Adapter\Country\CountryDataProvider;
+use PrestaShop\PrestaShop\Adapter\Customer\CustomerDataProvider;
+use PrestaShop\PrestaShop\Adapter\AddressFactory;
 
 /**
  * Class AdditionalInformation
@@ -47,7 +53,7 @@ class AdditionalInformation
     /**
      * Create basket items for transaction
      *
-     * @param $cart
+     * @param Cart $cart
      * @param Transaction $transaction
      * @param string $currency
      * @return Basket
@@ -100,71 +106,124 @@ class AdditionalInformation
     }
 
     /**
-     * Default create descriptor
+     * Create shop descriptor
      *
-     * @param $order
+     * @param string $id
      * @return string
      * @since 1.0.0
      */
-    public function createDescriptor( $order ) {
+    public function createDescriptor($id)
+    {
         return sprintf(
             '%s %s',
-            substr( 'name' , 0, 9 ),
-            '1'
+            substr(Configuration::get('PS_SHOP_NAME'), 0, 9),
+            $id
         );
     }
 
-    public function setAdditionalInformation( $cart, $order, $transaction, $currency ) {
-        $transaction->setDescriptor( $this->createDescriptor( $order ) );
-        $transaction->setAccountHolder( $this->createAccountHolder( $order, 'billing' ) );
-        $transaction->setShipping( $this->createAccountHolder( $order, 'shipping' ) );
-        $transaction->setOrderNumber( 'orderNumber' );
-        $transaction->setBasket( $this->createBasket( $cart, $transaction, $currency ) );
-        $transaction->setIpAddress( 'customerIpAddress' );
-        $transaction->setConsumerId( 'customerId' );
+    /**
+     * Create additional information for fps
+     *
+     * @param Cart $cart
+     * @param string $id
+     * @param Transaction $transaction
+     * @param string $currency
+     * @return Transaction
+     * @since 1.0.0
+     */
+    public function createAdditionalInformation($cart, $id, $transaction, $currency)
+    {
+        $transaction->setDescriptor($this->createDescriptor($id));
+        $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing'));
+        $transaction->setShipping($this->createAccountHolder($cart, 'shipping'));
+        $transaction->setOrderNumber($id);
+        $transaction->setBasket($this->createBasket($cart, $transaction, $currency));
+        $transaction->setIpAddress($this->getConsumerIpAddress());
+        $transaction->setConsumerId($cart->id_customer);
 
         return $transaction;
     }
 
     /**
-     * @param $order
-     * @param $type
+     * Create accountholder for shipping or billing
+     *
+     * @param Cart $cart
+     * @param string $type
      * @return AccountHolder
+     * @since 1.0.0
      */
-    public function creatAccountHolder( $order, $type ) {
+    public function createAccountHolder($cart, $type)
+    {
+        $customerProvider = new CustomerDataProvider();
+        $customer = $customerProvider->getCustomer($cart->id_customer);
+        $addressFactory = new AddressFactory();
+        $billing = $addressFactory->findOrCreate($cart->id_address_invoice);
+        $shipping = $addressFactory->findOrCreate($cart->id_address_delivery);
+
         $accountHolder = new AccountHolder();
-        if ( self::SHIPPING == $type ) {
-            $accountHolder->setAddress( $this->createAddressData( $order, $type ) );
-            $accountHolder->setFirstName( 'name' );
-            $accountHolder->setLastName('name' );
+        if ('shipping' == $type) {
+            $accountHolder->setAddress($this->createAddressData($shipping, $type));
+            $accountHolder->setFirstName($shipping->firstname);
+            $accountHolder->setLastName($shipping->lastname);
         } else {
-            $accountHolder->setAddress( $this->createAddressData( $order, $type ) );
-            $accountHolder->setEmail( 'b' );
-            $accountHolder->setFirstName( 'name' );
-            $accountHolder->setLastName( 'name' );
-            $accountHolder->setPhone( 'phonhe' );
+            $accountHolder->setAddress($this->createAddressData($billing, $type));
+            $accountHolder->setEmail($customer->email);
+            $accountHolder->setFirstName($billing->firstname);
+            $accountHolder->setLastName($billing->lastname);
+            $accountHolder->setPhone($billing->phone);
         }
 
         return $accountHolder;
     }
 
     /**
-     * @param $order
-     * @param $type
+     * Create addressdata for shipping or billing
+     *
+     * @param PrestaShop\Address $source
+     * @param string $type
      * @return Address
+     * @since 1.0.0
      */
-    public function createAddressData( $order, $type ) {
-        if ( self::SHIPPING == $type ) {
-            $address = new Address( 'country', 'city', 'address' );
-            $address->setPostalCode( 'postcode' );
+    public function createAddressData($source, $type)
+    {
+        $countryProvider = new CountryDataProvider();
+        $country = $countryProvider->getIsoCodeById($source->id_country);
+        if ('shipping' == $type) {
+            $address = new Address($country, $source->city, $source->address1);
+            $address->setPostalCode($source->postcode);
         } else {
-            $address = new Address(  'country', 'city', 'address'  );
-            $address->setPostalCode( 'postcode' );
-            if ( strlen( 'address2' ) ) {
-                $address->setStreet2( 'address2' );
+            $address = new Address($country, $source->city, $source->address1);
+            $address->setPostalCode($source->postcode);
+            if (strlen($source->address2)) {
+                $address->setStreet2($source->address2);
             }
         }
 
         return $address;
+    }
+
+    /**
+     * Create consumer ip address
+     *
+     * @return string
+     * @since 1.0.0
+     */
+    public function getConsumerIpAddress()
+    {
+        if (!method_exists('Tools', 'getRemoteAddr')) {
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) and $_SERVER['HTTP_X_FORWARDED_FOR']) {
+                if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',')) {
+                    $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+
+                    return $ips[0];
+                } else {
+                    return $_SERVER['HTTP_X_FORWARDED_FOR'];
+                }
+            }
+
+            return $_SERVER['REMOTE_ADDR'];
+        } else {
+            return Tools::getRemoteAddr();
+        }
     }
 }
