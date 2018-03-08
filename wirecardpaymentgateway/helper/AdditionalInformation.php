@@ -98,4 +98,73 @@ class AdditionalInformation
 
         return $basket;
     }
+
+    /**
+     * Default create descriptor
+     *
+     * @param $order
+     * @return string
+     * @since 1.0.0
+     */
+    public function createDescriptor( $order ) {
+        return sprintf(
+            '%s %s',
+            substr( 'name' , 0, 9 ),
+            '1'
+        );
+    }
+
+    public function setAdditionalInformation( $cart, $order, $transaction, $currency ) {
+        $transaction->setDescriptor( $this->createDescriptor( $order ) );
+        $transaction->setAccountHolder( $this->createAccountHolder( $order, 'billing' ) );
+        $transaction->setShipping( $this->createAccountHolder( $order, 'shipping' ) );
+        $transaction->setOrderNumber( 'orderNumber' );
+        $transaction->setBasket( $this->createBasket( $cart, $transaction, $currency ) );
+        $transaction->setIpAddress( 'customerIpAddress' );
+        $transaction->setConsumerId( 'customerId' );
+
+        return $transaction;
+    }
+
+    /**
+     * @param $order
+     * @param $type
+     * @return AccountHolder
+     */
+    public function creatAccountHolder( $order, $type ) {
+        $accountHolder = new AccountHolder();
+        if ( self::SHIPPING == $type ) {
+            $accountHolder->setAddress( $this->createAddressData( $order, $type ) );
+            $accountHolder->setFirstName( 'name' );
+            $accountHolder->setLastName('name' );
+        } else {
+            $accountHolder->setAddress( $this->createAddressData( $order, $type ) );
+            $accountHolder->setEmail( 'b' );
+            $accountHolder->setFirstName( 'name' );
+            $accountHolder->setLastName( 'name' );
+            $accountHolder->setPhone( 'phonhe' );
+        }
+
+        return $accountHolder;
+    }
+
+    /**
+     * @param $order
+     * @param $type
+     * @return Address
+     */
+    public function createAddressData( $order, $type ) {
+        if ( self::SHIPPING == $type ) {
+            $address = new Address( 'country', 'city', 'address' );
+            $address->setPostalCode( 'postcode' );
+        } else {
+            $address = new Address(  'country', 'city', 'address'  );
+            $address->setPostalCode( 'postcode' );
+            if ( strlen( 'address2' ) ) {
+                $address->setStreet2( 'address2' );
+            }
+        }
+
+        return $address;
+    }
 }
