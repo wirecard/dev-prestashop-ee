@@ -9,6 +9,7 @@ class PaymentModule
     protected $identifier;
     protected $context;
     protected $_path;
+    protected $active;
 
     public function __construct()
     {
@@ -16,6 +17,7 @@ class PaymentModule
         $this->identifier = 1;
         $this->context = new Context();
         $this->_path = '/wirecardpaymentgateway';
+        $this->active = true;
     }
 
     public function install()

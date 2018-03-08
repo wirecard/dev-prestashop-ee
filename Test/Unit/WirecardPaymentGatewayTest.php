@@ -1,6 +1,8 @@
 <?php
 namespace WirecardEE\Prestashop;
 
+use WirecardEE\Prestashop\Models\PaymentPaypal;
+
 require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
 
 class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
@@ -55,5 +57,58 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
         $actual = $this->gateway->getContent();
 
         $this->assertNotNull($actual);
+    }
+
+    public function testGetPaymentFromType()
+    {
+        $actual = $this->gateway->getPaymentFromType('paypal');
+
+        $expected = PaymentPaypal::class;
+
+        $this->assertInstanceOf($expected, $actual);
+    }
+
+    public function testGetPaymentFromTypeInvalid()
+    {
+        $actual = $this->gateway->getPaymentFromType('invalidpayment');
+
+        $this->assertFalse($actual);
+    }
+
+    public function testGetConfigValue()
+    {
+        $actual = $this->gateway->getConfigValue('paypal', 'base_url');
+
+        $expected = 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL';
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testRedirectUrl()
+    {
+        $actual = $this->gateway->createRedirectUrl('1', 'paypal', 'success');
+
+        $this->assertNotNull($actual);
+    }
+
+    public function testNotificationUrl()
+    {
+        $actual = $this->gateway->createNotificationUrl('1', 'paypal');
+
+        $this->assertNotNull($actual);
+    }
+
+    public function testPaymentOptions()
+    {
+        $actual = $this->gateway->hookPaymentOptions('test');
+
+        $this->assertCount(1, $actual);
+    }
+
+    public function testHookDisplayPaymentReturn()
+    {
+        $actual = $this->gateway->hookDisplayPaymentReturn('test');
+
+        $this->assertContains('payment_return', $actual);
     }
 }

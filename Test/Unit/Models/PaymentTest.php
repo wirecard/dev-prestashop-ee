@@ -4,17 +4,20 @@ namespace WirecardEE\Prestashop;
 
 use WirecardEE\Prestashop\Models\Payment;
 use Wirecard\PaymentSdk\Config\Config;
+use WirecardEE\Prestashop\Models\PaymentPaypal;
 
 class PaymentTest extends \PHPUnit_Framework_TestCase
 {
     private $payment;
     private $config;
+    private $paypalPayment;
 
     public function setUp()
     {
         $this->payment = new Payment();
         $this->payment->context = new \Context();
         $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
+        $this->paypalPayment = new PaymentPaypal();
     }
 
     public function testName()
@@ -52,5 +55,21 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         $expected = null;
 
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testType()
+    {
+        $actual = $this->paypalPayment->getType();
+
+        $expected = 'paypal';
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCreateTransactionIsNull()
+    {
+        $actual = $this->payment->createTransaction();
+
+        $this->assertNull($actual);
     }
 }
