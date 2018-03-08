@@ -1,5 +1,4 @@
 <?php
-namespace WirecardEE\Prestashop;
 
 class Configuration
 {

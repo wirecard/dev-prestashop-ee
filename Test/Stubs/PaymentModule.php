@@ -1,5 +1,4 @@
 <?php
-namespace WirecardEE\Prestashop;
 
 class PaymentModule
 {
@@ -9,12 +8,14 @@ class PaymentModule
     protected $html;
     protected $identifier;
     protected $context;
+    protected $_path;
 
     public function __construct()
     {
         $this->_html = null;
         $this->identifier = 1;
         $this->context = new Context();
+        $this->_path = '/wirecardpaymentgateway';
     }
 
     public function install()

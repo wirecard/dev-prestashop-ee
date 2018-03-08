@@ -1,13 +1,15 @@
 <?php
-use WirecardEE\Prestashop\WirecardPaymentGateway;
+namespace WirecardEE\Prestashop;
 
-class WirecardPaymentGatewayTest extends PHPUnit_Framework_TestCase
+require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
+
+class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 {
     private $gateway;
 
     public function setUp()
     {
-        $this->gateway = new WirecardPaymentGateway();
+        $this->gateway = new \WirecardPaymentGateway();
     }
 
     public function testConfiguration()
