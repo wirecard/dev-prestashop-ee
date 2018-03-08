@@ -37,7 +37,6 @@ use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Entity\Redirect;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
-use WirecardEE\Prestashop\Helper\Logger;
 
 /**
  * @property WirecardPaymentGateway module
@@ -115,8 +114,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function executeTransaction($transaction, $config, $operation, $paymentType)
     {
-        $logger = new Logger();
-        $transactionService = new TransactionService($config, $logger);
+        $transactionService = new TransactionService($config);
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
@@ -132,42 +130,5 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         echo "Something went wrong";
         die();
-    }
-
-    public function getAddress($source, $type='billing')
-    {
-        switch ($type) {
-            case 'shipping':
-                $address = new \WirecardCEE_Stdlib_ConsumerData_Address(
-                    \WirecardCEE_Stdlib_ConsumerData_Address::TYPE_SHIPPING
-                );
-                break;
-
-            default:
-                $address = new \WirecardCEE_Stdlib_ConsumerData_Address(
-                    \WirecardCEE_Stdlib_ConsumerData_Address::TYPE_BILLING
-                );
-                break;
-        }
-
-        $country = new Country($source->id_country);
-        $state = new State($source->id_state);
-
-        $address->setFirstname($source->firstname);
-        $address->setLastname($source->lastname);
-        $address->setAddress1($source->address1);
-        $address->setAddress2($source->address2);
-        $address->setZipCode($source->postcode);
-        $address->setCity($source->city);
-        $address->setCountry($country->iso_code);
-        $address->setPhone($source->phone);
-
-        if ($country->iso_code == 'US' || $country->iso_code == 'CA') {
-            $address->setState($state->iso_code);
-        } else {
-            $address->setState($state->name);
-        }
-
-        return $address;
     }
 }
