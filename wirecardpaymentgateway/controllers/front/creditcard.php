@@ -29,7 +29,7 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-use Wirecard\Prestashop\Models\Payments\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * @property WirecardPaymentGateway module
@@ -47,7 +47,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     public function displayAjaxGetCreditCardConfig()
     {
         $creditCard = new PaymentCreditCard();
-        $requestData = $creditCard->getRequestData();
-        die(Tools::jsonEncode(array('result' => $requestData)));
+        $requestData = $creditCard->getRequestData($this->module);
+        die(Tools::jsonEncode($requestData));
     }
 }

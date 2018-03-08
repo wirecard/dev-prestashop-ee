@@ -1,4 +1,5 @@
 <?php
+namespace WirecardEE\Prestashop;
 
 class Language
 {

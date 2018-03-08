@@ -28,8 +28,7 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-
-namespace Wirecard\Prestashop\Models;
+namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\Config;
 
@@ -184,29 +183,6 @@ class Payment
     }
 
     /**
-     * Create redirect Urls
-     *
-     * @param $paymentState
-     * @return null
-     * @since 1.0.0
-     */
-    public function createRedirectUrl($paymentState)
-    {
-        return null;
-    }
-
-    /**
-     * Create notification Urls
-     *
-     * @return null
-     * @since 1.0.0
-     */
-    public function createNotificationUrl()
-    {
-        return null;
-    }
-
-    /**
      * Create Default Transaction
      *
      * @return null
@@ -219,7 +195,8 @@ class Payment
 
     public function setAdditionalInformationTemplate($template)
     {
-        $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
+        $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
+            DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
     }
 
     public function getAdditionalInformationTemplate()

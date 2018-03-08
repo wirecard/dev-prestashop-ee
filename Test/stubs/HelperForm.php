@@ -1,4 +1,6 @@
 <?php
+namespace WirecardEE\Prestashop;
+
 class HelperForm
 {
     public function generateForm($fields)

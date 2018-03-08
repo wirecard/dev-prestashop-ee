@@ -35,8 +35,13 @@ use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Entity\Redirect;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
+ * Class WirecardPaymentGatewayPaymentModuleFrontController
+ *
+ * @extends ModuleFrontController
  * @property WirecardPaymentGateway module
  *
  * @since 1.0.0
@@ -52,6 +57,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     {
         $cart = $this->context->cart;
         $cartId = $cart->id;
+        $additionalInformation = new AdditionalInformation();
 
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
@@ -63,60 +69,74 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
-            $config = $payment->createConfig();
-            $amount = new Amount(2, 'EUR');
-            $operation = Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'payment_action'));
+            $config = $payment->createPaymentConfig($this->module);
+            $amount = round($cart->getOrderTotal(), 2);
+            $currency = new Currency($cart->id_currency);
+            $operation = $this->module->getConfigValue($paymentType, 'payment_action');
+            $redirectUrls = new Redirect(
+                $this->module->createRedirectUrl($cartId, $paymentType, 'success'),
+                $this->module->createRedirectUrl($cartId, $paymentType, 'cancel'),
+                $this->module->createRedirectUrl($cartId, $paymentType, 'failure')
+            );
 
             /** @var Transaction $transaction */
             $transaction = $payment->createTransaction();
-            $transaction->setNotificationUrl('test');
-            $transaction->setRedirect('test');
-            $transaction->setAmount($amount);
+            $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
+            $transaction->setRedirect($redirectUrls);
+            $transaction->setAmount(new Amount($amount, $currency->iso_code));
 
             $customFields = new CustomFieldCollection();
             $customFields->add(new CustomField('orderId', $cartId));
             $transaction->setCustomFields($customFields);
 
-            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'shopping_basket'))) {
-                //TODO: Create shoppingbasket here
+            if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
+                $transaction->setBasket($additionalInformation->createBasket($cart, $transaction, $currency->iso_code));
             }
 
-            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'descriptor'))) {
-                //TODO: Create descriptor
-                $transaction->setDescriptor();
+            if ($this->module->getConfigValue($paymentType, 'descriptor')) {
+                $transaction->setDescriptor($additionalInformation->createDescriptor($cartId));
             }
 
-            if (Configuration::get(WirecardPaymentGateway::buildParamName($paymentType, 'send_additional'))) {
-                //TODO: create additional information for fps
+            if ($this->module->getConfigValue($paymentType, 'send_additional')) {
+                $transaction = $additionalInformation->createAdditionalInformation(
+                    $cart,
+                    $cartId,
+                    $transaction,
+                    $currency->iso_code
+                );
             }
 
-            return $this->executeTransaction($transaction, $config, $operation);
+            return $this->executeTransaction($transaction, $config, $operation, $paymentType);
         }
     }
 
     /**
-     * Execute reserve and pay operations
+     * Execute transactions with operation pay and reserve
      *
-     * @param $transaction
-     * @param $config
-     * @param $operation
-     * @return string
+     * @param Transaction $transaction
+     * @param \Wirecard\PaymentSdk\Config\Config $config
+     * @param string $operation
+     * @param string $paymentType
+     * @throws Exception
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation)
+    public function executeTransaction($transaction, $config, $operation, $paymentType)
     {
         $transactionService = new TransactionService($config);
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
         } catch (Exception $exception) {
+            throw $exception;
             //throw exceptions in prestashop
         }
 
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
+            Tools::redirect($redirect);
         }
 
-        return $redirect;
+        echo "Something went wrong";
+        die();
     }
 }

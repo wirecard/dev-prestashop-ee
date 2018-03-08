@@ -1,0 +1,16 @@
+<phpunit bootstrap="./vendor/autoload.php" colors="true">
+    <testsuites>
+        <testsuite name="Wirecard\\PaymentSdk">
+            <directory suffix="UTest.php">./test</directory>
+            <directory suffix="ITest.php">./test</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <server name='HTTP_ACCEPT_LANGUAGE' value='de_AT' />
+    </php>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+</phpunit>

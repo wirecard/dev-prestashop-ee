@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../../../wirecardpaymentgateway/models/Payments/PaymentPaypal.php';
+use WirecardEE\Prestashop\Models\PaymentPaypal;
 
 class PaymentPaypalTest extends PHPUnit_Framework_TestCase
 {

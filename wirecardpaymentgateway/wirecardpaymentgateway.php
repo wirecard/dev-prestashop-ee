@@ -28,11 +28,12 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
+
 require_once (_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use Wirecard\Prestashop\Models\Payments\PaymentPaypal;
-use Wirecard\Prestashop\Models\Payments\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * Class WirecardPaymentGateway
@@ -50,7 +51,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     private $config;
 
-    private $html;
+    protected $html;
 
     /**
      * WirecardPaymentGateway constructor.
@@ -66,7 +67,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation');
+        $this->controllers = array('payment', 'validation', 'notify', 'return', 'creditcard');
         $this->is_eu_compatible = 1;
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
@@ -140,6 +141,13 @@ class WirecardPaymentGateway extends PaymentModule
         if (Tools::isSubmit('btnSubmit')) {
             $this->postProcess();
         }
+
+        $this->context->smarty->assign(
+            array(
+                'module_dir' => $this->_path,
+                'ajax_configtest_url' => $this->context->link->getModuleLink('wirecardpaymentgateway', 'ajax')
+            )
+        );
 
         $this->html .= $this->displayWirecardPaymentGateway();
         $this->html .= $this->renderForm();
@@ -259,13 +267,26 @@ class WirecardPaymentGateway extends PaymentModule
      * @return string
      * @since 1.0.0
      */
-    public static function buildParamName($name, $field)
+    public function buildParamName($name, $field)
     {
         return sprintf(
             'WIRECARD_PAYMENT_GATEWAY_%s_%s',
             Tools::strtoupper($name),
             Tools::strtoupper($field)
         );
+    }
+
+    /**
+     * Get Configuration value for specific field
+     *
+     * @param $name
+     * @param $field
+     * @return mixed
+     * @since 1.0.0
+     */
+    public function getConfigValue($name, $field)
+    {
+        return Configuration::get($this->buildParamName($name, $field));
     }
 
     /**
@@ -381,6 +402,19 @@ class WirecardPaymentGateway extends PaymentModule
                 );
 
                 switch ($f['type']) {
+                    case 'linkbutton':
+                        $elem['buttonText'] = $f['buttonText'];
+                        $elem['id'] = $f['id'];
+                        $elem['method'] = $f['method'];
+                        if (is_array($f['send']) && key_exists('type', $f['send'])) {
+                            $elem['send'] = array(
+                                $this->buildParamName($f['send']['type'], 'base_url'),
+                                $this->buildParamName($f['send']['type'], 'http_user'),
+                                $this->buildParamName($f['send']['type'], 'http_password')
+                            );
+                        }
+                        break;
+
                     case 'text':
                         if (!isset($elem['class'])) {
                             $elem['class'] = 'fixed-width-xl';
@@ -493,15 +527,61 @@ class WirecardPaymentGateway extends PaymentModule
 
     public function hookActionFrontControllerSetMedia()
     {
-        //$this->context->controller->addJsDef();
-        // Create a link with the good path
         $link = new Link;
         $parameters = array("action" => "getcreditcardconfig");
-        $ajax_link = $link->getModuleLink('wirecardpaymentgateway','creditcard', $parameters);
+        $ajax_link = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
+        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
 
         Media::addJsDef(['url' => $ajax_link]);
+        $this->context->controller->registerJavascript(
+            'remote-bootstrap',
+            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
+            ['server' => 'remote', 'position' => 'head', 'priority' => 20]
+        );
         $this->context->controller->addJS(
             _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
         );
+    }
+
+    /**
+     * Create redirect Urls
+     *
+     * @param $paymentState
+     * @return null
+     * @since 1.0.0
+     */
+    public function createRedirectUrl($cartId, $paymentType, $paymentState)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'return',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+                'payment_state' => $paymentState,
+            )
+        );
+
+        return $returnUrl;
+    }
+
+    /**
+     * Create notification Urls
+     *
+     * @return null
+     * @since 1.0.0
+     */
+    public function createNotificationUrl($cartId, $paymentType)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'notify',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+            )
+        );
+
+        return $returnUrl;
     }
 }
