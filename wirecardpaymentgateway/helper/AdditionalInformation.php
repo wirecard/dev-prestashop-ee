@@ -37,11 +37,6 @@ use Wirecard\PaymentSdk\Entity\Address;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\Transaction;
-use PrestaShop\PrestaShop\Adapter\Entity\Configuration;
-use PrestaShop\PrestaShop\Adapter\Entity\Tools;
-use PrestaShop\PrestaShop\Adapter\Country\CountryDataProvider;
-use PrestaShop\PrestaShop\Adapter\Customer\CustomerDataProvider;
-use PrestaShop\PrestaShop\Adapter\AddressFactory;
 
 /**
  * Class AdditionalInformation
@@ -66,11 +61,11 @@ class AdditionalInformation
 
         foreach ($cart->getProducts() as $product) {
             $quantity = $product['cart_quantity'];
-            $name = Tools::substr($product['name'], 0, 127);
+            $name = \Tools::substr($product['name'], 0, 127);
             $grossAmount = $product['total_wt'] / $quantity;
 
             //Check for rounding issues
-            if (Tools::strlen(Tools::substr(strrchr((string)$grossAmount, '.'), 1)) > 2) {
+            if (\Tools::strlen(\Tools::substr(strrchr((string)$grossAmount, '.'), 1)) > 2) {
                 $grossAmount = $product['total_wt'];
                 $name .= ' x' . $quantity;
                 $quantity = 1;
@@ -82,7 +77,7 @@ class AdditionalInformation
             $amount = new Amount(number_format($grossAmount, 2, '.', ''), $currency);
 
             $item = new Item($name, $amount, $quantity);
-            $item->setDescription(Tools::substr(strip_tags($product['description_short']), 0, 127));
+            $item->setDescription(\Tools::substr(strip_tags($product['description_short']), 0, 127));
             $item->setArticleNumber($product['reference']);
             $item->setTaxRate($taxRate);
 
@@ -101,7 +96,6 @@ class AdditionalInformation
 
             $basket->add($item);
         }
-
         return $basket;
     }
 
@@ -116,7 +110,7 @@ class AdditionalInformation
     {
         return sprintf(
             '%s %s',
-            substr(Configuration::get('PS_SHOP_NAME'), 0, 9),
+            substr(\Configuration::get('PS_SHOP_NAME'), 0, 9),
             $id
         );
     }
@@ -154,11 +148,9 @@ class AdditionalInformation
      */
     public function createAccountHolder($cart, $type)
     {
-        $customerProvider = new CustomerDataProvider();
-        $customer = $customerProvider->getCustomer($cart->id_customer);
-        $addressFactory = new AddressFactory();
-        $billing = $addressFactory->findOrCreate($cart->id_address_invoice);
-        $shipping = $addressFactory->findOrCreate($cart->id_address_delivery);
+        $customer = new \Customer($cart->id_customer);
+        $billing = new \Address($cart->id_address_invoice);
+        $shipping = new \Address($cart->id_address_delivery);
 
         $accountHolder = new AccountHolder();
         if ('shipping' == $type) {
@@ -186,13 +178,12 @@ class AdditionalInformation
      */
     public function createAddressData($source, $type)
     {
-        $countryProvider = new CountryDataProvider();
-        $country = $countryProvider->getIsoCodeById($source->id_country);
+        $country = new \Country($source->id_country);
         if ('shipping' == $type) {
-            $address = new Address($country, $source->city, $source->address1);
+            $address = new Address($country->iso_code, $source->city, $source->address1);
             $address->setPostalCode($source->postcode);
         } else {
-            $address = new Address($country, $source->city, $source->address1);
+            $address = new Address($country->iso_code, $source->city, $source->address1);
             $address->setPostalCode($source->postcode);
             if (strlen($source->address2)) {
                 $address->setStreet2($source->address2);
@@ -223,7 +214,7 @@ class AdditionalInformation
 
             return $_SERVER['REMOTE_ADDR'];
         } else {
-            return Tools::getRemoteAddr();
+            return \Tools::getRemoteAddr();
         }
     }
 }

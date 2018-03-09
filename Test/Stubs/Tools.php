@@ -21,4 +21,14 @@ class Tools
     {
         return $string;
     }
+
+    public static function substr($string, $start, $length = null)
+    {
+        return substr($string, $start, $length);
+    }
+
+    public static function strlen($string)
+    {
+        return strlen($string);
+    }
 }

@@ -12,5 +12,10 @@ require __DIR__ . '/Stubs/Context.php';
 require __DIR__ . '/Stubs/Link.php';
 require __DIR__ . '/Stubs/Smarty.php';
 require __DIR__ . '/Stubs/PaymentOption.php';
+require __DIR__ . '/Stubs/Cart.php';
+require __DIR__ . '/Stubs/Customer.php';
+require __DIR__ . '/Stubs/Address.php';
+require __DIR__ . '/Stubs/Country.php';
 
 const _PS_MODULE_DIR_ = '';
+$_SERVER['REMOTE_ADDR'] = 'Test';
