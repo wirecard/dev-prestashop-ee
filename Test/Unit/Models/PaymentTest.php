@@ -1,7 +1,5 @@
 <?php
 
-namespace WirecardEE\Prestashop;
-
 use WirecardEE\Prestashop\Models\Payment;
 use Wirecard\PaymentSdk\Config\Config;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
