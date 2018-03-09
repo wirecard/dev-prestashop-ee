@@ -48,6 +48,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     {
         $creditCard = new PaymentCreditCard();
         $requestData = $creditCard->getRequestData($this->module);
+        header('Content-Type: application/json; charset=utf8');
         die(Tools::jsonEncode($requestData));
     }
 }

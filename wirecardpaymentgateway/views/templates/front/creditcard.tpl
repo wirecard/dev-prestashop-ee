@@ -1,4 +1,4 @@
 
-<div id="payment-processing-gateway-credit-card-input">
+<div id="payment-processing-gateway-credit-card-form">
 asd
 </div>
