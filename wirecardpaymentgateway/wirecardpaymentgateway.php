@@ -29,7 +29,7 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-require_once (_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+require_once (_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
@@ -216,7 +216,8 @@ class WirecardPaymentGateway extends PaymentModule
             $payment->setCallToActionText($this->l($paymentMethod->getName()))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
             if ($paymentMethod->getAdditionalInformationTemplate()) {
-                $payment->setAdditionalInformation($this->fetch('module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'));
+                $payment->setAdditionalInformation($this->fetch(
+                    'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'));
             }
             $result[] = $payment;
         }
@@ -539,7 +540,8 @@ class WirecardPaymentGateway extends PaymentModule
             ['server' => 'remote', 'position' => 'head', 'priority' => 20]
         );
         $this->context->controller->addJS(
-            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
+            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'assets'
+            . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
         );
     }
 

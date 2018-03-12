@@ -229,7 +229,8 @@ class PaymentCreditCard extends Payment
         return $config;
     }
 
-    public function getRequestData($module) {
+    public function getRequestData($module)
+    {
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
         return $transactionService->getDataForCreditCardUi();
