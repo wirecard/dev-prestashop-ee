@@ -29,7 +29,7 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-require_once (_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
@@ -217,7 +217,8 @@ class WirecardPaymentGateway extends PaymentModule
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
             if ($paymentMethod->getAdditionalInformationTemplate()) {
                 $payment->setAdditionalInformation($this->fetch(
-                    'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'));
+                'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
+                ));
             }
             $result[] = $payment;
         }

@@ -2,8 +2,7 @@ var token = null;
 var form = null;
 
 $(document).ready(
-    function ()
-    {
+    function () {
         if ($('#payment-processing-gateway-credit-card-form').length > 0) {
             getRequestData();
         }
@@ -48,27 +47,27 @@ $(document).ready(
         function renderForm(config)
         {
             WirecardPaymentPage.seamlessRenderForm({
-                    requestData: config,
-                    wrappingDivId: "payment-processing-gateway-credit-card-form",
-                    onSuccess: resizeIframe,
-                    onError: logCallback
+                requestData: config,
+                wrappingDivId: "payment-processing-gateway-credit-card-form",
+                onSuccess: resizeIframe,
+                onError: logCallback
             });
         }
 
         function resizeIframe()
         {
-            $( "#payment-processing-gateway-credit-card-form > iframe" ).height( 550 );
+            $("#payment-processing-gateway-credit-card-form > iframe").height(550);
         }
 
-        function logCallback( response )
+        function logCallback(response)
         {
-            console.error( response );
+            console.error(response);
         }
 
-        function formSubmitSuccessHandler (response)
+        function formSubmitSuccessHandler(response)
         {
             token = response.token_id;
-            $( '<input>' ).attr(
+            $('<input>').attr(
                 {
                     type: 'hidden',
                     name: 'tokenId',
