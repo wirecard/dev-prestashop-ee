@@ -29,7 +29,6 @@
  *}
 
 {extends file="helpers/form/form.tpl"}
-
 {block name="input"}
     {if $input.type == 'linkbutton'}
 		<a class="btn btn-default" id="{$input.id}" href="#">

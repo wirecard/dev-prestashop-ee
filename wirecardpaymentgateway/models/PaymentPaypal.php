@@ -153,7 +153,9 @@ class PaymentPaypal extends Payment
                     'id' => 'paypalConfig',
                     'method' => 'paypal',
                     'send' => array(
-                        'type' => 'paypal'
+                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_PASS'
                     )
                 )
             )
