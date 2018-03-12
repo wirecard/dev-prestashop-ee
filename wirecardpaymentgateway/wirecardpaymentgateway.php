@@ -217,7 +217,7 @@ class WirecardPaymentGateway extends PaymentModule
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
             if ($paymentMethod->getAdditionalInformationTemplate()) {
                 $payment->setAdditionalInformation($this->fetch(
-                'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
+                    'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
                 ));
             }
             $result[] = $payment;
