@@ -68,4 +68,9 @@ class ModuleFrontController extends Controller
     {
         $this->module->context->cart->setId($id);
     }
+
+    public function setCartAddress($type, $data = null)
+    {
+        $this->module->context->cart->setAddress($type, $data);
+    }
 }

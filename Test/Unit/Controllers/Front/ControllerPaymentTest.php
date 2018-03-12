@@ -36,6 +36,8 @@ class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
         Configuration::setBasketConfig(true);
         Configuration::setAdditionalConfig(true);
         $paymentController->setProducts($products);
+        $paymentController->setCartAddress('invoice');
+        $paymentController->setCartAddress('delivery');
         $actual = $paymentController->postProcess();
 
         $this->assertTrue(is_string($actual));

@@ -8,6 +8,8 @@ class Cart
     public $id;
     private $amount;
     public $id_currency;
+    public $id_address_invoice;
+    public $id_address_delivery;
 
     public function getProducts()
     {
@@ -37,5 +39,17 @@ class Cart
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function setAddress($type, $val = null)
+    {
+        switch ($type) {
+            case 'delivery':
+                $this->id_address_delivery = new Address();
+                break;
+            case 'invoice':
+            default:
+                $this->id_address_invoice = new Address();
+        }
     }
 }
