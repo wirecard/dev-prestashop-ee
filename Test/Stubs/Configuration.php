@@ -2,7 +2,18 @@
 
 class Configuration
 {
-    private $config;
+    private static $basket;
+    private static $additional;
+
+    public static function setBasketConfig($bool)
+    {
+        self::$basket = $bool;
+    }
+
+    public static function setAdditionalConfig($bool)
+    {
+        self::$additional = $bool;
+    }
 
     public static function updateValue($param, $value)
     {
@@ -44,17 +55,25 @@ class Configuration
 
         if ('WIRECARD_PAYMENT_GATEWAY_PAYPAL_SEND_ADDITIONAL' == $param)
         {
-            return 0;
+            if (self::$additional) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
 
         if ('WIRECARD_PAYMENT_GATEWAY_PAYPAL_SHOPPING_BASKET' == $param)
         {
-            return 0;
+            if (self::$basket) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
 
         if ('WIRECARD_PAYMENT_GATEWAY_PAYPAL_DESCRIPTOR' == $param)
         {
-            return 0;
+            return 1;
         }
 
         return $param;

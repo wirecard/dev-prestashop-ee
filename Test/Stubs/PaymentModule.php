@@ -42,4 +42,9 @@ class PaymentModule extends Module
     {
         return true;
     }
+
+    public function displayError($string)
+    {
+        return $string;
+    }
 }

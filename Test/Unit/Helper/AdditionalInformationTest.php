@@ -151,8 +151,5 @@ class AdditionalInformationTest extends \PHPUnit_Framework_TestCase
         $expected->setOrderNumber('123');
         $expected->setIpAddress('Test');
         $expected->setConsumerId('1');
-
     }
-
-
 }
