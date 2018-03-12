@@ -2,8 +2,10 @@ var token = null;
 var form = null;
 
 $(document).ready(
-    function() {
-        $('#payment-processing-gateway-credit-card-form').parent().bind('display:block', getRequestData());
+    function () {
+        if ($('#payment-processing-gateway-credit-card-form').length > 0) {
+            getRequestData();
+        }
         $(document).on('submit','#payment-form', function (e) {
             form = $(this);
             if (form.attr('action').search('creditcard') >= 0) {
@@ -58,7 +60,7 @@ $(document).ready(
             console.error( response );
         }
 
-        function formSubmitSuccessHandler(response) {
+        function formSubmitSuccessHandler (response) {
             token = response.token_id;
             $( '<input>' ).attr(
                 {
