@@ -137,17 +137,15 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function getContent()
     {
+        if (Tools::isSubmit('btnSubmit')) {
+            $this->postProcess();
+        }
         $this->context->smarty->assign(
             array(
                 'module_dir' => $this->_path,
                 'ajax_configtest_url' => $this->context->link->getModuleLink('wirecardpaymentgateway', 'ajax')
             )
         );
-
-        if (Tools::isSubmit('btnSubmit')) {
-            $this->postProcess();
-        }
-
         $this->html .= $this->displayWirecardPaymentGateway();
         $this->html .= $this->renderForm();
 
