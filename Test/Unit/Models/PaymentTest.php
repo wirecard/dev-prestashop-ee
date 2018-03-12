@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../wirecardpaymentgateway/vendor/autoload.php';
+
 use WirecardEE\Prestashop\Models\Payment;
 use Wirecard\PaymentSdk\Config\Config;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
