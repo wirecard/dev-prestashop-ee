@@ -150,7 +150,7 @@ class PaymentCreditCard extends Payment
                 array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'authorization',
+                    'default' => 'reserve',
                     'label'   => 'Payment Action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
@@ -199,28 +199,26 @@ class PaymentCreditCard extends Payment
         $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
         $config->add($paymentConfig);
 
-        return $config;
-        /*
-        if (Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'three_d_merchant_account_id')) !== '') {
+        if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
             $paymentConfig->setThreeDCredentials(
-                Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'three_d_merchant_account_id')),
-                Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'three_d_secret'))
+                $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id'),
+                $paymentModule->getConfigValue($this->type, 'three_d_secret')
             );
         }
 
-        if (Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'ssl_max_limit')) !== '') {
+        if ($paymentModule->getConfigValue($this->type, 'ssl_max_limit') !== '') {
             $paymentConfig->addSslMaxLimit(
                 new Amount(
-                    Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'ssl_max_limit')),
+                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
                     'EUR'
                 )
             );
         }
 
-        if (Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'three_d_min_limit')) !== '') {
+        if ($paymentModule->getConfigValue($this->type, 'three_d_min_limit') !== '') {
             $paymentConfig->addThreeDMinLimit(
                 new Amount(
-                    Configuration::get(WirecardPaymentGateway::buildParamName($this->type, 'three_d_min_limit')),
+                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
                     'EUR'
                 )
             );
@@ -229,7 +227,6 @@ class PaymentCreditCard extends Payment
         $config->add($paymentConfig);
 
         return $config;
-        */
     }
 
     public function getRequestData($module) {
