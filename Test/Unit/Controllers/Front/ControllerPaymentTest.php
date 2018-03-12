@@ -1,18 +1,15 @@
 <?php
-require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/front/payment.php';
 
-use Wirecard\PaymentSdk\Entity\Amount;
-use Wirecard\PaymentSdk\Entity\Redirect;
-use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
-use Wirecard\PaymentSdk\Config\Config;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use WirecardEE\Prestashop\Models\PaymentPaypal;
+
+require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/front/payment.php';
 
 class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
 {
     //Default controller test
     public function testExecuteTransaction()
     {
-        $paymentController = new WirecardPaymentGatewayPaymentModuleFrontController();
+        $paymentController = new \WirecardPaymentGatewayPaymentModuleFrontController();
         $paymentController->setAmount(2.00);
         $paymentController->setCartId('123');
         $actual = $paymentController->postProcess();
@@ -23,7 +20,7 @@ class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
     //Controller test with wrong basket and wrong additional data
     public function testExecuteTransactionFailed()
     {
-        $paymentController = new WirecardPaymentGatewayPaymentModuleFrontController();
+        $paymentController = new \WirecardPaymentGatewayPaymentModuleFrontController();
         $paymentController->setAmount(2.00);
         $paymentController->setCartId('123');
         $products = array(

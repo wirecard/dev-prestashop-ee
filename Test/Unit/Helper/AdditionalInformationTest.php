@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../../../wirecardpaymentgateway/vendor/autoload.php';
 
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
@@ -14,7 +13,7 @@ class AdditionalInformationTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->cart = $this->getMockBuilder(Cart::class)->disableOriginalConstructor()->getMock();
+        $this->cart = $this->getMockBuilder(\Cart::class)->disableOriginalConstructor()->getMock();
         $this->additional = new AdditionalInformation();
     }
 
