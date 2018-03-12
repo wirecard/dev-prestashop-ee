@@ -238,16 +238,12 @@ class PaymentCreditCard extends Payment
     /**
      * Create CreditCardTransaction
      *
-     * @param array
-     * @param string
      * @return CreditCardTransaction
      * @since 1.0.0
      */
-    public function createTransaction($formFields, $cartId)
+    public function createTransaction()
     {
         $transaction = new CreditCardTransaction();
-        $transaction->setTokenId($formFields['tokenId']);
-        $transaction->setTermUrl($this->module->createRedirectUrl($cartId, $this->type, 'success'));
 
         return $transaction;
     }

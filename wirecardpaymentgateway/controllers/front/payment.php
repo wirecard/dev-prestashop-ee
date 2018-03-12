@@ -82,7 +82,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             );
 
             /** @var Transaction $transaction */
-            $transaction = $payment->createTransaction(Tools::getAllValues(), $cartId);
+            $transaction = $payment->createTransaction();
             $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
             $transaction->setRedirect($redirectUrls);
             $transaction->setAmount(new Amount($amount, $currency->iso_code));
@@ -90,6 +90,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $customFields = new CustomFieldCollection();
             $customFields->add(new CustomField('orderId', $cartId));
             $transaction->setCustomFields($customFields);
+
+            if ($transaction instanceof  \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
+                $transaction->setTokenId(Tools::getValue('tokenId'));
+                $transaction->setTermUrl($this->module->createRedirectUrl($cartId, $paymentType, 'success'));
+            }
 
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
                 $transaction->setBasket($additionalInformation->createBasket($cart, $transaction, $currency->iso_code));
