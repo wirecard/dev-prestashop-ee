@@ -529,10 +529,10 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $link = new Link;
         $parameters = array("action" => "getcreditcardconfig");
-        $ajax_link = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
+        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
         $baseUrl = $this->getConfigValue('creditcard', 'base_url');
 
-        Media::addJsDef(['url' => $ajax_link]);
+        Media::addJsDef(['url' => $ajaxLink]);
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
             $baseUrl  .'/engine/hpp/paymentPageLoader.js',

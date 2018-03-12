@@ -1,10 +1,14 @@
 var token = null;
+var form = null;
 
 $(document).ready(
     function() {
         $('#payment-processing-gateway-credit-card-form').parent().bind('display:block', getRequestData());
         $(document).on('submit','#payment-form', function (e) {
-            placeOrder(e);
+            form = $(this);
+            if (form.attr('action').search('creditcard') >= 0) {
+                placeOrder(e);
+            }
         });
 
         function placeOrder(e) {
@@ -55,7 +59,6 @@ $(document).ready(
         }
 
         function formSubmitSuccessHandler(response) {
-            console.log("token: " + response.token_id);
             token = response.token_id;
             $( '<input>' ).attr(
                 {
@@ -64,7 +67,8 @@ $(document).ready(
                     id: 'tokenId',
                     value: token
                 }
-            ).appendTo( '#payment-form' );
+            ).appendTo(form);
+            form.submit();
         }
     }
 );

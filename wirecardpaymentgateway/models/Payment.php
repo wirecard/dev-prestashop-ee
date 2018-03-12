@@ -185,10 +185,11 @@ class Payment
     /**
      * Create Default Transaction
      *
+     * @param array
      * @return null
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($formFields)
     {
         return null;
     }

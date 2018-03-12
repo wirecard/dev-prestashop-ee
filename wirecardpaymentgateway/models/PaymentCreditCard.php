@@ -237,4 +237,19 @@ class PaymentCreditCard extends Payment
         $transactionService = new TransactionService($config);
         return $transactionService->getDataForCreditCardUi();
     }
+
+    /**
+     * Create CreditCardTransaction
+     *
+     * @param array
+     * @return CreditCardTransaction
+     * @since 1.0.0
+     */
+    public function createTransaction($formFields)
+    {
+        $transaction = new CreditCardTransaction();
+        $transaction->setTokenId($formFields['tokenId']);
+
+        return $transaction;
+    }
 }
