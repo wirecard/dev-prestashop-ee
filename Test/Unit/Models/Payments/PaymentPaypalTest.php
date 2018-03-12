@@ -18,7 +18,7 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
             'merchant_account_id',
             'secret'
         );
-        $this->paymentModule = $this->getMockBuilder(WirecardPaymentGateway::class)
+        $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->payment = new PaymentPaypal();
