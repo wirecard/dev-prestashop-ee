@@ -224,7 +224,9 @@ class WirecardPaymentGateway extends PaymentModule
             $payment = new PaymentOption();
             $payment->setCallToActionText($this->l($paymentMethod->getName()))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
-            $payment->setLogo(Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/paypal.png'));
+            $payment->setLogo(
+                Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/paypal.png')
+            );
             $result[] = $payment;
         }
         //Implement action validation before payment
