@@ -30,13 +30,14 @@
  */
 
 use Wirecard\PaymentSdk\Entity\Amount;
-use Wirecard\PaymentSdk\Transaction\Transaction;
-use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Response\InteractionResponse;
-use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\Redirect;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction;
+use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
@@ -81,7 +82,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             );
 
             /** @var Transaction $transaction */
-            $transaction = $payment->createTransaction(Tools::getAllValues());
+            $transaction = $payment->createTransaction(Tools::getAllValues(), $cartId);
             $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
             $transaction->setRedirect($redirectUrls);
             $transaction->setAmount(new Amount($amount, $currency->iso_code));
@@ -136,6 +137,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
             Tools::redirect($redirect);
+        } elseif ($response instanceof FormInteractionResponse) {
+            $data['url']         = $response->getUrl();
+            $data['method']      = $response->getMethod();
+            $data['form_fields'] = $response->getFormFields();
+
+            echo $this->createPostForm($data);
+            die();
         } elseif ($response instanceof FailureResponse) {
             $errors = '';
             foreach ($response->getStatusCollection()->getIterator() as $item) {
@@ -145,5 +153,29 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         }
 
         Tools::redirect('index.php?controller=order');
+    }
+
+    private function createPostForm($data)
+    {
+        $html  = '';
+        $html .= '<script>window.setInterval( function() {
+                    var wait = document.getElementById( "wait" );
+    				if ( wait.innerHTML.length > 3 ) 
+       					 wait.innerHTML = "";
+    				else 
+        				wait.innerHTML += ".";
+    		}, 200); 
+    		</script>
+			<div style="display: flex; justify-content: center; font-size: 20px;">' .
+            'You are being redirected. Please wait' . '
+			<span id="wait" style="font-size: 20px; width: 50px;">.</span></div>';
+        $html .= '<form id="credit_card_form" method="' . $data['method'] . '" action="' . $data['url'] . '">';
+        foreach ( $data['form_fields'] as $key => $value ) {
+            $html .= '<input type="hidden" name="' . $key . '" value="' . $value . '">';
+        }
+        $html .= '</form>';
+        $html .= '<script>document.getElementsByTagName("form")[0].submit();</script>';
+
+        return $html;
     }
 }

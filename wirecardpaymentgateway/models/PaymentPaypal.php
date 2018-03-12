@@ -189,10 +189,11 @@ class PaymentPaypal extends Payment
      * Create PaypalTransaction
      *
      * @param array
+     * @param string
      * @return PayPalTransaction
      * @since 1.0.0
      */
-    public function createTransaction($formFields)
+    public function createTransaction($formFields, $cartId)
     {
         $transaction = new PayPalTransaction();
 

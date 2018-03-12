@@ -189,7 +189,7 @@ class Payment
      * @return null
      * @since 1.0.0
      */
-    public function createTransaction($formFields)
+    public function createTransaction($formFields, $cartId)
     {
         return null;
     }

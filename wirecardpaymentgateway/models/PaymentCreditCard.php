@@ -197,7 +197,6 @@ class PaymentCreditCard extends Payment
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
         $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
-        $config->add($paymentConfig);
 
         if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
             $paymentConfig->setThreeDCredentials(
@@ -240,13 +239,15 @@ class PaymentCreditCard extends Payment
      * Create CreditCardTransaction
      *
      * @param array
+     * @param string
      * @return CreditCardTransaction
      * @since 1.0.0
      */
-    public function createTransaction($formFields)
+    public function createTransaction($formFields, $cartId)
     {
         $transaction = new CreditCardTransaction();
         $transaction->setTokenId($formFields['tokenId']);
+        $transaction->setTermUrl($this->module->createRedirectUrl($cartId, $this->type, 'success'));
 
         return $transaction;
     }
