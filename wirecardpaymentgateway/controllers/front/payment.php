@@ -175,7 +175,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             'You are being redirected. Please wait' . '
 			<span id="wait" style="font-size: 20px; width: 50px;">.</span></div>';
         $html .= '<form id="credit_card_form" method="' . $data['method'] . '" action="' . $data['url'] . '">';
-        foreach ( $data['form_fields'] as $key => $value ) {
+        foreach ($data['form_fields'] as $key => $value) {
             $html .= '<input type="hidden" name="' . $key . '" value="' . $value . '">';
         }
         $html .= '</form>';
