@@ -1,7 +1,8 @@
 <?php
 
+use WirecardEE\Prestashop\Models\PaymentPaypal;
+
 require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
-require_once __DIR__ . '/../../wirecardpaymentgateway/models/PaymentPaypal.php';
 
 class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,7 +62,7 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->gateway->getPaymentFromType('paypal');
 
-        $expected = \WirecardEE\Prestashop\Models\PaymentPaypal::class;
+        $expected = PaymentPaypal::class;
 
         $this->assertInstanceOf($expected, $actual);
     }
