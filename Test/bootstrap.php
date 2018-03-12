@@ -1,7 +1,7 @@
 <?php
 const _PS_MODULE_DIR_ = './';
 
-require_once './wirecardpaymentgateway/vendor/autoload.php';
+require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
 
 //stub objects
 require __DIR__ . '/Stubs/Currency.php';
