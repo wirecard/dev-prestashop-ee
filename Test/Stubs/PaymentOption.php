@@ -12,4 +12,9 @@ class PaymentOption
     {
         return;
     }
+
+    public function setLogo($string)
+    {
+        return;
+    }
 }

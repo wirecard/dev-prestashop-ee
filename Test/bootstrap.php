@@ -16,6 +16,7 @@ require __DIR__ . '/Stubs/Language.php';
 require __DIR__ . '/Stubs/Context.php';
 require __DIR__ . '/Stubs/Link.php';
 require __DIR__ . '/Stubs/Smarty.php';
+require __DIR__ . '/Stubs/Media.php';
 require __DIR__ . '/Stubs/PaymentOption.php';
 require __DIR__ . '/Stubs/Cart.php';
 require __DIR__ . '/Stubs/Customer.php';
