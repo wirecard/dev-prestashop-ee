@@ -108,6 +108,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
             return $this->executeTransaction($transaction, $config, $operation, $paymentType);
         }
+        return null;
     }
 
     /**
@@ -133,10 +134,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
-            Tools::redirect($redirect);
+            return Tools::redirect($redirect);
         }
 
-        echo "Something went wrong";
-        die();
+        return Tools::redirect('index.php?controller=order');
     }
 }

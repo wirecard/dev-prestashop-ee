@@ -14,6 +14,10 @@ class Tools
 
     public static function getValue($string)
     {
+        if ('paymentType' == $string) {
+            return 'paypal';
+        }
+
         return $string;
     }
 
@@ -30,5 +34,13 @@ class Tools
     public static function strlen($string)
     {
         return strlen($string);
+    }
+
+    public static function redirect($string)
+    {
+        if (strlen($string)) {
+            return true;
+        }
+        return false;
     }
 }

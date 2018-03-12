@@ -1,6 +1,6 @@
 <?php
+require_once __DIR__ . '/../../../wirecardpaymentgateway/vendor/autoload.php';
 
-use WirecardEE\Prestashop\Models\PaymentPaypal;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;

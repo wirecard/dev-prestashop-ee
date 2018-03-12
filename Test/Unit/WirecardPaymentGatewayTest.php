@@ -76,9 +76,9 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 
     public function testGetConfigValue()
     {
-        $actual = $this->gateway->getConfigValue('paypal', 'base_url');
+        $actual = $this->gateway->getConfigValue('paypal', 'title');
 
-        $expected = 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL';
+        $expected = 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_TITLE';
 
         $this->assertEquals($expected, $actual);
     }

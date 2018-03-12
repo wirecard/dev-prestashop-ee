@@ -29,10 +29,43 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-class ModuleFrontController
+class ModuleFrontController extends Controller
 {
+    public $module;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
+        $this->controller_type = 'modulefront';
+    }
+
     public function getLanguages()
     {
         return new Language();
+    }
+
+    protected function l($string, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
+    {
+        if (isset($this->module) && is_a($this->module, 'Module')) {
+            return $this->module->l($string, $specific);
+        } else {
+            return $string;
+        }
+    }
+
+    public function setAmount($amount)
+    {
+        $this->module->context->cart->setOrderTotal($amount);
+    }
+
+    public function setProducts($products)
+    {
+        $this->module->context->cart->setProducts($products);
+    }
+
+    public function setCartId($id)
+    {
+        $this->module->context->cart->setId($id);
     }
 }

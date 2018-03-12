@@ -1,25 +1,7 @@
 <?php
 
-class PaymentModule
+class PaymentModule extends Module
 {
-    protected $name;
-
-    protected $_html;
-    protected $html;
-    protected $identifier;
-    protected $context;
-    protected $_path;
-    protected $active;
-
-    public function __construct()
-    {
-        $this->_html = null;
-        $this->identifier = 1;
-        $this->context = new Context();
-        $this->_path = '/wirecardpaymentgateway';
-        $this->active = true;
-    }
-
     public function install()
     {
         if (!strlen($this->name)) {
