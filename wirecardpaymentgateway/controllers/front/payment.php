@@ -35,6 +35,7 @@ use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Entity\Redirect;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
@@ -108,6 +109,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
             return $this->executeTransaction($transaction, $config, $operation, $paymentType);
         }
+        return null;
     }
 
     /**
@@ -134,9 +136,14 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
             Tools::redirect($redirect);
+        } elseif ($response instanceof FailureResponse) {
+            $errors = '';
+            foreach ($response->getStatusCollection()->getIterator() as $item) {
+                $errors .= $item->getDescription() . '<br>\n';
+            }
+            return $this->module->displayError($errors);
         }
 
-        echo "Something went wrong";
-        die();
+        Tools::redirect('index.php?controller=order');
     }
 }

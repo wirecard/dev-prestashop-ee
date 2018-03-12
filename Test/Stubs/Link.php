@@ -1,5 +1,4 @@
 <?php
-namespace WirecardEE\Prestashop;
 
 class Link
 {
@@ -8,8 +7,8 @@ class Link
         return $string;
     }
 
-    public function getModuleLink($string)
+    public function getModuleLink($name = null, $func = null, $array = null)
     {
-        return $string;
+        return 'http://test.com';
     }
 }

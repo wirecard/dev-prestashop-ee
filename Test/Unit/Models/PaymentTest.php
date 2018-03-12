@@ -2,17 +2,20 @@
 
 use WirecardEE\Prestashop\Models\Payment;
 use Wirecard\PaymentSdk\Config\Config;
+use WirecardEE\Prestashop\Models\PaymentPaypal;
 
-class PaymentTest extends PHPUnit_Framework_TestCase
+class PaymentTest extends \PHPUnit_Framework_TestCase
 {
     private $payment;
     private $config;
+    private $paypalPayment;
 
     public function setUp()
     {
         $this->payment = new Payment();
-        $this->payment->context = new \Wirecard\Prestashop\Context();
+        $this->payment->context = new \Context();
         $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
+        $this->paypalPayment = new PaymentPaypal();
     }
 
     public function testName()
@@ -52,21 +55,19 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testCreateRedirectUrl()
+    public function testType()
     {
-        $actual = $this->payment->createRedirectUrl('1', 'paypal', 'success');
+        $actual = $this->paypalPayment->getType();
 
-        $expected = array('id_cart','payment_type','payment_state');
+        $expected = 'paypal';
 
         $this->assertEquals($expected, $actual);
     }
 
-    public function testCreateNotificationUrl()
+    public function testCreateTransactionIsNull()
     {
-        $actual = $this->payment->createNotificationUrl();
+        $actual = $this->payment->createTransaction();
 
-        $expected = null;
-
-        $this->assertEquals($expected, $actual);
+        $this->assertNull($actual);
     }
 }

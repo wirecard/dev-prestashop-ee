@@ -67,7 +67,8 @@ class WirecardPaymentGateway extends PaymentModule
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation', 'notify', 'return', 'creditcard');
+        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'creditcard');
+
         $this->is_eu_compatible = 1;
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
@@ -138,16 +139,16 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function getContent()
     {
-        if (Tools::isSubmit('btnSubmit')) {
-            $this->postProcess();
-        }
-
         $this->context->smarty->assign(
             array(
                 'module_dir' => $this->_path,
                 'ajax_configtest_url' => $this->context->link->getModuleLink('wirecardpaymentgateway', 'ajax')
             )
         );
+
+        if (Tools::isSubmit('btnSubmit')) {
+            $this->postProcess();
+        }
 
         $this->html .= $this->displayWirecardPaymentGateway();
         $this->html .= $this->renderForm();
@@ -166,7 +167,19 @@ class WirecardPaymentGateway extends PaymentModule
         $values = array();
         foreach ($this->getAllConfigurationParameters() as $parameter) {
             $val = Configuration::get($parameter['param_name']);
-            $values[$parameter['param_name']] = $val;
+            if (isset($parameter['multiple']) && $parameter['multiple']) {
+                if (!is_array($val)) {
+                    $val = Tools::strlen($val) ? Tools::jsonDecode($val) : array();
+                }
+                $x = array();
+                foreach ($val as $v) {
+                    $x[$v] = $v;
+                }
+                $pname = $parameter['param_name'] . '[]';
+                $values[$pname] = $x;
+            } else {
+                $values[$parameter['param_name']] = $val;
+            }
         }
 
         return $values;
@@ -408,13 +421,7 @@ class WirecardPaymentGateway extends PaymentModule
                         $elem['buttonText'] = $f['buttonText'];
                         $elem['id'] = $f['id'];
                         $elem['method'] = $f['method'];
-                        if (is_array($f['send']) && key_exists('type', $f['send'])) {
-                            $elem['send'] = array(
-                                $this->buildParamName($f['send']['type'], 'base_url'),
-                                $this->buildParamName($f['send']['type'], 'http_user'),
-                                $this->buildParamName($f['send']['type'], 'http_password')
-                            );
-                        }
+                        $elem['send'] = $f['send'];
                         break;
 
                     case 'text':
@@ -482,6 +489,7 @@ class WirecardPaymentGateway extends PaymentModule
             'PS_BO_ALLOW_EMPLOYEE_FORM_LANG'
         ) : 0;
         $helper->id = (int)Tools::getValue('id_carrier');
+        $helper->module = $this;
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'btnSubmit';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
@@ -491,9 +499,7 @@ class WirecardPaymentGateway extends PaymentModule
         $helper->tpl_vars = array(
             'fields_value' => $this->getConfigFieldsValues(),
             'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id,
-            'ajax_configtest_url' => $this->context->link->getAdminLink('AdminModules') . '&configure=' . $this->name
-                . '&tab_module=' . $this->tab . '&module_name=' . $this->name
+            'id_language' => $this->context->language->id
         );
 
         return $helper->generateForm(array($fields));

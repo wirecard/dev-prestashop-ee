@@ -1,22 +1,7 @@
 <?php
-namespace WirecardEE\Prestashop;
 
-class PaymentModule
+class PaymentModule extends Module
 {
-    protected $name;
-
-    protected $_html;
-    protected $html;
-    protected $identifier;
-    protected $context;
-
-    public function __construct()
-    {
-        $this->_html = null;
-        $this->identifier = 1;
-        $this->context = new Context();
-    }
-
     public function install()
     {
         if (!strlen($this->name)) {
@@ -56,5 +41,10 @@ class PaymentModule
     public function registerHook($string)
     {
         return true;
+    }
+
+    public function displayError($string)
+    {
+        return $string;
     }
 }
