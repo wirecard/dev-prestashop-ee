@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../wirecardpaymentgateway/vendor/autoload.php';
-
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 
 require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
