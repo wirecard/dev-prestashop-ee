@@ -27,7 +27,11 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
+
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\Config;
@@ -194,12 +198,22 @@ class Payment
         return null;
     }
 
+    /**
+     * Set a template to display additional information
+     *
+     * @param $template
+     */
     public function setAdditionalInformationTemplate($template)
     {
         $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
             DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
     }
 
+    /**
+     * Get the template back
+     *
+     * @return bool|string
+     */
     public function getAdditionalInformationTemplate()
     {
         if (isset($this->additionalInformationTemplate)) {

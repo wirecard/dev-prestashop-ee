@@ -27,6 +27,9 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
@@ -175,6 +178,20 @@ class PaymentCreditCard extends Payment
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
+                array(
+                    'name' => 'test_credentials',
+                    'label' => 'Test Credentials',
+                    'type' => 'linkbutton',
+                    'required' => false,
+                    'buttonText' => 'Test credit card configuration',
+                    'id' => 'creditcardConfig',
+                    'method' => 'creditcard',
+                    'send' => array(
+                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_PASS'
+                    )
+                )
             )
         );
     }
@@ -228,6 +245,12 @@ class PaymentCreditCard extends Payment
         return $config;
     }
 
+    /**
+     * Create request data for credit card ui
+     *
+     * @param $module
+     * @return mixed
+     */
     public function getRequestData($module)
     {
         $config = $this->createPaymentConfig($module);

@@ -27,6 +27,9 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
 require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
@@ -549,14 +552,14 @@ class WirecardPaymentGateway extends PaymentModule
         $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
         $baseUrl = $this->getConfigValue('creditcard', 'base_url');
 
-        Media::addJsDef(['url' => $ajaxLink]);
+        Media::addJsDef(array('url' => $ajaxLink));
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
             $baseUrl  .'/engine/hpp/paymentPageLoader.js',
-            ['server' => 'remote', 'position' => 'head', 'priority' => 20]
+            array('server' => 'remote', 'position' => 'head', 'priority' => 20)
         );
         $this->context->controller->addJS(
-            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'assets'
+            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
         );
     }

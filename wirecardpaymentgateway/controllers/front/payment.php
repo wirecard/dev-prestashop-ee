@@ -27,6 +27,9 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
 use Wirecard\PaymentSdk\Entity\Amount;
@@ -143,6 +146,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $redirect = $response->getRedirectUrl();
             Tools::redirect($redirect);
         } elseif ($response instanceof FormInteractionResponse) {
+            $data                = null;
             $data['url']         = $response->getUrl();
             $data['method']      = $response->getMethod();
             $data['form_fields'] = $response->getFormFields();

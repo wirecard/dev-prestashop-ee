@@ -16,7 +16,14 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'http_user',
             'http_pass',
             'merchant_account_id',
-            'secret'
+            'secret',
+            'three_d_merchant_account_id',
+            'three_d_merchant_account_id',
+            'three_d_secret',
+            50,
+            50,
+            150,
+            150
         );
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
@@ -41,15 +48,17 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn($this->config[0]);
-        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn($this->config[1]);
-        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn($this->config[2]);
-        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn($this->config[3]);
-        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[4]);
+        for ($i = 0; $i <= 11; $i++) {
+            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
+        }
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->add(new \Wirecard\PaymentSdk\Config\CreditCardConfig( 'merchant_account_id', 'secret'));
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig( 'merchant_account_id', 'secret');
+        $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
+        $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
+        $expectedPaymentConfig->addThreeDMinLimit(new \Wirecard\PaymentSdk\Entity\Amount(150, 'EUR'));
+        $expected->add($expectedPaymentConfig);
 
         $this->assertEquals($expected, $actual);
     }
