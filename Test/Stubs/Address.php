@@ -9,4 +9,5 @@ class Address
     public $firstname;
     public $lastname;
     public $phone;
+    public $id_country;
 }

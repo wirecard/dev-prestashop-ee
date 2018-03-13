@@ -51,17 +51,18 @@ class WirecardPaymentGatewayAjaxModuleFrontController extends ModuleFrontControl
         switch (Tools::getValue('action')) {
             case 'TestConfig':
                 $method = Tools::getValue('method');
-                $status = 'ok';
-                $message = $this->l('The merchant configuration was successfuly tested.');
-
-                $baseUrl = Tools::getValue($this->module->buildParamName($method, 'wirecard_server_url'));
+                $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
                 $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
                 $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_password'));
-                $config = new Config($baseUrl, $httpUser, $httpPass, "RON");
-                $transactionService = new TransactionService($config, $this->logger);
-                if (!$transactionService->checkCredentials()) {
-                    $status = 'error';
-                    $message = $this->l('The merchant configuration is incorrect');
+
+                $config = new Config($baseUrl, $httpUser, $httpPass);
+                $transactionService = new TransactionService($config);
+
+                $status = 'error';
+                $message = $this->l('Please check your credentials.');
+                if ($transactionService->checkCredentials()) {
+                    $status = 'ok';
+                    $message = $this->l('The merchant configuration was successfuly tested.');
                 }
 
                 die(Tools::jsonEncode(

@@ -139,17 +139,15 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function getContent()
     {
+        if (Tools::isSubmit('btnSubmit')) {
+            $this->postProcess();
+        }
         $this->context->smarty->assign(
             array(
                 'module_dir' => $this->_path,
                 'ajax_configtest_url' => $this->context->link->getModuleLink('wirecardpaymentgateway', 'ajax')
             )
         );
-
-        if (Tools::isSubmit('btnSubmit')) {
-            $this->postProcess();
-        }
-
         $this->html .= $this->displayWirecardPaymentGateway();
         $this->html .= $this->renderForm();
 
@@ -220,19 +218,30 @@ class WirecardPaymentGateway extends PaymentModule
             return;
         }
 
+        $result = array();
         /** @var Payment $paymentMethod */
         foreach ($this->getPayments() as $paymentMethod) {
+            if (! $this->getConfigValue($paymentMethod->getType(), 'enabled')) {
+                continue;
+            }
+
             $paymentData = array(
                 'paymentType' => $paymentMethod->getType(),
             );
             $payment = new PaymentOption();
-            $payment->setCallToActionText($this->l($paymentMethod->getName()))
+            $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
             if ($paymentMethod->getAdditionalInformationTemplate()) {
                 $payment->setAdditionalInformation($this->fetch(
                     'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
                 ));
             }
+
+            $payment->setLogo(
+                Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
+                    . $paymentMethod->getType() . '.png')
+            );
+
             $result[] = $payment;
         }
         //Implement action validation before payment
