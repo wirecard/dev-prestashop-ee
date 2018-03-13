@@ -216,13 +216,18 @@ class WirecardPaymentGateway extends PaymentModule
             return;
         }
 
+        $result = array();
         /** @var Payment $paymentMethod */
         foreach ($this->getPayments() as $paymentMethod) {
+            if (! $this->getConfigValue($paymentMethod->getType(), 'enabled')) {
+                continue;
+            }
+
             $paymentData = array(
                 'paymentType' => $paymentMethod->getType(),
             );
             $payment = new PaymentOption();
-            $payment->setCallToActionText($this->l($paymentMethod->getName()))
+            $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
             $payment->setLogo(
                 Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/paypal.png')
