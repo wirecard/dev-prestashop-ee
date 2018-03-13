@@ -65,7 +65,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->version = '1.0.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.2.4');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.0');
         $this->bootstrap = true;
         $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax');
         $this->is_eu_compatible = 1;
