@@ -61,8 +61,9 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function __construct()
     {
-        require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php');
-        
+        require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
+            DIRECTORY_SEPARATOR.'autoload.php');
+
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
         $this->version = '1.0.0';
