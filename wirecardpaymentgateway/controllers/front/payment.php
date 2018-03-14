@@ -63,7 +63,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
         ) {
-            Tools::redirect('index.php?controller=order&step=1');
+            $this->errors = 'An error occured during the checkout process. Please try again.';
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
         $paymentType = Tools::getValue('paymentType');
@@ -109,7 +110,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
             return $this->executeTransaction($transaction, $config, $operation, $paymentType);
         }
-        return null;
     }
 
     /**
@@ -129,21 +129,22 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
         } catch (Exception $exception) {
-            throw $exception;
-            //throw exceptions in prestashop
+            $this->errors = $exception->getMessage();
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
-            die(Tools::redirect($redirect));
+            Tools::redirect($redirect);
         } elseif ($response instanceof FailureResponse) {
             $errors = '';
             foreach ($response->getStatusCollection()->getIterator() as $item) {
-                $errors .= $item->getDescription() . '<br>\n';
+                $errors .= $item->getDescription();
             }
-            return $this->module->displayError($errors);
+            $this->errors = $errors;
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
-
-        Tools::redirect('index.php?controller=order');
+        $this->errors = 'An error occured during the checkout process. Please try again.';
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 }
