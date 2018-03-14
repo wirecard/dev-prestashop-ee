@@ -29,6 +29,7 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  *
  * @author Wirecard AG
+ * @copyright Wirecard AG
  */
 
 namespace WirecardEE\Prestashop\Helper;

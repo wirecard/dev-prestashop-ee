@@ -27,7 +27,11 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
  */
+
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\Config;
