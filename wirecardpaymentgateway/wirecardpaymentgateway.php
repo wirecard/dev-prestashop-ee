@@ -33,8 +33,9 @@
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Models\PaymentSepa;
 
 /**
  * Class WirecardPaymentGateway
@@ -245,11 +246,10 @@ class WirecardPaymentGateway extends PaymentModule
                 Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
                     . $paymentMethod->getType() . '.png')
             );
-
             $result[] = $payment;
         }
-        //Implement action validation before payment
 
+        //Implement action validation before payment
         return count($result) ? $result : false;
     }
 
@@ -338,7 +338,8 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $payments = array(
             'paypal' => new PaymentPaypal(),
-            'creditcard' => new PaymentCreditCard()
+            'creditcard' => new PaymentCreditCard(),
+            'sepa' => new PaymentSepa()
         );
 
         return $payments;
