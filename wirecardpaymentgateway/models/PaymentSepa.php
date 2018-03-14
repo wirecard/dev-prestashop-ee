@@ -147,7 +147,8 @@ class PaymentSepa extends Payment
                     'name' => 'sepa_mandate_textextra',
                     'label'   => 'Additional text',
                     'type'    => 'textarea',
-                    'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first paragraph.',
+                    'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first 
+                    paragraph.',
                     'default' => '',
                     'required' => false,
                 ),
