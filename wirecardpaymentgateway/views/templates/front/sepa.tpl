@@ -28,6 +28,24 @@
 * Please do not use the plugin if you do not agree to these terms of use!
 *}
 
-<div>
-sepa template
+<div class="form-group">
+    <label>{l s='First name' mod='wirecardpaymentgateway'}</label>
+    <input type="text" name="sepaFirstName" />
 </div>
+
+<div class="form-group">
+    <label>{l s='Last name' mod='wirecardpaymentgateway'}</label>
+    <input type="text" name="sepaLastName" />
+</div>
+
+<div class="form-group required">
+    <label class="required"> {l s='IBAN' mod='wirecardpaymentgateway'}</label>
+    <input type="tel" name="sepaIban" />
+</div>
+
+{if $bicEnabled == 'true' }
+    <div class="required form-group">
+        <label class="required"> {l s='BIC' mod='wirecardpaymentgateway'}</label>
+        <input type="tel" name="sepaBic" />
+    </div>
+{/if}

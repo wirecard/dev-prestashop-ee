@@ -35,9 +35,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SepaTransaction;
-use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\SepaConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
  * Class PaymentCreditCard
@@ -58,7 +56,7 @@ class PaymentSepa extends Payment
         $this->type = 'sepa';
         $this->name = 'Wirecard Payment Processing Gateway SEPA';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type);
+        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
     }
 
     /**
@@ -233,5 +231,12 @@ class PaymentSepa extends Payment
         $transaction = new SepaTransaction();
 
         return $transaction;
+    }
+
+    private function setTemplateData()
+    {
+        $module = new \WirecardPaymentGateway();
+
+        return array('bicEnabled' => $module->getConfigValue($this->type, 'enable_bic'));
     }
 }

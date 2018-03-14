@@ -241,6 +241,9 @@ class WirecardPaymentGateway extends PaymentModule
                     'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
                 ));
             }
+            if ($paymentMethod->getTemplateData()) {
+                $this->context->smarty->assign($paymentMethod->getTemplateData());
+            }
 
             $payment->setLogo(
                 Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
