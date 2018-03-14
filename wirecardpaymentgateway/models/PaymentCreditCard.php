@@ -161,12 +161,6 @@ class PaymentCreditCard extends Payment
                     ),
                 ),
                 array(
-                    'name' => 'shopping_basket',
-                    'label'   => 'Enable/Disable Shopping Basket',
-                    'type'    => 'onoff',
-                    'default' => 0,
-                ),
-                array(
                     'name' => 'descriptor',
                     'label'   => 'Enable/Disable Descriptor',
                     'type'    => 'onoff',
