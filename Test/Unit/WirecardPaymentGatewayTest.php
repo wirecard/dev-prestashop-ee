@@ -113,6 +113,6 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 
     public function testHookActionFrontControllerSetMedia()
     {
-       $this->assertEquals(true,  $this->gateway->hookActionFrontControllerSetMedia());
+        $this->assertEquals(true, $this->gateway->hookActionFrontControllerSetMedia());
     }
 }

@@ -54,7 +54,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig( 'merchant_account_id', 'secret');
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
         $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
         $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
         $expectedPaymentConfig->addThreeDMinLimit(new \Wirecard\PaymentSdk\Entity\Amount(150, 'EUR'));
