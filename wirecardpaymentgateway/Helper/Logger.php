@@ -30,6 +30,7 @@
  *
  * @author Wirecard AG
  * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 use Psr\Log\LoggerInterface;
