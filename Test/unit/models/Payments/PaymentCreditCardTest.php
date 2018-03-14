@@ -71,4 +71,26 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $expected = 'creditcard';
         $this->assertEquals($expected, $actual::NAME);
     }
+
+    public function testGetRequestData()
+    {
+        $expected = array(
+            'request_time_stamp' => gmdate('YmdHis'),
+            'transaction_type' => 'authorization-only',
+            'merchant_account_id' => 'merchant_account_id',
+            'requested_amount' => 0,
+            'requested_amount_currency' => 'EUR',
+            'locale' => 'en',
+            'payment_method' => 'creditcard'
+        );
+
+        for ($i = 0; $i <= 11; $i++) {
+            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
+        }
+        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule));
+        //unset the generated request id as it is different every time
+        unset($actual['request_id'], $actual['request_signature']);
+
+        $this->assertEquals($expected, $actual);
+    }
 }

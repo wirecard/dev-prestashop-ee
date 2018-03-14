@@ -17,4 +17,9 @@ class PaymentOption
     {
         return;
     }
+
+    public function setAdditionalInformation($string)
+    {
+        return;
+    }
 }
