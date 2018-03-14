@@ -31,6 +31,7 @@
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class WirecardPaymentGateway
@@ -96,6 +97,11 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->setDefaults()) {
             return false;
         }
+
+        $orderManager = new OrderManager($this);
+        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
+        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
+
         return true;
     }
 

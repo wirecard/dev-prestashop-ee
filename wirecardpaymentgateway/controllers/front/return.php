@@ -28,26 +28,81 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  */
-require __DIR__.'/../../vendor/autoload.php';
 
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\TransactionService;
+use Wirecard\PaymentSdk\Exception\MalformedResponseException;
+use WirecardEE\Prestashop\Helper\OrderManager;
+
+/**
+ * Class WirecardPaymentGatewayReturnModuleFrontController
+ *
+ * @extends ModuleFrontController
+ * @property WirecardPaymentGateway module
+ *
+ * @since 1.0.0
+ */
 class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
 {
     /**
-     * @see FrontController::postProcess()
+     * Process redirects and responses
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
-        $cart = $this->context->cart;
-        if ($cart->id_customer == 0
-            || $cart->id_address_delivery == 0
-            || $cart->id_address_invoice == 0
-            || !$this->module->active) {
-            Tools::redirect('index.php?controller=order&step=1');
+        $response = $_REQUEST;
+        $paymentType = Tools::getValue('payment_type');
+        $payment = $this->module->getPaymentFromType($paymentType);
+        $config = $payment->createPaymentConfig($this->module);
+        try {
+            $transactionService = new TransactionService($config);
+            $result = $transactionService->handleResponse($response);
+            if ($result instanceof SuccessResponse) {
+                $this->processSuccess($result);
+            } elseif ($result instanceof FailureResponse) {
+                $errors = "";
+                foreach ($result->getStatusCollection()->getIterator() as $item) {
+                    $errors .= $item->getDescription() . "<br>\n";
+                }
+                print_r($errors);
+                die();
+            }
+        } catch (\InvalidArgumentException $exception) {
+            throw $exception;
+        } catch (MalformedResponseException $exception) {
+            throw $exception;
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+        die();
+    }
+
+    /**
+     * Create order and redirect for success response
+     *
+     * @param SuccessResponse $response
+     * @since 1.0.0
+     */
+    public function processSuccess($response)
+    {
+        $cartId = $response->getCustomFields()->get('orderId');
+        $cart = new Cart((int)($cartId));
+
+        $orderManager = new OrderManager($this->module);
+        $order= new Order($orderManager->createOrder(
+            $cart,
+            OrderManager::WIRECARD_OS_AWAITING,
+            $response->getPaymentMethod()
+        ));
+        $customer = new Customer($cart->id_customer);
+        $orderPayments = OrderPayment::getByOrderReference($order->reference);
+        if (!empty($orderPayments)) {
+            $orderPayments[0]->transaction_id = $response->getTransactionId();
+            $orderPayments[0]->save();
         }
 
-        $customer = new Customer($cart->id_customer);
-
-        //TODO: Check for success and create order before
         Tools::redirect('index.php?controller=order-confirmation&id_cart='
             .$cart->id.'&id_module='
             .$this->module->id.'&id_order='

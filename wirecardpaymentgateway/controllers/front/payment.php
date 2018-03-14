@@ -135,7 +135,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
-            Tools::redirect($redirect);
+            die(Tools::redirect($redirect));
         } elseif ($response instanceof FailureResponse) {
             $errors = '';
             foreach ($response->getStatusCollection()->getIterator() as $item) {
