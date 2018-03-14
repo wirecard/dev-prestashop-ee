@@ -562,6 +562,8 @@ class WirecardPaymentGateway extends PaymentModule
             _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
         );
+
+        return true;
     }
 
     /**

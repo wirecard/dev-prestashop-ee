@@ -6,4 +6,9 @@ class Media
     {
         return $string;
     }
+
+    public static function addJsDef($string)
+    {
+        return $string;
+    }
 }

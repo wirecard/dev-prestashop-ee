@@ -73,4 +73,14 @@ class ModuleFrontController extends Controller
     {
         $this->module->context->cart->setAddress($type, $data);
     }
+
+    public function registerJavascript($id, $relativePath, $params = array())
+    {
+        return;
+    }
+
+    public function addJS($string)
+    {
+        return;
+    }
 }
