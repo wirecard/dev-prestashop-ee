@@ -33,7 +33,7 @@
  * @license GPLv3
  */
 
-require __DIR__.'/../../vendor/autoload.php';
+require dirname(__FILE__).'/../../vendor/autoload.php';
 
 class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
 {
