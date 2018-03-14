@@ -118,14 +118,14 @@ class PaymentCreditCard extends Payment
                     'name' => 'ssl_max_limit',
                     'label'       => 'Non 3-D Secure Max Limit',
                     'type'        => 'text',
-                    'default'     => '100.0',
+                    'default'     => '300.0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'three_d_min_limit',
                     'label'       => '3-D Secure Min Limit',
                     'type'        => 'text',
-                    'default'     => '50.0',
+                    'default'     => '100.0',
                     'required' => true,
                 ),
                 array(
@@ -153,7 +153,7 @@ class PaymentCreditCard extends Payment
                 array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'reserve',
+                    'default' => 'pay',
                     'label'   => 'Payment Action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
