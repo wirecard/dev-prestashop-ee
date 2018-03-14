@@ -33,29 +33,48 @@
  * @license GPLv3
  */
 
-const _PS_MODULE_DIR_ = './';
+class ModuleFrontController extends Controller
+{
+    public $module;
 
-require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
+    public function __construct()
+    {
+        parent::__construct();
+        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
+        $this->controller_type = 'modulefront';
+    }
 
-//stub objects
-require __DIR__ . '/Stubs/Currency.php';
-require __DIR__ . '/Stubs/Controller.php';
-require __DIR__ . '/Stubs/ModuleFrontController.php';
-require __DIR__ . '/Stubs/Module.php';
-require __DIR__ . '/Stubs/PaymentModule.php';
-require __DIR__ . '/Stubs/Tools.php';
-require __DIR__ . '/Stubs/Configuration.php';
-require __DIR__ . '/Stubs/HelperForm.php';
-require __DIR__ . '/Stubs/Language.php';
-require __DIR__ . '/Stubs/Context.php';
-require __DIR__ . '/Stubs/Link.php';
-require __DIR__ . '/Stubs/Smarty.php';
-require __DIR__ . '/Stubs/Media.php';
-require __DIR__ . '/Stubs/PaymentOption.php';
-require __DIR__ . '/Stubs/Cart.php';
-require __DIR__ . '/Stubs/Customer.php';
-require __DIR__ . '/Stubs/Address.php';
-require __DIR__ . '/Stubs/Country.php';
+    public function getLanguages()
+    {
+        return new Language();
+    }
 
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';
+    protected function l($string, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
+    {
+        if (isset($this->module) && is_a($this->module, 'Module')) {
+            return $this->module->l($string, $specific);
+        } else {
+            return $string;
+        }
+    }
+
+    public function setAmount($amount)
+    {
+        $this->module->context->cart->setOrderTotal($amount);
+    }
+
+    public function setProducts($products)
+    {
+        $this->module->context->cart->setProducts($products);
+    }
+
+    public function setCartId($id)
+    {
+        $this->module->context->cart->setId($id);
+    }
+
+    public function setCartAddress($type, $data = null)
+    {
+        $this->module->context->cart->setAddress($type, $data);
+    }
+}

@@ -2,20 +2,25 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
          colors="true"
-         bootstrap="Test/bootstrap.php"
+         bootstrap="./Test/bootstrap.php"
 >
     <testsuites>
         <testsuite name="unit-tests">
-            <directory prefix="test-" suffix=".php">Test</directory>
+            <directory suffix="Test.php">Test</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./wirecardpaymentgateway/*</directory>
+            <file>wirecardpaymentgateway/wirecardpaymentgateway.php</file>
             <exclude>
                 <directory>wirecardpaymentgateway/vendor</directory>
+                <file>wirecardpaymentgateway/index.php</file>
                 <file>wirecardpaymentgateway/controllers/index.php</file>
                 <file>wirecardpaymentgateway/controllers/front/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/hook/index.php</file>
+                <file>wirecardpaymentgateway/models/index.php</file>
             </exclude>
         </whitelist>
     </filter>

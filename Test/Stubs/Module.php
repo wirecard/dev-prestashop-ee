@@ -33,29 +33,45 @@
  * @license GPLv3
  */
 
-const _PS_MODULE_DIR_ = './';
+class Module
+{
+    public static $_INSTANCE;
+    private static $modules = array('wirecardpaymentgateway'=>"WirecardPaymentGateway");
+    public $name;
+    public $context;
+    public $smarty;
+    public $id;
 
-require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
+    protected $_html;
+    protected $html;
+    protected $identifier;
+    protected $_path;
+    public $active;
 
-//stub objects
-require __DIR__ . '/Stubs/Currency.php';
-require __DIR__ . '/Stubs/Controller.php';
-require __DIR__ . '/Stubs/ModuleFrontController.php';
-require __DIR__ . '/Stubs/Module.php';
-require __DIR__ . '/Stubs/PaymentModule.php';
-require __DIR__ . '/Stubs/Tools.php';
-require __DIR__ . '/Stubs/Configuration.php';
-require __DIR__ . '/Stubs/HelperForm.php';
-require __DIR__ . '/Stubs/Language.php';
-require __DIR__ . '/Stubs/Context.php';
-require __DIR__ . '/Stubs/Link.php';
-require __DIR__ . '/Stubs/Smarty.php';
-require __DIR__ . '/Stubs/Media.php';
-require __DIR__ . '/Stubs/PaymentOption.php';
-require __DIR__ . '/Stubs/Cart.php';
-require __DIR__ . '/Stubs/Customer.php';
-require __DIR__ . '/Stubs/Address.php';
-require __DIR__ . '/Stubs/Country.php';
+    public static function getInstanceByName($module)
+    {
+        if (isset(self::$modules[$module])) {
+            $className = self::$modules[$module];
+            return new $className();
+        }
+        return null;
+    }
 
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';
+    public function __construct($name = null, Context $context = null)
+    {
+        $this->context = $context ? $context : Context::getContext();
+        /*if (is_object($this->context->smarty)) {
+            $this->smarty = $this->context->smarty->createData($this->context->smarty);
+        }*/
+
+        // If the module has no name we gave him its id as name
+        if ($this->name === null) {
+            $this->name = $this->id;
+        }
+
+        $this->_html = null;
+        $this->identifier = 1;
+        $this->_path = '/wirecardpaymentgateway';
+        $this->active = true;
+    }
+}

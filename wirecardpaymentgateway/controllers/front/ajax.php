@@ -33,29 +33,48 @@
  * @license GPLv3
  */
 
-const _PS_MODULE_DIR_ = './';
+require dirname(__FILE__) . '/../../vendor/autoload.php';
 
-require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
+use Wirecard\PaymentSdk\Config\Config;
+use Wirecard\PaymentSdk\TransactionService;
 
-//stub objects
-require __DIR__ . '/Stubs/Currency.php';
-require __DIR__ . '/Stubs/Controller.php';
-require __DIR__ . '/Stubs/ModuleFrontController.php';
-require __DIR__ . '/Stubs/Module.php';
-require __DIR__ . '/Stubs/PaymentModule.php';
-require __DIR__ . '/Stubs/Tools.php';
-require __DIR__ . '/Stubs/Configuration.php';
-require __DIR__ . '/Stubs/HelperForm.php';
-require __DIR__ . '/Stubs/Language.php';
-require __DIR__ . '/Stubs/Context.php';
-require __DIR__ . '/Stubs/Link.php';
-require __DIR__ . '/Stubs/Smarty.php';
-require __DIR__ . '/Stubs/Media.php';
-require __DIR__ . '/Stubs/PaymentOption.php';
-require __DIR__ . '/Stubs/Cart.php';
-require __DIR__ . '/Stubs/Customer.php';
-require __DIR__ . '/Stubs/Address.php';
-require __DIR__ . '/Stubs/Country.php';
+/**
+ * Class WirecardPaymentGatewayAjaxModuleFrontController
+ *
+ * @since 1.0.0
+ */
+class WirecardPaymentGatewayAjaxModuleFrontController extends ModuleFrontController
+{
+    /**
+     * Handle ajax actions
+     *
+     * @since 1.0.0
+     */
+    public function postProcess()
+    {
+        switch (Tools::getValue('action')) {
+            case 'TestConfig':
+                $method = Tools::getValue('method');
+                $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
+                $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
+                $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_password'));
 
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';
+                $config = new Config($baseUrl, $httpUser, $httpPass);
+                $transactionService = new TransactionService($config);
+
+                $status = 'error';
+                $message = $this->l('Please check your credentials.');
+                if ($transactionService->checkCredentials()) {
+                    $status = 'ok';
+                    $message = $this->l('The merchant configuration was successfuly tested.');
+                }
+
+                die(Tools::jsonEncode(
+                    array(
+                        'status' => htmlspecialchars($status),
+                        'message' => htmlspecialchars($message)
+                    )
+                ));
+        }
+    }
+}

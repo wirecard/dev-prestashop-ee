@@ -33,29 +33,47 @@
  * @license GPLv3
  */
 
-const _PS_MODULE_DIR_ = './';
+class Tools
+{
+    public static function isSubmit($string)
+    {
+        return true;
+    }
 
-require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
+    public static function strtoupper($string)
+    {
+        return strtoupper($string);
+    }
 
-//stub objects
-require __DIR__ . '/Stubs/Currency.php';
-require __DIR__ . '/Stubs/Controller.php';
-require __DIR__ . '/Stubs/ModuleFrontController.php';
-require __DIR__ . '/Stubs/Module.php';
-require __DIR__ . '/Stubs/PaymentModule.php';
-require __DIR__ . '/Stubs/Tools.php';
-require __DIR__ . '/Stubs/Configuration.php';
-require __DIR__ . '/Stubs/HelperForm.php';
-require __DIR__ . '/Stubs/Language.php';
-require __DIR__ . '/Stubs/Context.php';
-require __DIR__ . '/Stubs/Link.php';
-require __DIR__ . '/Stubs/Smarty.php';
-require __DIR__ . '/Stubs/Media.php';
-require __DIR__ . '/Stubs/PaymentOption.php';
-require __DIR__ . '/Stubs/Cart.php';
-require __DIR__ . '/Stubs/Customer.php';
-require __DIR__ . '/Stubs/Address.php';
-require __DIR__ . '/Stubs/Country.php';
+    public static function getValue($string)
+    {
+        if ('paymentType' == $string) {
+            return 'paypal';
+        }
 
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-$_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';
+        return $string;
+    }
+
+    public static function getAdminTokenLite($string)
+    {
+        return $string;
+    }
+
+    public static function substr($string, $start, $length = null)
+    {
+        return substr($string, $start, $length);
+    }
+
+    public static function strlen($string)
+    {
+        return strlen($string);
+    }
+
+    public static function redirect($string)
+    {
+        if (strlen($string)) {
+            return true;
+        }
+        return false;
+    }
+}

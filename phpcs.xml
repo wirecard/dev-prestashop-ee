@@ -11,4 +11,5 @@
     <!-- Paths to check -->
     <file>.</file>
     <exclude-pattern>./vendor/*</exclude-pattern>
+    <exclude-pattern>./Test/stubs/*</exclude-pattern>
 </ruleset>
