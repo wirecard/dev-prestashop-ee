@@ -103,11 +103,4 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(1, $actual);
     }
-
-    public function testHookDisplayPaymentReturn()
-    {
-        $actual = $this->gateway->hookDisplayPaymentReturn('test');
-
-        $this->assertContains('payment_return', $actual);
-    }
 }

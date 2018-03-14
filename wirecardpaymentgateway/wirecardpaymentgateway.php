@@ -246,22 +246,6 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Display payment return hook
-     *
-     * @param $params
-     * @return string
-     * @since 1.0.0
-     */
-    public function hookDisplayPaymentReturn($params)
-    {
-        if (!$this->active) {
-            return '';
-        }
-
-        return $this->display(__FILE__, 'payment_return.tpl');
-    }
-
-    /**
      * Get payment class from payment type
      *
      * @param $paymentType

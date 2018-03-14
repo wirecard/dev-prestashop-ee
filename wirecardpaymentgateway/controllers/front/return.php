@@ -34,6 +34,7 @@ use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class WirecardPaymentGatewayReturnModuleFrontController
@@ -57,26 +58,30 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
         try {
-            $transactionService = new TransactionService($config);
+            $transactionService = new TransactionService($config, new WirecardLogger());
             $result = $transactionService->handleResponse($response);
             if ($result instanceof SuccessResponse) {
                 $this->processSuccess($result);
             } elseif ($result instanceof FailureResponse) {
                 $errors = "";
                 foreach ($result->getStatusCollection()->getIterator() as $item) {
-                    $errors .= $item->getDescription() . "<br>\n";
+                    $errors .= $item->getDescription() . "<br>";
                 }
-                print_r($errors);
-                die();
+                $this->errors = $errors;
+                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
             }
         } catch (\InvalidArgumentException $exception) {
-            throw $exception;
+            $this->errors = 'Invalid Argument: ' . $exception->getMessage();
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         } catch (MalformedResponseException $exception) {
-            throw $exception;
+            $this->errors = 'Malformed Response: ' . $exception->getMessage();
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         } catch (Exception $exception) {
-            throw $exception;
+            $this->errors = $exception->getMessage();
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
-        die();
+        $this->errors = 'Something went wrong during the payment process.';
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 
     /**
@@ -89,19 +94,25 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     {
         $cartId = $response->getCustomFields()->get('orderId');
         $cart = new Cart((int)($cartId));
+        $orderId = Order::getOrderByCartId((int)$cartId);
 
         $orderManager = new OrderManager($this->module);
-        $order= new Order($orderManager->createOrder(
-            $cart,
-            OrderManager::WIRECARD_OS_AWAITING,
-            $response->getPaymentMethod()
-        ));
-        $customer = new Customer($cart->id_customer);
-        $orderPayments = OrderPayment::getByOrderReference($order->reference);
-        if (!empty($orderPayments)) {
-            $orderPayments[0]->transaction_id = $response->getTransactionId();
-            $orderPayments[0]->save();
+        if (! $orderId) {
+            $order = new Order($orderManager->createOrder(
+                $cart,
+                OrderManager::WIRECARD_OS_AWAITING,
+                $response->getPaymentMethod()
+            ));
+            $orderPayments = OrderPayment::getByOrderReference($order->reference);
+            if (!empty($orderPayments)) {
+                $orderPayments[0]->transaction_id = $response->getTransactionId();
+                $orderPayments[0]->save();
+            }
+        } else {
+            //If updates needed
+            $order = new Order($orderId);
         }
+        $customer = new Customer($cart->id_customer);
 
         Tools::redirect('index.php?controller=order-confirmation&id_cart='
             .$cart->id.'&id_module='
