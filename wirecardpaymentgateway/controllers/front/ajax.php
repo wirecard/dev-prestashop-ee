@@ -75,7 +75,6 @@ class WirecardPaymentGatewayAjaxModuleFrontController extends ModuleFrontControl
                         'message' => htmlspecialchars($message)
                     )
                 ));
-                break;
         }
     }
 }
