@@ -2,7 +2,7 @@
 
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 
-//require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
+require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
 
 class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 {
