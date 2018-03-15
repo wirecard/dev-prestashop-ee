@@ -118,6 +118,12 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->tpl_folder = 'backend/';
     }
 
+    /**
+     * Render detail transaction view
+     *
+     * @return mixed
+     * @since 1.0.0
+     */
     public function renderView()
     {
         if (!\Validate::isLoadedObject($this->object)) {
@@ -125,6 +131,7 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         $transaction = $this->object;
+        /** @var \WirecardEE\Prestashop\Models\Payment $payment */
         $payment = $this->module->getPaymentFromType($transaction->paymentmethod);
         $response_data = json_decode($transaction->response);
 
@@ -139,7 +146,10 @@ class WirecardTransactionsController extends ModuleAdminController
             'status' => $transaction->transaction_state,
             'amount' => $transaction->amount,
             'currency' => $transaction->currency,
-            'response_data' => $response_data
+            'response_data' => $response_data,
+            'canCancel' => $payment->can_cancel($transaction->transaction_type),
+            'canCapture' => $payment->can_capture($transaction->transaction_type),
+            'canRefund' => $payment->can_refund($transaction->transaction_type)
         );
 
         return parent::renderView();

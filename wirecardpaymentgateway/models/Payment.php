@@ -246,4 +246,49 @@ class Payment
             return false;
         }
     }
+
+    /**
+     * Check if payment method can use capture
+     *
+     * @param string $type
+     * @return bool
+     * @since 1.0.0
+     */
+    public function can_capture( $type ) {
+        if ( in_array( $type, $this->capture ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if payment method can use cancel
+     *
+     * @param string $type
+     * @return boolean
+     * @since 1.0.0
+     */
+    public function can_cancel( $type ) {
+        if ( in_array( $type, $this->cancel ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if payment method can use refund
+     *
+     * @param string $type
+     * @return boolean
+     * @since 1.0.0
+     */
+    public function can_refund( $type ) {
+        if ( in_array( $type, $this->refund ) ) {
+            return true;
+        }
+
+        return false;
+    }
 }
