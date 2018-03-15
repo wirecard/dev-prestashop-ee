@@ -135,7 +135,6 @@ class WirecardTransactionsController extends ModuleAdminController
         $payment = $this->module->getPaymentFromType($transaction->paymentmethod);
         $response_data = json_decode($transaction->response);
 
-
         // Smarty assign
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
@@ -149,9 +148,15 @@ class WirecardTransactionsController extends ModuleAdminController
             'response_data' => $response_data,
             'canCancel' => $payment->can_cancel($transaction->transaction_type),
             'canCapture' => $payment->can_capture($transaction->transaction_type),
-            'canRefund' => $payment->can_refund($transaction->transaction_type)
+            'canRefund' => $payment->can_refund($transaction->transaction_type),
+            'cancelLink' => $this->context->link->getAdminLink('WirecardTransactions', true)
         );
 
         return parent::renderView();
+    }
+
+    public function postProcess()
+    {
+        print_r('Not implemented yet');
     }
 }

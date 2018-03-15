@@ -49,8 +49,14 @@
             <div><b>{$transaction_type|escape:'htmlall':'UTF-8'}</b></div>
             <br>
             <div class="wc-order-data-row">
-                {if $status != 'closed' }
-                    <a href='?page=cancelpayment&id={$transaction_id|escape:'htmlall':'UTF-8'}' class='button'>{l s='Cancel Transaction' mod='wirecardpaymentgateway'}</a>
+                {if $status != 'closed' and $canCancel }
+                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Cancel Transaction' mod='wirecardpaymentgateway'}</a>
+                {/if}
+                {if $status != 'closed' and $canCapture }
+                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Capture Transaction' mod='wirecardpaymentgateway'}</a>
+                {/if}
+                {if $status != 'closed' and $canRefund }
+                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Refund Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status == 'closed' }
                     <p class='add-items'>{l s='No Back-end operations available for this transaction' mod='wirecardpaymentgateway'}</p>
