@@ -109,6 +109,8 @@ class WirecardPaymentGateway extends PaymentModule
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
 
+        $this->installTabs();
+
         return true;
     }
 
@@ -123,7 +125,35 @@ class WirecardPaymentGateway extends PaymentModule
         if (!parent::uninstall()) {
             return false;
         }
+
+        $this->uninstallTabs();
+
         return true;
+    }
+
+    /**
+     * register tabs
+     */
+    public function installTabs()
+    {
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'WirecardTransactions';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Wirecard Transactions';
+        }
+        $tab->module = $this->name;
+        $tab->add();
+    }
+
+    public function uninstallTabs()
+    {
+        $id_tab = (int)Tab::getIdFromClassName('WirecardTransactions');
+        if ($id_tab) {
+            $tab = new Tab($id_tab);
+            $tab->delete();
+        }
     }
 
     /**
