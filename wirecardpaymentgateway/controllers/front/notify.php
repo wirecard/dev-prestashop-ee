@@ -158,7 +158,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
                 return OrderManager::WIRECARD_OS_AUTHORIZATION;
             case 'debit':
             case 'capture':
-            case 'payment':
+            case 'purchase':
             default:
                 return 'PS_OS_PAYMENT';
         }
