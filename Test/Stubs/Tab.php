@@ -33,12 +33,9 @@
  * @license GPLv3
  */
 
-class Language
+class Tab
 {
-    public $id = 'test';
-
-    public static function getLanguages()
+    public function __construct()
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
     }
 }

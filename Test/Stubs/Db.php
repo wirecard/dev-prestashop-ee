@@ -49,4 +49,9 @@ class Db
 
         return self::$instance;
     }
+
+    public static function execute()
+    {
+        return true;
+    }
 }
