@@ -126,7 +126,7 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $transaction = $this->object;
         //$payment       = $this->transaction_handler->get_payment_method( $transaction->payment_method );
-        $response_data = json_decode( $transaction->response );
+        $response_data = json_decode($transaction->response);
 
 
         // Smarty assign

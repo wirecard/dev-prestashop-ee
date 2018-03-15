@@ -35,6 +35,8 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Response\Response;
+
 /**
  * Basic Transaction class
  *
@@ -96,26 +98,31 @@ class Transaction extends \ObjectModel
     );
 
     /**
-     * @param $id_order
-     * @param $id_cart
-     * @param $amount
-     * @param $currency
-     * @param $paymentname
-     * @param $paymentmethod
+     * Create transaction in wirecard_payment_gateway_tx
      *
-     * @return int
-     * @throws PrestaShopDatabaseException
+     * @param int $idOrder
+     * @param int $idCart
+     * @param float $amount
+     * @param string $currency
+     * @param Response $response
+     * @return mixed
+     * @since 1.0.0
      */
     public static function create($idOrder, $idCart, $amount, $currency, $response)
     {
-        //TODO: Implement logic for parent transaction id and closed transactions
+        $parentTransactionId = '';
         $transactionState = 'success';
+        if (self::get($response->getParentTransactionId())) {
+            $parentTransaction = self::get($parentTransactionId);
+            $parentTransactionId = $parentTransaction->transaction_id;
+            //TODO: update status for parenttransaction
+        }
 
         $db = \Db::getInstance();
 
         $db->insert('wirecard_payment_gateway_tx', array(
             'transaction_id' => $response->getTransactionId(),
-            'parent_transaction_id' => $response->getParentTransactionId(),
+            'parent_transaction_id' => $parentTransactionId,
             'order_id' => $idOrder === null ? 'NULL' : (int)$idOrder,
             'cart_id' => (int)$idCart,
             'paymentmethod' => pSQL($response->getPaymentMethod()),
@@ -135,10 +142,10 @@ class Transaction extends \ObjectModel
     }
 
     /**
-     * get transaction from database
-     * @param $transactionId
+     * Get single transaction per transaction id
      *
-     * @return array|bool|null|object
+     * @param string $transactionId
+     * @return mixed
      */
     public function get($transactionId)
     {

@@ -109,10 +109,16 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             $order = new Order($orderId);
             $order->setCurrentState($this->getTransactionOrderState($response));
         }
-        $transaction = Transaction::create($orderId, $cartId, $cart->getOrderTotal(true), $cart->id_currency, $response);
-        if ( ! $transaction ) {
+        $transaction = Transaction::create(
+            $orderId,
+            $cartId,
+            $cart->getOrderTotal(true),
+            $cart->id_currency,
+            $response
+        );
+        if (! $transaction) {
             $logger = new WirecardLogger();
-            $logger->error( __METHOD__ . 'Transaction could not be saved in transaction table' );
+            $logger->error(__METHOD__ . 'Transaction could not be saved in transaction table');
         }
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {
