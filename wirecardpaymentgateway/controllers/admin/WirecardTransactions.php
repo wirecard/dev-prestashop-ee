@@ -74,17 +74,12 @@ class WirecardTransactionsController extends ModuleAdminController
                 'class' => 'fixed-width-xs'
             ),
             'transaction_id' => array(
-                'title' => $this->translator->trans('TransactionID'),
+                'title' => $this->translator->trans('Transaction ID'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
             'parent_transaction_id' => array(
-                'title' => $this->translator->trans('ParentTransactionID'),
-                'align' => 'text-center',
-                'class' => 'fixed-width-xs'
-            ),
-            'status' => array(
-                'title' => $this->translator->trans('Status'),
+                'title' => $this->translator->trans('Parent Transaction ID'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
@@ -108,8 +103,12 @@ class WirecardTransactionsController extends ModuleAdminController
                 'title' => $this->translator->trans('Payment method'),
                 'class' => 'fixed-width-lg',
             ),
-            'transactionstate' => array(
-                'title' => $this->translator->trans('State'),
+            'transaction_type' => array(
+                'title' => $this->translator->trans('Transaction Type'),
+                'class' => 'fixed-width-xs',
+            ),
+            'transaction_state' => array(
+                'title' => $this->translator->trans('Transaction State'),
                 'class' => 'fixed-width-xs',
             ),
 

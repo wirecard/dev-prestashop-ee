@@ -105,6 +105,10 @@ class WirecardPaymentGateway extends PaymentModule
             return false;
         }
 
+        if (!$this->createTable()) {
+            return false;
+        }
+
         $orderManager = new OrderManager($this);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
@@ -183,9 +187,11 @@ class WirecardPaymentGateway extends PaymentModule
         if (Tools::isSubmit('btnSubmit')) {
             $this->postProcess();
         }
+
         $this->context->smarty->assign(
             array(
                 'module_dir' => $this->_path,
+                'link' => $this->context->link,
                 'ajax_configtest_url' => $this->context->link->getModuleLink('wirecardpaymentgateway', 'ajax')
             )
         );
@@ -565,6 +571,43 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return true;
+    }
+
+
+    private function createTable()
+    {
+        $sql = 'CREATE TABLE IF NOT EXISTS  `' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx` (';
+        foreach ($this->getColumnDefs() as $column => $definitions) {
+            $sql .= "\n"."\t" . $column . ' ';
+            foreach ($definitions as $definition) {
+                $sql .= $definition . ' ';
+            }
+            $sql .= ',';
+        }
+        $sql .= "\n".'PRIMARY KEY (`tx_id`)';
+        $sql .= "\n" . ') ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+
+        return Db::getInstance()->execute($sql);
+    }
+
+    private function getColumnDefs()
+    {
+        return array(
+            "tx_id" => array("INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT"),
+            "transaction_id" => array("VARCHAR(32)", "NOT NULL"),
+            "parent_transaction_id" => array("VARCHAR(32)", "NULL"),
+            "order_id" => array("INT(10)", "NULL"),
+            "cart_id" => array("INT(10) UNSIGNED", "NOT NULL"),
+            "ordernumber" => array("VARCHAR(32)", "NULL"),
+            "paymentmethod" => array("VARCHAR(32)", "NOT NULL"),
+            "transaction_type" => array("VARCHAR(32)", "NOT NULL"),
+            "transaction_state" => array("VARCHAR(32)", "NOT NULL"),
+            "amount" => array("FLOAT", "NOT NULL"),
+            "currency" => array("VARCHAR(3)", "NOT NULL"),
+            "response" => array("TEXT", "NULL"),
+            "created" => array("DATETIME", "NOT NULL"),
+            "modified" => array("DATETIME", "NULL"),
+        );
     }
 
     public function hookActionFrontControllerSetMedia()
