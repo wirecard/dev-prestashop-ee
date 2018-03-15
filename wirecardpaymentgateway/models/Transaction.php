@@ -42,7 +42,7 @@ namespace WirecardEE\Prestashop\Models;
  *
  * @since 1.0.0
  */
-class Transaction extends ObjectModel
+class Transaction extends \ObjectModel
 {
     public $txId;
 
@@ -112,12 +112,12 @@ class Transaction extends ObjectModel
      * @return int
      * @throws PrestaShopDatabaseException
      */
-    public function create($idOrder, $idCart, $amount, $currency, $response)
+    public static function create($idOrder, $idCart, $amount, $currency, $response)
     {
         //TODO: Implement logic for parent transaction id and closed transactions
         $transactionState = 'success';
 
-        $db = Db::getInstance();
+        $db = \Db::getInstance();
 
         $db->insert('wirecard_payment_gateway_tx', array(
             'transaction_id' => $response->getTransactionId(),
@@ -148,9 +148,9 @@ class Transaction extends ObjectModel
      */
     public function get($transactionId)
     {
-        $query = new DbQuery();
+        $query = new \DbQuery();
         $query->from('wirecard_payment_gateway_tx')->where('transaction_id = ' . (int)$transactionId);
 
-        return Db::getInstance()->getRow($query);
+        return \Db::getInstance()->getRow($query);
     }
 }

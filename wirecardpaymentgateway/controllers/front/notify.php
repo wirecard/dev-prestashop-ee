@@ -37,6 +37,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
+use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
@@ -107,6 +108,11 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             //If updates needed
             $order = new Order($orderId);
             $order->setCurrentState($this->getTransactionOrderState($response));
+        }
+        $transaction = Transaction::create($orderId, $cartId, $cart->getOrderTotal(true), $cart->id_currency, $response);
+        if ( ! $transaction ) {
+            $logger = new WirecardLogger();
+            $logger->error( __METHOD__ . 'Transaction could not be saved in transaction table' );
         }
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {
