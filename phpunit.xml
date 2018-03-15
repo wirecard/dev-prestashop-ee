@@ -30,6 +30,7 @@
                 <file>wirecardpaymentgateway/views/templates/admin/_configure/helpers/index.php</file>
                 <file>wirecardpaymentgateway/views/templates/admin/_configure/helpers/form/index.php</file>
                 <file>wirecardpaymentgateway/views/templates/hook/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/front/index.php</file>
             </exclude>
         </whitelist>
     </filter>
