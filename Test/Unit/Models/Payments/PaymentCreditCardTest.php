@@ -56,6 +56,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'three_d_secret',
             50,
             50,
+            50,
+            150,
             150,
             150
         );
@@ -82,7 +84,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        for ($i = 0; $i <= 11; $i++) {
+        for ($i = 0; $i <= 13; $i++) {
             $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
         }
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
@@ -118,7 +120,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'payment_method' => 'creditcard'
         );
 
-        for ($i = 0; $i <= 11; $i++) {
+        for ($i = 0; $i <= 13; $i++) {
             $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
         }
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule));
