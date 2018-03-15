@@ -57,7 +57,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         try {
             $transactionService = new TransactionService($config, $logger);
             $result = $transactionService->handleNotification($notification);
-            if ($result instanceof SuccessResponse) {
+            $logger->error('notify result: ' . print_r($result, true));
+            if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
                 $this->processSuccess($result);
             } elseif ($result instanceof FailureResponse) {
                 $errors = "";
@@ -94,20 +95,11 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
     {
         $cartId = $response->getCustomFields()->get('orderId');
         $cart = new Cart((int)($cartId));
-        $orderId = Order::getOrderByCartId((int)$cartId);
+        $orderId = Order::getIdByCartId((int)$cartId);
 
-        $orderManager = new OrderManager($this->module);
-        if (! $orderId) {
-            $order = new Order($orderManager->createOrder(
-                $cart,
-                $this->getTransactionOrderState($response),
-                $response->getPaymentMethod()
-            ));
-        } else {
-            //If updates needed
-            $order = new Order($orderId);
-            $order->setCurrentState($this->getTransactionOrderState($response));
-        }
+        $order = new Order($orderId);
+        $order->setCurrentState($this->getTransactionOrderState($response));
+
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {
             $orderPayments[0]->transaction_id = $response->getTransactionId();
@@ -115,7 +107,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         }
 
         $customer = new Customer($cart->id_customer);
-
         Tools::redirect('index.php?controller=order-confirmation&id_cart='
             .$cart->id.'&id_module='
             .$this->module->id.'&id_order='
@@ -160,7 +151,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             case 'capture':
             case 'purchase':
             default:
-                return 'PS_OS_PAYMENT';
+                return _PS_OS_PAYMENT_;
         }
     }
 }

@@ -43,6 +43,7 @@ use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -74,6 +75,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         }
 
         $paymentType = Tools::getValue('paymentType');
+        $this->createOrder($cart, $paymentType);
+
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
@@ -194,5 +197,23 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $html .= '<script>document.getElementsByTagName("form")[0].submit();</script>';
 
         return $html;
+    }
+
+    /**
+     * Create order
+     *
+     * @param Cart $cart
+     * @param string $paymentMethod
+     * @since 1.0.0
+     */
+    private function createOrder($cart, $paymentMethod)
+    {
+        $orderManager = new OrderManager($this->module);
+
+        $orderManager->createOrder(
+            $cart,
+            OrderManager::WIRECARD_OS_AWAITING,
+            $paymentMethod
+        );
     }
 }
