@@ -216,7 +216,8 @@ class PaymentCreditCard extends Payment
             );
         }
 
-        if ($paymentModule->getConfigValue($this->type, 'ssl_max_limit') !== '') {
+        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
+            $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
             $paymentConfig->addSslMaxLimit(
                 new Amount(
                     $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
@@ -225,7 +226,8 @@ class PaymentCreditCard extends Payment
             );
         }
 
-        if ($paymentModule->getConfigValue($this->type, 'three_d_min_limit') !== '') {
+        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit')) &&
+            $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
             $paymentConfig->addThreeDMinLimit(
                 new Amount(
                     $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
