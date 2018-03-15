@@ -18,8 +18,17 @@
                 <file>wirecardpaymentgateway/index.php</file>
                 <file>wirecardpaymentgateway/controllers/index.php</file>
                 <file>wirecardpaymentgateway/controllers/front/index.php</file>
+                <file>wirecardpaymentgateway/helper/index.php</file>
+                <file>wirecardpaymentgateway/views/index.php</file>
                 <file>wirecardpaymentgateway/views/templates/index.php</file>
                 <file>wirecardpaymentgateway/views/templates/hook/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/front/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/admin/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/admin/_configure/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/admin/_configure/helpers/index.php</file>
+                <file>wirecardpaymentgateway/views/templates/admin/_configure/helpers/form/index.php</file>
+                <file>wirecardpaymentgateway/views/img/index.php</file>
+                <file>wirecardpaymentgateway/views/img/paymenttypes/index.php</file>
                 <file>wirecardpaymentgateway/models/index.php</file>
             </exclude>
         </whitelist>
