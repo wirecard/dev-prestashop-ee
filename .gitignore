@@ -1,4 +1,3 @@
 .idea/*
-/wirecardpaymentgateway/vendor/*
-/vendor/*
+wirecardpaymentgateway/vendor/*
 composer.lock
