@@ -80,4 +80,9 @@ class PaymentModule extends Module
     {
         return $string;
     }
+
+    public function fetch($string)
+    {
+        return $string;
+    }
 }
