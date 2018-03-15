@@ -33,17 +33,28 @@
  * @license GPLv3
  */
 
-class Tab
+class ModuleAdminController extends Controller
 {
+    public $module;
+
     public function __construct()
     {
+        parent::__construct();
+        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
+        $this->controller_type = 'moduleadmin';
     }
 
-    public function add()
+    public function getLanguages()
     {
+        return new Language();
     }
 
-    public static function getIdFromClassName()
+    protected function l($string, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
     {
+        if (isset($this->module) && is_a($this->module, 'Module')) {
+            return $this->module->l($string, $specific);
+        } else {
+            return $string;
+        }
     }
 }

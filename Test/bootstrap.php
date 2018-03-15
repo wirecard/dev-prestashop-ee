@@ -43,6 +43,7 @@ require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
 require __DIR__ . '/Stubs/Currency.php';
 require __DIR__ . '/Stubs/Controller.php';
 require __DIR__ . '/Stubs/ModuleFrontController.php';
+require __DIR__ . '/Stubs/ModuleAdminController.php';
 require __DIR__ . '/Stubs/Module.php';
 require __DIR__ . '/Stubs/PaymentModule.php';
 require __DIR__ . '/Stubs/Tools.php';

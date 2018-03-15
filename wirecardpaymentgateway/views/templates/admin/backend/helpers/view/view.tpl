@@ -49,15 +49,12 @@
             <div><b>{$transaction_type|escape:'htmlall':'UTF-8'}</b></div>
             <br>
             <div class="wc-order-data-row">
-                {if $status == 'closed' }
+                {if $status != 'closed' }
                     <a href='?page=cancelpayment&id={$transaction_id|escape:'htmlall':'UTF-8'}' class='button'>{l s='Cancel Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status == 'closed' }
                     <p class='add-items'>{l s='No Back-end operations available for this transaction' mod='wirecardpaymentgateway'}</p>
                 {/if}
-                <p class="add-items">
-                    <a href="?page=wirecardpayment" class="button">{l s='Wirecard Payment Gateway Dashboard' mod='wirecardpaymentgateway'}</a>
-                </p>
             </div>
             <hr>
             <h3>{l s='Responsedata:' mod='wirecardpaymentgateway'}</h3>
