@@ -27,6 +27,10 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 namespace WirecardEE\Prestashop\Helper;
@@ -110,7 +114,7 @@ class AdditionalInformation
     {
         return sprintf(
             '%s %s',
-            substr(\Configuration::get('PS_SHOP_NAME'), 0, 9),
+            \Tools::substr(\Configuration::get('PS_SHOP_NAME'), 0, 9),
             $id
         );
     }
@@ -185,7 +189,7 @@ class AdditionalInformation
         } else {
             $address = new Address($country->iso_code, $source->city, $source->address1);
             $address->setPostalCode($source->postcode);
-            if (strlen($source->address2)) {
+            if (\Tools::strlen($source->address2)) {
                 $address->setStreet2($source->address2);
             }
         }
