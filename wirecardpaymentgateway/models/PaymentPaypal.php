@@ -47,6 +47,7 @@ use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
  */
 class PaymentPaypal extends Payment
 {
+
     /**
      * PaymentPaypal constructor.
      *
@@ -57,6 +58,10 @@ class PaymentPaypal extends Payment
         $this->type = 'paypal';
         $this->name = 'Wirecard Payment Processing Gateway Paypal';
         $this->formFields = $this->createFormFields();
+
+        $this->cancel  = array( 'authorization' );
+        $this->capture = array( 'authorization' );
+        $this->refund  = array( 'debit', 'capture-authorization' );
     }
 
     /**

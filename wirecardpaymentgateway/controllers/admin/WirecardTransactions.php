@@ -125,7 +125,7 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         $transaction = $this->object;
-        //$payment       = $this->transaction_handler->get_payment_method( $transaction->payment_method );
+        $payment = $this->module->getPaymentFromType($transaction->paymentmethod);
         $response_data = json_decode($transaction->response);
 
 

@@ -107,6 +107,24 @@ class Payment
     protected $additionalInformationTemplate;
 
     /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $cancel;
+
+    /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $refund;
+
+    /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $capture;
+
+    /**
      * WirecardPayment constructor.
      *
      * @since 1.0.0
@@ -115,6 +133,11 @@ class Payment
     {
         $this->name = 'Wirecard Payment Processing Gateway';
         $this->transactionTypes = array('authorization', 'capture');
+
+        //Default back-end operation possibilities
+        $this->cancel = array( 'authorization' );
+        $this->refund = array( 'capture-authorization' );
+        $this->capture = array( 'authorization' );
     }
 
     /**
