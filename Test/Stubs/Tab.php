@@ -38,4 +38,8 @@ class Tab
     public function __construct()
     {
     }
+
+    public function add()
+    {
+    }
 }

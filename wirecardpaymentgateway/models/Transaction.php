@@ -44,35 +44,29 @@ namespace WirecardEE\Prestashop\Models;
  */
 class Transaction extends \ObjectModel
 {
-    public $txId;
+    public $tx_id;
 
-    public $transactionId;
+    public $transaction_id;
 
-    public $parentTransactionId;
+    public $parent_transaction_id;
 
-    public $idOrder;
+    public $order_id;
 
-    public $idCart;
+    public $cart_id;
 
-    public $orderNumber;
+    public $ordernumber;
 
-    public $paymentName;
+    public $paymentmethod;
 
-    public $paymentMethod;
-
-    public $paymentNumber;
-
-    public $paymentState;
+    public $transaction_state;
 
     public $amount;
 
     public $currency;
 
-    public $message;
-
     public $response;
 
-    public $status;
+    public $transaction_type;
 
     public $created;
 

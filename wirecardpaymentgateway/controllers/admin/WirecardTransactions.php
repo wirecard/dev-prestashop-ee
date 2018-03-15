@@ -45,7 +45,7 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $this->bootstrap = true;
         $this->table = 'wirecard_payment_gateway_tx';
-        $this->className = 'Transaction';
+        $this->className = '\WirecardEE\Prestashop\Models\Transaction';
         $this->lang = false;
         $this->addRowAction('view');
         $this->explicitSelect = true;
@@ -120,6 +120,28 @@ class WirecardTransactionsController extends ModuleAdminController
 
     public function renderView()
     {
-        echo 'Test';
+        if (!\Validate::isLoadedObject($this->object)) {
+            $this->errors[] = \Tools::displayError('The transaction cannot be found within your database.');
+        }
+
+        $transaction = $this->object;
+        //$payment       = $this->transaction_handler->get_payment_method( $transaction->payment_method );
+        $response_data = json_decode( $transaction->response );
+
+
+        // Smarty assign
+        $this->tpl_view_vars = array(
+            'current_index' => self::$currentIndex,
+            'test' => 'test',
+            'transaction_id' => $transaction->transaction_id,
+            'payment_method' => $transaction->paymentmethod,
+            'transaction_type' => $transaction->transaction_type,
+            'status' => $transaction->transaction_state,
+            'amount' => $transaction->amount,
+            'currency' => $transaction->currency,
+            'response_data' => $response_data
+        );
+
+        return parent::renderView();
     }
 }
