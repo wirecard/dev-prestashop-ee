@@ -119,7 +119,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 );
             }
 
-            return $this->executeTransaction($transaction, $config, $operation, $paymentType);
+            return $this->executeTransaction($transaction, $config, $operation);
         }
     }
 
@@ -129,11 +129,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
-     * @param string $paymentType
      * @throws Exception
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation, $paymentType)
+    public function executeTransaction($transaction, $config, $operation)
     {
         $transactionService = new TransactionService($config, new WirecardLogger());
         try {

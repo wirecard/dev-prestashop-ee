@@ -29,6 +29,7 @@
                 <file>wirecardpaymentgateway/views/templates/admin/_configure/helpers/form/index.php</file>
                 <file>wirecardpaymentgateway/views/img/index.php</file>
                 <file>wirecardpaymentgateway/views/img/paymenttypes/index.php</file>
+                <file>wirecardpaymentgateway/views/js/index.php</file>
                 <file>wirecardpaymentgateway/models/index.php</file>
             </exclude>
         </whitelist>
