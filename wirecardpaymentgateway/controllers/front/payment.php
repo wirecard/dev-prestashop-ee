@@ -129,7 +129,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
-     * @throws Exception
      * @since 1.0.0
      */
     public function executeTransaction($transaction, $config, $operation)
@@ -166,6 +165,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 
+    /**
+     * Create post form for credit card
+     *
+     * @param Array $data
+     * @return string
+     * @since 1.0.0
+     */
     private function createPostForm($data)
     {
         $html  = '';
