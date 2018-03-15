@@ -236,14 +236,15 @@ class WirecardPaymentGateway extends PaymentModule
             $payment = new PaymentOption();
             $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
+            if ($paymentMethod->getTemplateData()) {
+                $this->context->smarty->assign($paymentMethod->getTemplateData());
+            }
             if ($paymentMethod->getAdditionalInformationTemplate()) {
                 $payment->setAdditionalInformation($this->fetch(
                     'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
                 ));
             }
-            if ($paymentMethod->getTemplateData()) {
-                $this->context->smarty->assign($paymentMethod->getTemplateData());
-            }
+
 
             $payment->setLogo(
                 Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'

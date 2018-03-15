@@ -240,7 +240,7 @@ class Payment
      */
     public function getTemplateData()
     {
-        if ($this->templateData) {
+        if (isset($this->templateData)) {
             return $this->templateData;
         } else {
             return false;
