@@ -101,6 +101,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $order->setCurrentState($this->getTransactionOrderState($response));
 
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
+        $logger->error('notify empty success: ' .  (bool) empty($orderPayments));
+        $logger->error('notify empty success number: ' .  count($orderPayments));
         if (!empty($orderPayments)) {
             $orderPayments[0]->transaction_id = $response->getTransactionId();
             $orderPayments[0]->save();
@@ -122,6 +124,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     private function processFailure($response)
     {
+        $logger = new WirecardLogger();
         $cartId = $response->getCustomFields()->get('orderId');
         $orderId = Order::getOrderByCartId((int)$cartId);
 
@@ -129,6 +132,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             $order = new Order($orderId);
             $order->setCurrentState('PS_OS_ERROR');
             $orderPayments = OrderPayment::getByOrderReference($order->reference);
+            $logger->error('notify empty failure: ' .  empty($orderPayments));
             if (!empty($orderPayments)) {
                 $orderPayments[0]->transaction_id = $response->getTransactionId();
                 $orderPayments[0]->save();
