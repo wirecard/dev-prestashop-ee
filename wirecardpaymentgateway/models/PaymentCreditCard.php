@@ -59,6 +59,7 @@ class PaymentCreditCard extends Payment
         $this->name = 'Wirecard Payment Processing Gateway Credit Card';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type);
+        $this->setLoadJs(true);
     }
 
     /**

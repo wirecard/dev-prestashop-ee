@@ -113,6 +113,12 @@ class Payment
     protected $templateData;
 
     /**
+     * @var bool
+     * @since 1.0.0
+     */
+    protected $loadJs;
+
+    /**
      * WirecardPayment constructor.
      *
      * @since 1.0.0
@@ -246,5 +252,15 @@ class Payment
         } else {
             return false;
         }
+    }
+
+    public function setLoadJs($load)
+    {
+        $this->loadJs = $load;
+    }
+
+    public function getLoadJs()
+    {
+        return isset($this->loadJs) ? $this->loadJs : false;
     }
 }

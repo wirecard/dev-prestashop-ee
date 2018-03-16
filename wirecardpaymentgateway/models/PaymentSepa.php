@@ -58,6 +58,7 @@ class PaymentSepa extends Payment
         $this->name = 'Wirecard Payment Processing Gateway SEPA';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
+        $this->setLoadJs(true);
     }
 
     /**

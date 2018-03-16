@@ -74,7 +74,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'creditcard');
+        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'creditcard', 'sepa');
 
         $this->is_eu_compatible = 1;
         $this->currencies = true;
@@ -246,12 +246,12 @@ class WirecardPaymentGateway extends PaymentModule
             if ($paymentMethod->getTemplateData()) {
                 $this->context->smarty->assign($paymentMethod->getTemplateData());
             }
+
             if ($paymentMethod->getAdditionalInformationTemplate()) {
                 $payment->setAdditionalInformation($this->fetch(
                     'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
                 ));
             }
-
 
             $payment->setLogo(
                 Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
@@ -548,17 +548,25 @@ class WirecardPaymentGateway extends PaymentModule
         $parameters = array("action" => "getcreditcardconfig");
         $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
         $baseUrl = $this->getConfigValue('creditcard', 'base_url');
-
         Media::addJsDef(array('url' => $ajaxLink));
+        $this->context->controller->addJquery();
+        $this->context->controller->addJqueryUI('dialog');
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
             $baseUrl  .'/engine/hpp/paymentPageLoader.js',
             array('server' => 'remote', 'position' => 'head', 'priority' => 20)
         );
-        $this->context->controller->addJS(
-            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
-            . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
-        );
+
+        foreach ($this->getPayments() as $paymentMethod) {
+            if ($paymentMethod->getLoadJs()) {
+                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', $paymentMethod->getType());
+                Media::addJsDef(array('ajax'.$paymentMethod->getType().'url' => $ajaxLink));
+                $this->context->controller->addJS(
+                    _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
+                    . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
+                );
+            }
+        }
 
         return true;
     }
