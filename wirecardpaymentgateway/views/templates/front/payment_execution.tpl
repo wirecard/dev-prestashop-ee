@@ -1,5 +1,4 @@
-<?php
-/**
+{*
  * Shop System Plugins - Terms of Use
  *
  * The plugins offered are provided free of charge by Wirecard AG and are explicitly not part
@@ -31,12 +30,6 @@
  * @author Wirecard AG
  * @copyright Wirecard AG
  * @license GPLv3
- */
+ *}
 
-class Smarty
-{
-    public function assign($array)
-    {
-        return implode(", ", $array);
-    }
-}
+{extends file='page.tpl'}

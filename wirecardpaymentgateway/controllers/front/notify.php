@@ -27,22 +27,135 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-require __DIR__.'/../../vendor/autoload.php';
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\TransactionService;
+use Wirecard\PaymentSdk\Exception\MalformedResponseException;
+use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {
     /**
-     * @see FrontController::postProcess()
+     * Process redirects and responses
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
-        //TODO: Implement notification handling
-        echo "notify in development";
-        exit;
+        $paymentType = Tools::getValue('payment_type');
+        $payment = $this->module->getPaymentFromType($paymentType);
+        $config = $payment->createPaymentConfig($this->module);
+        $notification         = Tools::file_get_contents('php://input');
+        $logger = new WirecardLogger();
+        try {
+            $transactionService = new TransactionService($config, $logger);
+            $result = $transactionService->handleNotification($notification);
+            $logger->error('notify result: ' . print_r($result, true));
+            if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
+                $this->processSuccess($result);
+            } elseif ($result instanceof FailureResponse) {
+                $errors = "";
+                foreach ($result->getStatusCollection()->getIterator() as $item) {
+                    $errors .= $item->getDescription() . "<br>";
+                }
+                $logger->error($errors);
+                $this->processFailure($result);
+            }
+        } catch (\InvalidArgumentException $exception) {
+            $this->errors = 'Invalid Argument: ' . $exception->getMessage();
+            $logger->error($exception->getMessage());
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        } catch (MalformedResponseException $exception) {
+            $this->errors = 'Malformed Response: ' . $exception->getMessage();
+            $logger->error($exception->getMessage());
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        } catch (Exception $exception) {
+            $this->errors = $exception->getMessage();
+            $logger->error($exception->getMessage());
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        }
+        $this->errors = 'Something went wrong during the payment process.';
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+    }
+
+    /**
+     * Create/Update order and handle notification
+     *
+     * @param SuccessResponse $response
+     * @since 1.0.0
+     */
+    private function processSuccess($response)
+    {
+        $cartId = $response->getCustomFields()->get('orderId');
+        $cart = new Cart((int)($cartId));
+        $orderId = Order::getIdByCartId((int)$cartId);
+
+        $order = new Order($orderId);
+        $order->setCurrentState($this->getTransactionOrderState($response));
+
+        $orderPayments = OrderPayment::getByOrderReference($order->reference);
+        $logger->error('notify empty success: ' .  (bool) empty($orderPayments));
+        $logger->error('notify empty success number: ' .  count($orderPayments));
+        if (!empty($orderPayments)) {
+            $orderPayments[0]->transaction_id = $response->getTransactionId();
+            $orderPayments[0]->save();
+        }
+
+        $customer = new Customer($cart->id_customer);
+        Tools::redirect('index.php?controller=order-confirmation&id_cart='
+            .$cart->id.'&id_module='
+            .$this->module->id.'&id_order='
+            .$this->module->currentOrder.'&key='
+            .$customer->secure_key);
+    }
+
+    /**
+     * Update order for failure response
+     *
+     * @param FailureResponse $response
+     * @since 1.0.0
+     */
+    private function processFailure($response)
+    {
+        $logger = new WirecardLogger();
+        $cartId = $response->getCustomFields()->get('orderId');
+        $orderId = Order::getOrderByCartId((int)$cartId);
+
+        if ($orderId) {
+            $order = new Order($orderId);
+            $order->setCurrentState('PS_OS_ERROR');
+            $orderPayments = OrderPayment::getByOrderReference($order->reference);
+            $logger->error('notify empty failure: ' .  empty($orderPayments));
+            if (!empty($orderPayments)) {
+                $orderPayments[0]->transaction_id = $response->getTransactionId();
+                $orderPayments[0]->save();
+            }
+        }
+    }
+
+    /**
+     * Get order state for specific transactiontype
+     *
+     * @param \Wirecard\PaymentSdk\Response\Response $response
+     * @return string
+     */
+    private function getTransactionOrderState($response)
+    {
+        switch ($response->getTransactionType()) {
+            case 'authorization':
+                return OrderManager::WIRECARD_OS_AUTHORIZATION;
+            case 'debit':
+            case 'capture':
+            case 'purchase':
+            default:
+                return _PS_OS_PAYMENT_;
+        }
     }
 }

@@ -27,15 +27,17 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class WirecardPaymentGateway
@@ -103,6 +105,11 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->setDefaults()) {
             return false;
         }
+
+        $orderManager = new OrderManager($this);
+        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
+        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
+
         return true;
     }
 
@@ -255,22 +262,6 @@ class WirecardPaymentGateway extends PaymentModule
 
         //Implement action validation before payment
         return count($result) ? $result : false;
-    }
-
-    /**
-     * Display payment return hook
-     *
-     * @param $params
-     * @return string
-     * @since 1.0.0
-     */
-    public function hookDisplayPaymentReturn($params)
-    {
-        if (!$this->active) {
-            return '';
-        }
-
-        return $this->display(__FILE__, 'payment_return.tpl');
     }
 
     /**

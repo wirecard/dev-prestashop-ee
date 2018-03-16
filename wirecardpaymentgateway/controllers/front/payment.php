@@ -27,9 +27,10 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 use Wirecard\PaymentSdk\Entity\Amount;
@@ -42,6 +43,8 @@ use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -67,10 +70,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
         ) {
-            Tools::redirect('index.php?controller=order&step=1');
+            $this->errors = 'An error occured during the checkout process. Please try again.';
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
         $paymentType = Tools::getValue('paymentType');
+        $this->createOrder($cart, $paymentType);
+
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
@@ -116,9 +122,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 );
             }
 
-            return $this->executeTransaction($transaction, $config, $operation, $paymentType);
+            return $this->executeTransaction($transaction, $config, $operation);
         }
-        return null;
     }
 
     /**
@@ -127,19 +132,17 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
-     * @param string $paymentType
-     * @throws Exception
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation, $paymentType)
+    public function executeTransaction($transaction, $config, $operation)
     {
-        $transactionService = new TransactionService($config);
+        $transactionService = new TransactionService($config, new WirecardLogger());
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
         } catch (Exception $exception) {
-            throw $exception;
-            //throw exceptions in prestashop
+            $this->errors = $exception->getMessage();
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
         if ($response instanceof InteractionResponse) {
@@ -156,14 +159,22 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         } elseif ($response instanceof FailureResponse) {
             $errors = '';
             foreach ($response->getStatusCollection()->getIterator() as $item) {
-                $errors .= $item->getDescription() . '<br>\n';
+                $errors .= $item->getDescription();
             }
-            return $this->module->displayError($errors);
+            $this->errors = $errors;
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
-
-        Tools::redirect('index.php?controller=order');
+        $this->errors = 'An error occured during the checkout process. Please try again.';
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 
+    /**
+     * Create post form for credit card
+     *
+     * @param Array $data
+     * @return string
+     * @since 1.0.0
+     */
     private function createPostForm($data)
     {
         $html  = '';
@@ -186,5 +197,23 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $html .= '<script>document.getElementsByTagName("form")[0].submit();</script>';
 
         return $html;
+    }
+
+    /**
+     * Create order
+     *
+     * @param Cart $cart
+     * @param string $paymentMethod
+     * @since 1.0.0
+     */
+    private function createOrder($cart, $paymentMethod)
+    {
+        $orderManager = new OrderManager($this->module);
+
+        $orderManager->createOrder(
+            $cart,
+            OrderManager::WIRECARD_OS_AWAITING,
+            $paymentMethod
+        );
     }
 }

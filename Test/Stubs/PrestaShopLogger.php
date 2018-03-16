@@ -33,10 +33,15 @@
  * @license GPLv3
  */
 
-class Smarty
+class PrestaShopLogger
 {
-    public function assign($array)
-    {
-        return implode(", ", $array);
+    public $error_code;
+    public $date_add;
+    public $date_upd;
+    public $severity;
+    public $message;
+
+    public function add(){
+
     }
 }

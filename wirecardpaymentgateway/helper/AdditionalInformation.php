@@ -27,9 +27,10 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 namespace WirecardEE\Prestashop\Helper;
@@ -133,7 +134,7 @@ class AdditionalInformation
         $transaction->setDescriptor($this->createDescriptor($id));
         $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing'));
         $transaction->setShipping($this->createAccountHolder($cart, 'shipping'));
-        $transaction->setOrderNumber($id);
+        //$transaction->setOrderNumber($id);
         $transaction->setBasket($this->createBasket($cart, $transaction, $currency));
         $transaction->setIpAddress($this->getConsumerIpAddress());
         $transaction->setConsumerId($cart->id_customer);

@@ -27,10 +27,13 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
+
+namespace WirecardEE\Prestashop\Helper;
 
 use Psr\Log\LoggerInterface;
 
@@ -176,7 +179,7 @@ class Logger implements LoggerInterface
      */
     public function log($level, $message, array $context = array())
     {
-        $log= new PrestaShopLogger();
+        $log= new \PrestaShopLogger();
         $log->error_code = null;
         $log->date_add = date('Y-m-d H:i:s');
         $log->date_upd = date('Y-m-d H:i:s');
