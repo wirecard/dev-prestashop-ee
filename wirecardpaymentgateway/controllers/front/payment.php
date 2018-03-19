@@ -236,8 +236,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     }
 
     /**
+     * Generate the mandate id for SEPA
+     *
      * @param $order_id
      * @return string
+     * @since 1.0,0
      */
     private function generateMandateId($orderId)
     {

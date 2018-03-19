@@ -39,6 +39,6 @@ class Order
 
     public function __construct($order)
     {
-        $id = 1;
+        $this->id = 1;
     }
 }
