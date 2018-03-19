@@ -56,8 +56,9 @@ class WirecardPaymentGatewaySepaModuleFrontController extends ModuleFrontControl
         $data['date']              = date('d.m.Y');
 
         $this->context->smarty->assign($data);
-        $template = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
-            DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'sepa_mandate.tpl');
+        $template = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR .
+            'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+            'sepa_mandate.tpl');
         header('Content-Type: application/json; charset=utf8');
         die(Tools::jsonEncode(array('html' => $template)));
     }

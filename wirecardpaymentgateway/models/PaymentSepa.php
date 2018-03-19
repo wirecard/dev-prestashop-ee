@@ -239,9 +239,9 @@ class PaymentSepa extends Payment
     {
         $test = \Configuration::get(
             sprintf(
-            'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-            \Tools::strtoupper($this->type),
-            \Tools::strtoupper('enable_bic')
+                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
+                \Tools::strtoupper($this->type),
+                \Tools::strtoupper('enable_bic')
             )
         );
 

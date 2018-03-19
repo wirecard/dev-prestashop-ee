@@ -49,7 +49,8 @@ $(document).ready(
                 placeOrder(e);
             }
         });
-        function placeOrder(e) {
+        function placeOrder(e)
+        {
             if (sepaCheck) {
                 return;
             } else {
@@ -69,7 +70,8 @@ $(document).ready(
             }
         }
         
-        function displayPopup(html) {
+        function displayPopup(html)
+        {
             popup.html(html);
             popup.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
             popup.find('.bank_iban').text($('#sepaIban').val());
@@ -78,17 +80,18 @@ $(document).ready(
                 height: '800',
                 width: 'auto'
             });
-            popup.dialog( 'open' );
-            $( 'body' ).css( 'overflow', 'hidden' );
+            popup.dialog('open');
+            $('body').css('overflow', 'hidden');
 
             var button = document.getElementById('sepaButton');
-            button.addEventListener( 'click', process_order, false );
+            button.addEventListener('click', process_order, false);
 
             var check_box = document.getElementById('sepaCheck');
-            check_box.addEventListener( 'change', check_change, false );
+            check_box.addEventListener('change', check_change, false);
         }
 
-        function process_order() {
+        function process_order()
+        {
             if ( document.getElementById('sepaCheck').checked ) {
                 sepaCheck = true;
                 $('#sepaFirstName').appendTo(form);
@@ -98,15 +101,16 @@ $(document).ready(
                 form.submit();
             } else {
                 popup.dialog('close');
-                $( 'body' ).css( 'overflow', 'auto' );
+                $('body').css('overflow', 'auto');
             }
         }
 
-        function check_change() {
+        function check_change()
+        {
             if ( document.getElementById('sepaCheck').checked ) {
-                $( '#sepaButton' ).text( 'Process' );
+                $('#sepaButton').text('Process');
             } else {
-                $( '#sepaButton' ).text( 'Cancel' );
+                $('#sepaButton').text('Cancel');
             }
         }
     });
