@@ -239,7 +239,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $order_id
      * @return string
      */
-    private function generateMandateId($orderId) {
-        return $this->module->getConfigValue('sepa', 'creditor_id') . '-' . $orderId . '-' . strtotime(date('Y-m-d H:i:s'));
+    private function generateMandateId($orderId)
+    {
+        return $this->module->getConfigValue('sepa', 'creditor_id') . '-' .
+            $orderId . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

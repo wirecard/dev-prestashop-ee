@@ -113,4 +113,5 @@ $(document).ready(
                 $('#sepaButton').text('Cancel');
             }
         }
-    });
+    }
+);
