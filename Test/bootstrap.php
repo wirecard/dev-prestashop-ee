@@ -56,6 +56,7 @@ require __DIR__ . '/Stubs/Cart.php';
 require __DIR__ . '/Stubs/Customer.php';
 require __DIR__ . '/Stubs/Address.php';
 require __DIR__ . '/Stubs/Country.php';
+require __DIR__ . '/Stubs/PrestaShopLogger.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';

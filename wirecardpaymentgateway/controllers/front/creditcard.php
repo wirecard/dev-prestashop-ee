@@ -27,33 +27,31 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
-namespace PrestaShop\PrestaShop\Core\Payment;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
-class PaymentOption
+/**
+ * @property WirecardPaymentGateway module
+ *
+ * @since 1.0.0
+ */
+class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
-    public function setCallToActionText($string)
+    public function initContent()
     {
-        return $this;
+        $this->ajax = true;
+        parent::initContent();
     }
 
-    public function setAction($string)
+    public function displayAjaxGetCreditCardConfig()
     {
-        return;
-    }
-
-    public function setLogo($string)
-    {
-        return;
-    }
-
-    public function setAdditionalInformation($string)
-    {
-        return;
+        $creditCard = new PaymentCreditCard();
+        $requestData = $creditCard->getRequestData($this->module);
+        header('Content-Type: application/json; charset=utf8');
+        die(Tools::jsonEncode($requestData));
     }
 }

@@ -33,6 +33,8 @@
  * @license GPLv3
  */
 
+namespace WirecardEE\Prestashop\Helper;
+
 use Psr\Log\LoggerInterface;
 
 /**
@@ -177,7 +179,7 @@ class Logger implements LoggerInterface
      */
     public function log($level, $message, array $context = array())
     {
-        $log= new PrestaShopLogger();
+        $log= new \PrestaShopLogger();
         $log->error_code = null;
         $log->date_add = date('Y-m-d H:i:s');
         $log->date_upd = date('Y-m-d H:i:s');

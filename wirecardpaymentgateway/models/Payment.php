@@ -96,9 +96,15 @@ class Payment
 
     /**
      * @var array
-     * @sine 1.0.0
+     * @since 1.0.0
      */
     protected $formFields;
+
+    /**
+     * @var string
+     * @since 1.0.0
+     */
+    protected $additionalInformationTemplate;
 
     /**
      * WirecardPayment constructor.
@@ -184,11 +190,37 @@ class Payment
     /**
      * Create Default Transaction
      *
+     * @param array
      * @return null
      * @since 1.0.0
      */
     public function createTransaction()
     {
         return null;
+    }
+
+    /**
+     * Set a template to display additional information
+     *
+     * @param $template
+     */
+    public function setAdditionalInformationTemplate($template)
+    {
+        $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
+            DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
+    }
+
+    /**
+     * Get the template back
+     *
+     * @return bool|string
+     */
+    public function getAdditionalInformationTemplate()
+    {
+        if (isset($this->additionalInformationTemplate)) {
+            return $this->additionalInformationTemplate;
+        } else {
+            return false;
+        }
     }
 }

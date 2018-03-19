@@ -33,27 +33,15 @@
  * @license GPLv3
  */
 
-namespace PrestaShop\PrestaShop\Core\Payment;
-
-class PaymentOption
+class PrestaShopLogger
 {
-    public function setCallToActionText($string)
-    {
-        return $this;
-    }
+    public $error_code;
+    public $date_add;
+    public $date_upd;
+    public $severity;
+    public $message;
 
-    public function setAction($string)
-    {
-        return;
-    }
+    public function add(){
 
-    public function setLogo($string)
-    {
-        return;
-    }
-
-    public function setAdditionalInformation($string)
-    {
-        return;
     }
 }

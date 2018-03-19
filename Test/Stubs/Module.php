@@ -41,6 +41,7 @@ class Module
     public $context;
     public $smarty;
     public $id;
+    public $currentOrder;
 
     protected $_html;
     protected $html;
@@ -73,5 +74,11 @@ class Module
         $this->identifier = 1;
         $this->_path = '/wirecardpaymentgateway';
         $this->active = true;
+    }
+
+
+    public function validateOrder()
+    {
+        return;
     }
 }

@@ -34,14 +34,17 @@
  */
 
 use Wirecard\PaymentSdk\Entity\Amount;
-use Wirecard\PaymentSdk\Transaction\Transaction;
-use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Response\InteractionResponse;
-use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\Redirect;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction;
+use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -67,10 +70,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
         ) {
-            Tools::redirect('index.php?controller=order&step=1');
+            $this->errors = 'An error occured during the checkout process. Please try again.';
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
         $paymentType = Tools::getValue('paymentType');
+        $this->createOrder($cart, $paymentType);
+
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
@@ -94,6 +100,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $customFields->add(new CustomField('orderId', $cartId));
             $transaction->setCustomFields($customFields);
 
+            if ($transaction instanceof  \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
+                $transaction->setTokenId(Tools::getValue('tokenId'));
+                $transaction->setTermUrl($this->module->createRedirectUrl($cartId, $paymentType, 'success'));
+            }
+
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
                 $transaction->setBasket($additionalInformation->createBasket($cart, $transaction, $currency->iso_code));
             }
@@ -111,9 +122,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 );
             }
 
-            return $this->executeTransaction($transaction, $config, $operation, $paymentType);
+            return $this->executeTransaction($transaction, $config, $operation);
         }
-        return null;
     }
 
     /**
@@ -122,32 +132,88 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
-     * @param string $paymentType
-     * @throws Exception
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation, $paymentType)
+    public function executeTransaction($transaction, $config, $operation)
     {
-        $transactionService = new TransactionService($config);
+        $transactionService = new TransactionService($config, new WirecardLogger());
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
         } catch (Exception $exception) {
-            throw $exception;
-            //throw exceptions in prestashop
+            $this->errors = $exception->getMessage();
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
             Tools::redirect($redirect);
+        } elseif ($response instanceof FormInteractionResponse) {
+            $data                = null;
+            $data['url']         = $response->getUrl();
+            $data['method']      = $response->getMethod();
+            $data['form_fields'] = $response->getFormFields();
+
+            echo $this->createPostForm($data);
+            die();
         } elseif ($response instanceof FailureResponse) {
             $errors = '';
             foreach ($response->getStatusCollection()->getIterator() as $item) {
-                $errors .= $item->getDescription() . '<br>\n';
+                $errors .= $item->getDescription();
             }
-            return $this->module->displayError($errors);
+            $this->errors = $errors;
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
+        $this->errors = 'An error occured during the checkout process. Please try again.';
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+    }
 
-        Tools::redirect('index.php?controller=order');
+    /**
+     * Create post form for credit card
+     *
+     * @param Array $data
+     * @return string
+     * @since 1.0.0
+     */
+    private function createPostForm($data)
+    {
+        $html  = '';
+        $html .= '<script>window.setInterval( function() {
+                    var wait = document.getElementById( "wait" );
+    				if ( wait.innerHTML.length > 3 ) 
+       					 wait.innerHTML = "";
+    				else 
+        				wait.innerHTML += ".";
+    		}, 200); 
+    		</script>
+			<div style="display: flex; justify-content: center; font-size: 20px;">' .
+            'You are being redirected. Please wait' . '
+			<span id="wait" style="font-size: 20px; width: 50px;">.</span></div>';
+        $html .= '<form id="credit_card_form" method="' . $data['method'] . '" action="' . $data['url'] . '">';
+        foreach ($data['form_fields'] as $key => $value) {
+            $html .= '<input type="hidden" name="' . $key . '" value="' . $value . '">';
+        }
+        $html .= '</form>';
+        $html .= '<script>document.getElementsByTagName("form")[0].submit();</script>';
+
+        return $html;
+    }
+
+    /**
+     * Create order
+     *
+     * @param Cart $cart
+     * @param string $paymentMethod
+     * @since 1.0.0
+     */
+    private function createOrder($cart, $paymentMethod)
+    {
+        $orderManager = new OrderManager($this->module);
+
+        $orderManager->createOrder(
+            $cart,
+            OrderManager::WIRECARD_OS_AWAITING,
+            $paymentMethod
+        );
     }
 }

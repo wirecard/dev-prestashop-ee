@@ -73,6 +73,6 @@ class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
         $paymentController->setCartAddress('delivery');
         $actual = $paymentController->postProcess();
 
-        $this->assertTrue(is_string($actual));
+        $this->assertTrue(is_string($paymentController->errors));
     }
 }

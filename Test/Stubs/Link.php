@@ -44,4 +44,9 @@ class Link
     {
         return 'http://test.com';
     }
+
+    public function getPageLink($link)
+    {
+        return $link;
+    }
 }

@@ -37,6 +37,7 @@ require dirname(__FILE__) . '/../../vendor/autoload.php';
 
 use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
+use WirecardEE\Prestashop\Helper\Logger;
 
 /**
  * Class WirecardPaymentGatewayAjaxModuleFrontController
@@ -57,16 +58,16 @@ class WirecardPaymentGatewayAjaxModuleFrontController extends ModuleFrontControl
                 $method = Tools::getValue('method');
                 $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
                 $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
-                $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_password'));
-
+                $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
+                
                 $config = new Config($baseUrl, $httpUser, $httpPass);
-                $transactionService = new TransactionService($config);
+                $transactionService = new TransactionService($config, new Logger());
 
                 $status = 'error';
                 $message = $this->l('Please check your credentials.');
                 if ($transactionService->checkCredentials()) {
                     $status = 'ok';
-                    $message = $this->l('The merchant configuration was successfuly tested.');
+                    $message = $this->l('The merchant configuration was successfully tested.');
                 }
 
                 die(Tools::jsonEncode(

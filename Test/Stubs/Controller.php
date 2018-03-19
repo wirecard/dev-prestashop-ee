@@ -46,4 +46,9 @@ class Controller
         $this->context = Context::getContext();
         $this->context->controller = $this;
     }
+
+    public function redirectWithNotifications($redirect)
+    {
+        Tools::redirect($redirect);
+    }
 }

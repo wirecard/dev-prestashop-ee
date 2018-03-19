@@ -35,6 +35,8 @@
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class WirecardPaymentGateway
@@ -61,17 +63,18 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function __construct()
     {
-        require_once(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-            'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+        require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
+            DIRECTORY_SEPARATOR.'autoload.php');
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
         $this->version = '1.0.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.0');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax');
+        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'creditcard');
+
         $this->is_eu_compatible = 1;
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
@@ -97,9 +100,15 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('paymentOptions')
             || !$this->registerHook('paymentReturn')
             || !$this->registerHook('displayPaymentEU')
+            || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->setDefaults()) {
             return false;
         }
+
+        $orderManager = new OrderManager($this);
+        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
+        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
+
         return true;
     }
 
@@ -233,30 +242,22 @@ class WirecardPaymentGateway extends PaymentModule
             $payment = new PaymentOption();
             $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
+            if ($paymentMethod->getAdditionalInformationTemplate()) {
+                $payment->setAdditionalInformation($this->fetch(
+                    'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
+                ));
+            }
+
             $payment->setLogo(
-                Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/paypal.png')
+                Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
+                    . $paymentMethod->getType() . '.png')
             );
+
             $result[] = $payment;
         }
         //Implement action validation before payment
 
         return count($result) ? $result : false;
-    }
-
-    /**
-     * Display payment return hook
-     *
-     * @param $params
-     * @return string
-     * @since 1.0.0
-     */
-    public function hookDisplayPaymentReturn($params)
-    {
-        if (!$this->active) {
-            return '';
-        }
-
-        return $this->display(__FILE__, 'payment_return.tpl');
     }
 
     /**
@@ -327,7 +328,8 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'paypal' => new PaymentPaypal()
+            'paypal' => new PaymentPaypal(),
+            'creditcard' => new PaymentCreditCard()
         );
 
         return $payments;
@@ -531,6 +533,27 @@ class WirecardPaymentGateway extends PaymentModule
                 }
             }
         }
+
+        return true;
+    }
+
+    public function hookActionFrontControllerSetMedia()
+    {
+        $link = new Link;
+        $parameters = array("action" => "getcreditcardconfig");
+        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
+        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
+
+        Media::addJsDef(array('url' => $ajaxLink));
+        $this->context->controller->registerJavascript(
+            'remote-bootstrap',
+            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
+            array('server' => 'remote', 'position' => 'head', 'priority' => 20)
+        );
+        $this->context->controller->addJS(
+            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
+            . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard.js'
+        );
 
         return true;
     }
