@@ -37,6 +37,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Entity\IdealBic;
 
 /**
  * Class PaymentiDEAL
@@ -57,6 +58,8 @@ class PaymentIdeal extends Payment
         $this->type = 'ideal';
         $this->name = 'Wirecard Payment Processing Gateway iDEAL';
         $this->formFields = $this->createFormFields();
+        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
+        $this->setLoadJs(true);
     }
 
     /**
@@ -193,5 +196,27 @@ class PaymentIdeal extends Payment
         $transaction = new IdealTransaction();
 
         return $transaction;
+    }
+
+    /**
+     * Returns all supported banks from iDEAL
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    private function setTemplateData()
+    {
+        return array('banks' => array(
+            array('key' => IdealBic::ABNANL2A, 'label' => 'ABN Amro Bank'),
+            array('key' => IdealBic::ASNBNL21, 'label' => 'ASN Bank'),
+            array('key' => IdealBic::BUNQNL2A, 'label' => 'bunq'),
+            array('key' => IdealBic::INGBNL2A, 'label' => 'ING'),
+            array('key' => IdealBic::KNABNL2H, 'label' => 'Knab'),
+            array('key' => IdealBic::RABONL2U, 'label' => 'Rabobank'),
+            array('key' => IdealBic::RGGINL21, 'label' => 'Regio Bank'),
+            array('key' => IdealBic::SNSBNL2A, 'label' => 'SNS Bank'),
+            array('key' => IdealBic::TRIONL2U, 'label' => 'Triodos Bank'),
+            array('key' => IdealBic::FVLBNL22, 'label' => 'Van Lanschot Bankiers')
+        ));
     }
 }

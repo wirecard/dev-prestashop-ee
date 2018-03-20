@@ -121,6 +121,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $transaction->setMandate($mandate);
             }
 
+            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\IdealTransaction) {
+                $transaction->setBic(Tools::getValue('idealBankBic'));
+            }
+
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
                 $transaction->setBasket($additionalInformation->createBasket($cart, $transaction, $currency->iso_code));
             }
