@@ -81,7 +81,11 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig('ideal','merchant_account_id', 'secret');
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
+            'ideal',
+            'merchant_account_id',
+            'secret'
+        );
         $expected->add($expectedPaymentConfig);
 
         $this->assertEquals($expected, $actual);
