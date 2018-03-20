@@ -36,6 +36,7 @@
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
@@ -329,7 +330,8 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $payments = array(
             'paypal' => new PaymentPaypal(),
-            'creditcard' => new PaymentCreditCard()
+            'creditcard' => new PaymentCreditCard(),
+            'ideal' => new PaymentIdeal()
         );
 
         return $payments;
