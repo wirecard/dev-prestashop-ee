@@ -35,8 +35,8 @@
 
 class Smarty
 {
-    public function assign($array)
+    public function assign($string)
     {
-        return implode(", ", $array);
+        return $string;
     }
 }
