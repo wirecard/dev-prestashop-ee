@@ -62,7 +62,7 @@ $(document).ready(
         function getRequestData()
         {
             $.ajax({
-                url: url,
+                url: ajaxcreditcardurl + '?action=getcreditcardconfig',
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {

@@ -34,10 +34,9 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Config\Config;
+use Wirecard\PaymentSdk\Transaction\SepaTransaction;
+use Wirecard\PaymentSdk\Config\SepaConfig;
 
 /**
  * Class PaymentCreditCard
@@ -46,24 +45,24 @@ use Wirecard\PaymentSdk\Entity\Amount;
  *
  * @since 1.0.0
  */
-class PaymentCreditCard extends Payment
+class PaymentSepa extends Payment
 {
     /**
-     * PaymentCreditCard constructor.
+     * PaymentSEPA constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'creditcard';
-        $this->name = 'Wirecard Payment Processing Gateway Credit Card';
+        $this->type = 'sepa';
+        $this->name = 'Wirecard Payment Processing Gateway SEPA';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type);
+        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
     }
 
     /**
-     * Create form fields for creditcard
+     * Create form fields for SEPA
      *
      * @return array|null
      * @since 1.0.0
@@ -71,62 +70,34 @@ class PaymentCreditCard extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'CreditCard',
+            'tab' => 'SEPA',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable/Disable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway Credit Card',
+                    'doc' => 'Enable Wirecard Payment Processing Gateway SEPA',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway Credit Card',
+                    'default' => 'Wirecard Payment Processing Gateway SEPA',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
+                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => 'Secret Key',
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_merchant_account_id',
-                    'label'    => '3-D Secure Merchant Account ID',
-                    'type'     => 'text',
-                    'default'  => '508b8896-b37d-4614-845c-26bf8bf2c948',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_secret',
-                    'label'       => '3-D Secure Secret Key',
-                    'type'        => 'text',
-                    'default'     => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'ssl_max_limit',
-                    'label'       => 'Non 3-D Secure Max Limit',
-                    'type'        => 'text',
-                    'default'     => '300.0',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_min_limit',
-                    'label'       => '3-D Secure Min Limit',
-                    'type'        => 'text',
-                    'default'     => '100.0',
+                    'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
                     'required' => true,
                 ),
                 array(
@@ -152,9 +123,39 @@ class PaymentCreditCard extends Payment
                     'required' => true,
                 ),
                 array(
+                    'name' => 'creditor_id',
+                    'label'   => 'Creditor ID',
+                    'type'    => 'text',
+                    'default' => 'DE98ZZZ09999999999',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'creditor_name',
+                    'label'   => 'Creditor Name',
+                    'type'    => 'text',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
+                    'name' => 'creditor_city',
+                    'label'   => 'Creditor City',
+                    'type'    => 'text',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
+                    'name' => 'sepa_mandate_textextra',
+                    'label'   => 'Additional text',
+                    'type'    => 'textarea',
+                    'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first 
+                    paragraph.',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'pay',
+                    'default' => 'authorization',
                     'label'   => 'Payment Action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
@@ -174,17 +175,23 @@ class PaymentCreditCard extends Payment
                     'default' => 1,
                 ),
                 array(
+                    'name' => 'enable_bic',
+                    'label'   => 'Enable/Disable BIC',
+                    'type'    => 'onoff',
+                    'default' => 0,
+                ),
+                array(
                     'name' => 'test_credentials',
                     'label' => 'Test Credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test credit card configuration',
-                    'id' => 'creditcardConfig',
-                    'method' => 'creditcard',
+                    'buttonText' => 'Test SEPA configuration',
+                    'id' => 'SepaConfig',
+                    'method' => 'SEPA',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_PASS'
                     )
                 )
             )
@@ -192,7 +199,7 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Create config for credit card transactions
+     * Create config for SEPA transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -208,63 +215,36 @@ class PaymentCreditCard extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
-
-        if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
-            $paymentConfig->setThreeDCredentials(
-                $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id'),
-                $paymentModule->getConfigValue($this->type, 'three_d_secret')
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
-            $paymentConfig->addSslMaxLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    'EUR'
-                )
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
-            $paymentConfig->addThreeDMinLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    'EUR'
-                )
-            );
-        }
-
+        $paymentConfig = new SepaConfig($merchantAccountId, $secret);
+        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create request data for credit card ui
+     * Create SepaTransaction
      *
-     * @param $module
-     * @return mixed
-     */
-    public function getRequestData($module)
-    {
-        $config = $this->createPaymentConfig($module);
-        $transactionService = new TransactionService($config);
-        return $transactionService->getDataForCreditCardUi();
-    }
-
-    /**
-     * Create CreditCardTransaction
-     *
-     * @return CreditCardTransaction
+     * @return SepaTransaction
      * @since 1.0.0
      */
     public function createTransaction()
     {
-        $transaction = new CreditCardTransaction();
+        $transaction = new SepaTransaction();
 
         return $transaction;
+    }
+
+    private function setTemplateData()
+    {
+        $test = \Configuration::get(
+            sprintf(
+                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
+                \Tools::strtoupper($this->type),
+                \Tools::strtoupper('enable_bic')
+            )
+        );
+
+        return array('bicEnabled' => (bool) $test);
     }
 }

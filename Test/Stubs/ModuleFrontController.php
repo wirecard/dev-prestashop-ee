@@ -87,4 +87,14 @@ class ModuleFrontController extends Controller
     {
         return;
     }
+
+    public function addJquery()
+    {
+        return;
+    }
+
+    public function addJqueryUI($string)
+    {
+        return;
+    }
 }

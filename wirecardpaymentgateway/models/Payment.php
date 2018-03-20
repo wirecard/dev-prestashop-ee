@@ -107,6 +107,18 @@ class Payment
     protected $additionalInformationTemplate;
 
     /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $templateData;
+
+    /**
+     * @var bool
+     * @since 1.0.0
+     */
+    protected $loadJs;
+
+    /**
      * WirecardPayment constructor.
      *
      * @since 1.0.0
@@ -204,10 +216,14 @@ class Payment
      *
      * @param $template
      */
-    public function setAdditionalInformationTemplate($template)
+    public function setAdditionalInformationTemplate($template, $data = null)
     {
         $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
             DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
+
+        if ($data != null) {
+            $this->templateData = $data;
+        }
     }
 
     /**
@@ -222,5 +238,29 @@ class Payment
         } else {
             return false;
         }
+    }
+
+    /**
+     * Get the template data back
+     *
+     * @return bool|array
+     */
+    public function getTemplateData()
+    {
+        if (isset($this->templateData)) {
+            return $this->templateData;
+        } else {
+            return false;
+        }
+    }
+
+    public function setLoadJs($load)
+    {
+        $this->loadJs = $load;
+    }
+
+    public function getLoadJs()
+    {
+        return isset($this->loadJs) ? $this->loadJs : false;
     }
 }
