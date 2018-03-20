@@ -37,7 +37,6 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
-use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -98,9 +97,15 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     {
         $cartId = $response->getCustomFields()->get('orderId');
         $cart = new Cart((int)($cartId));
-
+        $orderId = Order::getIdByCartId((int)$cartId);
         $customer = new Customer($cart->id_customer);
+        $order = new Order($orderId);
 
+        $orderPayments = OrderPayment::getByOrderReference($order->reference);
+        if (!empty($orderPayments)) {
+            $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
+            $orderPayments[count($orderPayments) - 1]->save();
+        }
         Tools::redirect('index.php?controller=order-confirmation&id_cart='
             .$cart->id.'&id_module='
             .$this->module->id.'&id_order='

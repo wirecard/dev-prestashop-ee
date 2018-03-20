@@ -57,7 +57,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         try {
             $transactionService = new TransactionService($config, $logger);
             $result = $transactionService->handleNotification($notification);
-            $logger->error('notify result: ' . print_r($result, true));
             if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
                 $this->processSuccess($result);
             } elseif ($result instanceof FailureResponse) {
@@ -101,11 +100,10 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $order->setCurrentState($this->getTransactionOrderState($response));
 
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
-        $logger->error('notify empty success: ' .  (bool) empty($orderPayments));
-        $logger->error('notify empty success number: ' .  count($orderPayments));
         if (!empty($orderPayments)) {
-            $orderPayments[0]->transaction_id = $response->getTransactionId();
-            $orderPayments[0]->save();
+            $orderPayments[0]->delete();
+            $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
+            $orderPayments[count($orderPayments) - 1]->save();
         }
 
         $customer = new Customer($cart->id_customer);

@@ -39,6 +39,7 @@ use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class WirecardPaymentGateway
@@ -103,6 +104,7 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('paymentReturn')
             || !$this->registerHook('displayPaymentEU')
             || !$this->registerHook('actionFrontControllerSetMedia')
+            || !$this->registerHook('actionPaymentConfirmation')
             || !$this->setDefaults()) {
             return false;
         }
@@ -613,5 +615,17 @@ class WirecardPaymentGateway extends PaymentModule
         );
 
         return $returnUrl;
+    }
+
+    /**
+     * Set the name to the payment type selected
+     *
+     * @param $params
+     * @since 1.0.0
+     */
+    public function hookActionPaymentConfirmation($params)
+    {
+        $order = new Order($params['id_order']);
+        $this->displayName = $order->payment;
     }
 }
