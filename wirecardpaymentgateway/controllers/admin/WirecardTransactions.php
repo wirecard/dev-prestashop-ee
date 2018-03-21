@@ -33,6 +33,13 @@
  * @license GPLv3
  */
 
+use WirecardEE\Prestashop\Models\Transaction;
+use WirecardEE\Prestashop\Models\Payment;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use Wirecard\PaymentSdk\TransactionService;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+
 /**
  * Class WirecardTransactions
  *
@@ -41,6 +48,8 @@
  */
 class WirecardTransactionsController extends ModuleAdminController
 {
+    private $logger;
+
     public function __construct()
     {
         $this->bootstrap = true;
@@ -53,6 +62,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->deleted = false;
         $this->context = Context::getContext();
         $this->identifier = 'tx_id';
+        //$this->logger = new WirecardLogger();
 
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
 
@@ -149,7 +159,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'canCancel' => $payment->can_cancel($transaction->transaction_type),
             'canCapture' => $payment->can_capture($transaction->transaction_type),
             'canRefund' => $payment->can_refund($transaction->transaction_type),
-            'cancelLink' => $this->context->link->getAdminLink('WirecardTransactions', true)
+            'cancelLink' => $this->context->link->getAdminLink('WirecardTransactions', true, array(), array('action' => 'cancel', 'tx' => $transaction->tx_id))
         );
 
         return parent::renderView();
@@ -157,6 +167,55 @@ class WirecardTransactionsController extends ModuleAdminController
 
     public function postProcess()
     {
+        if (\Tools::getValue('action') && \Tools::getValue('tx')) {
+            $transaction = new Transaction(\Tools::getValue('tx'));
+            if (!Validate::isLoadedObject($transaction)) {
+                $this->errors[] = Tools::displayError('The transcation cannot be found within your database.');
+            }
+
+            switch (\Tools::getValue('action')) {
+                case 'cancel':
+                    $this->cancelTransaction($transaction);
+                    break;
+            }
+        }
+
         print_r('Not implemented yet');
+    }
+
+    /**
+     * @param $transactionData
+     */
+    public function cancelTransaction($transactionData)
+    {
+        $paymentType = $transactionData->paymentmethod;
+        $payment = $this->module->getPaymentFromType($paymentType);
+        if ($payment) {
+           $config = $payment->createPaymentConfig($this->module);
+
+           $transaction = $payment->createTransaction();
+           $transaction->setParentTransactionId($transactionData->transaction_id);
+           $transaction->setAmount(new \Wirecard\PaymentSdk\Entity\Amount($transactionData->amount, 'EUR'));
+           $transactionService = new TransactionService($config, new WirecardLogger());
+           try {
+               /** @var $response \Wirecard\PaymentSdk\Response\Response */
+               $response = $transactionService->process($transaction, 'cancel');
+           } catch (\Exception $exception) {
+                //$this->logger->error(__METHOD__ . ':' . $exception->getMessage());
+               var_dump($exception->getMessage());die();
+           }
+
+            if ( $response instanceof SuccessResponse ) {
+                /*$order = wc_get_order( $transaction_data->order_id );
+                $order->set_transaction_id( $response->getTransactionId() );
+                $redirect_url = '/admin.php?page=wirecardpayment&id=' . $response->getTransactionId();
+                wp_redirect( admin_url( $redirect_url ), 301 );*/
+                var_dump($response);
+                die();
+            }
+            if ( $response instanceof FailureResponse ) {
+                echo __( 'An error occured. The transaction could not be cancelled!', 'woocommercer-gateway-wirecard' );
+            }
+        }
     }
 }

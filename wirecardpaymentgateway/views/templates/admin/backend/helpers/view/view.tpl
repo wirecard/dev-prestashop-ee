@@ -35,12 +35,9 @@
 {extends file="helpers/view/view.tpl"}
 
 {block name="override_tpl"}
-    <div class="col-lg-8">
-        <div class="panel">
-
+    <div class="col-lg-12">
+        <div class="panel" style="width: 100%">
             <h3><i class="icon-group"></i> {l s='Transaction information' mod='wirecardpaymentgateway'}</h3>
-
-
             <h2>{l s='Transaction' mod='wirecardpaymentgateway'} {$transaction_id|escape:'htmlall':'UTF-8'}</h2>
             <br>
             <h3>
