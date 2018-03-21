@@ -125,6 +125,19 @@ class Payment
     protected $capture;
 
     /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $templateData;
+
+    /**
+     * @var bool
+     * @since 1.0.0
+     */
+    protected $loadJs;
+
+
+    /**
      * WirecardPayment constructor.
      *
      * @since 1.0.0
@@ -135,9 +148,9 @@ class Payment
         $this->transactionTypes = array('authorization', 'capture');
 
         //Default back-end operation possibilities
-        $this->cancel = array( 'authorization' );
-        $this->refund = array( 'capture-authorization' );
-        $this->capture = array( 'authorization' );
+        $this->cancel = array('authorization');
+        $this->refund = array('capture-authorization');
+        $this->capture = array('authorization');
     }
 
     /**
@@ -227,10 +240,14 @@ class Payment
      *
      * @param $template
      */
-    public function setAdditionalInformationTemplate($template)
+    public function setAdditionalInformationTemplate($template, $data = null)
     {
         $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
             DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
+
+        if ($data != null) {
+            $this->templateData = $data;
+        }
     }
 
     /**
@@ -293,5 +310,29 @@ class Payment
         }
 
         return false;
+    }
+
+    /**
+     * Get the template data back
+     *
+     * @return bool|array
+     */
+    public function getTemplateData()
+    {
+        if (isset($this->templateData)) {
+            return $this->templateData;
+        } else {
+            return false;
+        }
+    }
+
+    public function setLoadJs($load)
+    {
+        $this->loadJs = $load;
+    }
+
+    public function getLoadJs()
+    {
+        return isset($this->loadJs) ? $this->loadJs : false;
     }
 }

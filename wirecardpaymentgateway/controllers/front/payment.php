@@ -43,6 +43,7 @@ use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -74,6 +75,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         }
 
         $paymentType = Tools::getValue('paymentType');
+        $orderId = $this->createOrder($cart, $paymentType);
+
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
@@ -100,6 +103,26 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             if ($transaction instanceof  \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
                 $transaction->setTokenId(Tools::getValue('tokenId'));
                 $transaction->setTermUrl($this->module->createRedirectUrl($cartId, $paymentType, 'success'));
+            }
+
+            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\SepaTransaction) {
+                $account_holder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
+                $account_holder->setFirstName(Tools::getValue('sepaFirstName'));
+                $account_holder->setLastName(Tools::getValue('sepaLastName'));
+
+                $transaction->setAccountHolder($account_holder);
+                $transaction->setIban(Tools::getValue('sepaIban'));
+
+                if ($this->module->getConfigValue('sepa', 'enable_bic')) {
+                    $transaction->setBic(Tools::getValue('sepaBic'));
+                }
+
+                $mandate = new \Wirecard\PaymentSdk\Entity\Mandate($this->generateMandateId($orderId));
+                $transaction->setMandate($mandate);
+            }
+
+            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\IdealTransaction) {
+                $transaction->setBic(Tools::getValue('idealBankBic'));
             }
 
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
@@ -129,7 +152,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
-     * @throws Exception
      * @since 1.0.0
      */
     public function executeTransaction($transaction, $config, $operation)
@@ -166,6 +188,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 
+    /**
+     * Create post form for credit card
+     *
+     * @param Array $data
+     * @return string
+     * @since 1.0.0
+     */
     private function createPostForm($data)
     {
         $html  = '';
@@ -188,5 +217,38 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $html .= '<script>document.getElementsByTagName("form")[0].submit();</script>';
 
         return $html;
+    }
+
+    /**
+     * Create order
+     *
+     * @param Cart $cart
+     * @param string $paymentMethod
+     * @since 1.0.0
+     */
+    private function createOrder($cart, $paymentMethod)
+    {
+        $orderManager = new OrderManager($this->module);
+
+        $order = new Order($orderManager->createOrder(
+            $cart,
+            OrderManager::WIRECARD_OS_AWAITING,
+            $paymentMethod
+        ));
+
+        return $order->id;
+    }
+
+    /**
+     * Generate the mandate id for SEPA
+     *
+     * @param $order_id
+     * @return string
+     * @since 1.0,0
+     */
+    private function generateMandateId($orderId)
+    {
+        return $this->module->getConfigValue('sepa', 'creditor_id') . '-' .
+            $orderId . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

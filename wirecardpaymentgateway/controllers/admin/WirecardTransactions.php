@@ -62,7 +62,6 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->deleted = false;
         $this->context = Context::getContext();
         $this->identifier = 'tx_id';
-        //$this->logger = new WirecardLogger();
 
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
 
@@ -144,7 +143,7 @@ class WirecardTransactionsController extends ModuleAdminController
         /** @var \WirecardEE\Prestashop\Models\Payment $payment */
         $payment = $this->module->getPaymentFromType($transaction->paymentmethod);
         $response_data = json_decode($transaction->response);
-
+        $currency = new Currency($transaction->currency);
         // Smarty assign
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
@@ -154,7 +153,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'transaction_type' => $transaction->transaction_type,
             'status' => $transaction->transaction_state,
             'amount' => $transaction->amount,
-            'currency' => $transaction->currency,
+            'currency' => $currency->iso_code,
             'response_data' => $response_data,
             'canCancel' => $payment->can_cancel($transaction->transaction_type),
             'canCapture' => $payment->can_capture($transaction->transaction_type),
@@ -191,30 +190,43 @@ class WirecardTransactionsController extends ModuleAdminController
         $paymentType = $transactionData->paymentmethod;
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
-           $config = $payment->createPaymentConfig($this->module);
+            $config = $payment->createPaymentConfig($this->module);
+            $currency = new Currency($transactionData->currency);
 
-           $transaction = $payment->createTransaction();
-           $transaction->setParentTransactionId($transactionData->transaction_id);
-           $transaction->setAmount(new \Wirecard\PaymentSdk\Entity\Amount($transactionData->amount, 'EUR'));
-           $transactionService = new TransactionService($config, new WirecardLogger());
-           try {
-               /** @var $response \Wirecard\PaymentSdk\Response\Response */
-               $response = $transactionService->process($transaction, 'cancel');
-           } catch (\Exception $exception) {
-                //$this->logger->error(__METHOD__ . ':' . $exception->getMessage());
-               var_dump($exception->getMessage());die();
-           }
+            $transaction = $payment->createTransaction();
+            $transaction->setParentTransactionId($transactionData->transaction_id);
+            $transaction->setAmount(new \Wirecard\PaymentSdk\Entity\Amount($transactionData->amount, $currency->iso_code));
+            $transactionService = new TransactionService($config, new WirecardLogger());
+            try {
+                /** @var $response \Wirecard\PaymentSdk\Response\Response */
+                $response = $transactionService->process($transaction, 'cancel');
+            } catch (\Exception $exception) {
+                $logger = new WirecardLogger();
+                $logger->error(__METHOD__ . ':' . $exception->getMessage());
+            }
 
             if ( $response instanceof SuccessResponse ) {
-                /*$order = wc_get_order( $transaction_data->order_id );
-                $order->set_transaction_id( $response->getTransactionId() );
-                $redirect_url = '/admin.php?page=wirecardpayment&id=' . $response->getTransactionId();
-                wp_redirect( admin_url( $redirect_url ), 301 );*/
+                $order = new Order($transactionData->order_id);
+                $order->setCurrentState((int) _PS_OS_CANCELED_);
+
+                $transaction = Transaction::create(
+                    $transactionData->order_id,
+                    $transactionData->cart_id,
+                    $transactionData->amount,
+                    $currency->iso_code,
+                    $response
+                );
+                if (! $transaction) {
+                    $logger = new WirecardLogger();
+                    $logger->error(__METHOD__ . 'Transaction could not be saved in transaction table');
+                }
+                //REDIRECT TO TRANSACTION PAGE
                 var_dump($response);
                 die();
             }
             if ( $response instanceof FailureResponse ) {
-                echo __( 'An error occured. The transaction could not be cancelled!', 'woocommercer-gateway-wirecard' );
+                $logger = new WirecardLogger();
+                $logger->error(__METHOD__ . 'An error occured. The transaction could not be cancelled!');
             }
         }
     }

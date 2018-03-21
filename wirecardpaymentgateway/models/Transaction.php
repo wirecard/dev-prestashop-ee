@@ -112,11 +112,11 @@ class Transaction extends \ObjectModel
     {
         $parentTransactionId = '';
         $transactionState = 'success';
-        if (self::get($response->getParentTransactionId())) {
+        /*if (self::get($response->getParentTransactionId())) {
             $parentTransaction = self::get($parentTransactionId);
             $parentTransactionId = $parentTransaction->transaction_id;
             //TODO: update status for parenttransaction
-        }
+        }*/
 
         $db = \Db::getInstance();
 

@@ -58,7 +58,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         try {
             $transactionService = new TransactionService($config, $logger);
             $result = $transactionService->handleNotification($notification);
-            if ($result instanceof SuccessResponse) {
+            if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
                 $this->processSuccess($result);
             } elseif ($result instanceof FailureResponse) {
                 $errors = "";
@@ -95,20 +95,9 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
     {
         $cartId = $response->getCustomFields()->get('orderId');
         $cart = new Cart((int)($cartId));
-        $orderId = Order::getOrderByCartId((int)$cartId);
-
-        $orderManager = new OrderManager($this->module);
-        if (! $orderId) {
-            $order = new Order($orderManager->createOrder(
-                $cart,
-                $this->getTransactionOrderState($response),
-                $response->getPaymentMethod()
-            ));
-        } else {
-            //If updates needed
-            $order = new Order($orderId);
-            $order->setCurrentState($this->getTransactionOrderState($response));
-        }
+        $orderId = Order::getIdByCartId((int)$cartId);
+        $order = new Order($orderId);
+        $order->setCurrentState($this->getTransactionOrderState($response));
         $transaction = Transaction::create(
             $orderId,
             $cartId,
@@ -116,18 +105,21 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             $cart->id_currency,
             $response
         );
+
         if (! $transaction) {
             $logger = new WirecardLogger();
-            $logger->error(__METHOD__ . 'Transaction could not be saved in transaction table');
+            $logger->error('Transaction could not be saved in transaction table');
         }
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {
-            $orderPayments[0]->transaction_id = $response->getTransactionId();
-            $orderPayments[0]->save();
+            if (count($orderPayments) > 1) {
+                $orderPayments[0]->delete();
+                $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
+                $orderPayments[count($orderPayments) - 1]->save();
+            }
         }
 
         $customer = new Customer($cart->id_customer);
-
         Tools::redirect('index.php?controller=order-confirmation&id_cart='
             .$cart->id.'&id_module='
             .$this->module->id.'&id_order='
@@ -161,18 +153,18 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      * Get order state for specific transactiontype
      *
      * @param \Wirecard\PaymentSdk\Response\Response $response
-     * @return string
+     * @return integer
      */
     private function getTransactionOrderState($response)
     {
         switch ($response->getTransactionType()) {
             case 'authorization':
-                return OrderManager::WIRECARD_OS_AUTHORIZATION;
+                return Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
             case 'debit':
             case 'capture':
             case 'purchase':
             default:
-                return 'PS_OS_PAYMENT';
+                return _PS_OS_PAYMENT_;
         }
     }
 }

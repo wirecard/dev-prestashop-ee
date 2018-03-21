@@ -33,10 +33,12 @@
  * @license GPLv3
  */
 
-class Smarty
+class Order
 {
-    public function assign($string)
+    public $id;
+
+    public function __construct($order)
     {
-        return $string;
+        $this->id = 1;
     }
 }

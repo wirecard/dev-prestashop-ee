@@ -1,4 +1,3 @@
-<?php
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -27,16 +26,17 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
  */
 
-class Smarty
-{
-    public function assign($string)
-    {
-        return $string;
+var form = null;
+
+$(document).ready(
+    function () {
+        $(document).on('submit','#payment-form', function (e) {
+            form = $(this);
+            if (form.attr('action').search('ideal') >= 0) {
+                $('#idealBankBic').appendTo(form);
+            }
+        });
     }
-}
+);

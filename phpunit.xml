@@ -19,7 +19,11 @@
                 <file>wirecardpaymentgateway/controllers/index.php</file>
                 <file>wirecardpaymentgateway/controllers/front/index.php</file>
                 <file>wirecardpaymentgateway/helper/index.php</file>
+                <file>wirecardpaymentgateway/models/index.php</file>
                 <file>wirecardpaymentgateway/views/index.php</file>
+                <file>wirecardpaymentgateway/views/img/index.php</file>
+                <file>wirecardpaymentgateway/views/img/paymenttypes/index.php</file>
+                <file>wirecardpaymentgateway/views/js/index.php</file>
                 <file>wirecardpaymentgateway/views/templates/index.php</file>
                 <file>wirecardpaymentgateway/views/templates/hook/index.php</file>
                 <file>wirecardpaymentgateway/views/templates/front/index.php</file>

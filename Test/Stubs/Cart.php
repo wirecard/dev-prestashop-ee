@@ -43,6 +43,7 @@ class Cart
     public $id_currency;
     public $id_address_invoice;
     public $id_address_delivery;
+    public $secure_key;
 
     public function getProducts()
     {

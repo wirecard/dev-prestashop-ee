@@ -27,47 +27,43 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Transaction\IdealTransaction;
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Entity\IdealBic;
 
 /**
- * Class PaymentCreditCard
+ * Class PaymentiDEAL
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentCreditCard extends Payment
+class PaymentIdeal extends Payment
 {
     /**
-     * PaymentCreditCard constructor.
+     * PaymentiDEAL constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'creditcard';
-        $this->name = 'Wirecard Payment Processing Gateway Credit Card';
+        $this->type = 'ideal';
+        $this->name = 'Wirecard Payment Processing Gateway iDEAL';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type);
+        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
-
-        $this->cancel  = array('authorization');
-        $this->capture = array('authorization');
-        $this->refund  = array('debit', 'capture-authorization');
     }
 
     /**
-     * Create form fields for creditcard
+     * Create form fields for iDEAL
      *
      * @return array|null
      * @since 1.0.0
@@ -75,27 +71,27 @@ class PaymentCreditCard extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'CreditCard',
+            'tab' => 'ideal',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable/Disable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway Credit Card',
+                    'doc' => 'Enable Wirecard Payment Processing Gateway iDEAL',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway Credit Card',
+                    'default' => 'Wirecard Payment Processing Gateway iDEAL',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
+                    'default' => 'b4ca14c0-bb9a-434d-8ce3-65fbff2c2267',
                     'required' => true,
                 ),
                 array(
@@ -103,34 +99,6 @@ class PaymentCreditCard extends Payment
                     'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_merchant_account_id',
-                    'label'    => '3-D Secure Merchant Account ID',
-                    'type'     => 'text',
-                    'default'  => '508b8896-b37d-4614-845c-26bf8bf2c948',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_secret',
-                    'label'       => '3-D Secure Secret Key',
-                    'type'        => 'text',
-                    'default'     => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'ssl_max_limit',
-                    'label'       => 'Non 3-D Secure Max Limit',
-                    'type'        => 'text',
-                    'default'     => '300.0',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_min_limit',
-                    'label'       => '3-D Secure Min Limit',
-                    'type'        => 'text',
-                    'default'     => '100.0',
                     'required' => true,
                 ),
                 array(
@@ -161,7 +129,6 @@ class PaymentCreditCard extends Payment
                     'default' => 'pay',
                     'label'   => 'Payment Action',
                     'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
                     ),
                 ),
@@ -182,13 +149,13 @@ class PaymentCreditCard extends Payment
                     'label' => 'Test Credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test credit card configuration',
-                    'id' => 'creditcardConfig',
-                    'method' => 'creditcard',
+                    'buttonText' => 'Test iDEAL configuration',
+                    'id' => 'idealConfig',
+                    'method' => 'iDEAL',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_HTTP_PASS'
                     )
                 )
             )
@@ -196,7 +163,7 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Create config for credit card transactions
+     * Create config for iDEAL transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -212,63 +179,44 @@ class PaymentCreditCard extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
-
-        if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
-            $paymentConfig->setThreeDCredentials(
-                $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id'),
-                $paymentModule->getConfigValue($this->type, 'three_d_secret')
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
-            $paymentConfig->addSslMaxLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    'EUR'
-                )
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
-            $paymentConfig->addThreeDMinLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    'EUR'
-                )
-            );
-        }
-
+        $paymentConfig = new PaymentMethodConfig(IdealTransaction::NAME, $merchantAccountId, $secret);
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create request data for credit card ui
+     * Create iDEALTransaction
      *
-     * @param $module
-     * @return mixed
-     */
-    public function getRequestData($module)
-    {
-        $config = $this->createPaymentConfig($module);
-        $transactionService = new TransactionService($config);
-        return $transactionService->getDataForCreditCardUi();
-    }
-
-    /**
-     * Create CreditCardTransaction
-     *
-     * @return CreditCardTransaction
+     * @return iDEALTransaction
      * @since 1.0.0
      */
     public function createTransaction()
     {
-        $transaction = new CreditCardTransaction();
+        $transaction = new IdealTransaction();
 
         return $transaction;
+    }
+
+    /**
+     * Returns all supported banks from iDEAL
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    private function setTemplateData()
+    {
+        return array('banks' => array(
+            array('key' => IdealBic::ABNANL2A, 'label' => 'ABN Amro Bank'),
+            array('key' => IdealBic::ASNBNL21, 'label' => 'ASN Bank'),
+            array('key' => IdealBic::BUNQNL2A, 'label' => 'bunq'),
+            array('key' => IdealBic::INGBNL2A, 'label' => 'ING'),
+            array('key' => IdealBic::KNABNL2H, 'label' => 'Knab'),
+            array('key' => IdealBic::RABONL2U, 'label' => 'Rabobank'),
+            array('key' => IdealBic::RGGINL21, 'label' => 'Regio Bank'),
+            array('key' => IdealBic::SNSBNL2A, 'label' => 'SNS Bank'),
+            array('key' => IdealBic::TRIONL2U, 'label' => 'Triodos Bank'),
+            array('key' => IdealBic::FVLBNL22, 'label' => 'Van Lanschot Bankiers')
+        ));
     }
 }
