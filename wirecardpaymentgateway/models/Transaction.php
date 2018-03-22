@@ -36,7 +36,6 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Response\Response;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Basic Transaction class
@@ -114,11 +113,8 @@ class Transaction extends \ObjectModel
         $db = \Db::getInstance();
         $parentTransactionId = '';
         $transactionState = 'success';
-        $logger = new WirecardLogger();
-        $logger->error('if statemant: ' . print_r(self::get($response->getParentTransactionId())));
         if (self::get($response->getParentTransactionId())) {
             $where = 'transaction_id = "' . $response->getParentTransactionId() . '"';
-            $logger->error('where : ' . $where);
             $db->update('wirecard_payment_gateway_tx', array(
                 'transaction_state' => 'closed'
             ), $where);
@@ -151,6 +147,7 @@ class Transaction extends \ObjectModel
      *
      * @param string $transactionId
      * @return mixed
+     * @since 1.0.0
      */
     public function get($transactionId)
     {

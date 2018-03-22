@@ -168,6 +168,10 @@ class WirecardTransactionsController extends ModuleAdminController
         return parent::renderView();
     }
 
+    /**
+     * Process the submit according to the action
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (\Tools::getValue('action') && \Tools::getValue('tx')) {
@@ -186,7 +190,9 @@ class WirecardTransactionsController extends ModuleAdminController
     }
 
     /**
+     * Cancel Transaction
      * @param $transactionData
+     * @since 1.0.0
      */
     public function cancelTransaction($transactionData)
     {

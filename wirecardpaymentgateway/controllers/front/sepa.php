@@ -45,6 +45,10 @@ class WirecardPaymentGatewaySepaModuleFrontController extends ModuleFrontControl
         parent::initContent();
     }
 
+    /**
+     * Return the SEPA mandate template
+     * @since 1.0.0
+     */
     public function displayAjaxSepaMandate()
     {
         $data = array();

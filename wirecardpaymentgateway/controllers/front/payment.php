@@ -191,7 +191,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Create post form for credit card
      *
-     * @param Array $data
+     * @param array $data
      * @return string
      * @since 1.0.0
      */
@@ -224,6 +224,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      *
      * @param Cart $cart
      * @param string $paymentMethod
+     * @return int
      * @since 1.0.0
      */
     private function createOrder($cart, $paymentMethod)
@@ -242,7 +243,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Generate the mandate id for SEPA
      *
-     * @param $order_id
+     * @param integer $orderId
      * @return string
      * @since 1.0,0
      */

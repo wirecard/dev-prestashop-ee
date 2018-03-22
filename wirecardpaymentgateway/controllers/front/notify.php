@@ -150,6 +150,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      *
      * @param \Wirecard\PaymentSdk\Response\Response $response
      * @return integer
+     * @since 1.0.0
      */
     private function getTransactionOrderState($response)
     {
@@ -166,6 +167,14 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         }
     }
 
+    /**
+     * Change payment state of an order
+     *
+     * @param string $reference
+     * @param string $transactionId
+     * @param int $orderState
+     * @since 1.0.0
+     */
     private function changePaymentStatus($reference, $transactionId, $orderState)
     {
         $orderPayments = OrderPayment::getByOrderReference($reference);
