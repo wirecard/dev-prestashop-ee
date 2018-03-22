@@ -49,8 +49,6 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
  */
 class WirecardTransactionsController extends ModuleAdminController
 {
-    private $logger;
-
     public function __construct()
     {
         $this->bootstrap = true;

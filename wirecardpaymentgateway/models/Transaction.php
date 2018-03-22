@@ -117,9 +117,6 @@ class Transaction extends \ObjectModel
         $logger = new WirecardLogger();
         $logger->error('if statemant: ' . print_r(self::get($response->getParentTransactionId())));
         if (self::get($response->getParentTransactionId())) {
-            /*$parentTransaction = self::get($parentTransactionId);
-            $parentTransactionId = $parentTransaction->transaction_id;
-            //TODO: update status for parenttransaction*/
             $where = 'transaction_id = "' . $response->getParentTransactionId() . '"';
             $logger->error('where : ' . $where);
             $db->update('wirecard_payment_gateway_tx', array(
