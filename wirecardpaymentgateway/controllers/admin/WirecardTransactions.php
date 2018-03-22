@@ -155,7 +155,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'amount' => $transaction->amount,
             'currency' => $currency->iso_code,
             'response_data' => $response_data,
-            'canCancel' => $payment->can_cancel($transaction->transaction_type),
+            'canCancel' => $payment->can_cancel($transaction->transaction_type, $transaction->transaction_state),
             'canCapture' => $payment->can_capture($transaction->transaction_type),
             'canRefund' => $payment->can_refund($transaction->transaction_type),
             'cancelLink' => $this->context->link->getAdminLink('WirecardTransactions', true, array(), array('action' => 'cancel', 'tx' => $transaction->tx_id))
@@ -178,8 +178,7 @@ class WirecardTransactionsController extends ModuleAdminController
                     break;
             }
         }
-
-        print_r('Not implemented yet');
+        return;
     }
 
     /**
@@ -206,27 +205,11 @@ class WirecardTransactionsController extends ModuleAdminController
             }
 
             if ( $response instanceof SuccessResponse ) {
-                $order = new Order($transactionData->order_id);
-                $order->setCurrentState((int) _PS_OS_CANCELED_);
-
-                $transaction = Transaction::create(
-                    $transactionData->order_id,
-                    $transactionData->cart_id,
-                    $transactionData->amount,
-                    $currency->iso_code,
-                    $response
-                );
-                if (! $transaction) {
-                    $logger = new WirecardLogger();
-                    $logger->error(__METHOD__ . 'Transaction could not be saved in transaction table');
-                }
-                //REDIRECT TO TRANSACTION PAGE
-                var_dump($response);
-                die();
+                Tools::redirectAdmin($this->context->link->getAdminLink('WirecardTransactions', true));
             }
-            if ( $response instanceof FailureResponse ) {
+            else if ( $response instanceof FailureResponse ) {
                 $logger = new WirecardLogger();
-                $logger->error(__METHOD__ . 'An error occured. The transaction could not be cancelled!');
+                $logger->error(__METHOD__ . 'An error occurred. The transaction could not be cancelled!');
             }
         }
     }

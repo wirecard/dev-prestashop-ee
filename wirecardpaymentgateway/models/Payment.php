@@ -287,9 +287,9 @@ class Payment
      * @return boolean
      * @since 1.0.0
      */
-    public function can_cancel($type)
+    public function can_cancel($type, $state)
     {
-        if (in_array($type, $this->cancel)) {
+        if (in_array($type, $this->cancel) && $state != 'closed') {
             return true;
         }
 

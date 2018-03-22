@@ -36,6 +36,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Response\Response;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Basic Transaction class
@@ -108,22 +109,29 @@ class Transaction extends \ObjectModel
      * @return mixed
      * @since 1.0.0
      */
-    public static function create($idOrder, $idCart, $amount, $currency, $response)
+    public static function create($idOrder, $idCart, $amount, $currency, $response, $orderNumber = null)
     {
+        $db = \Db::getInstance();
         $parentTransactionId = '';
         $transactionState = 'success';
-        /*if (self::get($response->getParentTransactionId())) {
-            $parentTransaction = self::get($parentTransactionId);
+        $logger = new WirecardLogger();
+        $logger->error('if statemant: ' . print_r(self::get($response->getParentTransactionId())));
+        if (self::get($response->getParentTransactionId())) {
+            /*$parentTransaction = self::get($parentTransactionId);
             $parentTransactionId = $parentTransaction->transaction_id;
-            //TODO: update status for parenttransaction
-        }*/
-
-        $db = \Db::getInstance();
+            //TODO: update status for parenttransaction*/
+            $where = 'transaction_id = "' . $response->getParentTransactionId() . '"';
+            $logger->error('where : ' . $where);
+            $db->update('wirecard_payment_gateway_tx', array(
+                'transaction_state' => 'closed'
+            ), $where);
+        }
 
         $db->insert('wirecard_payment_gateway_tx', array(
             'transaction_id' => $response->getTransactionId(),
             'parent_transaction_id' => $parentTransactionId,
             'order_id' => $idOrder === null ? 'NULL' : (int)$idOrder,
+            'ordernumber' => $orderNumber === null ? 'NULL' : $orderNumber,
             'cart_id' => (int)$idCart,
             'paymentmethod' => pSQL($response->getPaymentMethod()),
             'transaction_state' => pSQL($transactionState),

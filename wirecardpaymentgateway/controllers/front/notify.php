@@ -97,26 +97,22 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $cart = new Cart((int)($cartId));
         $orderId = Order::getIdByCartId((int)$cartId);
         $order = new Order($orderId);
-        $order->setCurrentState($this->getTransactionOrderState($response));
+        $orderState = $this->getTransactionOrderState($response);
+        $order->setCurrentState($orderState);
+        $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
+
         $transaction = Transaction::create(
             $orderId,
             $cartId,
             $cart->getOrderTotal(true),
             $cart->id_currency,
-            $response
+            $response,
+            $order->reference
         );
 
         if (! $transaction) {
             $logger = new WirecardLogger();
             $logger->error('Transaction could not be saved in transaction table');
-        }
-        $orderPayments = OrderPayment::getByOrderReference($order->reference);
-        if (!empty($orderPayments)) {
-            if (count($orderPayments) > 1) {
-                $orderPayments[0]->delete();
-                $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
-                $orderPayments[count($orderPayments) - 1]->save();
-            }
         }
 
         $customer = new Customer($cart->id_customer);
@@ -160,11 +156,27 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         switch ($response->getTransactionType()) {
             case 'authorization':
                 return Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
+            case 'void-authorization':
+                return _PS_OS_CANCELED_;
             case 'debit':
             case 'capture':
             case 'purchase':
             default:
                 return _PS_OS_PAYMENT_;
+        }
+    }
+
+    private function changePaymentStatus($reference, $transactionId, $orderState)
+    {
+        $orderPayments = OrderPayment::getByOrderReference($reference);
+        if ($orderState != _PS_OS_CANCELED_&& !empty($orderPayments)) {
+            if (count($orderPayments) > 1) {
+                $orderPayments[0]->delete();
+                $orderPayments[count($orderPayments) - 1]->transaction_id = $transactionId;
+                $orderPayments[count($orderPayments) - 1]->save();
+            }
+        } else {
+            $orderPayments[0]->delete();
         }
     }
 }
