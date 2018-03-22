@@ -37,6 +37,7 @@ use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\TransactionService;
+use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 
@@ -155,10 +156,15 @@ class WirecardTransactionsController extends ModuleAdminController
             'amount' => $transaction->amount,
             'currency' => $currency->iso_code,
             'response_data' => $response_data,
-            'canCancel' => $payment->can_cancel($transaction->transaction_type, $transaction->transaction_state),
-            'canCapture' => $payment->can_capture($transaction->transaction_type),
-            'canRefund' => $payment->can_refund($transaction->transaction_type),
-            'cancelLink' => $this->context->link->getAdminLink('WirecardTransactions', true, array(), array('action' => 'cancel', 'tx' => $transaction->tx_id))
+            'canCancel' => $payment->canCancel($transaction->transaction_type, $transaction->transaction_state),
+            'canCapture' => $payment->canCapture($transaction->transaction_type),
+            'canRefund' => $payment->canRefund($transaction->transaction_type),
+            'cancelLink' => $this->context->link->getAdminLink(
+                'WirecardTransactions',
+                true,
+                array(),
+                array('action' => 'cancel', 'tx' => $transaction->tx_id)
+            )
         );
 
         return parent::renderView();
@@ -194,7 +200,7 @@ class WirecardTransactionsController extends ModuleAdminController
 
             $transaction = $payment->createTransaction();
             $transaction->setParentTransactionId($transactionData->transaction_id);
-            $transaction->setAmount(new \Wirecard\PaymentSdk\Entity\Amount($transactionData->amount, $currency->iso_code));
+            $transaction->setAmount(new Amount($transactionData->amount, $currency->iso_code));
             $transactionService = new TransactionService($config, new WirecardLogger());
             try {
                 /** @var $response \Wirecard\PaymentSdk\Response\Response */
@@ -204,10 +210,9 @@ class WirecardTransactionsController extends ModuleAdminController
                 $logger->error(__METHOD__ . ':' . $exception->getMessage());
             }
 
-            if ( $response instanceof SuccessResponse ) {
+            if ($response instanceof SuccessResponse) {
                 Tools::redirectAdmin($this->context->link->getAdminLink('WirecardTransactions', true));
-            }
-            else if ( $response instanceof FailureResponse ) {
+            } elseif ($response instanceof FailureResponse) {
                 $logger = new WirecardLogger();
                 $logger->error(__METHOD__ . 'An error occurred. The transaction could not be cancelled!');
             }

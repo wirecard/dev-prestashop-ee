@@ -271,7 +271,7 @@ class Payment
      * @return bool
      * @since 1.0.0
      */
-    public function can_capture($type)
+    public function canCapture($type)
     {
         if (in_array($type, $this->capture)) {
             return true;
@@ -287,7 +287,7 @@ class Payment
      * @return boolean
      * @since 1.0.0
      */
-    public function can_cancel($type, $state)
+    public function canCancel($type, $state)
     {
         if (in_array($type, $this->cancel) && $state != 'closed') {
             return true;
@@ -303,7 +303,7 @@ class Payment
      * @return boolean
      * @since 1.0.0
      */
-    public function can_refund($type)
+    public function canRefund($type)
     {
         if (in_array($type, $this->refund)) {
             return true;
