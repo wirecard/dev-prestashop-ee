@@ -100,12 +100,13 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $orderState = $this->getTransactionOrderState($response);
         $order->setCurrentState($orderState);
         $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
+        $currency = new Currency($cart->id_currency);
 
         $transaction = Transaction::create(
             $orderId,
             $cartId,
             $cart->getOrderTotal(true),
-            $cart->id_currency,
+            $currency->iso_code,
             $response,
             $order->reference
         );
@@ -159,6 +160,9 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
                 return Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
             case 'void-authorization':
                 return _PS_OS_CANCELED_;
+            case 'void-capture':
+            case 'refund-capture':
+                return _PS_OS_REFUND_;
             case 'debit':
             case 'capture':
             case 'purchase':

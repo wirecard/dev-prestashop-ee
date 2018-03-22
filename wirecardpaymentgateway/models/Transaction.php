@@ -114,7 +114,8 @@ class Transaction extends \ObjectModel
         $parentTransactionId = '';
         $transactionState = 'success';
         if (self::get($response->getParentTransactionId())) {
-            $where = 'transaction_id = "' . $response->getParentTransactionId() . '"';
+            $parentTransactionId = $response->getParentTransactionId();
+            $where = 'transaction_id = "' . $parentTransactionId . '"';
             $db->update('wirecard_payment_gateway_tx', array(
                 'transaction_state' => 'closed'
             ), $where);

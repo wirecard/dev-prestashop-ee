@@ -50,10 +50,10 @@
                     <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Cancel Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status != 'closed' and $canCapture }
-                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Capture Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$captureLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Capture Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status != 'closed' and $canRefund }
-                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Refund Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$refundLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Refund Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status == 'closed' }
                     <p class='add-items'>{l s='No Back-end operations available for this transaction' mod='wirecardpaymentgateway'}</p>

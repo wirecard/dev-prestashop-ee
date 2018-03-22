@@ -142,7 +142,6 @@ class WirecardTransactionsController extends ModuleAdminController
         /** @var \WirecardEE\Prestashop\Models\Payment $payment */
         $payment = $this->module->getPaymentFromType($transaction->paymentmethod);
         $response_data = json_decode($transaction->response);
-        $currency = new Currency($transaction->currency);
         // Smarty assign
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
@@ -152,9 +151,9 @@ class WirecardTransactionsController extends ModuleAdminController
             'transaction_type' => $transaction->transaction_type,
             'status' => $transaction->transaction_state,
             'amount' => $transaction->amount,
-            'currency' => $currency->iso_code,
+            'currency' => $transaction->currency,
             'response_data' => $response_data,
-            'canCancel' => $payment->canCancel($transaction->transaction_type, $transaction->transaction_state),
+            'canCancel' => $payment->canCancel($transaction->transaction_type),
             'canCapture' => $payment->canCapture($transaction->transaction_type),
             'canRefund' => $payment->canRefund($transaction->transaction_type),
             'cancelLink' => $this->context->link->getAdminLink(
@@ -162,6 +161,18 @@ class WirecardTransactionsController extends ModuleAdminController
                 true,
                 array(),
                 array('action' => 'cancel', 'tx' => $transaction->tx_id)
+            ),
+            'captureLink' => $this->context->link->getAdminLink(
+                'WirecardTransactions',
+                true,
+                array(),
+                array('action' => 'capture', 'tx' => $transaction->tx_id)
+            ),
+            'refundLink' => $this->context->link->getAdminLink(
+                'WirecardTransactions',
+                true,
+                array(),
+                array('action' => 'refund', 'tx' => $transaction->tx_id)
             )
         );
 
@@ -182,7 +193,17 @@ class WirecardTransactionsController extends ModuleAdminController
 
             switch (\Tools::getValue('action')) {
                 case 'cancel':
-                    $this->cancelTransaction($transaction);
+                    $this->handleTransaction($transaction, 'cancel');
+                    break;
+                case 'capture':
+                    $this->handleTransaction($transaction, 'pay');
+                    break;
+                case 'refund':
+                    if ($transaction->paymentmethod == 'creditcard') {
+                        $this->handleTransaction($transaction, 'refund');
+                    } else {
+                        $this->handleTransaction($transaction, 'cancel');
+                    }
                     break;
             }
         }
@@ -190,25 +211,26 @@ class WirecardTransactionsController extends ModuleAdminController
     }
 
     /**
-     * Cancel Transaction
+     * Capture/Cancel/Refund Transaction
+     *
      * @param $transactionData
+     * @param string $operation
      * @since 1.0.0
      */
-    public function cancelTransaction($transactionData)
+    public function handleTransaction($transactionData, $operation)
     {
         $paymentType = $transactionData->paymentmethod;
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
             $config = $payment->createPaymentConfig($this->module);
-            $currency = new Currency($transactionData->currency);
 
             $transaction = $payment->createTransaction();
             $transaction->setParentTransactionId($transactionData->transaction_id);
-            $transaction->setAmount(new Amount($transactionData->amount, $currency->iso_code));
+            $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
             $transactionService = new TransactionService($config, new WirecardLogger());
             try {
                 /** @var $response \Wirecard\PaymentSdk\Response\Response */
-                $response = $transactionService->process($transaction, 'cancel');
+                $response = $transactionService->process($transaction, $operation);
             } catch (\Exception $exception) {
                 $logger = new WirecardLogger();
                 $logger->error(__METHOD__ . ':' . $exception->getMessage());
