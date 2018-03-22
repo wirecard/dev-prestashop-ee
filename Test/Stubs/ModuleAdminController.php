@@ -57,4 +57,9 @@ class ModuleAdminController extends Controller
             return $string;
         }
     }
+
+    public function addRowAction($string)
+    {
+        return $string;
+    }
 }

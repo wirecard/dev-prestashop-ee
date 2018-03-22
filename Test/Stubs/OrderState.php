@@ -33,9 +33,10 @@
  * @license GPLv3
  */
 
-require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/admin/WirecardTransactions.php';
-
-class ControllerWirecardTransactions extends \PHPUnit_Framework_TestCase
+class OrderState
 {
-
+    public static function getOrderStates($id)
+    {
+        return array(array('id_order_state' => 'id', 'name' => 'name'));
+    }
 }

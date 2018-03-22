@@ -32,63 +32,25 @@
  * @copyright Wirecard AG
  * @license GPLv3
  */
-require_once __DIR__.'/Translator.php';
 
-class PaymentModule extends Module
+require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/admin/WirecardTransactions.php';
+
+class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
 {
-    public function install()
+    public $transactions;
+
+    public function setUp()
     {
-        if (!strlen($this->name)) {
-            return false;
-        }
-        return true;
+        $this->transactions = new WirecardTransactionsController();
     }
 
-    public function uninstall()
+    public function testConstructor()
     {
-        if (!strlen($this->name)) {
-            return false;
-        }
-        return true;
+        $this->assertNotNull($this->transactions);
     }
 
-    public function l($string)
+    public function testTplData()
     {
-        return $string;
-    }
 
-    public function setName($string)
-    {
-        $this->name = $string;
-    }
-
-    public function displayConfirmation($string)
-    {
-        return $string;
-    }
-
-    public function display($file, $path)
-    {
-        return $file . $path;
-    }
-
-    public function registerHook($string)
-    {
-        return true;
-    }
-
-    public function displayError($string)
-    {
-        return $string;
-    }
-
-    public function fetch($string)
-    {
-        return $string;
-    }
-
-    public function getTranslator()
-    {
-        return new Translator();
     }
 }

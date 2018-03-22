@@ -32,63 +32,11 @@
  * @copyright Wirecard AG
  * @license GPLv3
  */
-require_once __DIR__.'/Translator.php';
 
-class PaymentModule extends Module
+class Translator
 {
-    public function install()
-    {
-        if (!strlen($this->name)) {
-            return false;
-        }
-        return true;
-    }
-
-    public function uninstall()
-    {
-        if (!strlen($this->name)) {
-            return false;
-        }
-        return true;
-    }
-
-    public function l($string)
+    public function trans($string)
     {
         return $string;
-    }
-
-    public function setName($string)
-    {
-        $this->name = $string;
-    }
-
-    public function displayConfirmation($string)
-    {
-        return $string;
-    }
-
-    public function display($file, $path)
-    {
-        return $file . $path;
-    }
-
-    public function registerHook($string)
-    {
-        return true;
-    }
-
-    public function displayError($string)
-    {
-        return $string;
-    }
-
-    public function fetch($string)
-    {
-        return $string;
-    }
-
-    public function getTranslator()
-    {
-        return new Translator();
     }
 }

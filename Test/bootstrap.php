@@ -64,6 +64,7 @@ require __DIR__ . '/Stubs/PrestaShopLogger.php';
 require __DIR__ . '/Stubs/Db.php';
 require __DIR__ . '/Stubs/Tab.php';
 require __DIR__ . '/Stubs/Order.php';
+require __DIR__ . '/Stubs/OrderState.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';
