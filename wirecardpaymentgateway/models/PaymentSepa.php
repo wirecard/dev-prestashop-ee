@@ -59,6 +59,10 @@ class PaymentSepa extends Payment
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
+
+        $this->cancel  = array('pending-debit');
+        $this->capture = array('authorization');
+        $this->refund  = array('debit');
     }
 
     /**

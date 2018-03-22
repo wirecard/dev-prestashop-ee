@@ -63,7 +63,7 @@ class PaymentCreditCard extends Payment
 
         $this->cancel  = array('authorization');
         $this->capture = array('authorization');
-        $this->refund  = array('debit', 'capture-authorization');
+        $this->refund  = array('purchase', 'capture-authorization');
     }
 
     /**
