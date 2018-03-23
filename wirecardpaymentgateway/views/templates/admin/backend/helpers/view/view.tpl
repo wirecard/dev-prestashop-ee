@@ -43,17 +43,24 @@
             <h3>
                 {l s='Payment via' mod='wirecardpaymentgateway'} {$payment_method|escape:'htmlall':'UTF-8'}
             </h3>
-            <div><b>{$transaction_type|escape:'htmlall':'UTF-8'}</b></div>
+            <div><b>{$transaction_type|escape:'htmlall':'UTF-8'}</b> |
+                {if $status == 'closed'}
+                    <b class="badge" style="color: white; background-color: red">{$status|escape:'htmlall':'UTF-8'}</b>
+                {else}
+                    <b class="badge" style="color: white; background-color: green">{$status|escape:'htmlall':'UTF-8'}</b>
+                {/if}
+            </div>
             <br>
             <div class="wc-order-data-row">
+                <a href="{$backButton|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Back' mod='wirecardpaymentgateway'}</a>
                 {if $status != 'closed' and $canCancel }
-                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Cancel Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Cancel Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status != 'closed' and $canCapture }
-                    <a href="{$captureLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Capture Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$captureLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Capture Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status != 'closed' and $canRefund }
-                    <a href="{$refundLink|escape:'htmlall':'UTF-8'}" class='button'>{l s='Refund Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$refundLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Refund Transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status == 'closed' }
                     <p class='add-items'>{l s='No Back-end operations available for this transaction' mod='wirecardpaymentgateway'}</p>

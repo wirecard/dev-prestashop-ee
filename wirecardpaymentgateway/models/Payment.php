@@ -273,7 +273,7 @@ class Payment
      */
     public function canCapture($type)
     {
-        if (in_array($type, $this->capture)) {
+        if ($this->capture && in_array($type, $this->capture)) {
             return true;
         }
 
@@ -289,7 +289,7 @@ class Payment
      */
     public function canCancel($type)
     {
-        if (in_array($type, $this->cancel)) {
+        if ($this->cancel && in_array($type, $this->cancel)) {
             return true;
         }
 
@@ -305,7 +305,7 @@ class Payment
      */
     public function canRefund($type)
     {
-        if (in_array($type, $this->refund)) {
+        if ($this->refund && in_array($type, $this->refund)) {
             return true;
         }
 

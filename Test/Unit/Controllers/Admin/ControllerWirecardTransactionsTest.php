@@ -66,27 +66,11 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
             'canRefund' => false,
             'cancelLink' => 'WirecardTransactions',
             'captureLink' => 'WirecardTransactions',
-            'refundLink' => 'WirecardTransactions'
+            'refundLink' => 'WirecardTransactions',
+            'backButton' => 'WirecardTransactions'
 
         );
 
         $this->assertEquals($expected, $this->transactions->tpl_view_vars);
-    }
-
-    public function testPostProcessPayPalCancel()
-    {
-        $this->transactions->postProcess();
-    }
-
-    public function testPostProcessPayPalPay()
-    {
-        Tools::$action = 'capture';
-        $this->transactions->postProcess();
-    }
-
-    public function testPostProcessPayPalRefund()
-    {
-        Tools::$action = 'refund';
-        $this->transactions->postProcess();
     }
 }

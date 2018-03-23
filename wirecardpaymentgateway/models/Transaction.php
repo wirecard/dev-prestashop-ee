@@ -112,13 +112,17 @@ class Transaction extends \ObjectModel
     {
         $db = \Db::getInstance();
         $parentTransactionId = '';
-        $transactionState = 'success';
+        $transactionState = 'open';
+        $closedTransactions = array(
+            'void-authorization',
+            'void-capture',
+            'refund-capture'
+        );
         if (self::get($response->getParentTransactionId())) {
             $parentTransactionId = $response->getParentTransactionId();
-            $where = 'transaction_id = "' . $parentTransactionId . '"';
-            $db->update('wirecard_payment_gateway_tx', array(
-                'transaction_state' => 'closed'
-            ), $where);
+            if (in_array($response->getTransactionType(), $closedTransactions)) {
+                $transactionState = 'closed';
+            }
         }
 
         $db->insert('wirecard_payment_gateway_tx', array(

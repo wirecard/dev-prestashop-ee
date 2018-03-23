@@ -172,7 +172,8 @@ class WirecardTransactionsController extends ModuleAdminController
                 true,
                 array(),
                 array('action' => 'refund', 'tx' => $transaction->tx_id)
-            )
+            ),
+            'backButton' => $this->context->link->getAdminLink('WirecardTransactions', true)
         );
 
         return parent::renderView();
@@ -198,7 +199,7 @@ class WirecardTransactionsController extends ModuleAdminController
                     $this->handleTransaction($transaction, 'pay');
                     break;
                 case 'refund':
-                    if ($transaction->paymentmethod == 'creditcard') {
+                    if ($transaction->paymentmethod != 'creditcard') {
                         $this->handleTransaction($transaction, 'refund');
                     } else {
                         $this->handleTransaction($transaction, 'cancel');
@@ -237,15 +238,29 @@ class WirecardTransactionsController extends ModuleAdminController
             } catch (\Exception $exception) {
                 $logger = new WirecardLogger();
                 $logger->error(__METHOD__ . ':' . $exception->getMessage());
+                $this->errors[] = Tools::displayError($exception->getMessage());
             }
 
             if ($response instanceof SuccessResponse) {
-                Tools::redirectAdmin($this->context->link->getAdminLink('WirecardTransactions', true));
+                $db = \Db::getInstance();
+                $where = 'transaction_id = "' . $transactionData->transaction_id . '"';
+                $db->update('wirecard_payment_gateway_tx', array(
+                    'transaction_state' => 'closed'
+                ), $where);
+
+                $url = $this->context->link->getAdminLink(
+                        'WirecardTransactions',
+                        true,
+                        array(),
+                        array(
+                            'tx_id' => $transactionData->tx_id
+                        )). '&viewwirecard_payment_gateway_tx';
+                Tools::redirectAdmin($url);
             } elseif ($response instanceof FailureResponse) {
-                $logger = new WirecardLogger();
-                $logger->error(__METHOD__ . 'An error occurred. The transaction could not be cancelled!');
+                $this->errors[] = Tools::displayError('An error occurred. The transaction could not processed');
             }
         }
+        return parent::postProcess();
     }
 
     /**
