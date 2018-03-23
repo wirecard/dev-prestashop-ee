@@ -34,7 +34,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\Transaction\SepaTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
 
@@ -153,6 +152,7 @@ class PaymentSepa extends Payment
                     'type'    => 'textarea',
                     'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first 
                     paragraph.',
+                    'placeholder' => 'Click here and type your text',
                     'default' => '',
                     'required' => false,
                 ),

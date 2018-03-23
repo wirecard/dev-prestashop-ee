@@ -26,23 +26,15 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 var form = null;
 var sepaCheck = false;
-var popup = $('#sepaDialog');
 
 $(document).ready(
     function () {
-        /**
-         * Create popup window
-         */
-        popup.dialog({
-            autoOpen :false,
-            modal: true,
-            show: "blind",
-            hide: "blind"
-        });
-
         $(document).on('submit','#payment-form', function (e) {
             form = $(this);
             if (form.attr('action').search('sepa') >= 0) {
@@ -72,19 +64,23 @@ $(document).ready(
         
         function displayPopup(html)
         {
-            popup.html(html);
-            popup.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
-            popup.find('.bank_iban').text($('#sepaIban').val());
-            popup.find('.bank_bic').text($('#sepaBic').val());
-            popup.dialog({
-                height: '800',
-                width: 'auto'
-            });
-            popup.dialog('open');
-            $('body').css('overflow', 'hidden');
+            if (document.getElementById('sepaMandateModal')) {
+                console.log("delete");
+                document.getElementById('sepaMandateModal').remove();
+            }
 
-            var button = document.getElementById('sepaButton');
-            button.addEventListener('click', process_order, false);
+            $('body').append(html);
+            var sepaModal = $('#sepaMandateModal');
+            sepaModal.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
+            sepaModal.find('.bank_iban').text($('#sepaIban').val());
+            sepaModal.find('.bank_bic').text($('#sepaBic').val());
+            sepaModal.modal('show');
+
+            var cancelButton = document.getElementById('sepaCancelButton');
+            cancelButton.addEventListener('click', close, false);
+
+            var confirmButton = document.getElementById('sepaConfirmButton');
+            confirmButton.addEventListener('click', process_order, false);
 
             var check_box = document.getElementById('sepaCheck');
             check_box.addEventListener('change', check_change, false);
@@ -92,26 +88,21 @@ $(document).ready(
 
         function process_order()
         {
-            if ( document.getElementById('sepaCheck').checked ) {
-                sepaCheck = true;
-                $('#sepaFirstName').appendTo(form);
-                $('#sepaLastName').appendTo(form);
-                $('#sepaIban').appendTo(form);
-                $('#sepaBic').appendTo(form);
-                form.submit();
-            } else {
-                popup.dialog('close');
-                $('body').css('overflow', 'auto');
-            }
+            sepaCheck = true;
+            $('#sepaFirstName').attr('type', 'hidden').appendTo(form);
+            $('#sepaLastName').attr('type', 'hidden').appendTo(form);
+            $('#sepaIban').attr('type', 'hidden').appendTo(form);
+            $('#sepaBic').attr('type', 'hidden').appendTo(form);
+            form.submit();
         }
 
         function check_change()
         {
-            if ( document.getElementById('sepaCheck').checked ) {
-                $('#sepaButton').text('Process');
-            } else {
-                $('#sepaButton').text('Cancel');
-            }
+            $('#sepaConfirmButton').toggleClass('disabled');
+        }
+
+        function close() {
+            $("#sepaMandateModal").modal('hide');
         }
     }
 );

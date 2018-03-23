@@ -35,7 +35,7 @@ $(document).ready(
         $(document).on('submit','#payment-form', function (e) {
             form = $(this);
             if (form.attr('action').search('ideal') >= 0) {
-                $('#idealBankBic').appendTo(form);
+                $('#idealBankBic').attr('type', 'hidden').appendTo(form);
             }
         });
     }

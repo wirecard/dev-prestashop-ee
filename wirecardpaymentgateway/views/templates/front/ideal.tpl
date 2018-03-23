@@ -26,15 +26,20 @@
 *
 * By installing the plugin into the shop system the customer agrees to these terms of use.
 * Please do not use the plugin if you do not agree to these terms of use!
+* @author Wirecard AG
+* @copyright Wirecard AG
+* @license GPLv3
 *}
 
 <div id="payment-processing-gateway-ideal-form">
-    <div class="form-group">
-        <label>{l s='Bank' mod='wirecardpaymentgateway'}</label>
-        <select name="idealBankBic" id="idealBankBic">
-            {foreach $banks as $bank}
-                <option value="{$bank.key}">{$bank.label}</option>
-            {/foreach}
-        </select>
+    <div class="form-group row">
+        <label class="col-md-3 form-control-label required">{l s='Bank' mod='wirecardpaymentgateway'}</label>
+        <div class="col-md-6">
+            <select class="form-control" name="idealBankBic" id="idealBankBic">
+                {foreach $banks as $bank}
+                    <option value="{$bank.key}">{$bank.label}</option>
+                {/foreach}
+            </select>
+        </div>
     </div>
 </div>

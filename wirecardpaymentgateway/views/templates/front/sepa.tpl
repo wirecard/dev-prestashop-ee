@@ -28,25 +28,41 @@
 * Please do not use the plugin if you do not agree to these terms of use!
 *}
 <div id="payment-processing-gateway-sepa-form">
-    <div class="form-group">
-        <label>{l s='First name' mod='wirecardpaymentgateway'}</label>
-        <input type="text" name="sepaFirstName" id="sepaFirstName" />
+    <div class="form-group row">
+        <label class="col-md-3 form-control-label">{l s='First name' mod='wirecardpaymentgateway'}</label>
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="sepaFirstName" id="sepaFirstName" />
+        </div>
+        <div class="col-md-3 form-control-comment">
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>{l s='Last name' mod='wirecardpaymentgateway'}</label>
-        <input type="text" name="sepaLastName" id="sepaLastName" />
+    <div class="form-group row">
+        <label class="col-md-3 form-control-label">{l s='Last name' mod='wirecardpaymentgateway'}</label>
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="sepaLastName" id="sepaLastName" />
+        </div>
+        <div class="col-md-3 form-control-comment">
+        </div>
     </div>
 
-    <div class="form-group required">
-        <label class="required"> {l s='IBAN' mod='wirecardpaymentgateway'}</label>
-        <input type="tel" name="sepaIban" id="sepaIban" />
+    <div class="form-group row">
+        <label class="col-md-3 form-control-label required"> {l s='IBAN' mod='wirecardpaymentgateway'}</label>
+        <div class="col-md-6">
+            <input type="tel" class="form-control" name="sepaIban" id="sepaIban" />
+        </div>
+        <div class="col-md-3 form-control-comment">
+        </div>
     </div>
 
     {if $bicEnabled == 'true' }
-        <div class="required form-group">
-            <label class="required"> {l s='BIC' mod='wirecardpaymentgateway'}</label>
-            <input type="tel" name="sepaBic" id="sepaBic" />
+        <div class="form-group row">
+            <label class="col-md-3 form-control-label required"> {l s='BIC' mod='wirecardpaymentgateway'}</label>
+            <div class="col-md-6">
+                <input type="tel" class="form-control" name="sepaBic" id="sepaBic" />
+            </div>
+            <div class="col-md-3 form-control-comment">
+            </div>
         </div>
     {/if}
 </div>
