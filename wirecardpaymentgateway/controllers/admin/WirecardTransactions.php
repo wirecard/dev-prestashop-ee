@@ -252,9 +252,8 @@ class WirecardTransactionsController extends ModuleAdminController
                     'WirecardTransactions',
                     true,
                     array(),
-                    array(
-                        'tx_id' => $transactionData->tx_id
-                    )). '&viewwirecard_payment_gateway_tx';
+                    array('tx_id' => $transactionData->tx_id)
+                ). '&viewwirecard_payment_gateway_tx';
                 Tools::redirectAdmin($url);
             } elseif ($response instanceof FailureResponse) {
                 $this->errors[] = Tools::displayError('An error occurred. The transaction could not processed');
