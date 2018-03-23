@@ -33,10 +33,10 @@
  * @license GPLv3
  */
 
-class ObjectModel
+class Validate
 {
-    const TYPE_STRING = 'sting';
-    const TYPE_INT = 'intiger';
-    const TYPE_FLOAT = 'float';
-    const TYPE_DATE = 'date';
+    public static function isLoadedObject($object)
+    {
+        return true;
+    }
 }

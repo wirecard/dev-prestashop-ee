@@ -35,13 +35,27 @@
 
 class ModuleAdminController extends Controller
 {
+    static $currentIndex = '1';
+
     public $module;
+
+    public $object;
 
     public function __construct()
     {
         parent::__construct();
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
         $this->controller_type = 'moduleadmin';
+
+        $this->object = new stdClass();
+        $this->object->paymentmethod = 'creditcard';
+        $this->object->response = '{key: value}';
+        $this->object->transaction_id = '12l3j123kjg12kj3g123';
+        $this->object->transaction_type = 'authorization';
+        $this->object->transaction_state = 'success';
+        $this->object->amount = '20';
+        $this->object->currency = 'EUR';
+        $this->object->tx_id = '11';
     }
 
     public function getLanguages()
@@ -61,5 +75,10 @@ class ModuleAdminController extends Controller
     public function addRowAction($string)
     {
         return $string;
+    }
+
+    public function renderView()
+    {
+        return;
     }
 }

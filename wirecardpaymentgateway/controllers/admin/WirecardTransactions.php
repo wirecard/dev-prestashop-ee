@@ -145,7 +145,6 @@ class WirecardTransactionsController extends ModuleAdminController
         // Smarty assign
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
-            'test' => 'test',
             'transaction_id' => $transaction->transaction_id,
             'payment_method' => $transaction->paymentmethod,
             'transaction_type' => $transaction->transaction_type,
@@ -186,7 +185,7 @@ class WirecardTransactionsController extends ModuleAdminController
     public function postProcess()
     {
         if (\Tools::getValue('action') && \Tools::getValue('tx')) {
-            $transaction = new Transaction(\Tools::getValue('tx'));
+            $transaction = $this->createTransaction(\Tools::getValue('tx'));
             if (!Validate::isLoadedObject($transaction)) {
                 $this->errors[] = Tools::displayError('The transcation cannot be found within your database.');
             }
@@ -205,6 +204,9 @@ class WirecardTransactionsController extends ModuleAdminController
                         $this->handleTransaction($transaction, 'cancel');
                     }
                     break;
+                default:
+                    $this->errors[] = Tools::displayError('The requested backend operation is not supported');
+                    break;
             }
         }
         return;
@@ -220,6 +222,7 @@ class WirecardTransactionsController extends ModuleAdminController
     public function handleTransaction($transactionData, $operation)
     {
         $paymentType = $transactionData->paymentmethod;
+        /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
             $config = $payment->createPaymentConfig($this->module);
@@ -243,5 +246,14 @@ class WirecardTransactionsController extends ModuleAdminController
                 $logger->error(__METHOD__ . 'An error occurred. The transaction could not be cancelled!');
             }
         }
+    }
+
+    /**
+     * @param int $txId
+     * @return Transaction
+     */
+    private function createTransaction($txId)
+    {
+        return new Transaction($txId);
     }
 }

@@ -36,6 +36,7 @@
 class Tools
 {
     static $paymentType = 'paypal';
+    static $action = 'cancel';
 
     public static function isSubmit($string)
     {
@@ -52,6 +53,9 @@ class Tools
         switch ($string) {
             case 'paymentType':
                 return self::$paymentType;
+                break;
+            case 'action':
+                return self::$action;
                 break;
             default:
                 return $string;
