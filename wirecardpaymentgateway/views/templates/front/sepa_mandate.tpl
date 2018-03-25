@@ -39,7 +39,12 @@
                                 <tr>
                                     <td class="text11justify">
                                         <i>{l s='Creditor' mod='wirecardpaymentgateway'}</i><br />
-                                        {$creditorName}, {$creditorStoreCity}<br />
+                                        {$creditorName}
+                                        {if strlen($creditorName)}
+                                            ,
+                                        {/if}
+                                        {$creditorStoreCity}
+                                        {if strlen($creditorName) || strlen($creditorStoreCity)}<br />{/if}
                                         {l s='Creditor ID:' mod='wirecardpaymentgateway'}{$creditorId}<br />
                                     </td>
                                     <td width="10%">&nbsp;</td>
@@ -98,7 +103,10 @@
                             <table border="0" width="100%">
                                 <tr>
                                     <td class="text11justify">
-                                        {$creditorStoreCity}, {$date}<span class="first_last_name"></span>
+                                        {if strlen($creditorStoreCity)}
+                                            {$creditorStoreCity},
+                                        {/if}
+                                        {$date}<span class="first_last_name"></span>
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
