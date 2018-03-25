@@ -77,7 +77,7 @@ class PaymentPaypal extends Payment
             'fields' => array(
                 array(
                     'name' => 'enabled',
-                    'label' => 'Enable/Disable',
+                    'label' => 'Enable',
                     'type' => 'onoff',
                     'doc' => 'Enable Wirecard Payment Processing Gateway PayPal',
                     'default' => 0,
@@ -98,14 +98,14 @@ class PaymentPaypal extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => 'Secret key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base Url',
+                    'label'       => 'Base url',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -113,14 +113,14 @@ class PaymentPaypal extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http User',
+                    'label'   => 'Http user',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http Password',
+                    'label'   => 'Http password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -129,7 +129,7 @@ class PaymentPaypal extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'authorization',
-                    'label'   => 'Payment Action',
+                    'label'   => 'Payment action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
@@ -137,25 +137,24 @@ class PaymentPaypal extends Payment
                 ),
                 array(
                     'name' => 'shopping_basket',
-                    'label'   => 'Enable/Disable Shopping Basket',
+                    'label'   => 'Enable shopping basket',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable/Disable Descriptor',
+                    'label'   => 'Enable descriptor',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Enable/Disable send additional information',
+                    'label'   => 'Send additional information',
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
                 array(
                     'name' => 'test_credentials',
-                    'label' => 'Test Credentials',
                     'type' => 'linkbutton',
                     'required' => false,
                     'buttonText' => 'Test paypal configuration',

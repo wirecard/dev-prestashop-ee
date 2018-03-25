@@ -465,6 +465,10 @@ class WirecardPaymentGateway extends PaymentModule
                     'required' => isset($f['required']) && $f['required']
                 );
 
+                if (isset($f['doc'])) {
+                    $elem['desc'] = $f['doc'];
+                }
+
                 switch ($f['type']) {
                     case 'linkbutton':
                         $elem['buttonText'] = $f['buttonText'];
