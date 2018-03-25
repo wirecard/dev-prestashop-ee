@@ -33,48 +33,37 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\Payment;
-use Wirecard\PaymentSdk\Config\Config;
-use WirecardEE\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Models\PaymentSepa;
 
-class PaymentTest extends \PHPUnit_Framework_TestCase
+class PaymentSepaTest extends PHPUnit_Framework_TestCase
 {
     private $payment;
+
+    private $paymentModule;
+
     private $config;
-    private $paypalPayment;
 
     public function setUp()
     {
-        $this->payment = new Payment();
-        $this->payment->context = new \Context();
-        $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
-        $this->paypalPayment = new PaymentPaypal();
+        $this->config = array(
+            'base_url',
+            'http_user',
+            'http_pass',
+            'merchant_account_id',
+            'secret',
+            'creditor_id'
+        );
+        $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->payment = new PaymentSepa();
     }
 
     public function testName()
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway';
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testConfig()
-    {
-        $this->payment->createConfig('baseUrl', 'httpUser', 'httpPass');
-        $actual = $this->payment->getConfig();
-
-        $expected = $this->config;
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testTransactionTypes()
-    {
-        $actual = $this->payment->getTransactionTypes();
-
-        $expected =  array('authorization','capture');
+        $expected = 'Wirecard Payment Processing Gateway SEPA';
 
         $this->assertEquals($expected, $actual);
     }
@@ -82,40 +71,30 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     public function testFormFields()
     {
         $actual = $this->payment->getFormFields();
+        $this->assertTrue(is_array($actual));
+    }
 
-        $expected = null;
+    public function testCreatePaymentConfig()
+    {
+        for ($i = 0; $i <= 5; $i++) {
+            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
+        }
+        $actual = $this->payment->createPaymentConfig($this->paymentModule);
+
+        $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\SepaConfig('merchant_account_id', 'secret');
+        $expectedPaymentConfig->setCreditorId('creditor_id');
+        $expected->add($expectedPaymentConfig);
 
         $this->assertEquals($expected, $actual);
     }
 
-    public function testType()
+    public function testCreateTransaction()
     {
-        $actual = $this->paypalPayment->getType();
-
-        $expected = 'paypal';
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testCreateTransactionIsNull()
-    {
+        /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction();
 
-        $this->assertNull($actual);
-    }
-
-    public function testCanCancel()
-    {
-        $this->assertEquals(false, $this->payment->canCancel('test'));
-    }
-
-    public function testCanCapture()
-    {
-        $this->assertEquals(false, $this->payment->canCapture('test'));
-    }
-
-    public function testCanRefund()
-    {
-        $this->assertEquals(true, $this->payment->canRefund('capture-authorization'));
+        $expected = 'sepa';
+        $this->assertEquals($expected, $actual::NAME);
     }
 }

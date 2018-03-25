@@ -27,45 +27,45 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Transaction\SepaTransaction;
+use Wirecard\PaymentSdk\Config\SepaConfig;
 
 /**
- * Class PaymentPaypal
+ * Class PaymentCreditCard
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentPaypal extends Payment
+class PaymentSepa extends Payment
 {
-
     /**
-     * PaymentPaypal constructor.
+     * PaymentSEPA constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'paypal';
-        $this->name = 'Wirecard Payment Processing Gateway Paypal';
+        $this->type = 'sepa';
+        $this->name = 'Wirecard Payment Processing Gateway SEPA';
         $this->formFields = $this->createFormFields();
+        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
+        $this->setLoadJs(true);
 
-        $this->cancel  = array( 'authorization' );
-        $this->capture = array( 'authorization' );
-        $this->refund  = array( 'debit', 'capture-authorization' );
+        $this->cancel  = array('pending-debit');
+        $this->capture = array('authorization');
+        $this->refund  = array('debit');
     }
 
     /**
-     * Create form fields for paypal
+     * Create form fields for SEPA
      *
      * @return array|null
      * @since 1.0.0
@@ -73,34 +73,34 @@ class PaymentPaypal extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'PayPal',
+            'tab' => 'SEPA',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway PayPal',
+                    'doc' => 'Enable Wirecard Payment Processing Gateway SEPA',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway PayPal',
+                    'default' => 'Wirecard Payment Processing Gateway SEPA',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '2a0e9351-24ed-4110-9a1b-fd0fee6bec26',
+                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => 'Secret key',
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
                     'required' => true,
                 ),
                 array(
@@ -126,6 +126,37 @@ class PaymentPaypal extends Payment
                     'required' => true,
                 ),
                 array(
+                    'name' => 'creditor_id',
+                    'label'   => 'Creditor ID',
+                    'type'    => 'text',
+                    'default' => 'DE98ZZZ09999999999',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'creditor_name',
+                    'label'   => 'Creditor name',
+                    'type'    => 'text',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
+                    'name' => 'creditor_city',
+                    'label'   => 'Creditor city',
+                    'type'    => 'text',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
+                    'name' => 'sepa_mandate_textextra',
+                    'label'   => 'Additional text',
+                    'type'    => 'textarea',
+                    'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first 
+                    paragraph.',
+                    'empty_message' => 'Click here and type your text',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'authorization',
@@ -134,12 +165,6 @@ class PaymentPaypal extends Payment
                         array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
                     ),
-                ),
-                array(
-                    'name' => 'shopping_basket',
-                    'label'   => 'Enable shopping basket',
-                    'type'    => 'onoff',
-                    'default' => 0,
                 ),
                 array(
                     'name' => 'descriptor',
@@ -154,16 +179,22 @@ class PaymentPaypal extends Payment
                     'default' => 1,
                 ),
                 array(
+                    'name' => 'enable_bic',
+                    'label'   => 'Enable BIC',
+                    'type'    => 'onoff',
+                    'default' => 0,
+                ),
+                array(
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test paypal configuration',
-                    'id' => 'paypalConfig',
-                    'method' => 'paypal',
+                    'buttonText' => 'Test SEPA configuration',
+                    'id' => 'SepaConfig',
+                    'method' => 'SEPA',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_PASS'
                     )
                 )
             )
@@ -171,7 +202,7 @@ class PaymentPaypal extends Payment
     }
 
     /**
-     * Create config for paypal transactions
+     * Create config for SEPA transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -187,22 +218,36 @@ class PaymentPaypal extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(PayPalTransaction::NAME, $merchantAccountId, $secret);
+        $paymentConfig = new SepaConfig($merchantAccountId, $secret);
+        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create PaypalTransaction
+     * Create SepaTransaction
      *
-     * @return PayPalTransaction
+     * @return SepaTransaction
      * @since 1.0.0
      */
     public function createTransaction()
     {
-        $transaction = new PayPalTransaction();
+        $transaction = new SepaTransaction();
 
         return $transaction;
+    }
+
+    private function setTemplateData()
+    {
+        $test = \Configuration::get(
+            sprintf(
+                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
+                \Tools::strtoupper($this->type),
+                \Tools::strtoupper('enable_bic')
+            )
+        );
+
+        return array('bicEnabled' => (bool) $test);
     }
 }

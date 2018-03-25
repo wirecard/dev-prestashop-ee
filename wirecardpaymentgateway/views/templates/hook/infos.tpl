@@ -31,3 +31,9 @@
 <img src="../modules/wirecardpaymentgateway/logo.png">
 <br>
 <p><strong>{l s="Pay with Wirecard Payment Processing Gateway." d='Modules.Wirecardpaymentgateway.Admin'}</strong></p>
+<div class="btn-group">
+        <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
+            <i class=e"icon-mony"></i>
+            {l s='Transactions' mod='wirecardpaymentgateway'}
+        </a>
+</div>

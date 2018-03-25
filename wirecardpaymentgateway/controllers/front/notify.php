@@ -37,6 +37,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
+use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
@@ -57,7 +58,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         try {
             $transactionService = new TransactionService($config, $logger);
             $result = $transactionService->handleNotification($notification);
-            $logger->error('notify result: ' . print_r($result, true));
             if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
                 $this->processSuccess($result);
             } elseif ($result instanceof FailureResponse) {
@@ -96,16 +96,24 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $cartId = $response->getCustomFields()->get('orderId');
         $cart = new Cart((int)($cartId));
         $orderId = Order::getIdByCartId((int)$cartId);
-
         $order = new Order($orderId);
-        $order->setCurrentState($this->getTransactionOrderState($response));
+        $orderState = $this->getTransactionOrderState($response);
+        $order->setCurrentState($orderState);
+        $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
+        $currency = new Currency($cart->id_currency);
 
-        $orderPayments = OrderPayment::getByOrderReference($order->reference);
-        $logger->error('notify empty success: ' .  (bool) empty($orderPayments));
-        $logger->error('notify empty success number: ' .  count($orderPayments));
-        if (!empty($orderPayments)) {
-            $orderPayments[0]->transaction_id = $response->getTransactionId();
-            $orderPayments[0]->save();
+        $transaction = Transaction::create(
+            $orderId,
+            $cartId,
+            $cart->getOrderTotal(true),
+            $currency->iso_code,
+            $response,
+            $order->reference
+        );
+
+        if (! $transaction) {
+            $logger = new WirecardLogger();
+            $logger->error('Transaction could not be saved in transaction table');
         }
 
         $customer = new Customer($cart->id_customer);
@@ -124,7 +132,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     private function processFailure($response)
     {
-        $logger = new WirecardLogger();
         $cartId = $response->getCustomFields()->get('orderId');
         $orderId = Order::getOrderByCartId((int)$cartId);
 
@@ -132,7 +139,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             $order = new Order($orderId);
             $order->setCurrentState('PS_OS_ERROR');
             $orderPayments = OrderPayment::getByOrderReference($order->reference);
-            $logger->error('notify empty failure: ' .  empty($orderPayments));
             if (!empty($orderPayments)) {
                 $orderPayments[0]->transaction_id = $response->getTransactionId();
                 $orderPayments[0]->save();
@@ -144,18 +150,46 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      * Get order state for specific transactiontype
      *
      * @param \Wirecard\PaymentSdk\Response\Response $response
-     * @return string
+     * @return integer
+     * @since 1.0.0
      */
     private function getTransactionOrderState($response)
     {
         switch ($response->getTransactionType()) {
             case 'authorization':
-                return OrderManager::WIRECARD_OS_AUTHORIZATION;
+                return Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
+            case 'void-authorization':
+                return _PS_OS_CANCELED_;
+            case 'void-capture':
+            case 'refund-capture':
+                return _PS_OS_REFUND_;
             case 'debit':
             case 'capture':
             case 'purchase':
             default:
                 return _PS_OS_PAYMENT_;
+        }
+    }
+
+    /**
+     * Change payment state of an order
+     *
+     * @param string $reference
+     * @param string $transactionId
+     * @param int $orderState
+     * @since 1.0.0
+     */
+    private function changePaymentStatus($reference, $transactionId, $orderState)
+    {
+        $orderPayments = OrderPayment::getByOrderReference($reference);
+        if ($orderState != _PS_OS_CANCELED_&& !empty($orderPayments)) {
+            if (count($orderPayments) > 1) {
+                $orderPayments[0]->delete();
+                $orderPayments[count($orderPayments) - 1]->transaction_id = $transactionId;
+                $orderPayments[count($orderPayments) - 1]->save();
+            }
+        } else {
+            $orderPayments[0]->delete();
         }
     }
 }

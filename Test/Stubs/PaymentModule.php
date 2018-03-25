@@ -32,6 +32,7 @@
  * @copyright Wirecard AG
  * @license GPLv3
  */
+require_once __DIR__.'/Translator.php';
 
 class PaymentModule extends Module
 {
@@ -84,5 +85,10 @@ class PaymentModule extends Module
     public function fetch($string)
     {
         return $string;
+    }
+
+    public function getTranslator()
+    {
+        return new Translator();
     }
 }

@@ -27,18 +27,14 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
  */
-
-class Language
-{
-    public $id = 'test';
-
-    public static function getLanguages()
-    {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
-    }
-}
+                        
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+                        
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+                        
+header("Location: ../");
+exit;

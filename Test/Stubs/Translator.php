@@ -33,12 +33,10 @@
  * @license GPLv3
  */
 
-class Language
+class Translator
 {
-    public $id = 'test';
-
-    public static function getLanguages()
+    public function trans($string)
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
+        return $string;
     }
 }

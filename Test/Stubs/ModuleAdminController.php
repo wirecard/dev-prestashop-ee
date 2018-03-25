@@ -33,12 +33,52 @@
  * @license GPLv3
  */
 
-class Language
+class ModuleAdminController extends Controller
 {
-    public $id = 'test';
+    static $currentIndex = '1';
 
-    public static function getLanguages()
+    public $module;
+
+    public $object;
+
+    public function __construct()
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
+        parent::__construct();
+        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
+        $this->controller_type = 'moduleadmin';
+
+        $this->object = new stdClass();
+        $this->object->paymentmethod = 'creditcard';
+        $this->object->response = '{key: value}';
+        $this->object->transaction_id = '12l3j123kjg12kj3g123';
+        $this->object->transaction_type = 'authorization';
+        $this->object->transaction_state = 'success';
+        $this->object->amount = '20';
+        $this->object->currency = 'EUR';
+        $this->object->tx_id = '11';
+    }
+
+    public function getLanguages()
+    {
+        return new Language();
+    }
+
+    protected function l($string, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
+    {
+        if (isset($this->module) && is_a($this->module, 'Module')) {
+            return $this->module->l($string, $specific);
+        } else {
+            return $string;
+        }
+    }
+
+    public function addRowAction($string)
+    {
+        return $string;
+    }
+
+    public function renderView()
+    {
+        return;
     }
 }

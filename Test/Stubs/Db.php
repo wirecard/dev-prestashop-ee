@@ -33,12 +33,25 @@
  * @license GPLv3
  */
 
-class Language
+class Db
 {
-    public $id = 'test';
+    protected static $instance;
 
-    public static function getLanguages()
+    public function __construct()
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
+    }
+
+    public static function getInstance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new Db();
+        }
+
+        return self::$instance;
+    }
+
+    public static function execute()
+    {
+        return true;
     }
 }

@@ -33,12 +33,10 @@
  * @license GPLv3
  */
 
-class Language
+class ObjectModel
 {
-    public $id = 'test';
-
-    public static function getLanguages()
-    {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
-    }
+    const TYPE_STRING = 'sting';
+    const TYPE_INT = 'intiger';
+    const TYPE_FLOAT = 'float';
+    const TYPE_DATE = 'date';
 }

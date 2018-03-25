@@ -107,6 +107,37 @@ class Payment
     protected $additionalInformationTemplate;
 
     /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $cancel;
+
+    /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $refund;
+
+    /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $capture;
+
+    /**
+     * @var array
+     * @since 1.0.0
+     */
+    protected $templateData;
+
+    /**
+     * @var bool
+     * @since 1.0.0
+     */
+    protected $loadJs;
+
+
+    /**
      * WirecardPayment constructor.
      *
      * @since 1.0.0
@@ -115,6 +146,11 @@ class Payment
     {
         $this->name = 'Wirecard Payment Processing Gateway';
         $this->transactionTypes = array('authorization', 'capture');
+
+        //Default back-end operation possibilities
+        $this->cancel = array('authorization');
+        $this->refund = array('capture-authorization');
+        $this->capture = array('authorization');
     }
 
     /**
@@ -204,10 +240,14 @@ class Payment
      *
      * @param $template
      */
-    public function setAdditionalInformationTemplate($template)
+    public function setAdditionalInformationTemplate($template, $data = null)
     {
         $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
             DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
+
+        if ($data != null) {
+            $this->templateData = $data;
+        }
     }
 
     /**
@@ -222,5 +262,77 @@ class Payment
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check if payment method can use capture
+     *
+     * @param string $type
+     * @return bool
+     * @since 1.0.0
+     */
+    public function canCapture($type)
+    {
+        if ($this->capture && in_array($type, $this->capture)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if payment method can use cancel
+     *
+     * @param string $type
+     * @return boolean
+     * @since 1.0.0
+     */
+    public function canCancel($type)
+    {
+        if ($this->cancel && in_array($type, $this->cancel)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if payment method can use refund
+     *
+     * @param string $type
+     * @return boolean
+     * @since 1.0.0
+     */
+    public function canRefund($type)
+    {
+        if ($this->refund && in_array($type, $this->refund)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the template data back
+     *
+     * @return bool|array
+     */
+    public function getTemplateData()
+    {
+        if (isset($this->templateData)) {
+            return $this->templateData;
+        } else {
+            return false;
+        }
+    }
+
+    public function setLoadJs($load)
+    {
+        $this->loadJs = $load;
+    }
+
+    public function getLoadJs()
+    {
+        return isset($this->loadJs) ? $this->loadJs : false;
     }
 }

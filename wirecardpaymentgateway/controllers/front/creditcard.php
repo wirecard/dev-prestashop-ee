@@ -47,6 +47,10 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         parent::initContent();
     }
 
+    /**
+     * Generate Credit Card config
+     * @since 1.0.0
+     */
     public function displayAjaxGetCreditCardConfig()
     {
         $creditCard = new PaymentCreditCard();

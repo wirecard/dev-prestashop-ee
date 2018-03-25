@@ -35,37 +35,35 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
+use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Entity\IdealBic;
 
 /**
- * Class PaymentPaypal
+ * Class PaymentiDEAL
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentPaypal extends Payment
+class PaymentIdeal extends Payment
 {
-
     /**
-     * PaymentPaypal constructor.
+     * PaymentiDEAL constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'paypal';
-        $this->name = 'Wirecard Payment Processing Gateway Paypal';
+        $this->type = 'ideal';
+        $this->name = 'Wirecard Payment Processing Gateway iDEAL';
         $this->formFields = $this->createFormFields();
-
-        $this->cancel  = array( 'authorization' );
-        $this->capture = array( 'authorization' );
-        $this->refund  = array( 'debit', 'capture-authorization' );
+        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
+        $this->setLoadJs(true);
     }
 
     /**
-     * Create form fields for paypal
+     * Create form fields for iDEAL
      *
      * @return array|null
      * @since 1.0.0
@@ -73,27 +71,27 @@ class PaymentPaypal extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'PayPal',
+            'tab' => 'ideal',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway PayPal',
+                    'doc' => 'Enable Wirecard Payment Processing Gateway iDEAL',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway PayPal',
+                    'default' => 'Wirecard Payment Processing Gateway iDEAL',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '2a0e9351-24ed-4110-9a1b-fd0fee6bec26',
+                    'default' => 'b4ca14c0-bb9a-434d-8ce3-65fbff2c2267',
                     'required' => true,
                 ),
                 array(
@@ -128,18 +126,11 @@ class PaymentPaypal extends Payment
                 array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'authorization',
+                    'default' => 'pay',
                     'label'   => 'Payment action',
                     'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
                     ),
-                ),
-                array(
-                    'name' => 'shopping_basket',
-                    'label'   => 'Enable shopping basket',
-                    'type'    => 'onoff',
-                    'default' => 0,
                 ),
                 array(
                     'name' => 'descriptor',
@@ -157,13 +148,13 @@ class PaymentPaypal extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test paypal configuration',
-                    'id' => 'paypalConfig',
-                    'method' => 'paypal',
+                    'buttonText' => 'Test iDEAL configuration',
+                    'id' => 'idealConfig',
+                    'method' => 'iDEAL',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_HTTP_PASS'
                     )
                 )
             )
@@ -171,7 +162,7 @@ class PaymentPaypal extends Payment
     }
 
     /**
-     * Create config for paypal transactions
+     * Create config for iDEAL transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -187,22 +178,44 @@ class PaymentPaypal extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(PayPalTransaction::NAME, $merchantAccountId, $secret);
+        $paymentConfig = new PaymentMethodConfig(IdealTransaction::NAME, $merchantAccountId, $secret);
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create PaypalTransaction
+     * Create iDEALTransaction
      *
-     * @return PayPalTransaction
+     * @return iDEALTransaction
      * @since 1.0.0
      */
     public function createTransaction()
     {
-        $transaction = new PayPalTransaction();
+        $transaction = new IdealTransaction();
 
         return $transaction;
+    }
+
+    /**
+     * Returns all supported banks from iDEAL
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    private function setTemplateData()
+    {
+        return array('banks' => array(
+            array('key' => IdealBic::ABNANL2A, 'label' => 'ABN Amro Bank'),
+            array('key' => IdealBic::ASNBNL21, 'label' => 'ASN Bank'),
+            array('key' => IdealBic::BUNQNL2A, 'label' => 'bunq'),
+            array('key' => IdealBic::INGBNL2A, 'label' => 'ING'),
+            array('key' => IdealBic::KNABNL2H, 'label' => 'Knab'),
+            array('key' => IdealBic::RABONL2U, 'label' => 'Rabobank'),
+            array('key' => IdealBic::RGGINL21, 'label' => 'Regio Bank'),
+            array('key' => IdealBic::SNSBNL2A, 'label' => 'SNS Bank'),
+            array('key' => IdealBic::TRIONL2U, 'label' => 'Triodos Bank'),
+            array('key' => IdealBic::FVLBNL22, 'label' => 'Van Lanschot Bankiers')
+        ));
     }
 }

@@ -27,18 +27,43 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
-class Language
+/**
+ * @property WirecardPaymentGateway module
+ *
+ * @since 1.0.0
+ */
+class WirecardPaymentGatewaySepaModuleFrontController extends ModuleFrontController
 {
-    public $id = 'test';
-
-    public static function getLanguages()
+    public function initContent()
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
+        $this->ajax = true;
+        parent::initContent();
+    }
+
+    /**
+     * Return the SEPA mandate template
+     * @since 1.0.0
+     */
+    public function displayAjaxSepaMandate()
+    {
+        $data = array();
+        $data['creditorName']      = $this->module->getConfigValue('sepa', 'creditor_name');
+        $data['creditorStoreCity'] = $this->module->getConfigValue('sepa', 'creditor_city');
+        $data['creditorId']        = $this->module->getConfigValue('sepa', 'creditor_id');
+        $data['enableBic']         = (bool) $this->module->getConfigValue('sepa', 'creditor_name');
+        $data['additionalText']    = $this->module->getConfigValue('sepa', 'sepa_mandate_textextra');
+        $data['date']              = date('d.m.Y');
+
+        $this->context->smarty->assign($data);
+        $template = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR .
+            'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+            'sepa_mandate.tpl');
+        header('Content-Type: application/json; charset=utf8');
+        die(Tools::jsonEncode(array('html' => $template)));
     }
 }

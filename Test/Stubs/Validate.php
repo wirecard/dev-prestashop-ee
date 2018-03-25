@@ -33,12 +33,10 @@
  * @license GPLv3
  */
 
-class Language
+class Validate
 {
-    public $id = 'test';
-
-    public static function getLanguages()
+    public static function isLoadedObject($object)
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
+        return true;
     }
 }

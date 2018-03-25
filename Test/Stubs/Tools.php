@@ -35,6 +35,9 @@
 
 class Tools
 {
+    static $paymentType = 'paypal';
+    static $action = 'cancel';
+
     public static function isSubmit($string)
     {
         return true;
@@ -47,11 +50,16 @@ class Tools
 
     public static function getValue($string)
     {
-        if ('paymentType' == $string) {
-            return 'paypal';
+        switch ($string) {
+            case 'paymentType':
+                return self::$paymentType;
+                break;
+            case 'action':
+                return self::$action;
+                break;
+            default:
+                return $string;
         }
-
-        return $string;
     }
 
     public static function getAdminTokenLite($string)

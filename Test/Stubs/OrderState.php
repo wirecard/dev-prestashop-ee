@@ -33,12 +33,10 @@
  * @license GPLv3
  */
 
-class Language
+class OrderState
 {
-    public $id = 'test';
-
-    public static function getLanguages()
+    public static function getOrderStates($id)
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
+        return array(array('id_order_state' => 'id', 'name' => 'name'));
     }
 }

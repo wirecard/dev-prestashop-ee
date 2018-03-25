@@ -33,12 +33,12 @@
  * @license GPLv3
  */
 
-class Language
+class Order
 {
-    public $id = 'test';
+    public $id;
 
-    public static function getLanguages()
+    public function __construct($order)
     {
-        return array(array('id_lang' => 'de'), array('id_lang' => 'en'));
+        $this->id = 1;
     }
 }
