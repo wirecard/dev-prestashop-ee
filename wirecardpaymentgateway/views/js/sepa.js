@@ -101,7 +101,8 @@ $(document).ready(
             $('#sepaConfirmButton').toggleClass('disabled');
         }
 
-        function close() {
+        function close()
+        {
             $("#sepaMandateModal").modal('hide');
         }
     }
