@@ -459,7 +459,7 @@ class WirecardPaymentGateway extends PaymentModule
             foreach ($value['fields'] as $f) {
                 $elem = array(
                     'name' => $this->buildParamName($tabname, $f['name']),
-                    'label' => $this->l($f['label']),
+                    'label' => isset($f['label'])?$this->l($f['label']):'',
                     'tab' => $tabname,
                     'type' => $f['type'],
                     'required' => isset($f['required']) && $f['required']
