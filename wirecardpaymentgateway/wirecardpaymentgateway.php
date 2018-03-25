@@ -38,6 +38,7 @@ use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
+use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
@@ -257,6 +258,45 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * return available country iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCountries()
+    {
+        $cookie = $this->context->cookie;
+        $countries = Country::getCountries($cookie->id_lang);
+        $ret = array();
+        foreach ($countries as $country) {
+            $ret[] = array(
+                'key' => $country['iso_code'],
+                'value' => $country['name']
+            );
+        }
+        return $ret;
+    }
+
+    /**
+     * return available currency iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCurrencies()
+    {
+        $currencies = Currency::getCurrencies();
+        $ret = array();
+        foreach ($currencies as $currency) {
+            $ret[] = array(
+                'key' => $currency['iso_code'],
+                'value' => $currency['name']
+            );
+        }
+        return $ret;
+    }
+
+    /**
      * Payment options hook
      *
      * @param $params
@@ -374,7 +414,8 @@ class WirecardPaymentGateway extends PaymentModule
             'paypal' => new PaymentPaypal(),
             'creditcard' => new PaymentCreditCard(),
             'sepa' => new PaymentSepa(),
-            'ideal' => new PaymentIdeal()
+            'ideal' => new PaymentIdeal(),
+            'ratepayinvoice' => new PaymentGuaranteedInvoiceRatepay()
         );
 
         return $payments;
@@ -495,6 +536,9 @@ class WirecardPaymentGateway extends PaymentModule
                         break;
 
                     case 'select':
+                        if (isset($f['multiple'])) {
+                            $elem['multiple'] = $f['multiple'];
+                        }
                         if (isset($f['options'])) {
                             $optfunc = $f['options'];
                             $options = array();
