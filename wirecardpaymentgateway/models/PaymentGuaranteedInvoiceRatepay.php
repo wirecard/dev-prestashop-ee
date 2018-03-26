@@ -49,6 +49,7 @@ use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
  */
 class PaymentGuaranteedInvoiceRatepay extends Payment
 {
+    const MIN_AGE = 18;
 
     /**
      * PaymentGuaranteedInvoiceRatepay constructor.
@@ -235,5 +236,43 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $transaction = new RatepayInvoiceTransaction();
 
         return $transaction;
+    }
+
+    /**
+     * @param \PaymentModule $module
+     * @param \Cart $cart
+     * @return bool
+     * @since 1.0.0
+     */
+    public function isAvailable($module, $cart)
+    {
+        /** @var \Customer $customer */
+        $customer = new \Customer($cart->id_customer);
+
+        /** @var \Address $billingAddress */
+        $billingAddress = new \Address($cart->id_address_invoice);
+
+        /** @var \Address $shippingAddress */
+        $shippingAddress = new \Address($cart->id_address_delivery);
+
+        $birthDay = new \DateTime($customer->birthday);
+        $difference = $birthDay->diff(new \DateTime());
+        $age = $difference->format('%y');
+
+        if ($age < self::MIN_AGE) {
+            return false;
+        }
+
+        if (! $this->isInLimit($module, $cart->getOrderTotal())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isInLimit($module, $total)
+    {
+        //$minimum = $module->getConfigValue($this->type, 'merchant_account_id');
+        return true;
     }
 }
