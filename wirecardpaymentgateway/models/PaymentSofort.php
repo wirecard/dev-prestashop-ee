@@ -182,7 +182,8 @@ class PaymentSofort extends Payment
         $paymentConfig = new PaymentMethodConfig(
             SofortTransaction::NAME,
             $merchantAccountId,
-            $secret);
+            $secret
+        );
         $config->add($paymentConfig);
 
         return $config;

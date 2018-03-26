@@ -254,7 +254,8 @@ class PaymentSepa extends Payment
         $additionalInformation = new AdditionalInformation();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder(
             $transactionData->cart_id,
-            'billing'));
+            'billing'
+        ));
         $transaction->setParentTransactionId($transactionData->transaction_id);
         $mandate = new Mandate($this->generateMandateId($paymentModule, $transactionData->order_id));
         $transaction->setMandate($mandate);
