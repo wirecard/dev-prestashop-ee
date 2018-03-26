@@ -267,6 +267,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
             return false;
         }
 
+        if (! $this->isValidAddress($module, $shippingAddress, $billingAddress)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -288,5 +292,74 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return true;
+    }
+
+    /**
+     * Validate address information (shipping, billing)
+     *
+     * @param \WirecardPaymentGateway $module
+     * @param \Address $shipping
+     * @param \Address $billing
+     * @return bool
+     * @since 1.0.0
+     */
+    private function isValidAddress($module, $shipping, $billing)
+    {
+        $isSame = $module->getConfigValue($this->type, 'billingshipping_same');
+        if ($isSame && $shipping->id != $billing->id) {
+            $fields = array(
+                'country',
+                'company',
+                'firstname',
+                'lastname',
+                'address1',
+                'postcode',
+                'city'
+            );
+            foreach ($fields as $f) {
+                if ($billing->$f != $shipping->$f) {
+                    return false;
+                }
+            }
+        }
+
+        if (count($this->getAllowedCountries($module, 'shipping'))) {
+            $c = new \Country($shipping->id_country);
+            if (!in_array($c->iso_code, $this->getAllowedCountries($module, 'shipping'))) {
+                return false;
+            }
+        }
+
+        if (count($this->getAllowedCountries($module, 'billing'))) {
+            $c = new \Country($shipping->id_country);
+            if (!in_array($c->iso_code, $this->getAllowedCountries($module, 'billing'))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get array with allowed countries per address type
+     *
+     * @param \WirecardPaymentGateway $module
+     * @param string $type
+     * @return array
+     * @since 1.0.0
+     */
+    private function getAllowedCountries($module, $type)
+    {
+        $val = $module->getConfigValue($this->type, $type. '_countries');
+        if (!\Tools::strlen($val)) {
+            return array();
+        }
+
+        $countries = \Tools::jsonDecode($val);
+        if (!is_array($countries)) {
+            return array();
+        }
+
+        return $countries;
     }
 }

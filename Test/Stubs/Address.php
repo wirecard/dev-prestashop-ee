@@ -43,4 +43,5 @@ class Address
     public $lastname;
     public $phone;
     public $id_country;
+    public $id;
 }
