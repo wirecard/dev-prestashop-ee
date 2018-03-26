@@ -85,8 +85,13 @@ class Tools
         return false;
     }
 
-    public static function jsonEncode($string)
+    public static function jsonEncode($var)
     {
-        return json_encode($string);
+        return json_encode($var);
+    }
+
+    public static function jsonDecode($var)
+    {
+        return json_decode($var);
     }
 }

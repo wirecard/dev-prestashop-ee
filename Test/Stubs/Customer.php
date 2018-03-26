@@ -36,5 +36,5 @@
 class Customer
 {
     public $email;
-
+    public $birthday;
 }
