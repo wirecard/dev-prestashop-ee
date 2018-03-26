@@ -37,6 +37,8 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use Wirecard\PaymentSdk\Transaction\Operation;
 
 /**
  * Class PaymentSofort
@@ -54,9 +56,11 @@ class PaymentSofort extends Payment
      */
     public function __construct()
     {
-        $this->type = 'sofort';
+        $this->type = 'sofortbanking';
         $this->name = 'Wirecard Payment Processing Gateway Pay now.';
         $this->formFields = $this->createFormFields();
+
+        $this->refund  = array('debit');
     }
 
     /**
@@ -68,7 +72,7 @@ class PaymentSofort extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'sofort',
+            'tab' => 'sofortbanking',
             'fields' => array(
                 array(
                     'name' => 'enabled',
@@ -146,12 +150,12 @@ class PaymentSofort extends Payment
                     'type' => 'linkbutton',
                     'required' => false,
                     'buttonText' => 'Test Pay now. configuration',
-                    'id' => 'sofortConfig',
-                    'method' => 'sofort',
+                    'id' => 'sofortbankingConfig',
+                    'method' => 'sofortbanking',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_PASS'
                     )
                 )
             )
@@ -175,7 +179,10 @@ class PaymentSofort extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(SofortTransaction::NAME, $merchantAccountId, $secret);
+        $paymentConfig = new PaymentMethodConfig(
+            SofortTransaction::NAME,
+            $merchantAccountId,
+            $secret);
         $config->add($paymentConfig);
 
         return $config;
@@ -192,5 +199,17 @@ class PaymentSofort extends Payment
         $transaction = new SofortTransaction();
 
         return $transaction;
+    }
+
+    /**
+     * Create refund Sofort.
+     * @param $transactionData
+     * @param $paymentModule
+     * @return SepaTransaction
+     */
+    public function createRefundTransaction($transactionData, $paymentModule)
+    {
+        $sepa = new PaymentSepa();
+        return $sepa->createRefundTransaction($transactionData, $paymentModule);
     }
 }

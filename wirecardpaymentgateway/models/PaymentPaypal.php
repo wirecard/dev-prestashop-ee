@@ -37,6 +37,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
  * Class PaymentPaypal
@@ -202,6 +203,32 @@ class PaymentPaypal extends Payment
     public function createTransaction()
     {
         $transaction = new PayPalTransaction();
+
+        return $transaction;
+    }
+
+    /**
+     * @param $transactionData
+     * @return PayPalTransaction
+     */
+    public function createCancelTransaction($transactionData)
+    {
+        $transaction = new PayPalTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        return $transaction;
+    }
+
+    /**
+     * @param $transactionData
+     * @return PayPalTransaction
+     */
+    public function createPayTransaction($transactionData)
+    {
+        $transaction = new PayPalTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }

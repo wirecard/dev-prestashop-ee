@@ -375,7 +375,7 @@ class WirecardPaymentGateway extends PaymentModule
             'creditcard' => new PaymentCreditCard(),
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
-            'sofort' => new PaymentSofort()
+            'sofortbanking' => new PaymentSofort()
         );
 
         return $payments;

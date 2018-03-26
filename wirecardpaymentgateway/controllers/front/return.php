@@ -58,33 +58,50 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     {
         $response = $_REQUEST;
         $paymentType = Tools::getValue('payment_type');
+        $paymentState = Tools::getValue('payment_state');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
-        try {
-            $transactionService = new TransactionService($config, new WirecardLogger());
-            $result = $transactionService->handleResponse($response);
-            if ($result instanceof SuccessResponse) {
-                $this->processSuccess($result);
-            } elseif ($result instanceof FailureResponse) {
-                $errors = "";
-                foreach ($result->getStatusCollection()->getIterator() as $item) {
-                    $errors .= $item->getDescription() . "<br>";
+
+        if ($paymentState == 'success') {
+            try {
+                $transactionService = new TransactionService($config, new WirecardLogger());
+                $result = $transactionService->handleResponse($response);
+                if ($result instanceof SuccessResponse) {
+                    $this->processSuccess($result);
+                } elseif ($result instanceof FailureResponse) {
+                    $errors = "";
+                    foreach ($result->getStatusCollection()->getIterator() as $item) {
+                        $errors .= $item->getDescription() . "<br>";
+                    }
+                    $this->errors = $errors;
+                    $this->redirectWithNotifications($this->context->link->getPageLink('order'));
                 }
-                $this->errors = $errors;
+            } catch (\InvalidArgumentException $exception) {
+                $this->errors = 'Invalid Argument: ' . $exception->getMessage();
+                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            } catch (\MalformedResponseException $exception) {
+                $this->errors = 'Malformed Response: ' . $exception->getMessage();
+                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            } catch (Exception $exception) {
+                $this->errors = $exception->getMessage();
                 $this->redirectWithNotifications($this->context->link->getPageLink('order'));
             }
-        } catch (\InvalidArgumentException $exception) {
-            $this->errors = 'Invalid Argument: ' . $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        } catch (MalformedResponseException $exception) {
-            $this->errors = 'Malformed Response: ' . $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        } catch (Exception $exception) {
-            $this->errors = $exception->getMessage();
+        } else {
+            $cartId = Tools::getValue('id_cart');
+            $logger = new WirecardLogger();
+            $logger->error('CartId: '.print_r($cartId, true));
+            $orderId = Order::getIdByCartId((int)$cartId);
+            $logger->error('OrderId: '.print_r($orderId, true));
+            $order = new Order($orderId);
+            $order->delete();
+
+            if ($paymentState == 'cancel') {
+                $this->errors = 'You have canceled the payment process.';
+            } else {
+                $this->errors = 'Something went wrong during the payment process.';
+            }
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
-        $this->errors = 'Something went wrong during the payment process.';
-        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 
     /**

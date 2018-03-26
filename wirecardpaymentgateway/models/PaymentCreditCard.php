@@ -270,4 +270,30 @@ class PaymentCreditCard extends Payment
 
         return $transaction;
     }
+
+    /**
+     * @param $transactionData
+     * @return CreditCardTransaction
+     */
+    public function createCancelTransaction($transactionData)
+    {
+        $transaction = new CreditCardTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        return $transaction;
+    }
+
+    /**
+     * @param $transactionData
+     * @return CreditCardTransaction
+     */
+    public function createPayTransaction($transactionData)
+    {
+        $transaction = new CreditCardTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        return $transaction;
+    }
 }
