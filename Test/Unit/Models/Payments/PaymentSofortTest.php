@@ -60,7 +60,10 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
         $this->transactionData->order_id = 'my_secret_order_id';
-        $this->transactionData->cart_id = 20;
+        $this->transactionData->cart_id = new stdClass();
+        $this->transactionData->cart_id->id_customer = 11;
+        $this->transactionData->cart_id->id_address_invoice = 12;
+        $this->transactionData->cart_id->id_address_delivery = 13;
     }
 
     public function testName()
