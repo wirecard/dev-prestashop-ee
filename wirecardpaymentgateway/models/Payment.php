@@ -335,4 +335,16 @@ class Payment
     {
         return isset($this->loadJs) ? $this->loadJs : false;
     }
+
+    /**
+     * Check if payment is available for specific cart content default true
+     *
+     * @param $cart
+     * @return bool
+     * @since 1.0.0
+     */
+    public function isAvailable($cart)
+    {
+        return true;
+    }
 }
