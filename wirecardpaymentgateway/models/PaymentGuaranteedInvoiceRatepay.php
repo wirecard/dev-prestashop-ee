@@ -128,6 +128,11 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'required' => true,
                 ),
                 array(
+                    'name' => 'payment_action',
+                    'type'    => 'hidden',
+                    'default' => 'reserve',
+                ),
+                array(
                     'name' => 'billingshipping_same',
                     'label' => 'Billing/Shipping address must be identical',
                     'type' => 'onoff',

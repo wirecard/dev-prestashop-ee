@@ -125,12 +125,8 @@ class PaymentIdeal extends Payment
                 ),
                 array(
                     'name' => 'payment_action',
-                    'type'    => 'select',
+                    'type'    => 'hidden',
                     'default' => 'pay',
-                    'label'   => 'Payment action',
-                    'options' => array(
-                        array('key' => 'pay', 'value' => 'Capture'),
-                    ),
                 ),
                 array(
                     'name' => 'descriptor',

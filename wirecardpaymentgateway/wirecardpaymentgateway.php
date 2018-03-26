@@ -569,7 +569,9 @@ class WirecardPaymentGateway extends PaymentModule
                         break;
                 }
 
-                $input_fields[] = $elem;
+                if ( 'hidden' != $f['type']) {
+                    $input_fields[] = $elem;
+                }
             }
         }
         return array('inputFields' => $input_fields, 'tabs' => $tabs);
