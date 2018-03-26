@@ -113,8 +113,13 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
         $actual->setAccountHolder($accountHolder);
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setMandate(new \Wirecard\PaymentSdk\Entity\Mandate('-my_secret_order_id-'. strtotime(date('Y-m-d H:i:s'))));
+        $actual->setMandate(new \Wirecard\PaymentSdk\Entity\Mandate(
+            '-my_secret_order_id-'. strtotime(date('Y-m-d H:i:s'))
+        ));
 
-        $this->assertEquals($actual, $this->payment->createRefundTransaction($this->transactionData, $this->paymentModule));
+        $this->assertEquals($actual, $this->payment->createRefundTransaction(
+            $this->transactionData,
+            $this->paymentModule
+        ));
     }
 }
