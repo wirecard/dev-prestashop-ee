@@ -239,7 +239,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * @param \PaymentModule $module
+     * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @return bool
      * @since 1.0.0
@@ -270,9 +270,23 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         return true;
     }
 
+    /**
+     * Check if total amount is in limit minimum and maximum amount
+     *
+     * @param \WirecardPaymentGateway $module
+     * @param float $total
+     * @return bool
+     * @since 1.0.0
+     */
     private function isInLimit($module, $total)
     {
-        //$minimum = $module->getConfigValue($this->type, 'merchant_account_id');
+        $minimum = $module->getConfigValue($this->type, 'amount_min');
+        $maximum = $module->getConfigValue($this->type, 'amount_max');
+
+        if ($minimum > $total || $total > $maximum) {
+            return false;
+        }
+
         return true;
     }
 }
