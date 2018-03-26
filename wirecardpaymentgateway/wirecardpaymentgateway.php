@@ -431,6 +431,10 @@ class WirecardPaymentGateway extends PaymentModule
         if (Tools::isSubmit('btnSubmit')) {
             foreach ($this->getAllConfigurationParameters() as $parameter) {
                 $val = Tools::getValue($parameter['param_name']);
+
+                if (is_array($val)) {
+                    $val = Tools::jsonEncode($val);
+                }
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
@@ -539,6 +543,11 @@ class WirecardPaymentGateway extends PaymentModule
                         if (isset($f['multiple'])) {
                             $elem['multiple'] = $f['multiple'];
                         }
+
+                        if (isset($f['size'])) {
+                            $elem['size'] = $f['size'];
+                        }
+
                         if (isset($f['options'])) {
                             $optfunc = $f['options'];
                             $options = array();

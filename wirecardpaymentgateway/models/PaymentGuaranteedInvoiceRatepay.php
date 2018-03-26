@@ -41,7 +41,7 @@ use Wirecard\PaymentSdk\Transaction\RatepayInstallmentTransaction;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 
 /**
- * Class PaymentPaypal
+ * Class PaymentGuaranteedInvoiceRatepay
  *
  * @extends Payment
  *
@@ -51,7 +51,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 {
 
     /**
-     * PaymentPaypal constructor.
+     * PaymentGuaranteedInvoiceRatepay constructor.
      *
      * @since 1.0.0
      */
@@ -137,7 +137,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'name' => 'shipping_countries',
                     'label' => 'Allowed shipping countries',
                     'type' => 'select',
-                    'multiple'=>true,
                     'size'=>10,
                     'default' => array('AT', 'DE', 'CH'),
                     'options'=>'getCountries'
@@ -185,12 +184,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'type' => 'linkbutton',
                     'required' => false,
                     'buttonText' => 'Test configuration',
-                    'id' => 'paypalConfig',
-                    'method' => 'paypal',
+                    'id' => 'invoiceConfig',
+                    'method' => 'invoice',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_INVOICE_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_INVOICE_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_INVOICE_HTTP_PASS'
                     )
                 )
             )
