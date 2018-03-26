@@ -233,7 +233,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         $order = new Order($orderManager->createOrder(
             $cart,
-            OrderManager::WIRECARD_OS_AWAITING,
+            OrderManager::WIRECARD_OS_STARTING,
             $paymentMethod
         ));
 

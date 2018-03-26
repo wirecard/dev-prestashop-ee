@@ -116,6 +116,7 @@ class WirecardPaymentGateway extends PaymentModule
         $orderManager = new OrderManager($this);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
+        $orderManager->createOrderState(OrderManager::WIRECARD_OS_STARTING);
 
         $this->installTabs();
 

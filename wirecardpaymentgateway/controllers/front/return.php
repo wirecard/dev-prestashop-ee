@@ -37,6 +37,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -88,15 +89,13 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             }
         } else {
             $cartId = Tools::getValue('id_cart');
-            $logger = new WirecardLogger();
-            $logger->error('CartId: '.print_r($cartId, true));
             $orderId = Order::getIdByCartId((int)$cartId);
-            $logger->error('OrderId: '.print_r($orderId, true));
             $order = new Order($orderId);
-            $order->delete();
-
-            if ($paymentState == 'cancel') {
-                $this->errors = 'You have canceled the payment process.';
+            if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+                $order->delete();
+                if ($paymentState == 'cancel') {
+                    $this->errors = 'You have canceled the payment process.';
+                }
             } else {
                 $this->errors = 'Something went wrong during the payment process.';
             }
@@ -117,6 +116,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $orderId = Order::getIdByCartId((int)$cartId);
         $customer = new Customer($cart->id_customer);
         $order = new Order($orderId);
+        $order->setOrderStatus(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
 
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {

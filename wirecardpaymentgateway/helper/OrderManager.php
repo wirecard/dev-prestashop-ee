@@ -42,6 +42,7 @@ namespace WirecardEE\Prestashop\Helper;
  */
 class OrderManager
 {
+    const WIRECARD_OS_STARTING = 'WIRECARD_OS_STARTING';
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
 
@@ -129,6 +130,11 @@ class OrderManager
     private function getOrderStateInfo($stateName)
     {
         switch ($stateName) {
+            case self::WIRECARD_OS_STARTING:
+                return array(
+                    'de' => 'Wirecard Bezahlung started',
+                    'en' => 'Wirecard payment started',
+                );
             case self::WIRECARD_OS_AUTHORIZATION:
                 return array(
                     'de' => 'Wirecard Bezahlung authorisiert',
