@@ -255,6 +255,9 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         /** @var \Address $shippingAddress */
         $shippingAddress = new \Address($cart->id_address_delivery);
 
+        /** @var \Currency $currency */
+        $currency = new \Currency($cart->id_currency);
+
         $birthDay = new \DateTime($customer->birthday);
         $difference = $birthDay->diff(new \DateTime());
         $age = $difference->format('%y');
@@ -268,6 +271,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         if (! $this->isValidAddress($module, $shippingAddress, $billingAddress)) {
+            return false;
+        }
+
+        if (! in_array($currency->iso_code, $this->getAllowedCurrencies($module))) {
             return false;
         }
 
@@ -361,5 +368,27 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return $countries;
+    }
+
+    /**
+     * Get array with allowed currencies
+     *
+     * @param \WirecardPaymentGateway $module
+     * @return array
+     * @since 1.0.0
+     */
+    private function getAllowedCurrencies($module)
+    {
+        $val = $module->getConfigValue($this->type, 'allowed_currencies');
+        if (!\Tools::strlen($val)) {
+            return array();
+        }
+
+        $currencies = \Tools::jsonDecode($val);
+        if (!is_array($currencies)) {
+            return array();
+        }
+
+        return $currencies;
     }
 }
