@@ -415,7 +415,7 @@ class WirecardPaymentGateway extends PaymentModule
             'creditcard' => new PaymentCreditCard(),
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
-            'ratepayinvoice' => new PaymentGuaranteedInvoiceRatepay()
+            'invoice' => new PaymentGuaranteedInvoiceRatepay()
         );
 
         return $payments;

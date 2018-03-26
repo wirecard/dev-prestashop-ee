@@ -67,7 +67,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * Create form fields for paypal
+     * Create form fields for invoice
      *
      * @return array|null
      * @since 1.0.0
@@ -88,7 +88,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway Invoice',
+                    'default' => 'Wirecard Payment Processing Gateway Guaranteed Invoice',
                     'required' => true,
                 ),
                 array(
@@ -137,7 +137,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'name' => 'shipping_countries',
                     'label' => 'Allowed shipping countries',
                     'type' => 'select',
-                    'size'=>10,
+                    'size'=> 10,
                     'default' => array('AT', 'DE', 'CH'),
                     'options'=>'getCountries'
                 ),
@@ -146,7 +146,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'label' => 'Allowed billing countries',
                     'type' => 'select',
                     'multiple'=>true,
-                    'size'=>10,
+                    'size'=> 10,
                     'default' => array('AT', 'DE', 'CH'),
                     'options'=>'getCountries'
                 ),
