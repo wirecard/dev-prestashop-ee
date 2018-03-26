@@ -222,11 +222,13 @@ class WirecardPaymentGateway extends PaymentModule
                     $val = Tools::strlen($val) ? Tools::jsonDecode($val) : array();
                 }
                 $x = array();
-                foreach ($val as $v) {
-                    $x[$v] = $v;
+                if (is_array($val)) {
+                    foreach ($val as $v) {
+                        $x[$v] = $v;
+                    }
+                    $pname = $parameter['param_name'] . '[]';
+                    $values[$pname] = $x;
                 }
-                $pname = $parameter['param_name'] . '[]';
-                $values[$pname] = $x;
             } else {
                 $values[$parameter['param_name']] = $val;
             }
@@ -573,7 +575,7 @@ class WirecardPaymentGateway extends PaymentModule
                         break;
                 }
 
-                if ( 'hidden' != $f['type']) {
+                if ('hidden' != $f['type']) {
                     $input_fields[] = $elem;
                 }
             }
