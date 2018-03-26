@@ -111,7 +111,6 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
     public function testGetRequestData()
     {
         $expected = array(
-            'request_time_stamp' => gmdate('YmdHis'),
             'transaction_type' => 'authorization-only',
             'merchant_account_id' => 'merchant_account_id',
             'requested_amount' => 0,
@@ -125,8 +124,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         }
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule));
         //unset the generated request id as it is different every time
-        unset($actual['request_id'], $actual['request_signature']);
-
+        unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
         $this->assertEquals($expected, $actual);
     }
 }
