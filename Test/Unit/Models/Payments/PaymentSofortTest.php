@@ -33,17 +33,15 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentPaypal;
+use WirecardEE\Prestashop\Models\PaymentSofort;
 
-class PaymentPaypalTest extends PHPUnit_Framework_TestCase
+class PaymentSofortTest extends PHPUnit_Framework_TestCase
 {
     private $payment;
 
     private $paymentModule;
 
     private $config;
-
-    private $transactionData;
 
     public function setUp()
     {
@@ -57,19 +55,19 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentPaypal();
+        $this->payment = new PaymentSofort();
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
-        $this->transactionData->amount = 20;
-        $this->transactionData->currency = 'EUR';
+        $this->transactionData->order_id = 'my_secret_order_id';
+        $this->transactionData->cart_id = 20;
     }
 
     public function testName()
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway Paypal';
+        $expected = 'Wirecard Payment Processing Gateway Pay now.';
 
         $this->assertEquals($expected, $actual);
     }
@@ -82,15 +80,18 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn($this->config[0]);
-        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn($this->config[1]);
-        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn($this->config[2]);
-        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn($this->config[3]);
-        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[4]);
+        for ($i = 0; $i <= 4; $i++) {
+            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
+        }
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig('paypal', 'merchant_account_id', 'secret'));
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
+            'sofortbanking',
+            'merchant_account_id',
+            'secret'
+        );
+        $expected->add($expectedPaymentConfig);
 
         $this->assertEquals($expected, $actual);
     }
@@ -100,25 +101,20 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction();
 
-        $expected = 'paypal';
+        $expected = 'sofortbanking';
         $this->assertEquals($expected, $actual::NAME);
     }
 
-    public function testCreateCancelTransaction()
+
+    public function testCreateRefundTransaction()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\PayPalTransaction();
+        $actual = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
+        $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
+        $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
+        $actual->setAccountHolder($accountHolder);
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
+        $actual->setMandate(new \Wirecard\PaymentSdk\Entity\Mandate('-my_secret_order_id-'. strtotime(date('Y-m-d H:i:s'))));
 
-        $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
-    }
-
-    public function testCreatePayTransaction()
-    {
-        $actual = new \Wirecard\PaymentSdk\Transaction\PayPalTransaction();
-        $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
-
-        $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
+        $this->assertEquals($actual, $this->payment->createRefundTransaction($this->transactionData, $this->paymentModule));
     }
 }

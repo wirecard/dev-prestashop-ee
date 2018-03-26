@@ -56,6 +56,11 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->payment = new PaymentIdeal();
+
+        $this->transactionData = new stdClass();
+        $this->transactionData->transaction_id = 'my_secret_id';
+        $this->transactionData->order_id = 'my_secret_order_id';
+        $this->transactionData->cart_id = 20;
     }
 
     public function testName()
@@ -98,5 +103,18 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
 
         $expected = 'ideal';
         $this->assertEquals($expected, $actual::NAME);
+    }
+
+
+    public function testCreateRefundTransaction()
+    {
+        $actual = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
+        $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
+        $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
+        $actual->setAccountHolder($accountHolder);
+        $actual->setParentTransactionId('my_secret_id');
+        $actual->setMandate(new \Wirecard\PaymentSdk\Entity\Mandate('-my_secret_order_id-'. strtotime(date('Y-m-d H:i:s'))));
+
+        $this->assertEquals($actual, $this->payment->createRefundTransaction($this->transactionData, $this->paymentModule));
     }
 }

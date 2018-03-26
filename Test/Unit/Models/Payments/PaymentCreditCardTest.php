@@ -43,6 +43,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     private $config;
 
+    private $transactionData;
+
     public function setUp()
     {
         $this->config = array(
@@ -65,6 +67,11 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->payment = new PaymentCreditCard();
+
+        $this->transactionData = new stdClass();
+        $this->transactionData->transaction_id = 'my_secret_id';
+        $this->transactionData->amount = 20;
+        $this->transactionData->currency = 'EUR';
     }
 
     public function testName()
@@ -128,5 +135,23 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         unset($actual['request_id'], $actual['request_signature']);
 
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testCreateCancelTransaction()
+    {
+        $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
+        $actual->setParentTransactionId('my_secret_id');
+        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
+
+        $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
+    }
+
+    public function testCreatePayTransaction()
+    {
+        $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
+        $actual->setParentTransactionId('my_secret_id');
+        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
+
+        $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
     }
 }
