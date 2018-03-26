@@ -84,4 +84,9 @@ class Tools
         }
         return false;
     }
+
+    public static function jsonEncode($string)
+    {
+        return json_encode($string);
+    }
 }

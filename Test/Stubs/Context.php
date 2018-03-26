@@ -60,6 +60,7 @@ class Context
         $this->language = new Language();
         $this->smarty = new Smarty();
         $this->cart = new Cart();
+        $this->cookie = new Cookie();
     }
 
     public static function getContext()
