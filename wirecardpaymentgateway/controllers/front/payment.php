@@ -91,7 +91,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             );
 
             /** @var Transaction $transaction */
-            $transaction = $payment->createTransaction();
+            $transaction = $payment->createTransaction($this->module, $cart);
             $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
             $transaction->setRedirect($redirectUrls);
             $transaction->setAmount(new Amount($amount, $currency->iso_code));

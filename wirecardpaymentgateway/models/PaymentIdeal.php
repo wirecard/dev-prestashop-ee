@@ -186,7 +186,7 @@ class PaymentIdeal extends Payment
      * @return iDEALTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart)
     {
         $transaction = new IdealTransaction();
 

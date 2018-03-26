@@ -226,11 +226,12 @@ class Payment
     /**
      * Create Default Transaction
      *
-     * @param array
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
      * @return null
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart)
     {
         return null;
     }

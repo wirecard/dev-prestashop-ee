@@ -134,7 +134,7 @@ class AdditionalInformation
         $transaction->setDescriptor($this->createDescriptor($id));
         $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing'));
         $transaction->setShipping($this->createAccountHolder($cart, 'shipping'));
-        //$transaction->setOrderNumber($id);
+        $transaction->setOrderNumber($id);
         $transaction->setBasket($this->createBasket($cart, $transaction, $currency));
         $transaction->setIpAddress($this->getConsumerIpAddress());
         $transaction->setConsumerId($cart->id_customer);
@@ -167,6 +167,7 @@ class AdditionalInformation
             $accountHolder->setFirstName($billing->firstname);
             $accountHolder->setLastName($billing->lastname);
             $accountHolder->setPhone($billing->phone);
+            $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
         }
 
         return $accountHolder;

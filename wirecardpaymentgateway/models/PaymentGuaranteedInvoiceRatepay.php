@@ -35,10 +35,10 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Transaction\RatepayInstallmentTransaction;
+use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
  * Class PaymentGuaranteedInvoiceRatepay
@@ -64,7 +64,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $this->cancel  = array( 'authorization' );
         $this->capture = array( 'authorization' );
-        $this->refund  = array( 'debit', 'capture-authorization' );
+        $this->refund  = array( 'capture-authorization' );
     }
 
     /**
@@ -180,6 +180,11 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'validator' => 'numeric'
                 ),
                 array(
+                    'name' => 'shopping_basket',
+                    'type'    => 'hidden',
+                    'default' => 1,
+                ),
+                array(
                     'name' => 'send_additional',
                     'label'   => 'Send additional information',
                     'type'    => 'onoff',
@@ -231,9 +236,23 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return RatepayInvoiceTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart)
     {
         $transaction = new RatepayInvoiceTransaction();
+
+        $additionalInformation = new AdditionalInformation();
+        $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
+        $transaction->setOrderNumber($cart->id);
+        $device = new Device();
+        $transaction->setDevice($device->setFingerPrint('test'));
+
+        /*if (strlen($this->checkoutSession->getData('invoiceDeviceIdent'))) {
+            $deviceIdent = $this->checkoutSession->getData('invoiceDeviceIdent');
+            $device = new \Wirecard\PaymentSdk\Entity\Device();
+            $device->setFingerprint($deviceIdent);
+            $transaction->setDevice($device);
+            $this->checkoutSession->unsetData('invoiceDeviceIdent');
+        }*/
 
         return $transaction;
     }

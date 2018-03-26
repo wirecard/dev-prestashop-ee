@@ -231,7 +231,7 @@ class PaymentSepa extends Payment
      * @return SepaTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart)
     {
         $transaction = new SepaTransaction();
 

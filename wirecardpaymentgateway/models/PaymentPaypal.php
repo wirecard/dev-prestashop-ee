@@ -199,7 +199,7 @@ class PaymentPaypal extends Payment
      * @return PayPalTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart)
     {
         $transaction = new PayPalTransaction();
 
