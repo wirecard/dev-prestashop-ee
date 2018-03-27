@@ -62,7 +62,6 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $paymentState = Tools::getValue('payment_state');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
-
         if ($paymentState == 'success') {
             try {
                 $transactionService = new TransactionService($config, new WirecardLogger());
@@ -116,8 +115,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $orderId = Order::getIdByCartId((int)$cartId);
         $customer = new Customer($cart->id_customer);
         $order = new Order($orderId);
-        $order->setOrderStatus(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-
+        $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {
             $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();

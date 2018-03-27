@@ -39,6 +39,7 @@ use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Models\PaymentSofort;
+use WirecardEE\Prestashop\Models\PaymentPoiPia;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
@@ -376,7 +377,8 @@ class WirecardPaymentGateway extends PaymentModule
             'creditcard' => new PaymentCreditCard(),
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
-            'sofortbanking' => new PaymentSofort()
+            'sofortbanking' => new PaymentSofort(),
+            'poipia' => new PaymentPoiPia()
         );
 
         return $payments;
