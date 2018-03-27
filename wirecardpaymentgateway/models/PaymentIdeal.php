@@ -192,9 +192,12 @@ class PaymentIdeal extends Payment
      * @return iDEALTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart)
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new IdealTransaction();
+        if (isset($values['idealBankBic'])) {
+            $transaction->setBic($values['idealBankBic']);
+        }
 
         return $transaction;
     }

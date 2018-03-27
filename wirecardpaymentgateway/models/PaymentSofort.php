@@ -191,7 +191,7 @@ class PaymentSofort extends Payment
      * @return SofortTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new SofortTransaction();
 

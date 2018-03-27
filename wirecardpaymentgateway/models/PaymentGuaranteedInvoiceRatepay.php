@@ -238,7 +238,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return RatepayInvoiceTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart)
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $ident = '';
         if (isset($module->context->cookie->wirecardDeviceIdent)) {

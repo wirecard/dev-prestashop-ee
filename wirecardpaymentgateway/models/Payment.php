@@ -231,7 +231,7 @@ class Payment
      * @return null
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart)
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         return null;
     }

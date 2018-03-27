@@ -91,7 +91,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             );
 
             /** @var Transaction $transaction */
-            $transaction = $payment->createTransaction($this->module, $cart);
+            $transaction = $payment->createTransaction($this->module, $cart, Tools::getAllValues(), $orderId);
             $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
             $transaction->setRedirect($redirectUrls);
             $transaction->setAmount(new Amount($amount, $currency->iso_code));
@@ -119,10 +119,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
                 $mandate = new \Wirecard\PaymentSdk\Entity\Mandate($this->generateMandateId($orderId));
                 $transaction->setMandate($mandate);
-            }
-
-            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\IdealTransaction) {
-                $transaction->setBic(Tools::getValue('idealBankBic'));
             }
 
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
