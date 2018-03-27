@@ -35,9 +35,13 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Entity\Mandate;
 use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\IdealBic;
+use Wirecard\PaymentSdk\Transaction\SepaTransaction;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use Wirecard\PaymentSdk\Transaction\Operation;
 
 /**
  * Class PaymentiDEAL
@@ -60,6 +64,8 @@ class PaymentIdeal extends Payment
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
+
+        $this->refund  = array('debit');
     }
 
     /**
@@ -191,6 +197,18 @@ class PaymentIdeal extends Payment
         $transaction = new IdealTransaction();
 
         return $transaction;
+    }
+
+    /**
+     * Create refund iDEALTransaction
+     * @param $transactionData
+     * @param $paymentModule
+     * @return SepaTransaction
+     */
+    public function createRefundTransaction($transactionData, $paymentModule)
+    {
+        $sepa = new PaymentSepa();
+        return $sepa->createRefundTransaction($transactionData, $paymentModule);
     }
 
     /**

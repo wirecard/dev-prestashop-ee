@@ -36,6 +36,9 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SepaTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use Wirecard\PaymentSdk\Transaction\Operation;
+use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
  * Class PaymentCreditCard
@@ -238,6 +241,28 @@ class PaymentSepa extends Payment
         return $transaction;
     }
 
+    /**
+     * Create refund SepaTransaction
+     * @param $transactionData
+     * @param $paymentModule
+     * @return SepaTransaction
+     */
+    public function createRefundTransaction($transactionData, $paymentModule)
+    {
+        $transaction = new SepaTransaction();
+
+        $additionalInformation = new AdditionalInformation();
+        $transaction->setAccountHolder($additionalInformation->createAccountHolder(
+            $transactionData->cart_id,
+            'billing'
+        ));
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $mandate = new Mandate($this->generateMandateId($paymentModule, $transactionData->order_id));
+        $transaction->setMandate($mandate);
+
+        return $transaction;
+    }
+
     private function setTemplateData()
     {
         $test = \Configuration::get(
@@ -249,5 +274,11 @@ class PaymentSepa extends Payment
         );
 
         return array('bicEnabled' => (bool) $test);
+    }
+
+    private function generateMandateId($paymentModule, $orderId)
+    {
+        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
+            . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

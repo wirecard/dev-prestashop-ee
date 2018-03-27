@@ -35,38 +35,36 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
+use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use Wirecard\PaymentSdk\Transaction\Operation;
 
 /**
- * Class PaymentPaypal
+ * Class PaymentSofort
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentPaypal extends Payment
+class PaymentSofort extends Payment
 {
-
     /**
-     * PaymentPaypal constructor.
+     * PaymentSofort constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'paypal';
-        $this->name = 'Wirecard Payment Processing Gateway Paypal';
+        $this->type = 'sofortbanking';
+        $this->name = 'Wirecard Payment Processing Gateway Pay now.';
         $this->formFields = $this->createFormFields();
 
-        $this->cancel  = array( 'authorization' );
-        $this->capture = array( 'authorization' );
-        $this->refund  = array( 'debit', 'capture-authorization' );
+        $this->refund  = array('debit');
     }
 
     /**
-     * Create form fields for paypal
+     * Create form fields for Sofort.
      *
      * @return array|null
      * @since 1.0.0
@@ -74,27 +72,27 @@ class PaymentPaypal extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'PayPal',
+            'tab' => 'sofortbanking',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway PayPal',
+                    'doc' => 'Enable Wirecard Payment Processing Gateway Pay now.',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway PayPal',
+                    'default' => 'Wirecard Payment Processing Gateway Pay now.',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '2a0e9351-24ed-4110-9a1b-fd0fee6bec26',
+                    'default' => 'c021a23a-49a5-4987-aa39-e8e858d29bad',
                     'required' => true,
                 ),
                 array(
@@ -129,18 +127,11 @@ class PaymentPaypal extends Payment
                 array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'authorization',
+                    'default' => 'pay',
                     'label'   => 'Payment action',
                     'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
                     ),
-                ),
-                array(
-                    'name' => 'shopping_basket',
-                    'label'   => 'Enable shopping basket',
-                    'type'    => 'onoff',
-                    'default' => 0,
                 ),
                 array(
                     'name' => 'descriptor',
@@ -158,13 +149,13 @@ class PaymentPaypal extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test paypal configuration',
-                    'id' => 'paypalConfig',
-                    'method' => 'paypal',
+                    'buttonText' => 'Test Pay now. configuration',
+                    'id' => 'sofortbankingConfig',
+                    'method' => 'sofortbanking',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_PASS'
                     )
                 )
             )
@@ -172,7 +163,7 @@ class PaymentPaypal extends Payment
     }
 
     /**
-     * Create config for paypal transactions
+     * Create config for Sofort. transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -188,48 +179,38 @@ class PaymentPaypal extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(PayPalTransaction::NAME, $merchantAccountId, $secret);
+        $paymentConfig = new PaymentMethodConfig(
+            SofortTransaction::NAME,
+            $merchantAccountId,
+            $secret
+        );
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create PaypalTransaction
+     * Create Sofort. Transaction
      *
-     * @return PayPalTransaction
+     * @return SofortTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart)
+    public function createTransaction()
     {
-        $transaction = new PayPalTransaction();
+        $transaction = new SofortTransaction();
 
         return $transaction;
     }
 
     /**
+     * Create refund Sofort.
      * @param $transactionData
-     * @return PayPalTransaction
+     * @param $paymentModule
+     * @return SepaTransaction
      */
-    public function createCancelTransaction($transactionData)
+    public function createRefundTransaction($transactionData, $paymentModule)
     {
-        $transaction = new PayPalTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
-
-        return $transaction;
-    }
-
-    /**
-     * @param $transactionData
-     * @return PayPalTransaction
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $transaction = new PayPalTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
-
-        return $transaction;
+        $sepa = new PaymentSepa();
+        return $sepa->createRefundTransaction($transactionData, $paymentModule);
     }
 }
