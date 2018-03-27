@@ -61,6 +61,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $this->type = 'invoice';
         $this->name = 'Wirecard Payment Processing Gateway Guaranteed Invoice';
         $this->formFields = $this->createFormFields();
+        $this->setLoadJs(true);
 
         $this->cancel  = array( 'authorization' );
         $this->capture = array( 'authorization' );
@@ -239,21 +240,18 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     public function createTransaction($module, $cart)
     {
+        $ident = '';
+        if (isset($module->context->cookie->wirecardDeviceIdent)) {
+            $ident = $module->context->cookie->wirecardDeviceIdent;
+            unset($module->context->cookie->wcsConsumerDeviceId);
+        }
         $transaction = new RatepayInvoiceTransaction();
 
         $additionalInformation = new AdditionalInformation();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setOrderNumber($cart->id);
         $device = new Device();
-        $transaction->setDevice($device->setFingerPrint('test'));
-
-        /*if (strlen($this->checkoutSession->getData('invoiceDeviceIdent'))) {
-            $deviceIdent = $this->checkoutSession->getData('invoiceDeviceIdent');
-            $device = new \Wirecard\PaymentSdk\Entity\Device();
-            $device->setFingerprint($deviceIdent);
-            $transaction->setDevice($device);
-            $this->checkoutSession->unsetData('invoiceDeviceIdent');
-        }*/
+        $transaction->setDevice($device->setFingerPrint($ident));
 
         return $transaction;
     }
@@ -410,5 +408,20 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return $currencies;
+    }
+
+    /**
+     * Returns deviceIdentToken for ratepayscript
+     *
+     * @return string
+     * @since 1.0.0
+     */
+    public function createDeviceIdent($merchantAccountId)
+    {
+        $timestamp = microtime();
+        $customerId = $merchantAccountId;
+        $deviceIdentToken = md5($customerId . "_" . $timestamp);
+
+        return $deviceIdentToken;
     }
 }
