@@ -248,6 +248,9 @@ class WirecardPaymentGateway extends PaymentModule
         $params = array();
         foreach ($this->config as $group) {
             foreach ($group['fields'] as $f) {
+                if ('hidden' == $f['type']) {
+                    continue;
+                }
                 $f['param_name'] = $this->buildParamName(
                     $group['tab'],
                     $f['name']
@@ -508,6 +511,9 @@ class WirecardPaymentGateway extends PaymentModule
             $tabname = $value['tab'];
             $tabs[$tabname] = $tabname;
             foreach ($value['fields'] as $f) {
+                if ('hidden' == $f['type']) {
+                    continue;
+                }
                 $elem = array(
                     'name' => $this->buildParamName($tabname, $f['name']),
                     'label' => isset($f['label'])?$this->l($f['label']):'',
@@ -574,10 +580,8 @@ class WirecardPaymentGateway extends PaymentModule
                     default:
                         break;
                 }
+                $input_fields[] = $elem;
 
-                if ('hidden' != $f['type']) {
-                    $input_fields[] = $elem;
-                }
             }
         }
         return array('inputFields' => $input_fields, 'tabs' => $tabs);

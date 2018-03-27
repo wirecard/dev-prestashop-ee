@@ -143,6 +143,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'name' => 'shipping_countries',
                     'label' => 'Allowed shipping countries',
                     'type' => 'select',
+                    'multiple' => true,
                     'size'=> 10,
                     'default' => array('AT', 'DE', 'CH'),
                     'options'=>'getCountries'
