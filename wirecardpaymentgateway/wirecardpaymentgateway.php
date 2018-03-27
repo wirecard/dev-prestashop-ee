@@ -106,6 +106,7 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('displayPaymentEU')
             || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->registerHook('actionPaymentConfirmation')
+            || !$this->registerHook('displayOrderConfirmation')
             || !$this->setDefaults()) {
             return false;
         }
@@ -708,5 +709,10 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $order = new Order($params['id_order']);
         $this->displayName = $order->payment;
+    }
+
+    public function hookOrderConfirmation($params)
+    {
+
     }
 }
