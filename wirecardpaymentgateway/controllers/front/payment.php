@@ -142,7 +142,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 );
             }
 
-            return $this->executeTransaction($transaction, $config, $operation);
+            return $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
     }
 
@@ -152,15 +152,17 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
+     * @param int $orderId
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation)
+    public function executeTransaction($transaction, $config, $operation, $orderId)
     {
         $transactionService = new TransactionService($config, new WirecardLogger());
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
         } catch (Exception $exception) {
+            $this->deleteOrder($orderId);
             $this->errors = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
@@ -177,6 +179,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             echo $this->createPostForm($data);
             die();
         } elseif ($response instanceof FailureResponse) {
+            $this->deleteOrder($orderId);
             $errors = '';
             foreach ($response->getStatusCollection()->getIterator() as $item) {
                 $errors .= $item->getDescription();
@@ -251,5 +254,17 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     {
         return $this->module->getConfigValue('sepa', 'creditor_id') . '-' .
             $orderId . '-' . strtotime(date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * Delete failed order
+     * @param $orderId
+     */
+    private function deleteOrder($orderId)
+    {
+        $order = new Order($orderId);
+        if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $order->delete();
+        }
     }
 }
