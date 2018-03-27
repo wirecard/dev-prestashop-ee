@@ -116,7 +116,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $orderId = Order::getIdByCartId((int)$cartId);
         $customer = new Customer($cart->id_customer);
         $order = new Order($orderId);
-        $order->setOrderStatus(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+        $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
 
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {
