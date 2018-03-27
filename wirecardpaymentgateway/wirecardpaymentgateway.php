@@ -330,26 +330,7 @@ class WirecardPaymentGateway extends PaymentModule
                 'paymentType' => $paymentMethod->getType(),
             );
             if ('invoice' == $paymentMethod->getType()) {
-                $merchantAccount = $this->getConfigValue('invoice', 'merchant_account_id');
-                $deviceIdent = $paymentMethod->createDeviceIdent($merchantAccount);
-
-                if (!isset($this->context->cookie->wirecardDeviceIdent)) {
-                    $this->context->cookie->wirecardDeviceIdent = $deviceIdent;
-                }
-
-                echo "<script language='JavaScript'>
-          var di = {t:'" . $this->context->cookie->wirecardDeviceIdent ."',v:'WDWL',l:'Checkout'};
-          </script>
-          <script type='text/javascript' src='//d.ratepay.com/WDWL/di.js'>
-          </script>
-          <noscript>
-          <link rel='stylesheet' type='text/css' href='//d.ratepay.com/di.css?t=" . $this->context->cookie->wirecardDeviceIdent . "&v=WDWL&l=Checkout'>
-          </noscript>
-          <object type='application/x-shockwave-flash' data='//d.ratepay.com/WDWL/c.swf' width='0' height='0'>
-          <param name='movie' value='//d.ratepay.com/WDWL/c.swf' />
-          <param name='flashvars' value='t=" . $this->context->cookie->wirecardDeviceIdent . "&v=WDWL'/><param name='AllowScriptAccess' value='always'/>
-          </object>";
-                $paymentMethod->setAdditionalInformationTemplate('invoice', array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent));
+                $this->createRatepayScript($paymentMethod);
             }
             $payment = new PaymentOption();
             $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
@@ -373,6 +354,36 @@ class WirecardPaymentGateway extends PaymentModule
 
         //Implement action validation before payment
         return count($result) ? $result : false;
+    }
+
+    /**
+     * Create ratepay script and device ident
+     *
+     * @param PaymentGuaranteedInvoiceRatepay $paymentMethod
+     * @since 1.0.0
+     */
+    public function createRatepayScript($paymentMethod) {
+        $merchantAccount = $this->getConfigValue('invoice', 'merchant_account_id');
+        $deviceIdent = $paymentMethod->createDeviceIdent($merchantAccount);
+
+        if (!isset($this->context->cookie->wirecardDeviceIdent)) {
+            $this->context->cookie->wirecardDeviceIdent = $deviceIdent;
+        }
+
+        echo "<script language='JavaScript'>
+          var di = {t:'" . $this->context->cookie->wirecardDeviceIdent ."',v:'WDWL',l:'Checkout'};
+          </script>
+          <script type='text/javascript' src='//d.ratepay.com/WDWL/di.js'>
+          </script>
+          <noscript>
+          <link rel='stylesheet' type='text/css' href='//d.ratepay.com/di.css?t=" . $this->context->cookie->wirecardDeviceIdent . "&v=WDWL&l=Checkout'>
+          </noscript>
+          <object type='application/x-shockwave-flash' data='//d.ratepay.com/WDWL/c.swf' width='0' height='0'>
+          <param name='movie' value='//d.ratepay.com/WDWL/c.swf' />
+          <param name='flashvars' value='t=" . $this->context->cookie->wirecardDeviceIdent . "&v=WDWL'/><param name='AllowScriptAccess' value='always'/>
+          </object>";
+
+        $paymentMethod->setAdditionalInformationTemplate('invoice', array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent));
     }
 
     /**
