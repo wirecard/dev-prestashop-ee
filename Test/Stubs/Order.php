@@ -37,6 +37,8 @@ class Order
 {
     public $id;
 
+    public $current_state;
+
     public function __construct($order)
     {
         $this->id = 1;

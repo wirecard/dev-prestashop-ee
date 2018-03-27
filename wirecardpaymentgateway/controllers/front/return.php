@@ -92,14 +92,18 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             $orderId = Order::getIdByCartId((int)$cartId);
             $order = new Order($orderId);
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $order->delete();
+                $order->setCurrentState(_PS_OS_ERROR_);
+                $params = array(
+                    'submitReorder' => true,
+                    'id_order' => (int)$orderId
+                );
                 if ($paymentState == 'cancel') {
                     $this->errors = 'You have canceled the payment process.';
                 }
             } else {
                 $this->errors = 'Something went wrong during the payment process.';
             }
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            $this->redirectWithNotifications($this->context->link->getPageLink('order', true, $order->id_lang, $params));
         }
     }
 
