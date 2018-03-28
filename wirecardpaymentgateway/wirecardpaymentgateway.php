@@ -362,7 +362,8 @@ class WirecardPaymentGateway extends PaymentModule
      * @param PaymentGuaranteedInvoiceRatepay $paymentMethod
      * @since 1.0.0
      */
-    public function createRatepayScript($paymentMethod) {
+    public function createRatepayScript($paymentMethod)
+    {
         $merchantAccount = $this->getConfigValue('invoice', 'merchant_account_id');
         $deviceIdent = $paymentMethod->createDeviceIdent($merchantAccount);
 

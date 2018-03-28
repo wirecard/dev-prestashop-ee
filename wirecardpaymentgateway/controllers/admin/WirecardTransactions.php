@@ -253,7 +253,7 @@ class WirecardTransactionsController extends ModuleAdminController
                 Tools::redirectAdmin($url);
             } elseif ($response instanceof FailureResponse) {
                 $errors = '';
-                foreach ( $response->getStatusCollection()->getIterator() as $item ) {
+                foreach ($response->getStatusCollection()->getIterator() as $item) {
                     /** @var Status $item */
                     $errors .= $item->getDescription() . "<br>\n";
                 }
