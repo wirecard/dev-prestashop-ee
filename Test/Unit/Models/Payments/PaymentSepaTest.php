@@ -97,4 +97,10 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $expected = 'sepa';
         $this->assertEquals($expected, $actual::NAME);
     }
+
+    public function testSepaMandate()
+    {
+        $acual = '-id-' . strtotime(date('Y-m-d H:i:s'));
+        $this->assertEquals($acual, $this->payment->generateMandateId($this->paymentModule, 'id'));
+    }
 }

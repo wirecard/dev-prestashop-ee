@@ -231,11 +231,8 @@ class PaymentSepa extends Payment
     /**
      * Create SepaTransaction
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
-     * @param array $values
-     * @param string $orderId
-     * @return null|SepaTransaction
+     * @return SepaTransaction
+     * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
@@ -310,7 +307,7 @@ class PaymentSepa extends Payment
      * @return string
      * @since 1.0.0
      */
-    private function generateMandateId($paymentModule, $orderId)
+    public function generateMandateId($paymentModule, $orderId)
     {
         return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));
