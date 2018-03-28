@@ -43,6 +43,8 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 
     private $config;
 
+    private $transactionData;
+
     public function setUp()
     {
         $this->config = array(
@@ -64,6 +66,8 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $this->transactionData->cart_id->id_customer = 11;
         $this->transactionData->cart_id->id_address_invoice = 12;
         $this->transactionData->cart_id->id_address_delivery = 13;
+        $this->transactionData->amount = 25;
+        $this->transactionData->currency = 'EUR';
     }
 
     public function testName()
@@ -125,18 +129,29 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
     }
 
 
-    /*public function testCreateRefundTransaction()
+    public function testCreateCancelTransaction()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\GuaranteedInvoiceRatepay();
-        $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
-        $accountHolder->setDateOfBirth(new DateTime());
-        $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
-        $actual->setAccountHolder($accountHolder);
-        $actual->setParentTransactionId('my_secret_id');
+        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
+        $expected->setParentTransactionId('my_secret_id');
+        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(25, 'EUR'));
 
-        $this->assertEquals($actual, $this->payment->createRefundTransaction(
-            $this->transactionData,
-            $this->paymentModule
-        ));
-    }*/
+        $actual = $this->payment->createCancelTransaction($this->transactionData, $this->paymentModule);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCreatePayTransaction()
+    {
+        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
+        $expected->setParentTransactionId('my_secret_id');
+        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(25, 'EUR'));
+
+        $basket = new \Wirecard\PaymentSdk\Entity\Basket();
+        $basket->setVersion($expected);
+        $expected->setBasket($basket);
+
+        $actual = $this->payment->createPayTransaction($this->transactionData);
+
+        $this->assertEquals($expected, $actual);
+    }
 }
