@@ -263,22 +263,23 @@ class PaymentSepa extends Payment
 
     /**
      * Create refund SepaTransaction
+     *
      * @param $transactionData
      * @param $paymentModule
      * @return SepaTransaction
+     * @since 1.0.0
      */
     public function createRefundTransaction($transactionData, $paymentModule)
     {
         $transaction = new SepaTransaction();
 
         $additionalInformation = new AdditionalInformation();
+        $cart = new \Cart($transactionData->cart_id);
         $transaction->setAccountHolder($additionalInformation->createAccountHolder(
-            $transactionData->cart_id,
+            $cart,
             'billing'
         ));
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $mandate = new Mandate($this->generateMandateId($paymentModule, $transactionData->order_id));
-        $transaction->setMandate($mandate);
 
         return $transaction;
     }

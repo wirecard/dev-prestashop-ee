@@ -52,7 +52,7 @@ class AdditionalInformation
     /**
      * Create basket items for transaction
      *
-     * @param Cart $cart
+     * @param \Cart $cart
      * @param Transaction $transaction
      * @param string $currency
      * @return Basket
