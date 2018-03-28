@@ -93,10 +93,10 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     private function processSuccess($response)
     {
-        $cartId = $response->getCustomFields()->get('orderId');
-        $cart = new Cart((int)($cartId));
-        $orderId = Order::getIdByCartId((int)$cartId);
+        $orderId = $response->getCustomFields()->get('orderId');
         $order = new Order($orderId);
+        $cartId = $order->id_cart;
+        $cart = new Cart((int)($cartId));
         $orderState = $this->getTransactionOrderState($response);
         $order->setCurrentState($orderState);
         $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
@@ -132,8 +132,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     private function processFailure($response)
     {
-        $cartId = $response->getCustomFields()->get('orderId');
-        $orderId = Order::getOrderByCartId((int)$cartId);
+        $orderId = $response->getCustomFields()->get('orderId');
 
         if ($orderId) {
             $order = new Order($orderId);

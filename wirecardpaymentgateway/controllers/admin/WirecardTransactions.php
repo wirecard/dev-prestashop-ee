@@ -252,8 +252,15 @@ class WirecardTransactionsController extends ModuleAdminController
                 ). '&viewwirecard_payment_gateway_tx';
                 Tools::redirectAdmin($url);
             } elseif ($response instanceof FailureResponse) {
-                $this->errors[] = Tools::displayError('An error occurred. The transaction could not processed');
+                $errors = '';
+                foreach ($response->getStatusCollection()->getIterator() as $item) {
+                    /** @var Status $item */
+                    $errors .= $item->getDescription() . "<br>\n";
+                }
+                $this->errors[] = $errors;
             }
+        } else {
+            $this->errors[] = \Tools::displayError('No valid payment for this transaction found.');
         }
         return parent::postProcess();
     }
@@ -278,7 +285,7 @@ class WirecardTransactionsController extends ModuleAdminController
             return Operation::PAY;
         }
 
-        if (in_array($paymentType, array('creditcard', 'paypal')) && $operation == 'refund') {
+        if (in_array($paymentType, array('creditcard', 'paypal', 'ratepay-invoice')) && $operation == 'refund') {
             return Operation::CANCEL;
         }
 

@@ -248,8 +248,9 @@ class PaymentCreditCard extends Payment
     /**
      * Create request data for credit card ui
      *
-     * @param $module
+     * @param \WirecardPaymentGateway $module
      * @return mixed
+     * @since 1.0.0
      */
     public function getRequestData($module)
     {
@@ -259,12 +260,16 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Create CreditCardTransaction
+     * Create creditcard transaction
      *
-     * @return CreditCardTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|CreditCardTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new CreditCardTransaction();
 
@@ -272,8 +277,11 @@ class PaymentCreditCard extends Payment
     }
 
     /**
+     * Create cancel transaction
+     *
      * @param $transactionData
      * @return CreditCardTransaction
+     * @since 1.0.0
      */
     public function createCancelTransaction($transactionData)
     {
@@ -285,8 +293,11 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * @param $transactionData
+     * Create pay transaction
+     *
+     * @param Transaction $transactionData
      * @return CreditCardTransaction
+     * @since 1.0.0
      */
     public function createPayTransaction($transactionData)
     {

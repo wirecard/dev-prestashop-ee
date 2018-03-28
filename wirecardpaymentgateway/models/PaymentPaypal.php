@@ -195,12 +195,16 @@ class PaymentPaypal extends Payment
     }
 
     /**
-     * Create PaypalTransaction
+     * Create paypal transaction
      *
-     * @return PayPalTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|PayPalTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new PayPalTransaction();
 
@@ -208,8 +212,11 @@ class PaymentPaypal extends Payment
     }
 
     /**
-     * @param $transactionData
+     * Create cancel transaction
+     *
+     * @param Transaction $transactionData
      * @return PayPalTransaction
+     * @since 1.0.0
      */
     public function createCancelTransaction($transactionData)
     {
@@ -221,8 +228,11 @@ class PaymentPaypal extends Payment
     }
 
     /**
-     * @param $transactionData
+     * Create pay transaction
+     *
+     * @param Transaction $transactionData
      * @return PayPalTransaction
+     * @since 1.0.0
      */
     public function createPayTransaction($transactionData)
     {

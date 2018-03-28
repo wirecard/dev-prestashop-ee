@@ -40,6 +40,7 @@ use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Models\PaymentSofort;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
+use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
@@ -224,11 +225,13 @@ class WirecardPaymentGateway extends PaymentModule
                     $val = Tools::strlen($val) ? Tools::jsonDecode($val) : array();
                 }
                 $x = array();
-                foreach ($val as $v) {
-                    $x[$v] = $v;
+                if (is_array($val)) {
+                    foreach ($val as $v) {
+                        $x[$v] = $v;
+                    }
+                    $pname = $parameter['param_name'] . '[]';
+                    $values[$pname] = $x;
                 }
-                $pname = $parameter['param_name'] . '[]';
-                $values[$pname] = $x;
             } else {
                 $values[$parameter['param_name']] = $val;
             }
@@ -248,6 +251,9 @@ class WirecardPaymentGateway extends PaymentModule
         $params = array();
         foreach ($this->config as $group) {
             foreach ($group['fields'] as $f) {
+                if ('hidden' == $f['type']) {
+                    continue;
+                }
                 $f['param_name'] = $this->buildParamName(
                     $group['tab'],
                     $f['name']
@@ -257,6 +263,45 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $params;
+    }
+
+    /**
+     * return available country iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCountries()
+    {
+        $cookie = $this->context->cookie;
+        $countries = Country::getCountries($cookie->id_lang);
+        $ret = array();
+        foreach ($countries as $country) {
+            $ret[] = array(
+                'key' => $country['iso_code'],
+                'value' => $country['name']
+            );
+        }
+        return $ret;
+    }
+
+    /**
+     * return available currency iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCurrencies()
+    {
+        $currencies = Currency::getCurrencies();
+        $ret = array();
+        foreach ($currencies as $currency) {
+            $ret[] = array(
+                'key' => $currency['iso_code'],
+                'value' => $currency['name']
+            );
+        }
+        return $ret;
     }
 
     /**
@@ -279,9 +324,16 @@ class WirecardPaymentGateway extends PaymentModule
                 continue;
             }
 
+            if (! $paymentMethod->isAvailable($this, $params['cart'])) {
+                continue;
+            }
+
             $paymentData = array(
                 'paymentType' => $paymentMethod->getType(),
             );
+            if ('invoice' == $paymentMethod->getType()) {
+                $this->createRatepayScript($paymentMethod);
+            }
             $payment = new PaymentOption();
             $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
@@ -307,6 +359,37 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Create ratepay script and device ident
+     *
+     * @param PaymentGuaranteedInvoiceRatepay $paymentMethod
+     * @since 1.0.0
+     */
+    public function createRatepayScript($paymentMethod)
+    {
+        $merchantAccount = $this->getConfigValue('invoice', 'merchant_account_id');
+        $deviceIdent = $paymentMethod->createDeviceIdent($merchantAccount);
+
+        if (!isset($this->context->cookie->wirecardDeviceIdent)) {
+            $this->context->cookie->wirecardDeviceIdent = $deviceIdent;
+        }
+
+        echo "<script language='JavaScript'>
+          var di = {t:'" . $this->context->cookie->wirecardDeviceIdent ."',v:'WDWL',l:'Checkout'};
+          </script>
+          <script type='text/javascript' src='//d.ratepay.com/WDWL/di.js'>
+          </script>
+          <noscript>
+          <link rel='stylesheet' type='text/css' href='//d.ratepay.com/di.css?t=" . $this->context->cookie->wirecardDeviceIdent . "&v=WDWL&l=Checkout'>
+          </noscript>
+          <object type='application/x-shockwave-flash' data='//d.ratepay.com/WDWL/c.swf' width='0' height='0'>
+          <param name='movie' value='//d.ratepay.com/WDWL/c.swf' />
+          <param name='flashvars' value='t=" . $this->context->cookie->wirecardDeviceIdent . "&v=WDWL'/><param name='AllowScriptAccess' value='always'/>
+          </object>";
+
+        $paymentMethod->setAdditionalInformationTemplate('invoice', array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent));
+    }
+
+    /**
      * Get payment class from payment type
      *
      * @param $paymentType
@@ -316,6 +399,9 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFromType($paymentType)
     {
         $payments = $this->getPayments();
+        if ('ratepay-invoice' == $paymentType) {
+            $paymentType = 'invoice';
+        }
         if (array_key_exists($paymentType, $payments)) {
             return $payments[$paymentType];
         }
@@ -379,7 +465,8 @@ class WirecardPaymentGateway extends PaymentModule
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
             'sofortbanking' => new PaymentSofort(),
-            'poipia' => new PaymentPoiPia()
+            'poipia' => new PaymentPoiPia(),
+            'invoice' => new PaymentGuaranteedInvoiceRatepay()
         );
 
         return $payments;
@@ -395,6 +482,10 @@ class WirecardPaymentGateway extends PaymentModule
         if (Tools::isSubmit('btnSubmit')) {
             foreach ($this->getAllConfigurationParameters() as $parameter) {
                 $val = Tools::getValue($parameter['param_name']);
+
+                if (is_array($val)) {
+                    $val = Tools::jsonEncode($val);
+                }
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
@@ -462,6 +553,9 @@ class WirecardPaymentGateway extends PaymentModule
             $tabname = $value['tab'];
             $tabs[$tabname] = $tabname;
             foreach ($value['fields'] as $f) {
+                if ('hidden' == $f['type']) {
+                    continue;
+                }
                 $elem = array(
                     'name' => $this->buildParamName($tabname, $f['name']),
                     'label' => isset($f['label'])?$this->l($f['label']):'',
@@ -500,6 +594,14 @@ class WirecardPaymentGateway extends PaymentModule
                         break;
 
                     case 'select':
+                        if (isset($f['multiple'])) {
+                            $elem['multiple'] = $f['multiple'];
+                        }
+
+                        if (isset($f['size'])) {
+                            $elem['size'] = $f['size'];
+                        }
+
                         if (isset($f['options'])) {
                             $optfunc = $f['options'];
                             $options = array();
@@ -711,6 +813,13 @@ class WirecardPaymentGateway extends PaymentModule
         $this->displayName = $order->payment;
     }
 
+    /**
+     * Show the payment information for PIA
+     *
+     * @param array $params
+     * @return string
+     * @since 1.0.0
+     */
     public function hookOrderConfirmation($params)
     {
         if ($this->context->cookie->__get('pia-enabled')) {

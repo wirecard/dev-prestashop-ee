@@ -33,17 +33,15 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 
-class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
+class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 {
     private $payment;
 
     private $paymentModule;
 
     private $config;
-
-    private $transactionData;
 
     public function setUp()
     {
@@ -52,33 +50,27 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'http_user',
             'http_pass',
             'merchant_account_id',
-            'secret',
-            'three_d_merchant_account_id',
-            'three_d_merchant_account_id',
-            'three_d_secret',
-            50,
-            50,
-            50,
-            150,
-            150,
-            150
+            'secret'
         );
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentCreditCard();
+        $this->payment = new PaymentGuaranteedInvoiceRatepay();
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
-        $this->transactionData->amount = 20;
-        $this->transactionData->currency = 'EUR';
+        $this->transactionData->order_id = 'my_secret_order_id';
+        $this->transactionData->cart_id = new stdClass();
+        $this->transactionData->cart_id->id_customer = 11;
+        $this->transactionData->cart_id->id_address_invoice = 12;
+        $this->transactionData->cart_id->id_address_delivery = 13;
     }
 
     public function testName()
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway Credit Card';
+        $expected = 'Wirecard Payment Processing Gateway Guaranteed Invoice';
 
         $this->assertEquals($expected, $actual);
     }
@@ -91,16 +83,17 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        for ($i = 0; $i <= 13; $i++) {
+        for ($i = 0; $i <= 4; $i++) {
             $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
         }
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
-        $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
-        $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
-        $expectedPaymentConfig->addThreeDMinLimit(new \Wirecard\PaymentSdk\Entity\Amount(150, 'EUR'));
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
+            'ratepayinvoice',
+            'merchant_account_id',
+            'secret'
+        );
         $expected->add($expectedPaymentConfig);
 
         $this->assertEquals($expected, $actual);
@@ -111,46 +104,39 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
 
-        $expected = 'creditcard';
+        $expected = 'ratepayinvoice';
         $this->assertEquals($expected, $actual::NAME);
     }
 
-    public function testGetRequestData()
+    public function testIsAvailable()
     {
-        $expected = array(
-            'transaction_type' => 'authorization-only',
-            'merchant_account_id' => 'merchant_account_id',
-            'requested_amount' => 0,
-            'requested_amount_currency' => 'EUR',
-            'locale' => 'en',
-            'payment_method' => 'creditcard'
-        );
+        //$customer = new Customer('oldenough');
+        //$customer->birthday = '1980-01-01';
 
-        for ($i = 0; $i <= 13; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
-        }
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule));
-        //unset the generated request id as it is different every time
-        unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
+        $cart = $this->getMockBuilder(Cart::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $cart->method('getOrderTotal')->willReturn(40);
 
-        $this->assertEquals($expected, $actual);
+        $actual = $this->payment->isAvailable($this->paymentModule, $cart);
+
+        //because no valid age
+        $this->assertFalse($actual);
     }
 
-    public function testCreateCancelTransaction()
+
+    /*public function testCreateRefundTransaction()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
+        $actual = new \Wirecard\PaymentSdk\Transaction\GuaranteedInvoiceRatepay();
+        $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
+        $accountHolder->setDateOfBirth(new DateTime());
+        $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
+        $actual->setAccountHolder($accountHolder);
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
-        $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
-    }
-
-    public function testCreatePayTransaction()
-    {
-        $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
-        $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
-
-        $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
-    }
+        $this->assertEquals($actual, $this->payment->createRefundTransaction(
+            $this->transactionData,
+            $this->paymentModule
+        ));
+    }*/
 }
