@@ -105,22 +105,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $transaction->setTermUrl($this->module->createRedirectUrl($cartId, $paymentType, 'success'));
             }
 
-            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\SepaTransaction) {
-                $account_holder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
-                $account_holder->setFirstName(Tools::getValue('sepaFirstName'));
-                $account_holder->setLastName(Tools::getValue('sepaLastName'));
-
-                $transaction->setAccountHolder($account_holder);
-                $transaction->setIban(Tools::getValue('sepaIban'));
-
-                if ($this->module->getConfigValue('sepa', 'enable_bic')) {
-                    $transaction->setBic(Tools::getValue('sepaBic'));
-                }
-
-                $mandate = new \Wirecard\PaymentSdk\Entity\Mandate($this->generateMandateId($orderId));
-                $transaction->setMandate($mandate);
-            }
-
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
                 $transaction->setBasket($additionalInformation->createBasket($cart, $transaction, $currency->iso_code));
             }
@@ -238,22 +222,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     }
 
     /**
-     * Generate the mandate id for SEPA
-     *
-     * @param integer $orderId
-     * @return string
-     * @since 1.0,0
-     */
-    private function generateMandateId($orderId)
-    {
-        return $this->module->getConfigValue('sepa', 'creditor_id') . '-' .
-            $orderId . '-' . strtotime(date('Y-m-d H:i:s'));
-    }
-
-    /**
      * Recover failed order
      *
      * @param $orderId
+     * @since 1.0.0
      */
     private function processFailure($orderId)
     {

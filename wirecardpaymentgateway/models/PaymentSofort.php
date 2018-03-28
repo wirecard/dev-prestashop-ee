@@ -131,9 +131,8 @@ class PaymentSofort extends Payment
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable descriptor',
-                    'type'    => 'onoff',
-                    'default' => 0,
+                    'type'    => 'hidden',
+                    'default' => 1,
                 ),
                 array(
                     'name' => 'send_additional',
