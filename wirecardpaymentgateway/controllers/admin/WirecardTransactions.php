@@ -219,6 +219,9 @@ class WirecardTransactionsController extends ModuleAdminController
                         $config = $payment->createPaymentConfig($this->module);
                         $operation = Operation::CREDIT;
                     }
+                    if ($paymentType == 'ratepay-invoice') {
+                        $operation = Operation::CANCEL;
+                    }
                     break;
                 case Operation::CANCEL:
                     $transaction = $payment->createCancelTransaction($transactionData);
@@ -285,7 +288,7 @@ class WirecardTransactionsController extends ModuleAdminController
             return Operation::PAY;
         }
 
-        if (in_array($paymentType, array('creditcard', 'paypal', 'ratepay-invoice')) && $operation == 'refund') {
+        if (in_array($paymentType, array('creditcard', 'paypal')) && $operation == 'refund') {
             return Operation::CANCEL;
         }
 
