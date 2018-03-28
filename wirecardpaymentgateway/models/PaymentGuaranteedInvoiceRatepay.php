@@ -60,7 +60,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     public function __construct()
     {
         $this->type = 'invoice';
-        $this->name = 'Wirecard Payment Processing Gateway Guaranteed Invoice';
+        $this->name = 'Wirecard Guaranteed Invoice';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
 
@@ -84,14 +84,14 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway Guaranteed Invoice',
+                    'doc' => 'Enable Wirecard Guaranteed Invoice',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway Guaranteed Invoice',
+                    'default' => 'Wirecard Guaranteed Invoice',
                     'required' => true,
                 ),
                 array(
@@ -103,14 +103,14 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret key',
+                    'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base url',
+                    'label'       => 'Base URL',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -118,14 +118,14 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http user',
+                    'label'   => 'HTTP User',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http password',
+                    'label'   => 'HTTP Password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -170,14 +170,14 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'amount_min',
-                    'label' => 'Minimum amount',
+                    'label' => 'Minimum Amount',
                     'type' => 'text',
                     'default' => 20,
                     'validator' => 'numeric'
                 ),
                 array(
                     'name' => 'amount_max',
-                    'label' => 'Maximum amount',
+                    'label' => 'Maximum Amount',
                     'type' => 'text',
                     'default' => 3500,
                     'validator' => 'numeric'

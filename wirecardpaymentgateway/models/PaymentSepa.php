@@ -57,7 +57,7 @@ class PaymentSepa extends Payment
     public function __construct()
     {
         $this->type = 'sepa';
-        $this->name = 'Wirecard Payment Processing Gateway SEPA';
+        $this->name = 'Wirecard SEPA';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
@@ -82,14 +82,14 @@ class PaymentSepa extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway SEPA',
+                    'doc' => 'Enable Wirecard SEPA',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway SEPA',
+                    'default' => 'Wirecard SEPA',
                     'required' => true,
                 ),
                 array(
@@ -101,14 +101,14 @@ class PaymentSepa extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret key',
+                    'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base url',
+                    'label'       => 'Base URL',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -116,14 +116,14 @@ class PaymentSepa extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http user',
+                    'label'   => 'HTTP User',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http password',
+                    'label'   => 'HTTP Password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -137,14 +137,14 @@ class PaymentSepa extends Payment
                 ),
                 array(
                     'name' => 'creditor_name',
-                    'label'   => 'Creditor name',
+                    'label'   => 'Creditor Name',
                     'type'    => 'text',
                     'default' => '',
                     'required' => false,
                 ),
                 array(
                     'name' => 'creditor_city',
-                    'label'   => 'Creditor city',
+                    'label'   => 'Creditor City',
                     'type'    => 'text',
                     'default' => '',
                     'required' => false,
@@ -163,7 +163,7 @@ class PaymentSepa extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'authorization',
-                    'label'   => 'Payment action',
+                    'label'   => 'Payment Action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
@@ -171,7 +171,7 @@ class PaymentSepa extends Payment
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable descriptor',
+                    'label'   => 'Descriptor',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
@@ -183,7 +183,7 @@ class PaymentSepa extends Payment
                 ),
                 array(
                     'name' => 'enable_bic',
-                    'label'   => 'Enable BIC',
+                    'label'   => 'BIC enabled',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
@@ -191,7 +191,7 @@ class PaymentSepa extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test SEPA configuration',
+                    'buttonText' => 'Test configuration',
                     'id' => 'SepaConfig',
                     'method' => 'SEPA',
                     'send' => array(

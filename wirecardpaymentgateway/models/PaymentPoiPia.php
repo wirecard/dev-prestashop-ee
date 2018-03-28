@@ -56,7 +56,7 @@ class PaymentPoiPia extends Payment
     public function __construct()
     {
         $this->type = 'poipia';
-        $this->name = 'Wirecard Payment Processing Gateway Payment on Invoice / Payment in Advance';
+        $this->name = 'Wirecard Payment on Invoice / Payment in Advance';
         $this->formFields = $this->createFormFields();
 
         $this->cancel  = array('authorization');
@@ -77,14 +77,14 @@ class PaymentPoiPia extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway Payment on Invoice / Payment in Advance',
+                    'doc' => 'Enable Wirecard Payment on Invoice / Payment in Advance',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway Payment on Invoice / Payment in Advance',
+                    'default' => 'Wirecard Payment on Invoice / Payment in Advance',
                     'required' => true,
                 ),
                 array(
@@ -96,14 +96,14 @@ class PaymentPoiPia extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret key',
+                    'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base url',
+                    'label'       => 'Base URL',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -111,14 +111,14 @@ class PaymentPoiPia extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http user',
+                    'label'   => 'HTTP User',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http password',
+                    'label'   => 'HTTP Password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -127,7 +127,7 @@ class PaymentPoiPia extends Payment
                     'name' => 'payment_type',
                     'type'    => 'select',
                     'default' => 'pia',
-                    'label'   => 'Payment type',
+                    'label'   => 'Payment',
                     'options' => array(
                         array('key' => 'pia', 'value' => 'Payment in Advance'),
                         array('key' => 'poi', 'value' => 'Payment on Invoice'),
@@ -140,7 +140,7 @@ class PaymentPoiPia extends Payment
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable descriptor',
+                    'label'   => 'Descriptor',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
@@ -154,7 +154,7 @@ class PaymentPoiPia extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test POI/PIA configuration',
+                    'buttonText' => 'Test configuration',
                     'id' => 'poipiaConfig',
                     'method' => 'poipia',
                     'send' => array(
