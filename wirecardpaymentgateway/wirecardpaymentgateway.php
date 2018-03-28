@@ -713,6 +713,11 @@ class WirecardPaymentGateway extends PaymentModule
 
     public function hookOrderConfirmation($params)
     {
+        if ($this->context->cookie->__get('pia-enabled')) {
 
+        }
+        $this->fetch('module:wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
+            DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'pia.tpl');
+        //var_dump($this->context->cookie->__get('pia-iban'), $this->context->cookie->__get('pia-bic'), $this->context->cookie->__get('pia-reference-id'));die();
     }
 }
