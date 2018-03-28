@@ -135,12 +135,8 @@ class PaymentPoiPia extends Payment
                 ),
                 array(
                     'name' => 'payment_action',
-                    'type'    => 'select',
+                    'type'    => 'hidden',
                     'default' => 'reserve',
-                    'label'   => 'Payment action',
-                    'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
-                    ),
                 ),
                 array(
                     'name' => 'descriptor',
