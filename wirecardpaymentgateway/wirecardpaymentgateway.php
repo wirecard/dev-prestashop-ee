@@ -714,10 +714,21 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookOrderConfirmation($params)
     {
         if ($this->context->cookie->__get('pia-enabled')) {
-
+            $currency = new Currency($params['order']->id_currency);
+            $this->context->smarty->assign(
+                array(
+                    'amount' => $params['order']->total_paid,
+                    'iban' => $this->context->cookie->__get('pia-iban'),
+                    'bic' => $this->context->cookie->__get('pia-bic'),
+                    'refId' => $this->context->cookie->__get('pia-reference-id'),
+                    'currency' => $currency->iso_code
+                )
+            );
+            return $this->display(
+                __FILE__,
+                DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'templates' .
+                DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'pia.tpl'
+            );
         }
-        $this->fetch('module:wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
-            DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'pia.tpl');
-        //var_dump($this->context->cookie->__get('pia-iban'), $this->context->cookie->__get('pia-bic'), $this->context->cookie->__get('pia-reference-id'));die();
     }
 }
