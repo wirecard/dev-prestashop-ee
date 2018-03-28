@@ -63,29 +63,31 @@ class AdditionalInformation
         $basket = new Basket();
         $basket->setVersion($transaction);
 
-        foreach ($cart->getProducts() as $product) {
-            $quantity = $product['cart_quantity'];
-            $name = \Tools::substr($product['name'], 0, 127);
-            $grossAmount = $product['total_wt'] / $quantity;
+        if (!empty($cart->getProducts())) {
+            foreach ($cart->getProducts() as $product) {
+                $quantity = $product['cart_quantity'];
+                $name = \Tools::substr($product['name'], 0, 127);
+                $grossAmount = $product['total_wt'] / $quantity;
 
-            //Check for rounding issues
-            if (\Tools::strlen(\Tools::substr(strrchr((string)$grossAmount, '.'), 1)) > 2) {
-                $grossAmount = $product['total_wt'];
-                $name .= ' x' . $quantity;
-                $quantity = 1;
+                //Check for rounding issues
+                if (\Tools::strlen(\Tools::substr(strrchr((string)$grossAmount, '.'), 1)) > 2) {
+                    $grossAmount = $product['total_wt'];
+                    $name .= ' x' . $quantity;
+                    $quantity = 1;
+                }
+
+                $netAmount = $product['total'] / $quantity;
+                $taxAmount = $grossAmount - $netAmount;
+                $taxRate = number_format($taxAmount / $grossAmount * 100, 2);
+                $amount = new Amount(number_format($grossAmount, 2, '.', ''), $currency);
+
+                $item = new Item($name, $amount, $quantity);
+                $item->setDescription(\Tools::substr(strip_tags($product['description_short']), 0, 127));
+                $item->setArticleNumber($product['reference']);
+                $item->setTaxRate($taxRate);
+
+                $basket->add($item);
             }
-
-            $netAmount = $product['total'] / $quantity;
-            $taxAmount = $grossAmount - $netAmount;
-            $taxRate = number_format($taxAmount / $grossAmount * 100, 2);
-            $amount = new Amount(number_format($grossAmount, 2, '.', ''), $currency);
-
-            $item = new Item($name, $amount, $quantity);
-            $item->setDescription(\Tools::substr(strip_tags($product['description_short']), 0, 127));
-            $item->setArticleNumber($product['reference']);
-            $item->setTaxRate($taxRate);
-
-            $basket->add($item);
         }
 
         if ($cart->getTotalShippingCost(null, true) > 0) {

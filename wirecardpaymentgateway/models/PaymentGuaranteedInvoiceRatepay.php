@@ -188,6 +188,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'default' => 1,
                 ),
                 array(
+                    'name' => 'descriptor',
+                    'label'   => 'Enable descriptor',
+                    'type'    => 'onoff',
+                    'default' => 0,
+                ),
+                array(
                     'name' => 'send_additional',
                     'label'   => 'Send additional information',
                     'type'    => 'onoff',
@@ -262,6 +268,66 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
+     * Create cancel transaction
+     *
+     * @param Transaction $transactionData
+     * @return RatepayInvoiceTransaction
+     * @since 1.0.0
+     */
+    public function createCancelTransaction($transactionData)
+    {
+        $transaction = new RatepayInvoiceTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        return $transaction;
+    }
+
+    /**
+     * Create pay transaction
+     *
+     * @param Transaction $transactionData
+     * @return RatepayInvoiceTransaction
+     * @since 1.0.0
+     */
+    public function createPayTransaction($transactionData)
+    {
+        $cart = new \Cart($transactionData->cart_id);
+        $currency = $transactionData->currency;
+
+        $transaction = new RatepayInvoiceTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        $additionalHelper = new AdditionalInformation();
+        $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
+
+        return $transaction;
+    }
+
+    /**
+     * Create refund transaction
+     *
+     * @param Transaction $transactionData
+     * @return RatepayInvoiceTransaction
+     * @since 1.0.0
+     */
+    public function createRefundTransaction($transactionData)
+    {
+        $cart = new \Cart($transactionData->cart_id);
+        $currency = $transactionData->currency;
+
+        $transaction = new RatepayInvoiceTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        $additionalHelper = new AdditionalInformation();
+        $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
+
+        return $transaction;
+    }
+
+    /**
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @return bool
@@ -302,6 +368,22 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return true;
+    }
+
+    /**
+     * Returns deviceIdentToken for ratepayscript
+     *
+     * @param string $merchantAccountId
+     * @return string
+     * @since 1.0.0
+     */
+    public function createDeviceIdent($merchantAccountId)
+    {
+        $timestamp = microtime();
+        $customerId = $merchantAccountId;
+        $deviceIdentToken = md5($customerId . "_" . $timestamp);
+
+        return $deviceIdentToken;
     }
 
     /**
@@ -413,53 +495,5 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return $currencies;
-    }
-
-    /**
-     * Returns deviceIdentToken for ratepayscript
-     *
-     * @param string $merchantAccountId
-     * @return string
-     * @since 1.0.0
-     */
-    public function createDeviceIdent($merchantAccountId)
-    {
-        $timestamp = microtime();
-        $customerId = $merchantAccountId;
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
-
-        return $deviceIdentToken;
-    }
-
-    /**
-     * Create cancel transaction
-     *
-     * @param Transaction $transactionData
-     * @return RatepayInvoiceTransaction
-     * @since 1.0.0
-     */
-    public function createCancelTransaction($transactionData)
-    {
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
-
-        return $transaction;
-    }
-
-    /**
-     * Create pay transaction
-     *
-     * @param Transaction $transactionData
-     * @return RatepayInvoiceTransaction
-     * @since 1.0.0
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
-
-        return $transaction;
     }
 }
