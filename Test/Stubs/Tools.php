@@ -62,6 +62,11 @@ class Tools
         }
     }
 
+    public static function getAllValues()
+    {
+        return array();
+    }
+
     public static function getAdminTokenLite($string)
     {
         return $string;
