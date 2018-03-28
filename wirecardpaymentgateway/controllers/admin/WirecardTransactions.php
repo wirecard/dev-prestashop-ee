@@ -39,6 +39,7 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Operation;
 
 /**
  * Class WirecardTransactions
@@ -211,18 +212,18 @@ class WirecardTransactionsController extends ModuleAdminController
             $config = $payment->createPaymentConfig($this->module);
             $operation = $this->getOperation($paymentType, $operation);
             switch ($operation) {
-                case 'refund':
+                case Operation::REFUND:
                     $transaction = $payment->createRefundTransaction($transactionData);
                     if (in_array($paymentType, ['ideal', 'sofortbanking', 'sepa'])) {
                         $payment = $this->module->getPaymentFromType('sepa');
                         $config = $payment->createPaymentConfig($this->module);
-                        $operation = 'credit';
+                        $operation = Operation::CREDIT;
                     }
                     break;
-                case 'cancel':
+                case Operation::CANCEL:
                     $transaction = $payment->createCancelTransaction($transactionData);
                     break;
-                case 'pay':
+                case Operation::PAY:
                     $transaction = $payment->createPayTransaction($transactionData);
                     break;
             }
@@ -274,11 +275,11 @@ class WirecardTransactionsController extends ModuleAdminController
     private function getOperation($paymentType, $operation)
     {
         if ($operation == 'capture') {
-            return 'pay';
+            return Operation::PAY;
         }
 
         if (in_array($paymentType, array('creditcard', 'paypal')) && $operation == 'refund') {
-            return 'cancel';
+            return Operation::CANCEL;
         }
 
         return $operation;
