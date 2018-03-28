@@ -102,7 +102,7 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
     public function testCreateTransaction()
     {
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction();
+        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
 
         $expected = 'sofortbanking';
         $this->assertEquals($expected, $actual::NAME);
@@ -113,13 +113,10 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
         $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
+        $accountHolder->setDateOfBirth(new DateTime());
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
         $actual->setAccountHolder($accountHolder);
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setMandate(new \Wirecard\PaymentSdk\Entity\Mandate(
-            '-my_secret_order_id-'.
-            strtotime(date('Y-m-d H:i:s'))
-        ));
 
         $this->assertEquals($actual, $this->payment->createRefundTransaction(
             $this->transactionData,
