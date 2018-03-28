@@ -274,7 +274,7 @@ class PaymentSepa extends Payment
         return array('bicEnabled' => (bool) $test);
     }
 
-    private function generateMandateId($paymentModule, $orderId)
+    public function generateMandateId($paymentModule, $orderId)
     {
         return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));
