@@ -63,7 +63,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway SEPA';
+        $expected = 'Wirecard SEPA';
 
         $this->assertEquals($expected, $actual);
     }

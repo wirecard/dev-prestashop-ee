@@ -57,7 +57,7 @@ class PaymentPaypal extends Payment
     public function __construct()
     {
         $this->type = 'paypal';
-        $this->name = 'Wirecard Paypal';
+        $this->name = 'Wirecard PayPal';
         $this->formFields = $this->createFormFields();
 
         $this->cancel  = array( 'authorization' );
@@ -80,14 +80,14 @@ class PaymentPaypal extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Paypal',
+                    'doc' => 'Enable Wirecard PayPal',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Paypal',
+                    'default' => 'Wirecard PayPal',
                     'required' => true,
                 ),
                 array(

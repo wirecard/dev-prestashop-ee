@@ -70,7 +70,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway Guaranteed Invoice';
+        $expected = 'Wirecard Guaranteed Invoice';
 
         $this->assertEquals($expected, $actual);
     }
