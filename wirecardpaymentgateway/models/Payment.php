@@ -228,6 +228,8 @@ class Payment
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
      * @return null
      * @since 1.0.0
      */
@@ -240,6 +242,7 @@ class Payment
      * Set a template to display additional information
      *
      * @param $template
+     * @since 1.0.0
      */
     public function setAdditionalInformationTemplate($template, $data = null)
     {
@@ -255,6 +258,7 @@ class Payment
      * Get the template back
      *
      * @return bool|string
+     * @since 1.0.0
      */
     public function getAdditionalInformationTemplate()
     {
@@ -317,6 +321,7 @@ class Payment
      * Get the template data back
      *
      * @return bool|array
+     * @since 1.0.0
      */
     public function getTemplateData()
     {
@@ -327,11 +332,23 @@ class Payment
         }
     }
 
+    /**
+     * Set loadJs
+     *
+     * @param bool $load
+     * @since 1.0.0
+     */
     public function setLoadJs($load)
     {
         $this->loadJs = $load;
     }
 
+    /**
+     * Check if js should be loaded
+     *
+     * @return bool
+     * @since 1.0.0
+     */
     public function getLoadJs()
     {
         return isset($this->loadJs) ? $this->loadJs : false;

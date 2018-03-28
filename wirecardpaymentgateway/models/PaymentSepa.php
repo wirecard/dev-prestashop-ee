@@ -41,7 +41,7 @@ use Wirecard\PaymentSdk\Entity\AccountHolder;
 use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
- * Class PaymentCreditCard
+ * Class PaymentSepa
  *
  * @extends Payment
  *
@@ -50,7 +50,7 @@ use Wirecard\PaymentSdk\Entity\Mandate;
 class PaymentSepa extends Payment
 {
     /**
-     * PaymentSEPA constructor.
+     * PaymentSepa constructor.
      *
      * @since 1.0.0
      */
@@ -229,9 +229,13 @@ class PaymentSepa extends Payment
     }
 
     /**
-     * Create SepaTransaction
+     * Create sepa transaction
      *
-     * @return SepaTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|SepaTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
@@ -261,12 +265,11 @@ class PaymentSepa extends Payment
     /**
      * Create refund SepaTransaction
      *
-     * @param $transactionData
-     * @param $paymentModule
+     * @param Transaction $transactionData
      * @return SepaTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData, $paymentModule)
+    public function createRefundTransaction($transactionData)
     {
         $transaction = new SepaTransaction();
 
@@ -303,7 +306,7 @@ class PaymentSepa extends Payment
     /**
      * Generate the mandate id for SEPA
      *
-     * @param integer $orderId
+     * @param int $orderId
      * @return string
      * @since 1.0.0
      */

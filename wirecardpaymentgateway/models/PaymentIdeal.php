@@ -187,9 +187,13 @@ class PaymentIdeal extends Payment
     }
 
     /**
-     * Create iDEALTransaction
+     * Create ideal transaction
      *
-     * @return iDEALTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|IdealTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
@@ -204,8 +208,10 @@ class PaymentIdeal extends Payment
 
     /**
      * Create refund iDEALTransaction
+     *
      * @param $transactionData
      * @return SepaTransaction
+     * @since 1.0.0
      */
     public function createRefundTransaction($transactionData)
     {

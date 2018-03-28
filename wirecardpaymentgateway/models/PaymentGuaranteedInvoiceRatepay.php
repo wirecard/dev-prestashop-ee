@@ -234,9 +234,13 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * Create RatepayInvoiceTransaction
+     * Create Ratepay invoice transaction
      *
-     * @return RatepayInvoiceTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|RatepayInvoiceTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
@@ -414,6 +418,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Returns deviceIdentToken for ratepayscript
      *
+     * @param string $merchantAccountId
      * @return string
      * @since 1.0.0
      */
@@ -445,7 +450,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Create pay transaction
      *
-     * @param $transactionData
+     * @param Transaction $transactionData
      * @return RatepayInvoiceTransaction
      * @since 1.0.0
      */
