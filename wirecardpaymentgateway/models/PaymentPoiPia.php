@@ -37,6 +37,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PoiPiaTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
  * Class PaymentPoiPia
@@ -191,6 +192,19 @@ class PaymentPoiPia extends Payment
         $config->add($paymentConfig);
 
         return $config;
+    }
+
+    /**
+     * @param $transactionData
+     * @return PoiPiaTransaction
+     */
+    public function createCancelTransaction($transactionData)
+    {
+        $transaction = new PoiPiaTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        return $transaction;
     }
 
     /**
