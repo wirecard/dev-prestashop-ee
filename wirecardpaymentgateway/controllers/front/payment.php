@@ -138,7 +138,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 );
             }
 
-            return $this->executeTransaction($transaction, $config, $operation);
+            return $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
     }
 
@@ -148,9 +148,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
+     * @param int $orderId
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation)
+    public function executeTransaction($transaction, $config, $operation, $orderId)
     {
         $transactionService = new TransactionService($config, new WirecardLogger());
         try {
@@ -158,7 +159,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $response = $transactionService->process($transaction, $operation);
         } catch (Exception $exception) {
             $this->errors = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            $this->processFailure($orderId);
         }
 
         if ($response instanceof InteractionResponse) {
@@ -178,10 +179,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $errors .= $item->getDescription();
             }
             $this->errors = $errors;
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            $this->processFailure($orderId);
         }
         $this->errors = 'An error occured during the checkout process. Please try again.';
-        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        $this->processFailure($orderId);
     }
 
     /**
@@ -247,5 +248,25 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     {
         return $this->module->getConfigValue('sepa', 'creditor_id') . '-' .
             $orderId . '-' . strtotime(date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * Recover failed order
+     *
+     * @param $orderId
+     */
+    private function processFailure($orderId)
+    {
+        $order = new Order($orderId);
+        if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $order->setCurrentState(_PS_OS_ERROR_);
+            $params = array(
+                'submitReorder' => true,
+                'id_order' => (int)$orderId
+            );
+            $this->redirectWithNotifications(
+                $this->context->link->getPageLink('order', true, $order->id_lang, $params)
+            );
+        }
     }
 }
