@@ -188,6 +188,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'default' => 1,
                 ),
                 array(
+                    'name' => 'descriptor',
+                    'label'   => 'Enable descriptor',
+                    'type'    => 'onoff',
+                    'default' => 0,
+                ),
+                array(
                     'name' => 'send_additional',
                     'label'   => 'Send additional information',
                     'type'    => 'onoff',
