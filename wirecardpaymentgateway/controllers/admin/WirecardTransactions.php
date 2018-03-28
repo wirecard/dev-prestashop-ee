@@ -258,6 +258,8 @@ class WirecardTransactionsController extends ModuleAdminController
                 }
                 $this->errors[] = $errors;
             }
+        } else {
+            $this->errors[] = \Tools::displayError('No valid payment for this transaction found.');
         }
         return parent::postProcess();
     }
@@ -282,7 +284,7 @@ class WirecardTransactionsController extends ModuleAdminController
             return 'pay';
         }
 
-        if (in_array($paymentType, array('creditcard', 'paypal')) && $operation == 'refund') {
+        if (in_array($paymentType, array('creditcard', 'paypal', 'ratepay-invoice')) && $operation == 'refund') {
             return 'cancel';
         }
 

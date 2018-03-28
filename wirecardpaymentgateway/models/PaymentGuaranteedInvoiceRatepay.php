@@ -36,6 +36,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
@@ -423,5 +424,37 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $deviceIdentToken = md5($customerId . "_" . $timestamp);
 
         return $deviceIdentToken;
+    }
+
+    /**
+     * Create cancel transaction
+     *
+     * @param Transaction $transactionData
+     * @return RatepayInvoiceTransaction
+     * @since 1.0.0
+     */
+    public function createCancelTransaction($transactionData)
+    {
+        $transaction = new RatepayInvoiceTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        return $transaction;
+    }
+
+    /**
+     * Create pay transaction
+     *
+     * @param $transactionData
+     * @return RatepayInvoiceTransaction
+     * @since 1.0.0
+     */
+    public function createPayTransaction($transactionData)
+    {
+        $transaction = new RatepayInvoiceTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        return $transaction;
     }
 }
