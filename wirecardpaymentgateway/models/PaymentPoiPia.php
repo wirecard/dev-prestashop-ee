@@ -206,10 +206,14 @@ class PaymentPoiPia extends Payment
     /**
      * Create PoiPiaTransaction
      *
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
      * @return PoiPiaTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new PoiPiaTransaction();
 

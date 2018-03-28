@@ -99,7 +99,7 @@ class PaymentPoiPiaTest extends PHPUnit_Framework_TestCase
     public function testCreateTransaction()
     {
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction();
+        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
 
         $expected = 'wiretransfer';
         $this->assertEquals($expected, $actual::NAME);
