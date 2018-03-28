@@ -102,7 +102,9 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             } else {
                 $this->errors = 'Something went wrong during the payment process.';
             }
-            $this->redirectWithNotifications($this->context->link->getPageLink('order', true, $order->id_lang, $params));
+            $this->redirectWithNotifications(
+                $this->context->link->getPageLink('order', true, $order->id_lang, $params)
+            );
         }
     }
 

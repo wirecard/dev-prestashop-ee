@@ -268,7 +268,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 'submitReorder' => true,
                 'id_order' => (int)$orderId
             );
-            $this->redirectWithNotifications($this->context->link->getPageLink('order', true, $order->id_lang, $params));
+            $this->redirectWithNotifications(
+                $this->context->link->getPageLink('order', true, $order->id_lang, $params)
+            );
         }
     }
 }

@@ -206,13 +206,12 @@ class PaymentIdeal extends Payment
     /**
      * Create refund iDEALTransaction
      * @param $transactionData
-     * @param $paymentModule
      * @return SepaTransaction
      */
-    public function createRefundTransaction($transactionData, $paymentModule)
+    public function createRefundTransaction($transactionData)
     {
         $sepa = new PaymentSepa();
-        return $sepa->createRefundTransaction($transactionData, $paymentModule);
+        return $sepa->createRefundTransaction($transactionData);
     }
 
     /**
