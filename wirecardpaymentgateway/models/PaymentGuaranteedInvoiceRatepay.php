@@ -456,9 +456,15 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     public function createPayTransaction($transactionData)
     {
+        $cart = new \Cart($transactionData->cart_id);
+        $currency = $transactionData->currency;
+
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+
+        $additionalHelper = new AdditionalInformation();
+        $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
 
         return $transaction;
     }
