@@ -164,6 +164,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             case 'refund-capture':
             case 'refund-debit':
             case 'credit':
+            case 'refund-request':
                 return _PS_OS_REFUND_;
             case 'debit':
             case 'capture':

@@ -287,7 +287,7 @@ class WirecardTransactionsController extends ModuleAdminController
             return Operation::PAY;
         }
 
-        if (in_array($paymentType, array('creditcard', 'paypal')) && $operation == 'refund') {
+        if (in_array($paymentType, array('creditcard', 'paypal', 'p24')) && $operation == 'refund') {
             return Operation::CANCEL;
         }
 
