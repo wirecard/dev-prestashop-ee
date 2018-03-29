@@ -86,4 +86,9 @@ class Cart
                 $this->id_address_invoice = new Address();
         }
     }
+
+    public function isVirtualCart()
+    {
+        return false;
+    }
 }
