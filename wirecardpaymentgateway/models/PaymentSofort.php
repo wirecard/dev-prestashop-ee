@@ -35,10 +35,9 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Transaction\SepaTransaction;
 use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
-use Wirecard\PaymentSdk\Transaction\Operation;
 
 /**
  * Class PaymentSofort
@@ -126,18 +125,13 @@ class PaymentSofort extends Payment
                 ),
                 array(
                     'name' => 'payment_action',
-                    'type'    => 'select',
+                    'type'    => 'hidden',
                     'default' => 'pay',
-                    'label'   => 'Payment action',
-                    'options' => array(
-                        array('key' => 'pay', 'value' => 'Capture'),
-                    ),
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable descriptor',
-                    'type'    => 'onoff',
-                    'default' => 0,
+                    'type'    => 'hidden',
+                    'default' => 1,
                 ),
                 array(
                     'name' => 'send_additional',
@@ -190,12 +184,16 @@ class PaymentSofort extends Payment
     }
 
     /**
-     * Create Sofort. Transaction
+     * Create sofort transaction
      *
-     * @return SofortTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|SofortTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new SofortTransaction();
 
@@ -204,8 +202,10 @@ class PaymentSofort extends Payment
 
     /**
      * Create refund Sofort.
-     * @param $transactionData
+     *
+     * @param Transaction $transactionData
      * @return SepaTransaction
+     * @since 1.0.0
      */
     public function createRefundTransaction($transactionData)
     {

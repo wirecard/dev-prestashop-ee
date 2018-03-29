@@ -45,4 +45,16 @@ class Currency
         $this->name = 'Euro';
         $this->iso_code = 'EUR';
     }
+
+    public static function getCurrencies()
+    {
+        return array(
+            array('iso_code' => 'EUR', 'name' => 'Euro')
+        );
+    }
+
+    public static function getTestCurrency()
+    {
+        return array('EUR');
+    }
 }

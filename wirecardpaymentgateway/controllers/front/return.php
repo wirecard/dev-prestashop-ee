@@ -117,12 +117,13 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
      */
     public function processSuccess($response)
     {
-        $cartId = $response->getCustomFields()->get('orderId');
-        $cart = new Cart((int)($cartId));
-        $orderId = Order::getIdByCartId((int)$cartId);
-        $customer = new Customer($cart->id_customer);
+        $orderId = $response->getCustomFields()->get('orderId');
         $order = new Order($orderId);
-        if ($order->current_state != _PS_OS_PAYMENT_) {
+        $cartId = $order->id_cart;
+        $cart = new Cart((int)($cartId));
+        $customer = new Customer($cart->id_customer);
+
+        if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
             $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
         }
 

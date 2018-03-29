@@ -39,6 +39,7 @@ use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Models\PaymentSofort;
+use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
@@ -57,6 +58,10 @@ class WirecardPaymentGateway extends PaymentModule
      */
     private $config;
 
+    /**
+     * @var string
+     * @since 1.0.0
+     */
     protected $html;
 
     /**
@@ -141,7 +146,9 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * register tabs
+     * Register tabs
+     *
+     * @since 1.0.0
      */
     public function installTabs()
     {
@@ -156,6 +163,11 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->add();
     }
 
+    /**
+     * Unregister tabs
+     *
+     * @since 1.0.0
+     */
     public function uninstallTabs()
     {
         $id_tab = (int)Tab::getIdFromClassName('WirecardTransactions');
@@ -222,11 +234,13 @@ class WirecardPaymentGateway extends PaymentModule
                     $val = Tools::strlen($val) ? Tools::jsonDecode($val) : array();
                 }
                 $x = array();
-                foreach ($val as $v) {
-                    $x[$v] = $v;
+                if (is_array($val)) {
+                    foreach ($val as $v) {
+                        $x[$v] = $v;
+                    }
+                    $pname = $parameter['param_name'] . '[]';
+                    $values[$pname] = $x;
                 }
-                $pname = $parameter['param_name'] . '[]';
-                $values[$pname] = $x;
             } else {
                 $values[$parameter['param_name']] = $val;
             }
@@ -246,6 +260,9 @@ class WirecardPaymentGateway extends PaymentModule
         $params = array();
         foreach ($this->config as $group) {
             foreach ($group['fields'] as $f) {
+                if ('hidden' == $f['type']) {
+                    continue;
+                }
                 $f['param_name'] = $this->buildParamName(
                     $group['tab'],
                     $f['name']
@@ -277,9 +294,16 @@ class WirecardPaymentGateway extends PaymentModule
                 continue;
             }
 
+            if (! $paymentMethod->isAvailable($this, $params['cart'])) {
+                continue;
+            }
+
             $paymentData = array(
                 'paymentType' => $paymentMethod->getType(),
             );
+            if ('invoice' == $paymentMethod->getType()) {
+                $this->createRatepayScript($paymentMethod);
+            }
             $payment = new PaymentOption();
             $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
@@ -305,6 +329,42 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Create ratepay script and device ident
+     *
+     * @param PaymentGuaranteedInvoiceRatepay $paymentMethod
+     * @since 1.0.0
+     */
+    public function createRatepayScript($paymentMethod)
+    {
+        $merchantAccount = $this->getConfigValue('invoice', 'merchant_account_id');
+        $deviceIdent = $paymentMethod->createDeviceIdent($merchantAccount);
+
+        if (!isset($this->context->cookie->wirecardDeviceIdent)) {
+            $this->context->cookie->wirecardDeviceIdent = $deviceIdent;
+        }
+
+        echo "<script language='JavaScript'>
+          var di = {t:'" . $this->context->cookie->wirecardDeviceIdent ."',v:'WDWL',l:'Checkout'};
+          </script>
+          <script type='text/javascript' src='//d.ratepay.com/WDWL/di.js'>
+          </script>
+          <noscript>
+          <link rel='stylesheet' type='text/css' href='//d.ratepay.com/di.css?t=" .
+            $this->context->cookie->wirecardDeviceIdent . "&v=WDWL&l=Checkout'>
+          </noscript>
+          <object type='application/x-shockwave-flash' data='//d.ratepay.com/WDWL/c.swf' width='0' height='0'>
+          <param name='movie' value='//d.ratepay.com/WDWL/c.swf' />
+          <param name='flashvars' value='t=" . $this->context->cookie->wirecardDeviceIdent .
+            "&v=WDWL'/><param name='AllowScriptAccess' value='always'/>
+          </object>";
+
+        $paymentMethod->setAdditionalInformationTemplate(
+            'invoice',
+            array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent)
+        );
+    }
+
+    /**
      * Get payment class from payment type
      *
      * @param $paymentType
@@ -314,6 +374,9 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFromType($paymentType)
     {
         $payments = $this->getPayments();
+        if ('ratepay-invoice' == $paymentType) {
+            $paymentType = 'invoice';
+        }
         if (array_key_exists($paymentType, $payments)) {
             return $payments[$paymentType];
         }
@@ -353,6 +416,95 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Hook for media setter
+     *
+     * @return bool
+     * @since 1.0.0
+     */
+    public function hookActionFrontControllerSetMedia()
+    {
+        $link = new Link;
+        $parameters = array("action" => "getcreditcardconfig");
+        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
+        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
+        Media::addJsDef(array('url' => $ajaxLink));
+        $this->context->controller->addJquery();
+        $this->context->controller->addJqueryUI('dialog');
+        $this->context->controller->registerJavascript(
+            'remote-bootstrap',
+            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
+            array('server' => 'remote', 'position' => 'head', 'priority' => 20)
+        );
+
+        foreach ($this->getPayments() as $paymentMethod) {
+            if ($paymentMethod->getLoadJs()) {
+                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', $paymentMethod->getType());
+                Media::addJsDef(array('ajax'.$paymentMethod->getType().'url' => $ajaxLink));
+                $this->context->controller->addJS(
+                    _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
+                    . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Create redirect Urls
+     *
+     * @param $paymentState
+     * @return null
+     * @since 1.0.0
+     */
+    public function createRedirectUrl($cartId, $paymentType, $paymentState)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'return',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+                'payment_state' => $paymentState,
+            )
+        );
+
+        return $returnUrl;
+    }
+
+    /**
+     * Create notification Urls
+     *
+     * @return null
+     * @since 1.0.0
+     */
+    public function createNotificationUrl($cartId, $paymentType)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'notify',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+            )
+        );
+
+        return $returnUrl;
+    }
+
+    /**
+     * Set the name to the payment type selected
+     *
+     * @param $params
+     * @since 1.0.0
+     */
+    public function hookActionPaymentConfirmation($params)
+    {
+        $order = new Order($params['id_order']);
+        $this->displayName = $order->payment;
+    }
+
+    /**
      * Display info text for Wirecard Payment Processing Gateway page
      *
      * @return string
@@ -361,6 +513,45 @@ class WirecardPaymentGateway extends PaymentModule
     protected function displayWirecardPaymentGateway()
     {
         return $this->display(__FILE__, 'infos.tpl');
+    }
+
+    /**
+     * return available country iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCountries()
+    {
+        $cookie = $this->context->cookie;
+        $countries = Country::getCountries($cookie->id_lang);
+        $ret = array();
+        foreach ($countries as $country) {
+            $ret[] = array(
+                'key' => $country['iso_code'],
+                'value' => $country['name']
+            );
+        }
+        return $ret;
+    }
+
+    /**
+     * return available currency iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCurrencies()
+    {
+        $currencies = Currency::getCurrencies();
+        $ret = array();
+        foreach ($currencies as $currency) {
+            $ret[] = array(
+                'key' => $currency['iso_code'],
+                'value' => $currency['name']
+            );
+        }
+        return $ret;
     }
 
     /**
@@ -376,7 +567,8 @@ class WirecardPaymentGateway extends PaymentModule
             'creditcard' => new PaymentCreditCard(),
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
-            'sofortbanking' => new PaymentSofort()
+            'sofortbanking' => new PaymentSofort(),
+            'invoice' => new PaymentGuaranteedInvoiceRatepay()
         );
 
         return $payments;
@@ -392,6 +584,10 @@ class WirecardPaymentGateway extends PaymentModule
         if (Tools::isSubmit('btnSubmit')) {
             foreach ($this->getAllConfigurationParameters() as $parameter) {
                 $val = Tools::getValue($parameter['param_name']);
+
+                if (is_array($val)) {
+                    $val = Tools::jsonEncode($val);
+                }
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
@@ -459,6 +655,9 @@ class WirecardPaymentGateway extends PaymentModule
             $tabname = $value['tab'];
             $tabs[$tabname] = $tabname;
             foreach ($value['fields'] as $f) {
+                if ('hidden' == $f['type']) {
+                    continue;
+                }
                 $elem = array(
                     'name' => $this->buildParamName($tabname, $f['name']),
                     'label' => isset($f['label'])?$this->l($f['label']):'',
@@ -497,6 +696,14 @@ class WirecardPaymentGateway extends PaymentModule
                         break;
 
                     case 'select':
+                        if (isset($f['multiple'])) {
+                            $elem['multiple'] = $f['multiple'];
+                        }
+
+                        if (isset($f['size'])) {
+                            $elem['size'] = $f['size'];
+                        }
+
                         if (isset($f['options'])) {
                             $optfunc = $f['options'];
                             $options = array();
@@ -588,7 +795,12 @@ class WirecardPaymentGateway extends PaymentModule
         return true;
     }
 
-
+    /**
+     * Create wirecard payment transaction table
+     *
+     * @return bool
+     * @since 1.0.0
+     */
     private function createTable()
     {
         $sql = 'CREATE TABLE IF NOT EXISTS  `' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx` (';
@@ -605,6 +817,12 @@ class WirecardPaymentGateway extends PaymentModule
         return Db::getInstance()->execute($sql);
     }
 
+    /**
+     * Get transaction table columns
+     *
+     * @return array
+     * @since 1.0.0
+     */
     private function getColumnDefs()
     {
         return array(
@@ -623,88 +841,5 @@ class WirecardPaymentGateway extends PaymentModule
             "created" => array("DATETIME", "NOT NULL"),
             "modified" => array("DATETIME", "NULL"),
         );
-    }
-
-    public function hookActionFrontControllerSetMedia()
-    {
-        $link = new Link;
-        $parameters = array("action" => "getcreditcardconfig");
-        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
-        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
-        Media::addJsDef(array('url' => $ajaxLink));
-        $this->context->controller->addJquery();
-        $this->context->controller->addJqueryUI('dialog');
-        $this->context->controller->registerJavascript(
-            'remote-bootstrap',
-            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
-            array('server' => 'remote', 'position' => 'head', 'priority' => 20)
-        );
-
-        foreach ($this->getPayments() as $paymentMethod) {
-            if ($paymentMethod->getLoadJs()) {
-                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', $paymentMethod->getType());
-                Media::addJsDef(array('ajax'.$paymentMethod->getType().'url' => $ajaxLink));
-                $this->context->controller->addJS(
-                    _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
-                    . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
-                );
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Create redirect Urls
-     *
-     * @param $paymentState
-     * @return null
-     * @since 1.0.0
-     */
-    public function createRedirectUrl($cartId, $paymentType, $paymentState)
-    {
-        $returnUrl = $this->context->link->getModuleLink(
-            $this->name,
-            'return',
-            array(
-                'id_cart' => $cartId,
-                'payment_type' => $paymentType,
-                'payment_state' => $paymentState,
-            )
-        );
-
-        return $returnUrl;
-    }
-
-    /**
-     * Create notification Urls
-     *
-     * @return null
-     * @since 1.0.0
-     */
-    public function createNotificationUrl($cartId, $paymentType)
-    {
-        $returnUrl = $this->context->link->getModuleLink(
-            $this->name,
-            'notify',
-            array(
-                'id_cart' => $cartId,
-                'payment_type' => $paymentType,
-            )
-        );
-
-        return $returnUrl;
-    }
-
-    /**
-     * Set the name to the payment type selected
-     *
-     * @param $params
-     * @since 1.0.0
-     */
-    public function hookActionPaymentConfirmation($params)
-    {
-        $order = new Order($params['id_order']);
-        $this->displayName = $order->payment;
     }
 }

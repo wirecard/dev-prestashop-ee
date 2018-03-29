@@ -98,7 +98,7 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
     public function testCreateTransaction()
     {
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction();
+        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
 
         $expected = 'paypal';
         $this->assertEquals($expected, $actual::NAME);

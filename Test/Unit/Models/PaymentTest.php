@@ -99,7 +99,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateTransactionIsNull()
     {
-        $actual = $this->payment->createTransaction();
+        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
 
         $this->assertNull($actual);
     }

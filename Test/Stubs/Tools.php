@@ -62,6 +62,11 @@ class Tools
         }
     }
 
+    public static function getAllValues()
+    {
+        return array();
+    }
+
     public static function getAdminTokenLite($string)
     {
         return $string;
@@ -83,5 +88,15 @@ class Tools
             return true;
         }
         return false;
+    }
+
+    public static function jsonEncode($var)
+    {
+        return json_encode($var);
+    }
+
+    public static function jsonDecode($var)
+    {
+        return json_decode($var);
     }
 }

@@ -91,38 +91,18 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             );
 
             /** @var Transaction $transaction */
-            $transaction = $payment->createTransaction();
+            $transaction = $payment->createTransaction($this->module, $cart, Tools::getAllValues(), $orderId);
             $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
             $transaction->setRedirect($redirectUrls);
             $transaction->setAmount(new Amount($amount, $currency->iso_code));
 
             $customFields = new CustomFieldCollection();
-            $customFields->add(new CustomField('orderId', $cartId));
+            $customFields->add(new CustomField('orderId', $orderId));
             $transaction->setCustomFields($customFields);
 
             if ($transaction instanceof  \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
                 $transaction->setTokenId(Tools::getValue('tokenId'));
-                $transaction->setTermUrl($this->module->createRedirectUrl($cartId, $paymentType, 'success'));
-            }
-
-            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\SepaTransaction) {
-                $account_holder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
-                $account_holder->setFirstName(Tools::getValue('sepaFirstName'));
-                $account_holder->setLastName(Tools::getValue('sepaLastName'));
-
-                $transaction->setAccountHolder($account_holder);
-                $transaction->setIban(Tools::getValue('sepaIban'));
-
-                if ($this->module->getConfigValue('sepa', 'enable_bic')) {
-                    $transaction->setBic(Tools::getValue('sepaBic'));
-                }
-
-                $mandate = new \Wirecard\PaymentSdk\Entity\Mandate($this->generateMandateId($orderId));
-                $transaction->setMandate($mandate);
-            }
-
-            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\IdealTransaction) {
-                $transaction->setBic(Tools::getValue('idealBankBic'));
+                $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType, 'success'));
             }
 
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
@@ -130,13 +110,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             }
 
             if ($this->module->getConfigValue($paymentType, 'descriptor')) {
-                $transaction->setDescriptor($additionalInformation->createDescriptor($cartId));
+                $transaction->setDescriptor($additionalInformation->createDescriptor($orderId));
             }
 
             if ($this->module->getConfigValue($paymentType, 'send_additional')) {
                 $transaction = $additionalInformation->createAdditionalInformation(
                     $cart,
-                    $cartId,
+                    $orderId,
                     $transaction,
                     $currency->iso_code
                 );
@@ -242,22 +222,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     }
 
     /**
-     * Generate the mandate id for SEPA
-     *
-     * @param integer $orderId
-     * @return string
-     * @since 1.0,0
-     */
-    private function generateMandateId($orderId)
-    {
-        return $this->module->getConfigValue('sepa', 'creditor_id') . '-' .
-            $orderId . '-' . strtotime(date('Y-m-d H:i:s'));
-    }
-
-    /**
      * Recover failed order
      *
      * @param $orderId
+     * @since 1.0.0
      */
     private function processFailure($orderId)
     {

@@ -131,12 +131,8 @@ class PaymentIdeal extends Payment
                 ),
                 array(
                     'name' => 'payment_action',
-                    'type'    => 'select',
+                    'type'    => 'hidden',
                     'default' => 'pay',
-                    'label'   => 'Payment action',
-                    'options' => array(
-                        array('key' => 'pay', 'value' => 'Capture'),
-                    ),
                 ),
                 array(
                     'name' => 'descriptor',
@@ -191,22 +187,31 @@ class PaymentIdeal extends Payment
     }
 
     /**
-     * Create iDEALTransaction
+     * Create ideal transaction
      *
-     * @return iDEALTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|IdealTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new IdealTransaction();
+        if (isset($values['idealBankBic'])) {
+            $transaction->setBic($values['idealBankBic']);
+        }
 
         return $transaction;
     }
 
     /**
      * Create refund iDEALTransaction
+     *
      * @param $transactionData
      * @return SepaTransaction
+     * @since 1.0.0
      */
     public function createRefundTransaction($transactionData)
     {

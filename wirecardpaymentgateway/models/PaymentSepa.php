@@ -37,11 +37,11 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\SepaTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
-use Wirecard\PaymentSdk\Transaction\Operation;
+use Wirecard\PaymentSdk\Entity\AccountHolder;
 use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
- * Class PaymentCreditCard
+ * Class PaymentSepa
  *
  * @extends Payment
  *
@@ -50,7 +50,7 @@ use Wirecard\PaymentSdk\Entity\Mandate;
 class PaymentSepa extends Payment
 {
     /**
-     * PaymentSEPA constructor.
+     * PaymentSepa constructor.
      *
      * @since 1.0.0
      */
@@ -229,22 +229,45 @@ class PaymentSepa extends Payment
     }
 
     /**
-     * Create SepaTransaction
+     * Create sepa transaction
      *
-     * @return SepaTransaction
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @return null|SepaTransaction
      * @since 1.0.0
      */
-    public function createTransaction()
+    public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new SepaTransaction();
+        if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
+            $account_holder = new AccountHolder();
+            $account_holder->setFirstName($values['sepaFirstName']);
+            $account_holder->setLastName($values['sepaLastName']);
+
+            $transaction->setAccountHolder($account_holder);
+            $transaction->setIban($values['sepaIban']);
+
+            if ($module->getConfigValue('sepa', 'enable_bic')) {
+                if (isset($values['sepaBic'])) {
+                    $transaction->setBic($values['sepaBic']);
+                }
+            }
+
+            $mandate = new Mandate($this->generateMandateId($module, $orderId));
+            $transaction->setMandate($mandate);
+        }
 
         return $transaction;
     }
 
     /**
      * Create refund SepaTransaction
-     * @param $transactionData
+     *
+     * @param Transaction $transactionData
      * @return SepaTransaction
+     * @since 1.0.0
      */
     public function createRefundTransaction($transactionData)
     {
@@ -261,6 +284,12 @@ class PaymentSepa extends Payment
         return $transaction;
     }
 
+    /**
+     * Set template variables
+     *
+     * @return array
+     * @since 1.0.0
+     */
     private function setTemplateData()
     {
         $test = \Configuration::get(
@@ -274,6 +303,13 @@ class PaymentSepa extends Payment
         return array('bicEnabled' => (bool) $test);
     }
 
+    /**
+     * Generate the mandate id for SEPA
+     *
+     * @param int $orderId
+     * @return string
+     * @since 1.0.0
+     */
     public function generateMandateId($paymentModule, $orderId)
     {
         return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
