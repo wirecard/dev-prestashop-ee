@@ -39,6 +39,7 @@ use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Models\PaymentSofort;
+use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
@@ -568,7 +569,8 @@ class WirecardPaymentGateway extends PaymentModule
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
             'sofortbanking' => new PaymentSofort(),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay()
+            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
+            'alipay-xborder' => new PaymentAlipayCrossborder(),
         );
 
         return $payments;
