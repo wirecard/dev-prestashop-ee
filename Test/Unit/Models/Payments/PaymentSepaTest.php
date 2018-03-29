@@ -91,15 +91,16 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
 
     public function testCreateTransaction()
     {
-        $data = array(
-            'sepaFirstName' => 'firsName',
-            'sepaLastName' => 'lastLast',
-            'sepaIban' => 'iban',
-            'sepaBic' => 'bic'
-        );
         $this->paymentModule->method('getConfigValue')->willReturn(true);
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(1);
+        $values = array(
+            'sepaFirstName' => 'Max',
+            'sepaLastName' => 'Mustermann',
+            'sepaIban' => '123456',
+            'sepaBic' => '12354'
+        );
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), $data, 'ADB123');
+        $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), $values, 'ADB123');
 
         $expected = 'sepa';
         $this->assertEquals($expected, $actual::NAME);

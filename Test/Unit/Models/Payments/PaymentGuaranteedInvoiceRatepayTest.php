@@ -114,18 +114,23 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 
     public function testIsAvailable()
     {
-        //$customer = new Customer('oldenough');
-        //$customer->birthday = '1980-01-01';
-
         $cart = $this->getMockBuilder(Cart::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $cart->id_customer = 2;
         $cart->method('getOrderTotal')->willReturn(40);
+
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(20);
+        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn(3500);
+        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn(false);
+        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn('AT,DE,CH');
+        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn('AT,DE,CH');
+        $currencies = json_encode(Currency::getTestCurrency());
+        $this->paymentModule->expects($this->at(5))->method('getConfigValue')->willReturn($currencies);
 
         $actual = $this->payment->isAvailable($this->paymentModule, $cart);
 
-        //because no valid age
-        $this->assertFalse($actual);
+        $this->assertTrue($actual);
     }
 
 
@@ -151,6 +156,21 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $expected->setBasket($basket);
 
         $actual = $this->payment->createPayTransaction($this->transactionData);
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testCreateRefundTransaction()
+    {
+        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
+        $expected->setParentTransactionId('my_secret_id');
+        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(25, 'EUR'));
+
+        $basket = new \Wirecard\PaymentSdk\Entity\Basket();
+        $basket->setVersion($expected);
+        $expected->setBasket($basket);
+
+        $actual = $this->payment->createRefundTransaction($this->transactionData);
 
         $this->assertEquals($expected, $actual);
     }

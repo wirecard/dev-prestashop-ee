@@ -351,6 +351,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $difference = $birthDay->diff(new \DateTime());
         $age = $difference->format('%y');
 
+        if ($cart->isVirtualCart()) {
+            return false;
+        }
+
         if ($age < self::MIN_AGE) {
             return false;
         }

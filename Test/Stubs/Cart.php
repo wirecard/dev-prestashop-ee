@@ -45,6 +45,13 @@ class Cart
     public $id_address_delivery;
     public $secure_key;
 
+    public function __construct($id = null)
+    {
+        if(!is_null($id)) {
+            $this->id_customer = 1;
+        }
+    }
+
     public function getProducts()
     {
         return $this->products;
@@ -85,5 +92,10 @@ class Cart
             default:
                 $this->id_address_invoice = new Address();
         }
+    }
+
+    public function isVirtualCart()
+    {
+        return false;
     }
 }

@@ -52,4 +52,9 @@ class Currency
             array('iso_code' => 'EUR', 'name' => 'Euro')
         );
     }
+
+    public static function getTestCurrency()
+    {
+        return array('EUR');
+    }
 }

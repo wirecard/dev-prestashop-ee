@@ -101,8 +101,11 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
 
     public function testCreateTransaction()
     {
+        $values = array(
+            'idealBankBic' => 'ING',
+        );
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
+        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), $values, 'ADB123');
 
         $expected = 'ideal';
         $this->assertEquals($expected, $actual::NAME);
@@ -111,16 +114,20 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
 
     public function testCreateRefundTransaction()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
+        $expected = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
+
         $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
-        $accountHolder->setDateOfBirth(new DateTime());
-        $actual->setAccountHolder($accountHolder);
-        $actual->setParentTransactionId('my_secret_id');
+        $accountHolder->setDateOfBirth(new \DateTime('01-01-1980'));
 
-        $this->assertEquals($actual, $this->payment->createRefundTransaction(
+        $expected->setAccountHolder($accountHolder);
+        $expected->setParentTransactionId('my_secret_id');
+
+        $actual = $this->payment->createRefundTransaction(
             $this->transactionData,
             $this->paymentModule
-        ));
+        );
+
+        $this->assertEquals($expected, $actual);
     }
 }

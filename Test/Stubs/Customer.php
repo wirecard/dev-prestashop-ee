@@ -37,4 +37,11 @@ class Customer
 {
     public $email;
     public $birthday;
+
+    public function __construct($id = null)
+    {
+        if (!is_null($id)) {
+            $this->birthday = '01-01-1980';
+        }
+    }
 }
