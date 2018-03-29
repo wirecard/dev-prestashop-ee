@@ -40,7 +40,6 @@ use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
 
-
 /**
  * Class PaymentPtwentyfour
  *
