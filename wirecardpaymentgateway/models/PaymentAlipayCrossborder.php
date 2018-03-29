@@ -98,14 +98,14 @@ class PaymentAlipayCrossborder extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret key',
+                    'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base url',
+                    'label'       => 'Base URL',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -113,14 +113,14 @@ class PaymentAlipayCrossborder extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http user',
+                    'label'   => 'HTTP User',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http password',
+                    'label'   => 'HTTP Password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -150,9 +150,9 @@ class PaymentAlipayCrossborder extends Payment
                     'id' => 'alipaycrossborderConfig',
                     'method' => 'alipay-xborder',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_ALIPAY-XBORDER_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_ALIPAY-XBORDER_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_ALIPAY-XBORDER_HTTP_PASS'
                     )
                 )
             )

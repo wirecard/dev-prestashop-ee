@@ -537,7 +537,7 @@ class WirecardPaymentGateway extends PaymentModule
             'ideal' => new PaymentIdeal(),
             'sofortbanking' => new PaymentSofort(),
             'poipia' => new PaymentPoiPia(),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay()
+            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
             'alipay-xborder' => new PaymentAlipayCrossborder(),
         );
 
@@ -813,6 +813,12 @@ class WirecardPaymentGateway extends PaymentModule
         );
     }
 
+    /**
+     * Hook for media setter
+     *
+     * @return bool
+     * @since 1.0.0
+     */
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
