@@ -56,7 +56,7 @@ class PaymentSofort extends Payment
     public function __construct()
     {
         $this->type = 'sofortbanking';
-        $this->name = 'Wirecard Payment Processing Gateway Pay now.';
+        $this->name = 'Wirecard Online Bank Transfer.';
         $this->formFields = $this->createFormFields();
 
         $this->refund  = array('debit');
@@ -77,14 +77,14 @@ class PaymentSofort extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway Pay now.',
+                    'doc' => 'Enable Wirecard Online Bank Transfer.',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway Pay now.',
+                    'default' => 'Wirecard Online Bank Transfer.',
                     'required' => true,
                 ),
                 array(
@@ -96,14 +96,14 @@ class PaymentSofort extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret key',
+                    'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base url',
+                    'label'       => 'Base URL',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -111,14 +111,14 @@ class PaymentSofort extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http user',
+                    'label'   => 'HTTP User',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http password',
+                    'label'   => 'HTTP Password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -143,7 +143,7 @@ class PaymentSofort extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test Pay now. configuration',
+                    'buttonText' => 'Test configuration',
                     'id' => 'sofortbankingConfig',
                     'method' => 'sofortbanking',
                     'send' => array(
