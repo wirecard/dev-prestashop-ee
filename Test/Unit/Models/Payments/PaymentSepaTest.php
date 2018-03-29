@@ -63,7 +63,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway SEPA';
+        $expected = 'Wirecard SEPA';
 
         $this->assertEquals($expected, $actual);
     }
@@ -91,6 +91,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
 
     public function testCreateTransaction()
     {
+        $this->paymentModule->method('getConfigValue')->willReturn(true);
         $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(1);
         $values = array(
             'sepaFirstName' => 'Max',

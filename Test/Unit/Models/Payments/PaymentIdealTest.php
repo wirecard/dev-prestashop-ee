@@ -70,7 +70,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway iDEAL';
+        $expected = 'Wirecard iDEAL';
 
         $this->assertEquals($expected, $actual);
     }
