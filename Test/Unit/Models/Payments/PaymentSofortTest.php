@@ -113,7 +113,7 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
         $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
-        $accountHolder->setDateOfBirth(new DateTime());
+        $accountHolder->setDateOfBirth(new \DateTime('01-01-1980'));
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
         $actual->setAccountHolder($accountHolder);
         $actual->setParentTransactionId('my_secret_id');

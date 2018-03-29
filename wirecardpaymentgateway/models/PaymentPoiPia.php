@@ -38,6 +38,7 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\PoiPiaTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
  * Class PaymentPoiPia
@@ -191,8 +192,11 @@ class PaymentPoiPia extends Payment
     }
 
     /**
-     * @param $transactionData
+     * Create Cancel PoiPia Transaction
+     *
+     * @param Transaction $transactionData
      * @return PoiPiaTransaction
+     * @since 1.0.0
      */
     public function createCancelTransaction($transactionData)
     {
@@ -216,6 +220,9 @@ class PaymentPoiPia extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new PoiPiaTransaction();
+
+        $additionalInformation = new AdditionalInformation();
+        $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
 
         return $transaction;
     }

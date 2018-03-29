@@ -60,6 +60,10 @@ class WirecardPaymentGateway extends PaymentModule
      */
     private $config;
 
+    /**
+     * @var string
+     * @since 1.0.0
+     */
     protected $html;
 
     /**
@@ -145,7 +149,9 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * register tabs
+     * Register tabs
+     *
+     * @since 1.0.0
      */
     public function installTabs()
     {
@@ -160,6 +166,11 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->add();
     }
 
+    /**
+     * Unregister tabs
+     *
+     * @since 1.0.0
+     */
     public function uninstallTabs()
     {
         $id_tab = (int)Tab::getIdFromClassName('WirecardTransactions');
@@ -264,45 +275,6 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $params;
-    }
-
-    /**
-     * return available country iso codes
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    protected function getCountries()
-    {
-        $cookie = $this->context->cookie;
-        $countries = Country::getCountries($cookie->id_lang);
-        $ret = array();
-        foreach ($countries as $country) {
-            $ret[] = array(
-                'key' => $country['iso_code'],
-                'value' => $country['name']
-            );
-        }
-        return $ret;
-    }
-
-    /**
-     * return available currency iso codes
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    protected function getCurrencies()
-    {
-        $currencies = Currency::getCurrencies();
-        $ret = array();
-        foreach ($currencies as $currency) {
-            $ret[] = array(
-                'key' => $currency['iso_code'],
-                'value' => $currency['name']
-            );
-        }
-        return $ret;
     }
 
     /**
@@ -447,6 +419,60 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Create redirect Urls
+     *
+     * @param $paymentState
+     * @return null
+     * @since 1.0.0
+     */
+    public function createRedirectUrl($cartId, $paymentType, $paymentState)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'return',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+                'payment_state' => $paymentState,
+            )
+        );
+
+        return $returnUrl;
+    }
+
+    /**
+     * Create notification Urls
+     *
+     * @return null
+     * @since 1.0.0
+     */
+    public function createNotificationUrl($cartId, $paymentType)
+    {
+        $returnUrl = $this->context->link->getModuleLink(
+            $this->name,
+            'notify',
+            array(
+                'id_cart' => $cartId,
+                'payment_type' => $paymentType,
+            )
+        );
+
+        return $returnUrl;
+    }
+
+    /**
+     * Set the name to the payment type selected
+     *
+     * @param $params
+     * @since 1.0.0
+     */
+    public function hookActionPaymentConfirmation($params)
+    {
+        $order = new Order($params['id_order']);
+        $this->displayName = $order->payment;
+    }
+
+    /**
      * Display info text for Wirecard Payment Processing Gateway page
      *
      * @return string
@@ -455,6 +481,45 @@ class WirecardPaymentGateway extends PaymentModule
     protected function displayWirecardPaymentGateway()
     {
         return $this->display(__FILE__, 'infos.tpl');
+    }
+
+    /**
+     * return available country iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCountries()
+    {
+        $cookie = $this->context->cookie;
+        $countries = Country::getCountries($cookie->id_lang);
+        $ret = array();
+        foreach ($countries as $country) {
+            $ret[] = array(
+                'key' => $country['iso_code'],
+                'value' => $country['name']
+            );
+        }
+        return $ret;
+    }
+
+    /**
+     * return available currency iso codes
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    protected function getCurrencies()
+    {
+        $currencies = Currency::getCurrencies();
+        $ret = array();
+        foreach ($currencies as $currency) {
+            $ret[] = array(
+                'key' => $currency['iso_code'],
+                'value' => $currency['name']
+            );
+        }
+        return $ret;
     }
 
     /**
@@ -700,7 +765,12 @@ class WirecardPaymentGateway extends PaymentModule
         return true;
     }
 
-
+    /**
+     * Create wirecard payment transaction table
+     *
+     * @return bool
+     * @since 1.0.0
+     */
     private function createTable()
     {
         $sql = 'CREATE TABLE IF NOT EXISTS  `' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx` (';
@@ -717,6 +787,12 @@ class WirecardPaymentGateway extends PaymentModule
         return Db::getInstance()->execute($sql);
     }
 
+    /**
+     * Get transaction table columns
+     *
+     * @return array
+     * @since 1.0.0
+     */
     private function getColumnDefs()
     {
         return array(
@@ -764,60 +840,6 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return true;
-    }
-
-    /**
-     * Create redirect Urls
-     *
-     * @param $paymentState
-     * @return null
-     * @since 1.0.0
-     */
-    public function createRedirectUrl($cartId, $paymentType, $paymentState)
-    {
-        $returnUrl = $this->context->link->getModuleLink(
-            $this->name,
-            'return',
-            array(
-                'id_cart' => $cartId,
-                'payment_type' => $paymentType,
-                'payment_state' => $paymentState,
-            )
-        );
-
-        return $returnUrl;
-    }
-
-    /**
-     * Create notification Urls
-     *
-     * @return null
-     * @since 1.0.0
-     */
-    public function createNotificationUrl($cartId, $paymentType)
-    {
-        $returnUrl = $this->context->link->getModuleLink(
-            $this->name,
-            'notify',
-            array(
-                'id_cart' => $cartId,
-                'payment_type' => $paymentType,
-            )
-        );
-
-        return $returnUrl;
-    }
-
-    /**
-     * Set the name to the payment type selected
-     *
-     * @param $params
-     * @since 1.0.0
-     */
-    public function hookActionPaymentConfirmation($params)
-    {
-        $order = new Order($params['id_order']);
-        $this->displayName = $order->payment;
     }
 
     /**
