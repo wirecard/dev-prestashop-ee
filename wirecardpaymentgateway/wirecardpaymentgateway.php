@@ -136,11 +136,14 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function uninstall()
     {
+        if (!$this->deleteConfig()) {
+            return false;
+        }
+        $this->uninstallTabs();
+
         if (!parent::uninstall()) {
             return false;
         }
-
-        $this->uninstallTabs();
 
         return true;
     }
@@ -792,6 +795,29 @@ class WirecardPaymentGateway extends PaymentModule
             }
         }
 
+        return true;
+    }
+
+    /**
+     * Delete Configuration values
+     *
+     * @return bool
+     * @since 1.0.0
+     */
+    private function deleteConfig()
+    {
+        foreach ($this->config as $config) {
+            foreach ($config['fields'] as $field) {
+                $name = $config['tab'];
+                $fieldname = $this->buildParamName($name, $field['name']);
+                $value = Configuration::get($fieldname);
+                if (!empty($value)) {
+                    if(!Configuration::deleteByName($fieldname)) {
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 
