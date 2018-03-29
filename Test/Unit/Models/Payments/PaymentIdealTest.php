@@ -101,8 +101,11 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
 
     public function testCreateTransaction()
     {
+        $values = array(
+            'idealBankBic' => 'ING',
+        );
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
+        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), $values, 'ADB123');
 
         $expected = 'ideal';
         $this->assertEquals($expected, $actual::NAME);
