@@ -811,7 +811,7 @@ class WirecardPaymentGateway extends PaymentModule
                 $name = $config['tab'];
                 $fieldname = $this->buildParamName($name, $field['name']);
                 $value = Configuration::get($fieldname);
-                if (!empty($value)) {
+                if (isset($value)) {
                     if (!Configuration::deleteByName($fieldname)) {
                         return false;
                     }
