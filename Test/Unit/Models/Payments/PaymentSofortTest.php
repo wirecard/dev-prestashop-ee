@@ -33,9 +33,9 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentIdeal;
+use WirecardEE\Prestashop\Models\PaymentSofort;
 
-class PaymentIdealTest extends PHPUnit_Framework_TestCase
+class PaymentSofortTest extends PHPUnit_Framework_TestCase
 {
     private $payment;
 
@@ -55,7 +55,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentIdeal();
+        $this->payment = new PaymentSofort();
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
@@ -70,7 +70,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway iDEAL';
+        $expected = 'Wirecard Payment Processing Gateway Pay now.';
 
         $this->assertEquals($expected, $actual);
     }
@@ -90,7 +90,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
         $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
-            'ideal',
+            'sofortbanking',
             'merchant_account_id',
             'secret'
         );
@@ -104,7 +104,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction();
 
-        $expected = 'ideal';
+        $expected = 'sofortbanking';
         $this->assertEquals($expected, $actual::NAME);
     }
 

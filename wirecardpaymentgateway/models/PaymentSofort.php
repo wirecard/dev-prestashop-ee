@@ -27,48 +27,44 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
-use Wirecard\PaymentSdk\Config\SepaConfig;
+use Wirecard\PaymentSdk\Transaction\SofortTransaction;
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use Wirecard\PaymentSdk\Transaction\Operation;
-use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
- * Class PaymentCreditCard
+ * Class PaymentSofort
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentSepa extends Payment
+class PaymentSofort extends Payment
 {
     /**
-     * PaymentSEPA constructor.
+     * PaymentSofort constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'sepa';
-        $this->name = 'Wirecard Payment Processing Gateway SEPA';
+        $this->type = 'sofortbanking';
+        $this->name = 'Wirecard Payment Processing Gateway Pay now.';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
-        $this->setLoadJs(true);
 
-        $this->cancel  = array('pending-debit');
-        $this->capture = array('authorization');
         $this->refund  = array('debit');
     }
 
     /**
-     * Create form fields for SEPA
+     * Create form fields for Sofort.
      *
      * @return array|null
      * @since 1.0.0
@@ -76,34 +72,34 @@ class PaymentSepa extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'SEPA',
+            'tab' => 'sofortbanking',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway SEPA',
+                    'doc' => 'Enable Wirecard Payment Processing Gateway Pay now.',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway SEPA',
+                    'default' => 'Wirecard Payment Processing Gateway Pay now.',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
+                    'default' => 'c021a23a-49a5-4987-aa39-e8e858d29bad',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => 'Secret key',
                     'type'    => 'text',
-                    'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
+                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
@@ -129,43 +125,11 @@ class PaymentSepa extends Payment
                     'required' => true,
                 ),
                 array(
-                    'name' => 'creditor_id',
-                    'label'   => 'Creditor ID',
-                    'type'    => 'text',
-                    'default' => 'DE98ZZZ09999999999',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'creditor_name',
-                    'label'   => 'Creditor name',
-                    'type'    => 'text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
-                    'name' => 'creditor_city',
-                    'label'   => 'Creditor city',
-                    'type'    => 'text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
-                    'name' => 'sepa_mandate_textextra',
-                    'label'   => 'Additional text',
-                    'type'    => 'textarea',
-                    'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first 
-                    paragraph.',
-                    'empty_message' => 'Click here and type your text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'authorization',
+                    'default' => 'pay',
                     'label'   => 'Payment action',
                     'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
                     ),
                 ),
@@ -182,22 +146,16 @@ class PaymentSepa extends Payment
                     'default' => 1,
                 ),
                 array(
-                    'name' => 'enable_bic',
-                    'label'   => 'Enable BIC',
-                    'type'    => 'onoff',
-                    'default' => 0,
-                ),
-                array(
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test SEPA configuration',
-                    'id' => 'SepaConfig',
-                    'method' => 'SEPA',
+                    'buttonText' => 'Test Pay now. configuration',
+                    'id' => 'sofortbankingConfig',
+                    'method' => 'sofortbanking',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_PASS'
                     )
                 )
             )
@@ -205,7 +163,7 @@ class PaymentSepa extends Payment
     }
 
     /**
-     * Create config for SEPA transactions
+     * Create config for Sofort. transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -221,62 +179,37 @@ class PaymentSepa extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new SepaConfig($merchantAccountId, $secret);
-        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
+        $paymentConfig = new PaymentMethodConfig(
+            SofortTransaction::NAME,
+            $merchantAccountId,
+            $secret
+        );
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create SepaTransaction
+     * Create Sofort. Transaction
      *
-     * @return SepaTransaction
+     * @return SofortTransaction
      * @since 1.0.0
      */
     public function createTransaction()
     {
-        $transaction = new SepaTransaction();
+        $transaction = new SofortTransaction();
 
         return $transaction;
     }
 
     /**
-     * Create refund SepaTransaction
+     * Create refund Sofort.
      * @param $transactionData
      * @return SepaTransaction
      */
     public function createRefundTransaction($transactionData)
     {
-        $transaction = new SepaTransaction();
-
-        $additionalInformation = new AdditionalInformation();
-        $cart = new \Cart($transactionData->cart_id);
-        $transaction->setAccountHolder($additionalInformation->createAccountHolder(
-            $cart,
-            'billing'
-        ));
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $transaction;
-    }
-
-    private function setTemplateData()
-    {
-        $test = \Configuration::get(
-            sprintf(
-                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-                \Tools::strtoupper($this->type),
-                \Tools::strtoupper('enable_bic')
-            )
-        );
-
-        return array('bicEnabled' => (bool) $test);
-    }
-
-    public function generateMandateId($paymentModule, $orderId)
-    {
-        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
-            . '-' . strtotime(date('Y-m-d H:i:s'));
+        $sepa = new PaymentSepa();
+        return $sepa->createRefundTransaction($transactionData);
     }
 }

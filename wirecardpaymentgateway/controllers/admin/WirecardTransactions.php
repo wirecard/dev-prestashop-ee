@@ -37,9 +37,9 @@ use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Operation;
 
 /**
  * Class WirecardTransactions
@@ -191,26 +191,8 @@ class WirecardTransactionsController extends ModuleAdminController
                 $this->errors[] = Tools::displayError('The transcation cannot be found within your database.');
             }
 
-            switch (\Tools::getValue('action')) {
-                case 'cancel':
-                    $this->handleTransaction($transaction, 'cancel');
-                    break;
-                case 'capture':
-                    $this->handleTransaction($transaction, 'pay');
-                    break;
-                case 'refund':
-                    if ($transaction->paymentmethod != 'creditcard') {
-                        $this->handleTransaction($transaction, 'refund');
-                    } else {
-                        $this->handleTransaction($transaction, 'cancel');
-                    }
-                    break;
-                default:
-                    $this->errors[] = Tools::displayError('The requested backend operation is not supported');
-                    break;
-            }
+            $this->handleTransaction($transaction, \Tools::getValue('action'));
         }
-        return;
     }
 
     /**
@@ -227,10 +209,23 @@ class WirecardTransactionsController extends ModuleAdminController
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
             $config = $payment->createPaymentConfig($this->module);
-
-            $transaction = $payment->createTransaction();
-            $transaction->setParentTransactionId($transactionData->transaction_id);
-            $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+            $operation = $this->getOperation($paymentType, $operation);
+            switch ($operation) {
+                case Operation::REFUND:
+                    $transaction = $payment->createRefundTransaction($transactionData);
+                    if (in_array($paymentType, array('ideal', 'sofortbanking', 'sepa'))) {
+                        $payment = $this->module->getPaymentFromType('sepa');
+                        $config = $payment->createPaymentConfig($this->module);
+                        $operation = Operation::CREDIT;
+                    }
+                    break;
+                case Operation::CANCEL:
+                    $transaction = $payment->createCancelTransaction($transactionData);
+                    break;
+                case Operation::PAY:
+                    $transaction = $payment->createPayTransaction($transactionData);
+                    break;
+            }
             $transactionService = new TransactionService($config, new WirecardLogger());
             try {
                 /** @var $response \Wirecard\PaymentSdk\Response\Response */
@@ -269,5 +264,23 @@ class WirecardTransactionsController extends ModuleAdminController
     private function createTransaction($txId)
     {
         return new Transaction($txId);
+    }
+
+    /**
+     * @param $paymentType
+     * @param $operation
+     * @return string
+     */
+    private function getOperation($paymentType, $operation)
+    {
+        if ($operation == 'capture') {
+            return Operation::PAY;
+        }
+
+        if (in_array($paymentType, array('creditcard', 'paypal')) && $operation == 'refund') {
+            return Operation::CANCEL;
+        }
+
+        return $operation;
     }
 }

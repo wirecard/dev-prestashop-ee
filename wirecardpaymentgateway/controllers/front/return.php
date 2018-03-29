@@ -37,6 +37,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -58,33 +59,54 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     {
         $response = $_REQUEST;
         $paymentType = Tools::getValue('payment_type');
+        $paymentState = Tools::getValue('payment_state');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
-        try {
-            $transactionService = new TransactionService($config, new WirecardLogger());
-            $result = $transactionService->handleResponse($response);
-            if ($result instanceof SuccessResponse) {
-                $this->processSuccess($result);
-            } elseif ($result instanceof FailureResponse) {
-                $errors = "";
-                foreach ($result->getStatusCollection()->getIterator() as $item) {
-                    $errors .= $item->getDescription() . "<br>";
+
+        if ($paymentState == 'success') {
+            try {
+                $transactionService = new TransactionService($config, new WirecardLogger());
+                $result = $transactionService->handleResponse($response);
+                if ($result instanceof SuccessResponse) {
+                    $this->processSuccess($result);
+                } elseif ($result instanceof FailureResponse) {
+                    $errors = "";
+                    foreach ($result->getStatusCollection()->getIterator() as $item) {
+                        $errors .= $item->getDescription() . "<br>";
+                    }
+                    $this->errors = $errors;
+                    $this->redirectWithNotifications($this->context->link->getPageLink('order'));
                 }
-                $this->errors = $errors;
+            } catch (\InvalidArgumentException $exception) {
+                $this->errors = 'Invalid Argument: ' . $exception->getMessage();
+                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            } catch (\MalformedResponseException $exception) {
+                $this->errors = 'Malformed Response: ' . $exception->getMessage();
+                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            } catch (Exception $exception) {
+                $this->errors = $exception->getMessage();
                 $this->redirectWithNotifications($this->context->link->getPageLink('order'));
             }
-        } catch (\InvalidArgumentException $exception) {
-            $this->errors = 'Invalid Argument: ' . $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        } catch (MalformedResponseException $exception) {
-            $this->errors = 'Malformed Response: ' . $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        } catch (Exception $exception) {
-            $this->errors = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        } else {
+            $cartId = Tools::getValue('id_cart');
+            $orderId = Order::getIdByCartId((int)$cartId);
+            $order = new Order($orderId);
+            if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+                $order->setCurrentState(_PS_OS_ERROR_);
+                $params = array(
+                    'submitReorder' => true,
+                    'id_order' => (int)$orderId
+                );
+                if ($paymentState == 'cancel') {
+                    $this->errors = $this->l('You have canceled the payment process.');
+                }
+            } else {
+                $this->errors = $this->l('Something went wrong during the payment process.');
+            }
+            $this->redirectWithNotifications(
+                $this->context->link->getPageLink('order', true, $order->id_lang, $params)
+            );
         }
-        $this->errors = 'Something went wrong during the payment process.';
-        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 
     /**
@@ -100,6 +122,9 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $orderId = Order::getIdByCartId((int)$cartId);
         $customer = new Customer($cart->id_customer);
         $order = new Order($orderId);
+        if ($order->current_state != _PS_OS_PAYMENT_) {
+            $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+        }
 
         $orderPayments = OrderPayment::getByOrderReference($order->reference);
         if (!empty($orderPayments)) {
