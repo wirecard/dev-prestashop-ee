@@ -209,7 +209,7 @@ class PaymentAlipayCrossborder extends Payment
      * @return AlipayCrossborderTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData)
+    public function createCancelTransaction($transactionData)
     {
         $transaction = new AlipayCrossborderTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
