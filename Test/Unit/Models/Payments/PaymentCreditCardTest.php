@@ -72,6 +72,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $this->transactionData->transaction_id = 'my_secret_id';
         $this->transactionData->amount = 20;
         $this->transactionData->currency = 'EUR';
+        $this->transactionData->transaction_type = null;
     }
 
     public function testName()
