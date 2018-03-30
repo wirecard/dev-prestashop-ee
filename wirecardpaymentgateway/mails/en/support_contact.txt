@@ -1,0 +1,16 @@
+Hi,
+
+{shop_name} [{shop_url}]
+
+message
+
+Version:
+info
+
+Config:
+config
+
+Modules:
+modules
+
+
