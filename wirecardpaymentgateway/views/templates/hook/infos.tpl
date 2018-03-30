@@ -32,8 +32,12 @@
 <br>
 <p><strong>{l s="Pay with Wirecard Payment Processing Gateway." d='Modules.Wirecardpaymentgateway.Admin'}</strong></p>
 <div class="btn-group">
-        <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
-            <i class=e"icon-mony"></i>
-            {l s='Transactions' mod='wirecardpaymentgateway'}
-        </a>
+    <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
+        <i class=e"icon-mony"></i>
+        {l s='Transactions' mod='wirecardpaymentgateway'}
+    </a>
+    <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
+        <i class=e"icon-mony"></i>
+        {l s='Support' mod='wirecardpaymentgateway'}
+    </a>
 </div>
