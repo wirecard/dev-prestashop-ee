@@ -102,7 +102,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
     public function testCreateTransaction()
     {
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
+        $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), array('tokenId' => 'test'), 'ADB123');
 
         $expected = 'unionpayinternational';
         $this->assertEquals($expected, $actual::NAME);
