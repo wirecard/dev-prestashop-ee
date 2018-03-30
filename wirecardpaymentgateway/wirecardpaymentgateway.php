@@ -430,6 +430,9 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function getConfigValue($name, $field)
     {
+        if ('sofortbanking' == $name) {
+            $name = 'Sofort';
+        }
         return Configuration::get($this->buildParamName($name, $field));
     }
 
