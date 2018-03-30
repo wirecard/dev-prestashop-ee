@@ -73,7 +73,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'UnionPay International';
+        $expected = 'Wirecard UnionPay International';
 
         $this->assertEquals($expected, $actual);
     }
