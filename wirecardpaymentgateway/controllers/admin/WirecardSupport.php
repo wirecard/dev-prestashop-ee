@@ -76,29 +76,9 @@ class WirecardSupportController extends ModuleAdminController
     {
         $this->fields_form = array(
             'legend' => array(
-                'title' => $this->l('Send support request'),
+                'title' => $this->l('Send support request to <shop-systems-support@wirecard.com>'),
             ),
             'input' => array(
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('To:'),
-                    'desc' => $this->l('Choose a support channel'),
-                    'name' => 'to',
-                    'required' => true,
-                    'options' => array(
-                        'query' => array(
-                            array(
-                                'id_option' => 'support.at@wirecard.com',
-                                'name' => 'Support Team Wirecard CEE, Austria'
-                            ),
-                            array('id_option' => 'support@wirecard.com', 'name' => 'Support Team Wirecard AG, Germany'),
-                            array('id_option' => 'support.sg@wirecard.com', 'name' => 'Support Team Wirecard Singapore')
-                        ),
-                        'id' => 'id_option',
-                        'name' => 'name'
-                    ),
-                    'class' => 'fixed-width-xxl'
-                ),
                 array(
                     'type' => 'text',
                     'label' => $this->l('Your e-mail address:'),
@@ -134,10 +114,6 @@ class WirecardSupportController extends ModuleAdminController
         if (Tools::isSubmit('sendrequest')) {
             if (!Tools::getValue('replyto') || !Validate::isEmail(Tools::getValue('replyto'))) {
                 $this->errors[] = Tools::displayError('Please enter a valid e-mail address');
-            }
-
-            if (!Tools::getValue('to') || !Validate::isEmail(Tools::getValue('to'))) {
-                $this->errors[] = Tools::displayError('Please choise a valid support channel');
             }
 
             if (!Tools::getValue('message')) {
@@ -185,7 +161,7 @@ class WirecardSupportController extends ModuleAdminController
             'support_contact',
             'Prestashop support request',
             $tmpl_vars,
-            Tools::getValue('to'),
+            'shop-systems-support@wirecard.com',
             null, // to_name
             null, // from
             null, // from_name
