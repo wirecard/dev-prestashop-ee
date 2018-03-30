@@ -40,6 +40,7 @@ use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Models\PaymentSofort;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
+use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\OrderManager;
@@ -538,6 +539,7 @@ class WirecardPaymentGateway extends PaymentModule
             'sofortbanking' => new PaymentSofort(),
             'poipia' => new PaymentPoiPia(),
             'invoice' => new PaymentGuaranteedInvoiceRatepay(),
+            'alipay-xborder' => new PaymentAlipayCrossborder(),
             'p24' => new PaymentPtwentyfour()
         );
 
@@ -813,6 +815,12 @@ class WirecardPaymentGateway extends PaymentModule
         );
     }
 
+    /**
+     * Hook for media setter
+     *
+     * @return bool
+     * @since 1.0.0
+     */
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
