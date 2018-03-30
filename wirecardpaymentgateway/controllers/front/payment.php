@@ -121,7 +121,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                     $currency->iso_code
                 );
             }
-
             return $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
     }

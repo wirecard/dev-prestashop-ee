@@ -40,6 +40,7 @@ use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Models\PaymentSofort;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
+use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
@@ -536,7 +537,8 @@ class WirecardPaymentGateway extends PaymentModule
             'ideal' => new PaymentIdeal(),
             'sofortbanking' => new PaymentSofort(),
             'poipia' => new PaymentPoiPia(),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay()
+            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
+            'p24' => new PaymentPtwentyfour()
         );
 
         return $payments;

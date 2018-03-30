@@ -116,7 +116,9 @@ class Transaction extends \ObjectModel
         $closedTransactions = array(
             'void-authorization',
             'void-capture',
-            'refund-capture'
+            'refund-capture',
+            'refund-request',
+            'refund-debit'
         );
         if (self::get($response->getParentTransactionId())) {
             $parentTransactionId = $response->getParentTransactionId();
