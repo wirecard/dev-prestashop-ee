@@ -142,7 +142,7 @@ class PaymentIdeal extends Payment
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send additional information',
+                    'label'   => 'Send Additional Information',
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
