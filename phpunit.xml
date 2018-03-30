@@ -39,6 +39,9 @@
                 <file>wirecardpaymentgateway/views/img/paymenttypes/index.php</file>
                 <file>wirecardpaymentgateway/views/js/index.php</file>
                 <file>wirecardpaymentgateway/models/index.php</file>
+                <file>wirecardpaymentgateway/mails/index.php</file>
+                <file>wirecardpaymentgateway/mails/en/index.php</file>
+
             </exclude>
         </whitelist>
     </filter>

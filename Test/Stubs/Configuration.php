@@ -120,4 +120,9 @@ class Configuration
                 return $param;
         }
     }
+
+    public static function deleteByName($string)
+    {
+        return true;
+    }
 }

@@ -61,7 +61,6 @@ class PaymentPtwentyfourTest extends PHPUnit_Framework_TestCase
         $this->transactionData->transaction_id = 'my_secret_id';
         $this->transactionData->amount = 20;
         $this->transactionData->currency = 'EUR';
-
     }
 
     public function testName()

@@ -56,7 +56,7 @@ class PaymentSofort extends Payment
     public function __construct()
     {
         $this->type = 'sofortbanking';
-        $this->name = 'Wirecard Online Bank Transfer.';
+        $this->name = 'Wirecard Sofort.';
         $this->formFields = $this->createFormFields();
 
         $this->refund  = array('debit');
@@ -71,20 +71,20 @@ class PaymentSofort extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'sofortbanking',
+            'tab' => 'Sofort',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Online Bank Transfer.',
+                    'doc' => 'Enable Wirecard Sofort.',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Online Bank Transfer.',
+                    'default' => 'Wirecard Sofort.',
                     'required' => true,
                 ),
                 array(
@@ -147,9 +147,9 @@ class PaymentSofort extends Payment
                     'id' => 'sofortbankingConfig',
                     'method' => 'sofortbanking',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORTBANKING_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORT._BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORT._HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORT._HTTP_PASS'
                     )
                 )
             )
