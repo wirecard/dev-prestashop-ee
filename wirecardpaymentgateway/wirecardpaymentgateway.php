@@ -165,16 +165,27 @@ class WirecardPaymentGateway extends PaymentModule
         }
         $tab->module = $this->name;
         $tab->add();
+
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'WirecardSupport';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Wirecard Support';
+        }
+        $tab->module = $this->name;
+        $tab->add();
     }
 
-    /**
-     * Unregister tabs
-     *
-     * @since 1.0.0
-     */
     public function uninstallTabs()
     {
         $id_tab = (int)Tab::getIdFromClassName('WirecardTransactions');
+        if ($id_tab) {
+            $tab = new Tab($id_tab);
+            $tab->delete();
+        }
+
+        $id_tab = (int)Tab::getIdFromClassName('WirecardSupport');
         if ($id_tab) {
             $tab = new Tab($id_tab);
             $tab->delete();
