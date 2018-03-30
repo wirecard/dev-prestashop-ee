@@ -43,6 +43,7 @@ use WirecardEE\Prestashop\Models\PaymentPoiPia;
 use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
+use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
@@ -84,7 +85,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'creditcard', 'sepa');
+        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'configprovider', 'sepa');
 
         $this->is_eu_compatible = 1;
         $this->currencies = true;
@@ -557,7 +558,8 @@ class WirecardPaymentGateway extends PaymentModule
             'poipia' => new PaymentPoiPia(),
             'invoice' => new PaymentGuaranteedInvoiceRatepay(),
             'alipay-xborder' => new PaymentAlipayCrossborder(),
-            'p24' => new PaymentPtwentyfour()
+            'p24' => new PaymentPtwentyfour(),
+            'unionpayinternational' => new PaymentUnionPayInternational()
         );
 
         return $payments;
@@ -864,10 +866,10 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $parameters = array("action" => "getcreditcardconfig");
-        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
+        //$parameters = array("action" => "getcreditcardconfig");
+        //$ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider', $parameters);
         $baseUrl = $this->getConfigValue('creditcard', 'base_url');
-        Media::addJsDef(array('url' => $ajaxLink));
+        //Media::addJsDef(array('url' => $ajaxLink));
         $this->context->controller->addJquery();
         $this->context->controller->addJqueryUI('dialog');
         $this->context->controller->registerJavascript(
@@ -878,8 +880,8 @@ class WirecardPaymentGateway extends PaymentModule
 
         foreach ($this->getPayments() as $paymentMethod) {
             if ($paymentMethod->getLoadJs()) {
-                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', $paymentMethod->getType());
-                Media::addJsDef(array('ajax'.$paymentMethod->getType().'url' => $ajaxLink));
+                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway');
+                Media::addJsDef(array('configProviderURL' => $ajaxLink));
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
