@@ -1,6 +1,4 @@
 # PrestaShop Wirecard Payment Processing Gateway Shop Plugin
-[![Build Status](https://travis-ci.org/wirecard/dev-prestashop-ee.svg?branch=master)](https://travis-ci.org/wirecard/dev-prestashop-ee)
-[![Build Status](https://saucelabs.com/buildstatus/wirecard-dev-prestashop-ee-bot)](https://saucelabs.com/open_sauce/user/wirecard-dev-prestashop-ee-bot)
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/wirecard/magento2-ee/master/LICENSE)
 [![PHP v5.6](https://img.shields.io/badge/php-v5.6-yellow.svg)](http://www.php.net)
 [![PHP v7.0](https://img.shields.io/badge/php-v7.0-yellow.svg)](http://www.php.net)
