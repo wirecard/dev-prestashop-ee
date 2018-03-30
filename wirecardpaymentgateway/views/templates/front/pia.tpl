@@ -27,17 +27,30 @@
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
  *}
-
-<img src="../modules/wirecardpaymentgateway/logo.png">
 <br>
-<p><strong>{l s="Pay with Wirecard Payment Processing Gateway." d='Modules.Wirecardpaymentgateway.Admin'}</strong></p>
-<div class="btn-group">
-    <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
-        <i class=e"icon-mony"></i>
-        {l s='Transactions' mod='wirecardpaymentgateway'}
-    </a>
-    <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
-        <i class=e"icon-mony"></i>
-        {l s='Support' mod='wirecardpaymentgateway'}
-    </a>
-</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <td scope="col" colspan="2"><b>{l s='Please transfer the amount using the following data:' mod='wirecardpaymentgateway'}</b></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{l s='Amount' mod='wirecardpaymentgateway'}</td>
+            <td>{$amount|string_format:"%.2f"} {$currency|escape:'htmlall':'UTF-8'}</td>
+        </tr>
+        <tr>
+            <td>IBAN</td>
+            <td>{$iban}</td>
+        </tr>
+        <tr>
+            <td>BIC</td>
+            <td>{$bic}</td>
+        </tr>
+        <tr>
+            <td>{l s='Provider transaction reference id' mod='wirecardpaymentgateway'}</td>
+            <td>{$refId}</td>
+        </tr>
+    </tbody>
+</table>
+<br>

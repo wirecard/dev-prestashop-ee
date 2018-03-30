@@ -27,48 +27,44 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
-use Wirecard\PaymentSdk\Config\SepaConfig;
+use Wirecard\PaymentSdk\Transaction\PtwentyfourTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
-use Wirecard\PaymentSdk\Entity\AccountHolder;
-use Wirecard\PaymentSdk\Entity\Mandate;
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
- * Class PaymentSepa
+ * Class PaymentPtwentyfour
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentSepa extends Payment
+class PaymentPtwentyfour extends Payment
 {
     /**
-     * PaymentSepa constructor.
+     * PaymentPtwentyfour constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'sepa';
-        $this->name = 'Wirecard SEPA';
+        $this->type = 'p24';
+        $this->name = 'Wirecard Przelewy24';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
-        $this->setLoadJs(true);
 
-        $this->cancel  = array('pending-debit');
-        $this->capture = array('authorization');
         $this->refund  = array('debit');
     }
 
     /**
-     * Create form fields for SEPA
+     * Create form fields for Pwentyfour
      *
      * @return array|null
      * @since 1.0.0
@@ -76,34 +72,34 @@ class PaymentSepa extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'SEPA',
+            'tab' => 'P24',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard SEPA',
+                    'doc' => 'Enable Wirecard Przelewy24',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard SEPA',
+                    'default' => 'Wirecard Przelewy24',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
+                    'default' => 'afb0aa46-3b0b-4cbf-a91c-5c91ede23701',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => 'Secret Key',
                     'type'    => 'text',
-                    'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
+                    'default' => '82fd2e9e-f8e9-42fb-be25-b60a6907c996',
                     'required' => true,
                 ),
                 array(
@@ -129,45 +125,9 @@ class PaymentSepa extends Payment
                     'required' => true,
                 ),
                 array(
-                    'name' => 'creditor_id',
-                    'label'   => 'Creditor ID',
-                    'type'    => 'text',
-                    'default' => 'DE98ZZZ09999999999',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'creditor_name',
-                    'label'   => 'Creditor Name',
-                    'type'    => 'text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
-                    'name' => 'creditor_city',
-                    'label'   => 'Creditor City',
-                    'type'    => 'text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
-                    'name' => 'sepa_mandate_textextra',
-                    'label'   => 'Additional text',
-                    'type'    => 'textarea',
-                    'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first 
-                    paragraph.',
-                    'empty_message' => 'Click here and type your text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
                     'name' => 'payment_action',
-                    'type'    => 'select',
-                    'default' => 'authorization',
-                    'label'   => 'Payment Action',
-                    'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
-                        array('key' => 'pay', 'value' => 'Capture'),
-                    ),
+                    'type'    => 'hidden',
+                    'default' => 'pay',
                 ),
                 array(
                     'name' => 'descriptor',
@@ -182,22 +142,16 @@ class PaymentSepa extends Payment
                     'default' => 1,
                 ),
                 array(
-                    'name' => 'enable_bic',
-                    'label'   => 'BIC enabled',
-                    'type'    => 'onoff',
-                    'default' => 0,
-                ),
-                array(
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
                     'buttonText' => 'Test configuration',
-                    'id' => 'SepaConfig',
-                    'method' => 'SEPA',
+                    'id' => 'p24Config',
+                    'method' => 'P24',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_P24_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_P24_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_P24_HTTP_PASS'
                     )
                 )
             )
@@ -205,7 +159,7 @@ class PaymentSepa extends Payment
     }
 
     /**
-     * Create config for SEPA transactions
+     * Create config for Ptwentyfour transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -221,98 +175,45 @@ class PaymentSepa extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new SepaConfig($merchantAccountId, $secret);
-        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
+        $paymentConfig = new PaymentMethodConfig(PtwentyfourTransaction::NAME, $merchantAccountId, $secret);
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create sepa transaction
+     * Create Ptwentyfour transaction
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @param array $values
      * @param int $orderId
-     * @return null|SepaTransaction
+     * @return null|PtwentyfourTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new SepaTransaction();
-        if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
-            $account_holder = new AccountHolder();
-            $account_holder->setFirstName($values['sepaFirstName']);
-            $account_holder->setLastName($values['sepaLastName']);
-
-            $transaction->setAccountHolder($account_holder);
-            $transaction->setIban($values['sepaIban']);
-
-            if ($module->getConfigValue('sepa', 'enable_bic')) {
-                if (isset($values['sepaBic'])) {
-                    $transaction->setBic($values['sepaBic']);
-                }
-            }
-
-            $mandate = new Mandate($this->generateMandateId($module, $orderId));
-            $transaction->setMandate($mandate);
-        }
-
-        return $transaction;
-    }
-
-    /**
-     * Create refund SepaTransaction
-     *
-     * @param Transaction $transactionData
-     * @return SepaTransaction
-     * @since 1.0.0
-     */
-    public function createRefundTransaction($transactionData)
-    {
-        $transaction = new SepaTransaction();
+        $transaction = new PtwentyfourTransaction();
 
         $additionalInformation = new AdditionalInformation();
-        $cart = new \Cart($transactionData->cart_id);
-        $transaction->setAccountHolder($additionalInformation->createAccountHolder(
-            $cart,
-            'billing'
-        ));
-        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
 
         return $transaction;
     }
 
     /**
-     * Set template variables
+     * Create cancel transaction
      *
-     * @return array
+     * @param $transactionData
+     * @return PtwentyfourTransaction
      * @since 1.0.0
      */
-    private function setTemplateData()
+    public function createCancelTransaction($transactionData)
     {
-        $test = \Configuration::get(
-            sprintf(
-                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-                \Tools::strtoupper($this->type),
-                \Tools::strtoupper('enable_bic')
-            )
-        );
+        $transaction = new PtwentyfourTransaction();
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
-        return array('bicEnabled' => (bool) $test);
-    }
-
-    /**
-     * Generate the mandate id for SEPA
-     *
-     * @param int $orderId
-     * @return string
-     * @since 1.0.0
-     */
-    public function generateMandateId($paymentModule, $orderId)
-    {
-        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
-            . '-' . strtotime(date('Y-m-d H:i:s'));
+        return $transaction;
     }
 }

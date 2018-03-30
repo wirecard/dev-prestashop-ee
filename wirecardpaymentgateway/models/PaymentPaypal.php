@@ -57,7 +57,7 @@ class PaymentPaypal extends Payment
     public function __construct()
     {
         $this->type = 'paypal';
-        $this->name = 'Wirecard Payment Processing Gateway Paypal';
+        $this->name = 'Wirecard PayPal';
         $this->formFields = $this->createFormFields();
 
         $this->cancel  = array( 'authorization' );
@@ -80,14 +80,14 @@ class PaymentPaypal extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway PayPal',
+                    'doc' => 'Enable Wirecard PayPal',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway PayPal',
+                    'default' => 'Wirecard PayPal',
                     'required' => true,
                 ),
                 array(
@@ -99,14 +99,14 @@ class PaymentPaypal extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret key',
+                    'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base url',
+                    'label'       => 'Base URL',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -114,14 +114,14 @@ class PaymentPaypal extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http user',
+                    'label'   => 'HTTP User',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http password',
+                    'label'   => 'HTTP Password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -130,7 +130,7 @@ class PaymentPaypal extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'authorization',
-                    'label'   => 'Payment action',
+                    'label'   => 'Payment Action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
@@ -138,13 +138,13 @@ class PaymentPaypal extends Payment
                 ),
                 array(
                     'name' => 'shopping_basket',
-                    'label'   => 'Enable shopping basket',
+                    'label'   => 'Shopping Basket',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable descriptor',
+                    'label'   => 'Descriptor',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
@@ -158,7 +158,7 @@ class PaymentPaypal extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test paypal configuration',
+                    'buttonText' => 'Test configuration',
                     'id' => 'paypalConfig',
                     'method' => 'paypal',
                     'send' => array(

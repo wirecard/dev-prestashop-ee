@@ -56,7 +56,7 @@ class PaymentCreditCard extends Payment
     public function __construct()
     {
         $this->type = 'creditcard';
-        $this->name = 'Wirecard Payment Processing Gateway Credit Card';
+        $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type);
         $this->setLoadJs(true);
@@ -81,14 +81,14 @@ class PaymentCreditCard extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment Processing Gateway Credit Card',
+                    'doc' => 'Enable Wirecard Credit Card',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment Processing Gateway Credit Card',
+                    'default' => 'Wirecard Credit Card',
                     'required' => true,
                 ),
                 array(
@@ -100,7 +100,7 @@ class PaymentCreditCard extends Payment
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret key',
+                    'label'   => 'Secret Key',
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
@@ -114,28 +114,28 @@ class PaymentCreditCard extends Payment
                 ),
                 array(
                     'name' => 'three_d_secret',
-                    'label'       => '3-D Secure secret key',
+                    'label'       => '3-D Secure Secret Key',
                     'type'        => 'text',
                     'default'     => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'ssl_max_limit',
-                    'label'       => 'Non 3-D Secure max limit',
+                    'label'       => 'Non 3-D Secure Max Limit',
                     'type'        => 'text',
                     'default'     => '300.0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'three_d_min_limit',
-                    'label'       => '3-D Secure min limit',
+                    'label'       => '3-D Secure Min Limit',
                     'type'        => 'text',
                     'default'     => '100.0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base url',
+                    'label'       => 'Base URL',
                     'type'        => 'text',
                     'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
                     'default'     => 'https://api-test.wirecard.com',
@@ -143,14 +143,14 @@ class PaymentCreditCard extends Payment
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'Http user',
+                    'label'   => 'HTTP User',
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'Http password',
+                    'label'   => 'HTTP Password',
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -159,7 +159,7 @@ class PaymentCreditCard extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'pay',
-                    'label'   => 'Payment action',
+                    'label'   => 'Payment Action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
                         array('key' => 'pay', 'value' => 'Capture'),
@@ -167,7 +167,7 @@ class PaymentCreditCard extends Payment
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable descriptor',
+                    'label'   => 'Descriptor',
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
@@ -181,7 +181,7 @@ class PaymentCreditCard extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test credit card configuration',
+                    'buttonText' => 'Test Credit Card configuration',
                     'id' => 'creditcardConfig',
                     'method' => 'creditcard',
                     'send' => array(

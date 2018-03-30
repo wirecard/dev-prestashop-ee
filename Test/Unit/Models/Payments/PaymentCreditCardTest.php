@@ -78,7 +78,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway Credit Card';
+        $expected = 'Wirecard Credit Card';
 
         $this->assertEquals($expected, $actual);
     }

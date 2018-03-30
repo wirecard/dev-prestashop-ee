@@ -33,17 +33,15 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
+use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 
-class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
+class PaymentAlipayCrossborderTest extends PHPUnit_Framework_TestCase
 {
     private $payment;
 
     private $paymentModule;
 
     private $config;
-
-    private $transactionData;
 
     public function setUp()
     {
@@ -57,7 +55,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentGuaranteedInvoiceRatepay();
+        $this->payment = new PaymentAlipayCrossborder();
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
@@ -66,7 +64,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $this->transactionData->cart_id->id_customer = 11;
         $this->transactionData->cart_id->id_address_invoice = 12;
         $this->transactionData->cart_id->id_address_delivery = 13;
-        $this->transactionData->amount = 25;
+        $this->transactionData->amount = 20;
         $this->transactionData->currency = 'EUR';
     }
 
@@ -74,7 +72,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Guaranteed Invoice';
+        $expected = 'Wirecard Alipay Crossborder';
 
         $this->assertEquals($expected, $actual);
     }
@@ -94,7 +92,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
         $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
-            'ratepayinvoice',
+            'alipay-xborder',
             'merchant_account_id',
             'secret'
         );
@@ -108,69 +106,23 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
 
-        $expected = 'ratepayinvoice';
+        $expected = 'alipay-xborder';
+
         $this->assertEquals($expected, $actual::NAME);
-    }
-
-    public function testIsAvailable()
-    {
-        $cart = $this->getMockBuilder(Cart::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $cart->id_customer = 2;
-        $cart->method('getOrderTotal')->willReturn(40);
-
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(20);
-        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn(3500);
-        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn(false);
-        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn('AT,DE,CH');
-        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn('AT,DE,CH');
-        $currencies = json_encode(Currency::getTestCurrency());
-        $this->paymentModule->expects($this->at(5))->method('getConfigValue')->willReturn($currencies);
-
-        $actual = $this->payment->isAvailable($this->paymentModule, $cart);
-
-        $this->assertTrue($actual);
     }
 
 
     public function testCreateCancelTransaction()
     {
-        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
+        $expected = new \Wirecard\PaymentSdk\Transaction\AlipayCrossborderTransaction();
+
         $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(25, 'EUR'));
+        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
-        $actual = $this->payment->createCancelTransaction($this->transactionData, $this->paymentModule);
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testCreatePayTransaction()
-    {
-        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
-        $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(25, 'EUR'));
-
-        $basket = new \Wirecard\PaymentSdk\Entity\Basket();
-        $basket->setVersion($expected);
-        $expected->setBasket($basket);
-
-        $actual = $this->payment->createPayTransaction($this->transactionData);
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testCreateRefundTransaction()
-    {
-        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
-        $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(25, 'EUR'));
-
-        $basket = new \Wirecard\PaymentSdk\Entity\Basket();
-        $basket->setVersion($expected);
-        $expected->setBasket($basket);
-
-        $actual = $this->payment->createRefundTransaction($this->transactionData);
+        $actual = $this->payment->createCancelTransaction(
+            $this->transactionData,
+            $this->paymentModule
+        );
 
         $this->assertEquals($expected, $actual);
     }

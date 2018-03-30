@@ -1,4 +1,5 @@
-{*
+<?php
+/**
  * Shop System Plugins - Terms of Use
  *
  * The plugins offered are provided free of charge by Wirecard AG and are explicitly not part
@@ -26,18 +27,18 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *}
-
-<img src="../modules/wirecardpaymentgateway/logo.png">
-<br>
-<p><strong>{l s="Pay with Wirecard Payment Processing Gateway." d='Modules.Wirecardpaymentgateway.Admin'}</strong></p>
-<div class="btn-group">
-    <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
-        <i class=e"icon-mony"></i>
-        {l s='Transactions' mod='wirecardpaymentgateway'}
-    </a>
-    <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
-        <i class=e"icon-mony"></i>
-        {l s='Support' mod='wirecardpaymentgateway'}
-    </a>
-</div>
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
+ */
+                        
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+                        
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+                        
+header("Location: ../");
+exit;

@@ -39,6 +39,9 @@ use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentSepa;
 use WirecardEE\Prestashop\Models\PaymentSofort;
+use WirecardEE\Prestashop\Models\PaymentPoiPia;
+use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
+use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
@@ -110,6 +113,7 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('displayPaymentEU')
             || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->registerHook('actionPaymentConfirmation')
+            || !$this->registerHook('displayOrderConfirmation')
             || !$this->setDefaults()) {
             return false;
         }
@@ -164,16 +168,27 @@ class WirecardPaymentGateway extends PaymentModule
         }
         $tab->module = $this->name;
         $tab->add();
+
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'WirecardSupport';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Wirecard Support';
+        }
+        $tab->module = $this->name;
+        $tab->add();
     }
 
-    /**
-     * Unregister tabs
-     *
-     * @since 1.0.0
-     */
     public function uninstallTabs()
     {
         $id_tab = (int)Tab::getIdFromClassName('WirecardTransactions');
+        if ($id_tab) {
+            $tab = new Tab($id_tab);
+            $tab->delete();
+        }
+
+        $id_tab = (int)Tab::getIdFromClassName('WirecardSupport');
         if ($id_tab) {
             $tab = new Tab($id_tab);
             $tab->delete();
@@ -419,41 +434,6 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Hook for media setter
-     *
-     * @return bool
-     * @since 1.0.0
-     */
-    public function hookActionFrontControllerSetMedia()
-    {
-        $link = new Link;
-        $parameters = array("action" => "getcreditcardconfig");
-        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
-        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
-        Media::addJsDef(array('url' => $ajaxLink));
-        $this->context->controller->addJquery();
-        $this->context->controller->addJqueryUI('dialog');
-        $this->context->controller->registerJavascript(
-            'remote-bootstrap',
-            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
-            array('server' => 'remote', 'position' => 'head', 'priority' => 20)
-        );
-
-        foreach ($this->getPayments() as $paymentMethod) {
-            if ($paymentMethod->getLoadJs()) {
-                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', $paymentMethod->getType());
-                Media::addJsDef(array('ajax'.$paymentMethod->getType().'url' => $ajaxLink));
-                $this->context->controller->addJS(
-                    _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
-                    . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
-                );
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Create redirect Urls
      *
      * @param $paymentState
@@ -571,7 +551,10 @@ class WirecardPaymentGateway extends PaymentModule
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
             'sofortbanking' => new PaymentSofort(),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay()
+            'poipia' => new PaymentPoiPia(),
+            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
+            'alipay-xborder' => new PaymentAlipayCrossborder(),
+            'p24' => new PaymentPtwentyfour()
         );
 
         return $payments;
@@ -867,5 +850,68 @@ class WirecardPaymentGateway extends PaymentModule
             "created" => array("DATETIME", "NOT NULL"),
             "modified" => array("DATETIME", "NULL"),
         );
+    }
+
+    /**
+     * Hook for media setter
+     *
+     * @return bool
+     * @since 1.0.0
+     */
+    public function hookActionFrontControllerSetMedia()
+    {
+        $link = new Link;
+        $parameters = array("action" => "getcreditcardconfig");
+        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard', $parameters);
+        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
+        Media::addJsDef(array('url' => $ajaxLink));
+        $this->context->controller->addJquery();
+        $this->context->controller->addJqueryUI('dialog');
+        $this->context->controller->registerJavascript(
+            'remote-bootstrap',
+            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
+            array('server' => 'remote', 'position' => 'head', 'priority' => 20)
+        );
+
+        foreach ($this->getPayments() as $paymentMethod) {
+            if ($paymentMethod->getLoadJs()) {
+                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', $paymentMethod->getType());
+                Media::addJsDef(array('ajax'.$paymentMethod->getType().'url' => $ajaxLink));
+                $this->context->controller->addJS(
+                    _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
+                    . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Show the payment information for PIA
+     *
+     * @param array $params
+     * @return string
+     * @since 1.0.0
+     */
+    public function hookOrderConfirmation($params)
+    {
+        if ($this->context->cookie->__get('pia-enabled')) {
+            $currency = new Currency($params['order']->id_currency);
+            $this->context->smarty->assign(
+                array(
+                    'amount' => $params['order']->total_paid,
+                    'iban' => $this->context->cookie->__get('pia-iban'),
+                    'bic' => $this->context->cookie->__get('pia-bic'),
+                    'refId' => $this->context->cookie->__get('pia-reference-id'),
+                    'currency' => $currency->iso_code
+                )
+            );
+            return $this->display(
+                __FILE__,
+                DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'templates' .
+                DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'pia.tpl'
+            );
+        }
     }
 }

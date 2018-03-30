@@ -68,7 +68,7 @@
             </div>
             <hr>
             <h3>{l s='Responsedata:' mod='wirecardpaymentgateway'}</h3>
-            <div class="order_data_column_container">
+            <div class="order_data_column_container table table-striped">
                 <table>
                     <tr>
                         <td>
