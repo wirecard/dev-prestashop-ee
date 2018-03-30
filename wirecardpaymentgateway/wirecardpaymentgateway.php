@@ -43,6 +43,7 @@ use WirecardEE\Prestashop\Models\PaymentPoiPia;
 use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
+use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
@@ -557,7 +558,8 @@ class WirecardPaymentGateway extends PaymentModule
             'poipia' => new PaymentPoiPia(),
             'invoice' => new PaymentGuaranteedInvoiceRatepay(),
             'alipay-xborder' => new PaymentAlipayCrossborder(),
-            'p24' => new PaymentPtwentyfour()
+            'p24' => new PaymentPtwentyfour(),
+            'masterpass' => new PaymentMasterpass()
         );
 
         return $payments;
