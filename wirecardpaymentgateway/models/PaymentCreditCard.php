@@ -287,6 +287,7 @@ class PaymentCreditCard extends Payment
     {
         $transaction = new CreditCardTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setParentTransactionType($transactionData->transaction_type);
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
