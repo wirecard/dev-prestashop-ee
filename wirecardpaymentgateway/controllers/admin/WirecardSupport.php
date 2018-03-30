@@ -62,7 +62,6 @@ class WirecardSupportController extends ModuleAdminController
         parent::initToolbarTitle();
 
         switch ($this->display) {
-
             case 'add':
                 $this->toolbar_title[] = $this->l('Send support request');
                 $this->addMetaTitle($this->l('Send support request'));
