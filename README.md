@@ -1,4 +1,4 @@
-# PrestaShop Wirecard Payment Processing Gateway Shop Plugin
+# PrestaShop Wirecard Payment Processing Gateway Shop Module
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/wirecard/magento2-ee/master/LICENSE)
 [![PHP v5.6](https://img.shields.io/badge/php-v5.6-yellow.svg)](http://www.php.net)
 [![PHP v7.0](https://img.shields.io/badge/php-v7.0-yellow.svg)](http://www.php.net)
