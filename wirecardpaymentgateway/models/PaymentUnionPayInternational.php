@@ -259,24 +259,4 @@ class PaymentUnionPayInternational extends Payment
 
         return $transaction;
     }
-
-    /**
-     * Create refund transaction
-     *
-     * @param Transaction $transactionData
-     * @return UpiTransaction
-     * @since 1.0.0
-     */
-    public function createRefundTransaction($transactionData)
-    {
-        $transaction = new UpiTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
-
-        $cart = new \Cart($transactionData->cart_id);
-        $additionalInformation = new AdditionalInformation();
-        $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
-
-        return $transaction;
-    }
 }

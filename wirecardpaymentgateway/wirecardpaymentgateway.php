@@ -866,12 +866,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        //$parameters = array("action" => "getcreditcardconfig");
-        //$ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider', $parameters);
         $baseUrl = $this->getConfigValue('creditcard', 'base_url');
-        //Media::addJsDef(array('url' => $ajaxLink));
-        $this->context->controller->addJquery();
-        $this->context->controller->addJqueryUI('dialog');
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
             $baseUrl  .'/engine/hpp/paymentPageLoader.js',
@@ -880,7 +875,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         foreach ($this->getPayments() as $paymentMethod) {
             if ($paymentMethod->getLoadJs()) {
-                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway');
+                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
                 Media::addJsDef(array('configProviderURL' => $ajaxLink));
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'

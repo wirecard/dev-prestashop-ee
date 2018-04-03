@@ -53,7 +53,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $paymentType = Tools::getValue('payment_type');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
-        $notification         = Tools::file_get_contents('php://input');
+        $notification = Tools::file_get_contents('php://input');
         $logger = new WirecardLogger();
         try {
             $transactionService = new TransactionService($config, $logger);

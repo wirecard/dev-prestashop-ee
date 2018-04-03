@@ -116,6 +116,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
      */
     public function processSuccess($response)
     {
+        sleep(1);
         $orderId = $response->getCustomFields()->get('orderId');
         $order = new Order($orderId);
         $cartId = $order->id_cart;
