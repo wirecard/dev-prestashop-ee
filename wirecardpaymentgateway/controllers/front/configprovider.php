@@ -33,13 +33,14 @@
  */
 
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
 
 /**
  * @property WirecardPaymentGateway module
  *
  * @since 1.0.0
  */
-class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
+class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
@@ -55,6 +56,18 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     {
         $creditCard = new PaymentCreditCard();
         $requestData = $creditCard->getRequestData($this->module);
+        header('Content-Type: application/json; charset=utf8');
+        die(Tools::jsonEncode($requestData));
+    }
+
+    /**
+     * Generate UPI config
+     * @since 1.0.0
+     */
+    public function displayAjaxGetUPIConfig()
+    {
+        $UPI = new PaymentUnionPayInternational();
+        $requestData = $UPI->getRequestData($this->module);
         header('Content-Type: application/json; charset=utf8');
         die(Tools::jsonEncode($requestData));
     }
