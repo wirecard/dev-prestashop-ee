@@ -71,7 +71,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $tokenId = Tools::getValue('tokenid');
         $maskedpan = Tools::getValue('maskedpan');
 
-        if(!$tokenId || !$maskedpan) {
+        if (!$tokenId || !$maskedpan) {
             $this->displayAjaxListStoredCards();
         }
 

@@ -91,7 +91,7 @@ class CreditCardVault
 
         $existing = $this->getCard($token);
 
-        if ( $existing ) {
+        if ($existing) {
             return $existing["cc_id"];
         }
 
@@ -106,7 +106,7 @@ class CreditCardVault
             return 0;
         }
 
-        if ( $db->getNumberError() > 0 ) {
+        if ($db->getNumberError() > 0) {
             $this->logger->error(__METHOD__ . $db->getMsgError());
             return 0;
         }
