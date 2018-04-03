@@ -93,8 +93,16 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[4]);
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
-        $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig('unionpayinternational', 'merchant_account_id', 'secret'));
+        $expected = new \Wirecard\PaymentSdk\Config\Config(
+            'base_url',
+            'http_user',
+            'http_pass'
+        );
+        $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
+            'unionpayinternational',
+            'merchant_account_id',
+            'secret'
+        ));
 
         $this->assertEquals($expected, $actual);
     }
@@ -102,7 +110,12 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
     public function testCreateTransaction()
     {
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), array('tokenId' => 'test'), 'ADB123');
+        $actual = $this->payment->createTransaction(
+            $this->paymentModule,
+            new Cart(),
+            array('tokenId' => 'test'),
+            'ADB123'
+        );
 
         $expected = 'unionpayinternational';
         $this->assertEquals($expected, $actual::NAME);
