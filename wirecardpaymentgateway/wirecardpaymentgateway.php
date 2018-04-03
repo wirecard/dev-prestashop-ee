@@ -86,7 +86,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'configprovider', 'sepa');
+        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'configprovider', 'sepa', 'creditcard');
 
         $this->is_eu_compatible = 1;
         $this->currencies = true;
@@ -120,7 +120,11 @@ class WirecardPaymentGateway extends PaymentModule
             return false;
         }
 
-        if (!$this->createTable()) {
+        if (!$this->createTable('tx')) {
+            return false;
+        }
+
+        if (!$this->createTable('cc')) {
             return false;
         }
 
@@ -812,51 +816,61 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Create wirecard payment transaction table
+     * Create a wirecard table
      *
+     * @param string $name
      * @return bool
      * @since 1.0.0
      */
-    private function createTable()
+    private function createTable($name)
     {
-        $sql = 'CREATE TABLE IF NOT EXISTS  `' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx` (';
-        foreach ($this->getColumnDefs() as $column => $definitions) {
+        $sql = 'CREATE TABLE IF NOT EXISTS  `' . _DB_PREFIX_ . 'wirecard_payment_gateway_' .$name .'` (';
+        foreach ($this->getColumnDefsTable($name) as $column => $definitions) {
             $sql .= "\n"."\t" . $column . ' ';
             foreach ($definitions as $definition) {
                 $sql .= $definition . ' ';
             }
             $sql .= ',';
         }
-        $sql .= "\n".'PRIMARY KEY (`tx_id`)';
+        $sql .= "\n".'PRIMARY KEY (`' . $name . '_id`)';
         $sql .= "\n" . ') ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
         return Db::getInstance()->execute($sql);
     }
 
     /**
-     * Get transaction table columns
+     * Get table columns
      *
      * @return array
      * @since 1.0.0
      */
-    private function getColumnDefs()
+    private function getColumnDefsTable($name)
     {
-        return array(
-            "tx_id" => array("INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT"),
-            "transaction_id" => array("VARCHAR(36)", "NOT NULL"),
-            "parent_transaction_id" => array("VARCHAR(36)", "NULL"),
-            "order_id" => array("INT(10)", "NULL"),
-            "cart_id" => array("INT(10) UNSIGNED", "NOT NULL"),
-            "ordernumber" => array("VARCHAR(32)", "NULL"),
-            "paymentmethod" => array("VARCHAR(32)", "NOT NULL"),
-            "transaction_type" => array("VARCHAR(32)", "NOT NULL"),
-            "transaction_state" => array("VARCHAR(32)", "NOT NULL"),
-            "amount" => array("FLOAT", "NOT NULL"),
-            "currency" => array("VARCHAR(3)", "NOT NULL"),
-            "response" => array("TEXT", "NULL"),
-            "created" => array("DATETIME", "NOT NULL"),
-            "modified" => array("DATETIME", "NULL"),
-        );
+        $defs = array( 'wirecard_payment_gateway_tx' =>
+            array(
+                "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
+                "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
+                "order_id" => array( "INT(10)", "NULL" ),
+                "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
+                "ordernumber" => array( "VARCHAR(32)", "NULL" ),
+                "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
+                "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
+                "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
+                "amount" => array( "FLOAT", "NOT NULL" ),
+                "currency" => array( "VARCHAR(3)", "NOT NULL" ),
+                "response" => array( "TEXT", "NULL" ),
+                "created" => array( "DATETIME", "NOT NULL" ),
+                "modified" => array( "DATETIME", "NULL" ),
+            ),
+            'wirecard_payment_gateway_cc' => array(
+                "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                "user_id" => array( "INT(10)", "NOT NULL" ),
+                "token" => array( "INT(20)", "NOT NULL", "UNIQUE" ),
+                "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
+            ) );
+
+        return $defs[$name];
     }
 
     /**
