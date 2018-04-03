@@ -28,5 +28,29 @@
 * Please do not use the plugin if you do not agree to these terms of use!
 *}
 
+{if $ccvaultenabled == 'true'}
+<div class="modal fade" id="wirecard-ccvault-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h2>{l s='Credit card selection' mod='wirecardpaymentgateway'}</h2>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{l s='Cancel' mod='wirecardpaymentgateway'}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-primary" data-toggle="modal" data-target="#wirecard-ccvault-modal">{l s='Use stored credit card' mod='wirecardpaymentgateway'}</button>
+{/if}
 <div id="payment-processing-gateway-credit-card-form">
 </div>

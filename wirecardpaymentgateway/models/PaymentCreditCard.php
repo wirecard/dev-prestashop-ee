@@ -58,7 +58,7 @@ class PaymentCreditCard extends Payment
         $this->type = 'creditcard';
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type);
+        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
 
         $this->cancel  = array('authorization');
@@ -176,6 +176,12 @@ class PaymentCreditCard extends Payment
                     'label'   => 'Send Additional Information',
                     'type'    => 'onoff',
                     'default' => 1,
+                ),
+                array(
+                    'name' => 'ccvault_enabled',
+                    'label'=> 'Enable One-Click checkout',
+                    'type' => 'onoff',
+                    'default' => 0
                 ),
                 array(
                     'name' => 'test_credentials',
@@ -307,5 +313,24 @@ class PaymentCreditCard extends Payment
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
+    }
+
+    /**
+     * Set template variables
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    private function setTemplateData()
+    {
+        $test = \Configuration::get(
+            sprintf(
+                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
+                \Tools::strtoupper($this->type),
+                \Tools::strtoupper('ccvault_enabled')
+            )
+        );
+
+        return array('ccvaultenabled' => (bool) $test);
     }
 }
