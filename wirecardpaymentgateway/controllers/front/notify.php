@@ -93,8 +93,9 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     private function processSuccess($response)
     {
-        if ('masterpass' == $response->getPaymentMethod() &&
-            \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_DEBIT == $response->getTransactionType()) {
+        if ('masterpass' == $response->getPaymentMethod() && (
+            \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_DEBIT == $response->getTransactionType() ||
+            \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION == $response->getTransactionType())) {
             return;
         }
         $orderId = $response->getCustomFields()->get('orderId');

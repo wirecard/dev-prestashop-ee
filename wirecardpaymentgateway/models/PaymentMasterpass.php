@@ -235,7 +235,7 @@ class PaymentMasterpass extends Payment
     public function createPayTransaction($transactionData)
     {
         $transaction = new MasterpassTransaction();
-        $transaction->setParentTransactionId($transactionData->parent_transaction_id);
+        $transaction->setParentTransactionId($transactionData->transaction_id);
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
