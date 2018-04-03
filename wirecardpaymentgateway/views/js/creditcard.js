@@ -43,6 +43,10 @@ $(document).ready(
             }
         });
 
+        $("#wirecard-ccvault-modal").on('show.bs.modal',function(){
+            getStoredCards();
+        });
+
         function placeOrder(e)
         {
             if (token !== null) {
@@ -57,6 +61,28 @@ $(document).ready(
                     }
                 );
             }
+        }
+
+        function getStoredCards(){
+            $.ajax({
+                url: ccVaultURL + '?action=liststoredcards',
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    var table = $("#wirecard-ccvault-modal .modal-body table");
+                    table.empty();
+
+                    for(var row in response){
+                        var card = response[row];
+                        var tr = "<tr>";
+                        tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
+                        tr += "<td><button class='btn btn-success' data-value='" + card.cc_id + "'><b>+</b></button>";
+                        tr += "<button class='btn btn-danger' data-value='" + card.cc_id + "'><b>-</b></button></td>";
+                        tr += "</tr>";
+                        table.append(tr);
+                    }
+                }
+            });
         }
 
         function getRequestData()
