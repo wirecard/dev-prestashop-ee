@@ -33,12 +33,12 @@ var form = null;
 
 $(document).ready(
     function () {
-        if ($('#payment-processing-gateway-credit-card-form').length > 0) {
+        if ($('#payment-processing-gateway-upi-form').length > 0) {
             getRequestData();
         }
         $(document).on('submit','#payment-form', function (e) {
             form = $(this);
-            if (form.attr('action').search('creditcard') >= 0) {
+            if (form.attr('action').search('unionpayinternational') >= 0) {
                 placeOrder(e);
             }
         });
@@ -53,7 +53,7 @@ $(document).ready(
                     {
                         onSuccess: formSubmitSuccessHandler,
                         onError: logCallback,
-                        wrappingDivId: "payment-processing-gateway-credit-card-form"
+                        wrappingDivId: "payment-processing-gateway-upi-form"
                     }
                 );
             }
@@ -62,7 +62,7 @@ $(document).ready(
         function getRequestData()
         {
             $.ajax({
-                url: configProviderURL + '?action=getcreditcardconfig',
+                url: configProviderURL + '?action=getupiconfig',
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {
@@ -78,7 +78,7 @@ $(document).ready(
         {
             WirecardPaymentPage.seamlessRenderForm({
                 requestData: config,
-                wrappingDivId: "payment-processing-gateway-credit-card-form",
+                wrappingDivId: "payment-processing-gateway-upi-form",
                 onSuccess: resizeIframe,
                 onError: logCallback
             });
@@ -86,7 +86,7 @@ $(document).ready(
 
         function resizeIframe()
         {
-            $("#payment-processing-gateway-credit-card-form > iframe").height(550);
+            $("#payment-processing-gateway-upi-form > iframe").height(550);
         }
 
         function logCallback(response)

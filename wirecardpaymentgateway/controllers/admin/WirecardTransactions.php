@@ -205,6 +205,10 @@ class WirecardTransactionsController extends ModuleAdminController
     public function handleTransaction($transactionData, $operation)
     {
         $paymentType = $transactionData->paymentmethod;
+
+        if ($paymentType == 'creditcard') {
+            $paymentType = $this->checkPaymentName($transactionData->order_id);
+        }
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
@@ -287,10 +291,23 @@ class WirecardTransactionsController extends ModuleAdminController
             return Operation::PAY;
         }
 
-        if (in_array($paymentType, array('creditcard', 'paypal', 'alipay-xborder', 'p24', 'masterpasss')) && $operation == 'refund') {
+        if (in_array($paymentType, array('creditcard', 'paypal', 'alipay-xborder', 'p24', 'masterpasss', 'unionpayinternational')) && $operation == 'refund') {
             return Operation::CANCEL;
         }
 
         return $operation;
+    }
+
+    private function checkPaymentName($orderId)
+    {
+        $order = new Order($orderId);
+        switch ($order->payment) {
+            case $this->module->getConfigValue('unionpayinternational', 'title'):
+                return 'unionpayinternational';
+                break;
+            default:
+                return 'creditcard';
+                break;
+        }
     }
 }
