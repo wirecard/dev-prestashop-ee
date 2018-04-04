@@ -570,8 +570,8 @@ class WirecardPaymentGateway extends PaymentModule
             'ideal' => new PaymentIdeal(),
             'sofortbanking' => new PaymentSofort(),
             'poipia' => new PaymentPoiPia(),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
-            'alipay-xborder' => new PaymentAlipayCrossborder(),
+            'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
+            'alipay-xborder' => new PaymentAlipayCrossborder($this),
             'p24' => new PaymentPtwentyfour(),
             'masterpass' => new PaymentMasterpass(),
             'unionpayinternational' => new PaymentUnionPayInternational()
@@ -973,6 +973,16 @@ class WirecardPaymentGateway extends PaymentModule
             'ali_enable_doc' => $this->l('Enable Wirecard Alipay Crossborder'),
             'ali_title_doc' => $this->l('Wirecard Alipay Crossborder'),
             'ali_test_config_butoon_doc' => $this->l('Test Alipay Crossborder configuration'),
+
+            'gua_i_enable_doc' => $this->l('Enable Wirecard Guaranteed Invoice'),
+            'gua_i_title_doc' => $this->l('Wirecard Guaranteed Invoice'),
+            'gua_i_bil_ship_doc' => $this->l('Billing/Shipping address must be identical'),
+            'gua_i_allow_ship_doc' => $this->l('Allowed shipping countries'),
+            'gua_i_allow_bill_doc' => $this->l('Allowed billing countries'),
+            'gua_i_allow_currencies_doc' => $this->l('Allowed currencies'),
+            'gua_i_min_doc' => $this->l('Minimum Amount'),
+            'gua_i_max_doc' => $this->l('Maximum Amount'),
+            'gua_i_test_config_butoon_doc' => $this->l('Test Guaranteed Invoice configuration'),
 
         );
     }

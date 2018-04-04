@@ -57,8 +57,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'invoice';
         $this->name = 'Wirecard Guaranteed Invoice';
         $this->formFields = $this->createFormFields();
@@ -84,48 +86,48 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Guaranteed Invoice',
+                    'doc' => $this->translate('gua_i_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Guaranteed Invoice',
+                    'default' => $this->translate('gua_i_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => 'Merchant Account ID',
+                    'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
                     'default' => 'fa02d1d4-f518-4e22-b42b-2abab5867a84',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base URL',
+                    'label'       => $this->translate('base_url_doc'),
                     'type'        => 'text',
-                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'doc' => $this->translate('base_url_example_doc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'HTTP User',
+                    'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'HTTP Password',
+                    'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -137,13 +139,13 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'billingshipping_same',
-                    'label' => 'Billing/Shipping address must be identical',
+                    'label' => $this->translate('gua_i_bil_ship_doc'),
                     'type' => 'onoff',
                     'default' => 1
                 ),
                 array(
                     'name' => 'shipping_countries',
-                    'label' => 'Allowed shipping countries',
+                    'label' => $this->translate('gua_i_allow_ship_doc'),
                     'type' => 'select',
                     'multiple' => true,
                     'size'=> 10,
@@ -152,7 +154,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'billing_countries',
-                    'label' => 'Allowed billing countries',
+                    'label' => $this->translate('gua_i_allow_bill_doc'),
                     'type' => 'select',
                     'multiple'=>true,
                     'size'=> 10,
@@ -161,7 +163,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'allowed_currencies',
-                    'label' => 'Allowed currencies',
+                    'label' => $this->translate('gua_i_allow_currencies_doc'),
                     'type' => 'select',
                     'multiple'=>true,
                     'size'=>10,
@@ -170,14 +172,14 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'amount_min',
-                    'label' => 'Minimum Amount',
+                    'label' => $this->translate('gua_i_min_doc'),
                     'type' => 'text',
                     'default' => 20,
                     'validator' => 'numeric'
                 ),
                 array(
                     'name' => 'amount_max',
-                    'label' => 'Maximum Amount',
+                    'label' => $this->translate('gua_i_max_doc'),
                     'type' => 'text',
                     'default' => 3500,
                     'validator' => 'numeric'
@@ -189,13 +191,13 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Enable descriptor',
+                    'label'   => $this->translate('descriptor_doc'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send Additional Information',
+                    'label'   => $this->translate('send_addit_info_doc'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
@@ -203,7 +205,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test configuration',
+                    'buttonText' => $this->translate('gua_i_test_config_butoon_doc'),
                     'id' => 'invoiceConfig',
                     'method' => 'invoice',
                     'send' => array(
