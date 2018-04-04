@@ -564,7 +564,7 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'paypal' => new PaymentPaypal(),
+            'paypal' => new PaymentPaypal($this),
             'creditcard' => new PaymentCreditCard($this),
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal($this),
@@ -958,6 +958,7 @@ class WirecardPaymentGateway extends PaymentModule
             'payment_action_doc' => $this->l('Payment Action'),
             'payment_action_auth_doc' => $this->l('Authorization'),
             'payment_action_capture_doc' => $this->l('Capture'),
+            'basket_doc' => $this->l('Shopping Basket'),
             'descriptor_doc' => $this->l('Descriptor'),
             'send_addit_info_doc' => $this->l('Send Additional Information'),
 
@@ -991,6 +992,10 @@ class WirecardPaymentGateway extends PaymentModule
             'master_enable_doc' => $this->l('Enable Wirecard Masterpass'),
             'master_title_doc' => $this->l('Wirecard Masterpass'),
             'master_test_config_butoon_doc' => $this->l('Test Masterpass configuration'),
+
+            'paypal_enable_doc' => $this->l('Enable Wirecard PayPal'),
+            'paypal_title_doc' => $this->l('Wirecard PayPal'),
+            'paypal_test_config_butoon_doc' => $this->l('Test PayPal configuration'),
         );
     }
 }
