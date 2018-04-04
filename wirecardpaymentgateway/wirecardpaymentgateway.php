@@ -571,7 +571,7 @@ class WirecardPaymentGateway extends PaymentModule
             'sofortbanking' => new PaymentSofort(),
             'poipia' => new PaymentPoiPia(),
             'invoice' => new PaymentGuaranteedInvoiceRatepay(),
-            'alipay-xborder' => new PaymentAlipayCrossborder(),
+            'alipay-xborder' => new PaymentAlipayCrossborder($this),
             'p24' => new PaymentPtwentyfour(),
             'masterpass' => new PaymentMasterpass(),
             'unionpayinternational' => new PaymentUnionPayInternational()
