@@ -54,3 +54,6 @@
 {/if}
 <div id="payment-processing-gateway-credit-card-form">
 </div>
+{if $ccvaultenabled == 'true'}
+    <label for="wirecard-store-card"><input type="checkbox" id="wirecard-store-card" /> {l s='Save for later use.' mod='wirecardpaymentgateway'}</label>
+{/if}

@@ -118,7 +118,8 @@ $(document).ready(
                 ).appendTo(form);
                 form.submit();
             };
-            if(response.masked_account_number !== undefined) {
+            
+            if(response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
                 $.ajax({
                     url: ccVaultURL + '?action=addcard&tokenid=' + token + '&maskedpan=' + response.masked_account_number,
                     type: "GET",
