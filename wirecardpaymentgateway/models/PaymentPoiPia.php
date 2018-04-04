@@ -54,8 +54,10 @@ class PaymentPoiPia extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'poipia';
         $this->name = 'Wirecard Payment on Invoice / Payment in Advance';
         $this->formFields = $this->createFormFields();
@@ -78,48 +80,48 @@ class PaymentPoiPia extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Payment on Invoice / Payment in Advance',
+                    'doc' => $this->translate('poipia_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Payment on Invoice / Payment in Advance',
+                    'default' => $this->translate('poipia_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => 'Merchant Account ID',
+                    'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
                     'default' => '105ab3e8-d16b-4fa0-9f1f-18dd9b390c94',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base URL',
+                    'label'       => $this->translate('base_url_doc'),
                     'type'        => 'text',
-                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'doc' => $this->translate('base_url_example_doc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'HTTP User',
+                    'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'HTTP Password',
+                    'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -128,10 +130,10 @@ class PaymentPoiPia extends Payment
                     'name' => 'payment_type',
                     'type'    => 'select',
                     'default' => 'pia',
-                    'label'   => 'Payment',
+                    'label'   => $this->translate('poipia_payment_action_doc'),
                     'options' => array(
-                        array('key' => 'pia', 'value' => 'Payment in Advance'),
-                        array('key' => 'poi', 'value' => 'Payment on Invoice'),
+                        array('key' => 'pia', 'value' => $this->translate('poipia_pia_action_doc')),
+                        array('key' => 'poi', 'value' => $this->translate('poipia_poi_action_doc')),
                     ),
                 ),
                 array(
@@ -141,13 +143,13 @@ class PaymentPoiPia extends Payment
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Descriptor',
+                    'label'   => $this->translate('descriptor_doc'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send Additional Information',
+                    'label'   => $this->translate('send_addit_info_doc'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
@@ -155,7 +157,7 @@ class PaymentPoiPia extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test configuration',
+                    'buttonText' => $this->translate('poipia_test_config_butoon_doc'),
                     'id' => 'poipiaConfig',
                     'method' => 'poipia',
                     'send' => array(

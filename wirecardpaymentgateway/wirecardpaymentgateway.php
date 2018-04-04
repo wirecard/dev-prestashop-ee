@@ -569,7 +569,7 @@ class WirecardPaymentGateway extends PaymentModule
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal($this),
             'sofortbanking' => new PaymentSofort(),
-            'poipia' => new PaymentPoiPia(),
+            'poipia' => new PaymentPoiPia($this),
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
             'alipay-xborder' => new PaymentAlipayCrossborder($this),
             'p24' => new PaymentPtwentyfour(),
@@ -996,6 +996,13 @@ class WirecardPaymentGateway extends PaymentModule
             'paypal_enable_doc' => $this->l('Enable Wirecard PayPal'),
             'paypal_title_doc' => $this->l('Wirecard PayPal'),
             'paypal_test_config_butoon_doc' => $this->l('Test PayPal configuration'),
+
+            'poipia_enable_doc' => $this->l('Enable Wirecard Payment on Invoice / Payment in Advance'),
+            'poipia_title_doc' => $this->l('Wirecard Payment on Invoice / Payment in Advance'),
+            'poipia_payment_action_doc' => $this->l('Payment'),
+            'poipia_pia_action_doc' => $this->l('Payment in Advance'),
+            'poipia_poi_action_doc' => $this->l('Payment on Invoice'),
+            'poipia_test_config_butoon_doc' => $this->l('Test Payment on Invoice / Payment in Advance configuration'),
         );
     }
 }
