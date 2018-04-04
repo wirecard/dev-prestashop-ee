@@ -385,7 +385,7 @@ class Payment
     {
         $translations = $this->module->getTranslations();
 
-        if( isset($translations[$string])){
+        if (isset($translations[$string])) {
             return $translations[$string];
         }
         return $string;

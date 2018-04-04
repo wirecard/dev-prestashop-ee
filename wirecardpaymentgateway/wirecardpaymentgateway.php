@@ -567,7 +567,7 @@ class WirecardPaymentGateway extends PaymentModule
             'paypal' => new PaymentPaypal(),
             'creditcard' => new PaymentCreditCard($this),
             'sepa' => new PaymentSepa(),
-            'ideal' => new PaymentIdeal(),
+            'ideal' => new PaymentIdeal($this),
             'sofortbanking' => new PaymentSofort(),
             'poipia' => new PaymentPoiPia(),
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
@@ -984,6 +984,9 @@ class WirecardPaymentGateway extends PaymentModule
             'gua_i_max_doc' => $this->l('Maximum Amount'),
             'gua_i_test_config_butoon_doc' => $this->l('Test Guaranteed Invoice configuration'),
 
+            'ideal_enable_doc' => $this->l('Enable Wirecard iDEAL'),
+            'ideal_title_doc' => $this->l('Wirecard iDEAL'),
+            'ideal_test_config_butoon_doc' => $this->l('Test iDEAL configuration'),
         );
     }
 }
