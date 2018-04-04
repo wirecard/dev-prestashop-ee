@@ -44,7 +44,7 @@ use WirecardEE\Prestashop\Helper\Logger;
  *
  * Class CreditCardVault
  *
- * @since 1.0.0
+ * @since 1.1.0
  */
 class CreditCardVault
 {
@@ -64,6 +64,8 @@ class CreditCardVault
      * get all cards by user_id and order them by increment id
      *
      * @return array|false|\mysqli_result|null|\PDOStatement|resource
+     *
+     * @since 1.1.0
      */
     public function getUserCards()
     {
@@ -84,6 +86,8 @@ class CreditCardVault
      * @param $maskedPan
      * @param $token
      * @return int|string
+     *
+     * @since 1.1.0
      */
     public function addCard($maskedPan, $token)
     {
@@ -119,6 +123,8 @@ class CreditCardVault
      *
      * @param $token
      * @return array|bool|null|object
+     *
+     * @since 1.1.0
      */
     public function getCard($token)
     {
@@ -133,6 +139,8 @@ class CreditCardVault
      *
      * @param $id
      * @return bool
+     *
+     * @since 1.1.0
      */
     public function deleteCard($id)
     {

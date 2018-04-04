@@ -38,7 +38,7 @@ use \WirecardEE\Prestashop\Models\CreditCardVault;
 /**
  * @property WirecardPaymentGateway module
  *
- * @since 1.0.0
+ * @since 1.1.0
  */
 class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
@@ -56,6 +56,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
     /**
      * list user credit cards from the vault
+     *
+     * @since 1.1.0
      */
     public function displayAjaxListStoredCards()
     {
@@ -65,6 +67,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
     /**
      * add a card and return a list of stored user credit cards
+     *
+     * @since 1.1.0
      */
     public function displayAjaxAddCard()
     {
@@ -82,6 +86,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
     /**
      * delete a card and return a list of stored user credit cards
+     *
+     * @since 1.1.0
      */
     public function displayAjaxDeleteCard()
     {
