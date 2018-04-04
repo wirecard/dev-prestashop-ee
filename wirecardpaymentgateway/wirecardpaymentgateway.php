@@ -568,7 +568,7 @@ class WirecardPaymentGateway extends PaymentModule
             'creditcard' => new PaymentCreditCard($this),
             'sepa' => new PaymentSepa($this),
             'ideal' => new PaymentIdeal($this),
-            'sofortbanking' => new PaymentSofort(),
+            'sofortbanking' => new PaymentSofort($this),
             'poipia' => new PaymentPoiPia($this),
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
             'alipay-xborder' => new PaymentAlipayCrossborder($this),
@@ -1020,6 +1020,10 @@ class WirecardPaymentGateway extends PaymentModule
             'sepa_creditor_additional_todo_doc' => $this->l('Click here and type your text'),
             'sepa_bic_doc' => $this->l('BIC enabled'),
             'sepa_test_config_butoon_doc' => $this->l('Test SEPA configuration'),
+
+            'sofort_enable_doc' => $this->l('Enable Wirecard Sofort.'),
+            'sofort_title_doc' => $this->l('Wirecard Sofort.'),
+            'sofort_test_config_butoon_doc' => $this->l('Test Sofort. configuration'),
         );
     }
 }
