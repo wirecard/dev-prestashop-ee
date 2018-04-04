@@ -33,9 +33,9 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentMasterpass;
 
-class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
+class PaymentMasterpassTest extends PHPUnit_Framework_TestCase
 {
     private $payment;
 
@@ -52,34 +52,25 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'http_user',
             'http_pass',
             'merchant_account_id',
-            'secret',
-            'three_d_merchant_account_id',
-            'three_d_merchant_account_id',
-            'three_d_secret',
-            50,
-            50,
-            50,
-            150,
-            150,
-            150
+            'secret'
         );
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentCreditCard();
+        $this->payment = new PaymentMasterpass();
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
+        $this->transactionData->parent_transaction_id = 'my_secret_id';
         $this->transactionData->amount = 20;
         $this->transactionData->currency = 'EUR';
-        $this->transactionData->transaction_type = null;
     }
 
     public function testName()
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Credit Card';
+        $expected = 'Wirecard Masterpass';
 
         $this->assertEquals($expected, $actual);
     }
@@ -92,17 +83,19 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        for ($i = 0; $i <= 13; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
-        }
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn($this->config[0]);
+        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn($this->config[1]);
+        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn($this->config[2]);
+        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn($this->config[3]);
+        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[4]);
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
-        $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
-        $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
-        $expectedPaymentConfig->addThreeDMinLimit(new \Wirecard\PaymentSdk\Entity\Amount(150, 'EUR'));
-        $expected->add($expectedPaymentConfig);
+        $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
+            'masterpass',
+            'merchant_account_id',
+            'secret'
+        ));
 
         $this->assertEquals($expected, $actual);
     }
@@ -112,34 +105,13 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
 
-        $expected = 'creditcard';
+        $expected = 'masterpass';
         $this->assertEquals($expected, $actual::NAME);
-    }
-
-    public function testGetRequestData()
-    {
-        $expected = array(
-            'transaction_type' => 'authorization-only',
-            'merchant_account_id' => 'merchant_account_id',
-            'requested_amount' => 0,
-            'requested_amount_currency' => 'EUR',
-            'locale' => 'en',
-            'payment_method' => 'creditcard'
-        );
-
-        for ($i = 0; $i <= 13; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
-        }
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule));
-        //unset the generated request id as it is different every time
-        unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
-
-        $this->assertEquals($expected, $actual);
     }
 
     public function testCreateCancelTransaction()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
+        $actual = new \Wirecard\PaymentSdk\Transaction\MasterpassTransaction();
         $actual->setParentTransactionId('my_secret_id');
         $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
@@ -148,7 +120,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePayTransaction()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
+        $actual = new \Wirecard\PaymentSdk\Transaction\MasterpassTransaction();
         $actual->setParentTransactionId('my_secret_id');
         $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 

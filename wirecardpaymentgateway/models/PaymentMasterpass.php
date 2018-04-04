@@ -27,47 +27,47 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Config\CreditCardConfig;
+use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
- * Class PaymentCreditCard
+ * Class PaymentMasterpass
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentCreditCard extends Payment
+class PaymentMasterpass extends Payment
 {
     /**
-     * PaymentCreditCard constructor.
+     * PaymentiDEAL constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->type = 'creditcard';
-        $this->name = 'Wirecard Credit Card';
+        $this->type = 'masterpass';
+        $this->name = 'Wirecard Masterpass';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type);
-        $this->setLoadJs(true);
 
-        $this->cancel  = array('authorization');
+        $this->cancel = array('authorization');
         $this->capture = array('authorization');
-        $this->refund  = array('purchase', 'capture-authorization');
+        $this->refund = array('debit');
     }
 
     /**
-     * Create form fields for creditcard
+     * Create form fields for iDEAL
      *
      * @return array|null
      * @since 1.0.0
@@ -75,62 +75,34 @@ class PaymentCreditCard extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'CreditCard',
+            'tab' => 'masterpass',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Credit Card',
+                    'doc' => 'Enable Wirecard Masterpass',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Credit Card',
+                    'default' => 'Wirecard Masterpass',
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => 'Merchant Account ID',
                     'type'    => 'text',
-                    'default' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
+                    'default' => '8bc8ed6d-81a8-43be-bd7b-75b008f89fa6',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => 'Secret Key',
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_merchant_account_id',
-                    'label'    => '3-D Secure Merchant Account ID',
-                    'type'     => 'text',
-                    'default'  => '508b8896-b37d-4614-845c-26bf8bf2c948',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_secret',
-                    'label'       => '3-D Secure Secret Key',
-                    'type'        => 'text',
-                    'default'     => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'ssl_max_limit',
-                    'label'       => 'Non 3-D Secure Max Limit',
-                    'type'        => 'text',
-                    'default'     => '300.0',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'three_d_min_limit',
-                    'label'       => '3-D Secure Min Limit',
-                    'type'        => 'text',
-                    'default'     => '100.0',
+                    'default' => '2d96596b-9d10-4c98-ac47-4d56e22fd878',
                     'required' => true,
                 ),
                 array(
@@ -158,7 +130,7 @@ class PaymentCreditCard extends Payment
                 array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'pay',
+                    'default' => 'authorization',
                     'label'   => 'Payment Action',
                     'options' => array(
                         array('key' => 'reserve', 'value' => 'Authorization'),
@@ -181,13 +153,13 @@ class PaymentCreditCard extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test Credit Card configuration',
-                    'id' => 'creditcardConfig',
-                    'method' => 'creditcard',
+                    'buttonText' => 'Test configuration',
+                    'id' => 'masterpassConfig',
+                    'method' => 'Masterpass',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_MASTERPASS_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_MASTERPASS_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_MASTERPASS_HTTP_PASS'
                     )
                 )
             )
@@ -195,7 +167,7 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Create config for credit card transactions
+     * Create config for Masterpass transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -211,67 +183,28 @@ class PaymentCreditCard extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
-
-        if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
-            $paymentConfig->setThreeDCredentials(
-                $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id'),
-                $paymentModule->getConfigValue($this->type, 'three_d_secret')
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
-            $paymentConfig->addSslMaxLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    'EUR'
-                )
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
-            $paymentConfig->addThreeDMinLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    'EUR'
-                )
-            );
-        }
-
+        $paymentConfig = new PaymentMethodConfig(MasterpassTransaction::NAME, $merchantAccountId, $secret);
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create request data for credit card ui
-     *
-     * @param \WirecardPaymentGateway $module
-     * @return mixed
-     * @since 1.0.0
-     */
-    public function getRequestData($module)
-    {
-        $config = $this->createPaymentConfig($module);
-        $transactionService = new TransactionService($config);
-        return $transactionService->getDataForCreditCardUi();
-    }
-
-    /**
-     * Create creditcard transaction
+     * Create Masterpass transaction
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @param array $values
      * @param int $orderId
-     * @return null|CreditCardTransaction
+     * @return null|MasterpassTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new CreditCardTransaction();
+        $transaction = new MasterpassTransaction();
+
+        $additionalInformation = new AdditionalInformation();
+        $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
 
         return $transaction;
     }
@@ -280,14 +213,13 @@ class PaymentCreditCard extends Payment
      * Create cancel transaction
      *
      * @param $transactionData
-     * @return CreditCardTransaction
+     * @return MasterpassTransaction
      * @since 1.0.0
      */
     public function createCancelTransaction($transactionData)
     {
-        $transaction = new CreditCardTransaction();
+        $transaction = new MasterpassTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setParentTransactionType($transactionData->transaction_type);
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
@@ -297,12 +229,12 @@ class PaymentCreditCard extends Payment
      * Create pay transaction
      *
      * @param Transaction $transactionData
-     * @return CreditCardTransaction
+     * @return MasterpassTransaction
      * @since 1.0.0
      */
     public function createPayTransaction($transactionData)
     {
-        $transaction = new CreditCardTransaction();
+        $transaction = new MasterpassTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 

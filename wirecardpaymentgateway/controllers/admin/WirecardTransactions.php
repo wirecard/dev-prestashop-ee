@@ -291,7 +291,13 @@ class WirecardTransactionsController extends ModuleAdminController
             return Operation::PAY;
         }
 
-        if (in_array($paymentType, array('creditcard', 'paypal', 'alipay-xborder', 'p24', 'unionpayinternational')) && $operation == 'refund') {
+        if (in_array($paymentType, array(
+            'creditcard',
+            'paypal',
+            'alipay-xborder',
+            'p24',
+            'masterpass',
+            'unionpayinternational')) && $operation == 'refund') {
             return Operation::CANCEL;
         }
 
@@ -304,6 +310,9 @@ class WirecardTransactionsController extends ModuleAdminController
         switch ($order->payment) {
             case $this->module->getConfigValue('unionpayinternational', 'title'):
                 return 'unionpayinternational';
+                break;
+            case $this->module->getConfigValue('masterpass', 'title'):
+                return 'masterpass';
                 break;
             default:
                 return 'creditcard';
