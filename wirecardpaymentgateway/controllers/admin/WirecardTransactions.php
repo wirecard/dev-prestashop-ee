@@ -312,6 +312,9 @@ class WirecardTransactionsController extends ModuleAdminController
             case $this->module->getConfigValue('unionpayinternational', 'title'):
                 return 'unionpayinternational';
                 break;
+            case $this->module->getConfigValue('masterpass', 'title'):
+                return 'masterpass';
+                break;
             default:
                 return 'creditcard';
                 break;

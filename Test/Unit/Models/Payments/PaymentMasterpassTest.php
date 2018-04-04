@@ -91,7 +91,11 @@ class PaymentMasterpassTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig('masterpass', 'merchant_account_id', 'secret'));
+        $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
+            'masterpass',
+            'merchant_account_id',
+            'secret'
+        ));
 
         $this->assertEquals($expected, $actual);
     }
@@ -112,5 +116,14 @@ class PaymentMasterpassTest extends PHPUnit_Framework_TestCase
         $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
+    }
+
+    public function testCreatePayTransaction()
+    {
+        $actual = new \Wirecard\PaymentSdk\Transaction\MasterpassTransaction();
+        $actual->setParentTransactionId('my_secret_id');
+        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
+
+        $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
     }
 }

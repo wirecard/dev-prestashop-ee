@@ -63,8 +63,9 @@ class PaymentMasterpass extends Payment
         $this->name = 'Wirecard Masterpass';
         $this->formFields = $this->createFormFields();
 
-        $this->refund  = array('debit');
-        $this->cancel= array('authorization');
+        $this->cancel = array('authorization');
+        $this->capture = array('authorization');
+        $this->refund = array('debit');
     }
 
     /**
@@ -103,7 +104,7 @@ class PaymentMasterpass extends Payment
                     'name' => 'secret',
                     'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default' => '2d96596b-9d10-4c98-ac47-4d56e22fd878',
                     'required' => true,
                 ),
                 array(
@@ -220,22 +221,22 @@ class PaymentMasterpass extends Payment
     public function createCancelTransaction($transactionData)
     {
         $transaction = new MasterpassTransaction();
-        $transaction->setParentTransactionId($transactionData->parent_transaction_id);
+        $transaction->setParentTransactionId($transactionData->transaction_id);
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
 
     /**
-     * Create refund Masterpass Transaction
+     * Create pay transaction
      *
-     * @param $transactionData
+     * @param Transaction $transactionData
      * @return MasterpassTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData, $module)
+    public function createPayTransaction($transactionData)
     {
-        $transaction = new CreditCardTransaction();
+        $transaction = new MasterpassTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
