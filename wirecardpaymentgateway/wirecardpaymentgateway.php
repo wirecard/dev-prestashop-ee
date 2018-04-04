@@ -875,7 +875,7 @@ class WirecardPaymentGateway extends PaymentModule
             'wirecard_payment_gateway_cc' => array(
                 "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
                 "user_id" => array( "INT(10)", "NOT NULL" ),
-                "token" => array( "INT(20)", "NOT NULL", "UNIQUE" ),
+                "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
                 "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
             ) );
 
