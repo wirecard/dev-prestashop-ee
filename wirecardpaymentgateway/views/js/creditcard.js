@@ -43,6 +43,13 @@ $(document).ready(
             }
         });
 
+        $("#new-card").on('click', function () {
+            getRequestData();
+            $("#new-card").addClass('invisible');
+            $("#new-card-text").addClass('invisible');
+            $("#stored-card").removeClass('invisible');
+        });
+
         $("#wirecard-ccvault-modal").on('show.bs.modal', function () {
             form = $("#payment-form", $(this).closest(".additional-information").next(".js-payment-option-form"));
             getStoredCards();
@@ -119,6 +126,9 @@ $(document).ready(
                 $("#payment-processing-gateway-credit-card-form").empty();
                 $("#wirecard-store-card").parent().hide();
                 $("#wirecard-ccvault-modal").modal('hide');
+                $("#stored-card").addClass('invisible');
+                $("#new-card-text").removeClass('invisible');
+                $("#new-card").removeClass('invisible');
             };
 
             if(response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {

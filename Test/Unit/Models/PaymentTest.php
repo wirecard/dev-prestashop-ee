@@ -42,13 +42,18 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     private $payment;
     private $config;
     private $paypalPayment;
+    private $paymentModule;
 
     public function setUp()
     {
-        $this->payment = new Payment();
+        $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->payment = new Payment($this->paymentModule);
         $this->payment->context = new \Context();
         $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
-        $this->paypalPayment = new PaymentPaypal();
+        $this->paypalPayment = new PaymentPaypal($this->paymentModule);
     }
 
     public function testName()

@@ -206,12 +206,13 @@ class PaymentSofort extends Payment
      * Create refund Sofort.
      *
      * @param Transaction $transactionData
+     * @param module
      * @return SepaTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData)
+    public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepa();
+        $sepa = new PaymentSepa($module);
         return $sepa->createRefundTransaction($transactionData);
     }
 }

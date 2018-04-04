@@ -50,7 +50,9 @@
     </div>
 </div>
 
-<button class="btn btn-primary" data-toggle="modal" data-target="#wirecard-ccvault-modal">{l s='Use stored credit card' mod='wirecardpaymentgateway'}</button>
+<button id="stored-card" class="btn btn-primary" data-toggle="modal" data-target="#wirecard-ccvault-modal">{l s='Use stored credit card' mod='wirecardpaymentgateway'}</button>
+<div id="new-card-text" class="invisible">{l s='Credit Card is selected. To use another Credit Card, click on button below.' mod='wirecardpaymentgateway'}</div>
+<button id="new-card" class="invisible btn btn-primary">{l s='Use new credit card' mod='wirecardpaymentgateway'}</button>
 {/if}
 <div id="payment-processing-gateway-credit-card-form">
 </div>
