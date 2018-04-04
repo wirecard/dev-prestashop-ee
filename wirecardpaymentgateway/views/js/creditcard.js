@@ -116,7 +116,9 @@ $(document).ready(
                         value: token
                     }
                 ).appendTo(form);
-                form.submit();
+                $("#payment-processing-gateway-credit-card-form").empty();
+                $("#wirecard-store-card").parent().hide();
+                $("#wirecard-ccvault-modal").modal('hide');
             };
 
             if(response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
