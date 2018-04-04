@@ -54,7 +54,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
      */
     public function displayAjaxGetCreditCardConfig()
     {
-        $creditCard = new PaymentCreditCard();
+        $creditCard = new PaymentCreditCard($this->module);
         $requestData = $creditCard->getRequestData($this->module);
         header('Content-Type: application/json; charset=utf8');
         die(Tools::jsonEncode($requestData));
