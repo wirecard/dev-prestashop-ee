@@ -291,7 +291,15 @@ class WirecardTransactionsController extends ModuleAdminController
             return Operation::PAY;
         }
 
-        if (in_array($paymentType, array('creditcard', 'paypal', 'alipay-xborder', 'p24', 'masterpasss', 'unionpayinternational')) && $operation == 'refund') {
+        if (in_array($paymentType, array(
+                    'creditcard',
+                    'paypal',
+                    'alipay-xborder',
+                    'p24',
+                    'masterpasss',
+                    'unionpayinternational'
+                )
+            ) && $operation == 'refund') {
             return Operation::CANCEL;
         }
 

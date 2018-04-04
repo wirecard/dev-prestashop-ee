@@ -93,7 +93,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     {
         $ccid = Tools::getValue('ccid');
 
-        if(!$ccid) {
+        if (!$ccid) {
             $this->displayAjaxListStoredCards();
         }
 
