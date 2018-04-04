@@ -33,42 +33,72 @@
  */
 
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
+use \WirecardEE\Prestashop\Models\CreditCardVault;
 
 /**
  * @property WirecardPaymentGateway module
  *
- * @since 1.0.0
+ * @since 1.1.0
  */
-class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFrontController
+class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
+    /**
+     * @var CreditCardVault $vaultModel
+     */
+    private $vaultModel;
+
     public function initContent()
     {
         $this->ajax = true;
+        $this->vaultModel = new CreditCardVault($this->context->customer->id);
         parent::initContent();
     }
 
     /**
-     * Generate Credit Card config
-     * @since 1.0.0
+     * list user credit cards from the vault
+     *
+     * @since 1.1.0
      */
-    public function displayAjaxGetCreditCardConfig()
+    public function displayAjaxListStoredCards()
     {
-        $creditCard = new PaymentCreditCard($this->module);
-        $requestData = $creditCard->getRequestData($this->module);
         header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        die(json_encode($this->vaultModel->getUserCards()));
     }
 
     /**
-     * Generate UPI config
-     * @since 1.0.0
+     * add a card and return a list of stored user credit cards
+     *
+     * @since 1.1.0
      */
-    public function displayAjaxGetUPIConfig()
+    public function displayAjaxAddCard()
     {
-        $UPI = new PaymentUnionPayInternational($this->module);
-        $requestData = $UPI->getRequestData($this->module);
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        $tokenId = Tools::getValue('tokenid');
+        $maskedpan = Tools::getValue('maskedpan');
+
+        if (!$tokenId || !$maskedpan) {
+            $this->displayAjaxListStoredCards();
+        }
+
+        $this->vaultModel->addCard($maskedpan, $tokenId);
+
+        $this->displayAjaxListStoredCards();
+    }
+
+    /**
+     * delete a card and return a list of stored user credit cards
+     *
+     * @since 1.1.0
+     */
+    public function displayAjaxDeleteCard()
+    {
+        $ccid = Tools::getValue('ccid');
+
+        if (!$ccid) {
+            $this->displayAjaxListStoredCards();
+        }
+
+        $this->vaultModel->deleteCard($ccid);
+
+        $this->displayAjaxListStoredCards();
     }
 }

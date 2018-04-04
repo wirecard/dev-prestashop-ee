@@ -27,48 +27,26 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
- */
-
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
-
-/**
- * @property WirecardPaymentGateway module
  *
- * @since 1.0.0
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
-class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFrontController
+
+class DbQuery
 {
-    public function initContent()
+    public function from($table)
     {
-        $this->ajax = true;
-        parent::initContent();
+        return $this;
     }
 
-    /**
-     * Generate Credit Card config
-     * @since 1.0.0
-     */
-    public function displayAjaxGetCreditCardConfig()
+    public function where($where)
     {
-        $creditCard = new PaymentCreditCard($this->module);
-        $requestData = $creditCard->getRequestData($this->module);
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        return $this;
     }
 
-    /**
-     * Generate UPI config
-     * @since 1.0.0
-     */
-    public function displayAjaxGetUPIConfig()
+    public function orderBy($field)
     {
-        $UPI = new PaymentUnionPayInternational($this->module);
-        $requestData = $UPI->getRequestData($this->module);
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        return $this;
     }
 }

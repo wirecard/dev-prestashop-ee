@@ -53,8 +53,10 @@ class PaymentSofort extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'sofortbanking';
         $this->name = 'Wirecard Sofort.';
         $this->formFields = $this->createFormFields();
@@ -77,48 +79,48 @@ class PaymentSofort extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Sofort.',
+                    'doc' => $this->translate('sofort_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Sofort.',
+                    'default' => $this->translate('sofort_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => 'Merchant Account ID',
+                    'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
                     'default' => 'c021a23a-49a5-4987-aa39-e8e858d29bad',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base URL',
+                    'label'       => $this->translate('base_url_doc'),
                     'type'        => 'text',
-                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'doc' => $this->translate('base_url_example_doc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'HTTP User',
+                    'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'HTTP Password',
+                    'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -135,7 +137,7 @@ class PaymentSofort extends Payment
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send Additional Information',
+                    'label'   => $this->translate('send_addit_info_doc'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
@@ -143,7 +145,7 @@ class PaymentSofort extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test configuration',
+                    'buttonText' => $this->translate('sofort_test_config_butoon_doc'),
                     'id' => 'sofortbankingConfig',
                     'method' => 'sofortbanking',
                     'send' => array(
@@ -204,12 +206,13 @@ class PaymentSofort extends Payment
      * Create refund Sofort.
      *
      * @param Transaction $transactionData
+     * @param module
      * @return SepaTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData)
+    public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepa();
-        return $sepa->createRefundTransaction($transactionData);
+        $sepa = new PaymentSepa($module);
+        return $sepa->createRefundTransaction($transactionData, $module);
     }
 }

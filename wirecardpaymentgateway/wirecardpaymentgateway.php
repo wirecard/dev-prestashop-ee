@@ -81,12 +81,21 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
         $this->bootstrap = true;
-        $this->controllers = array('payment', 'validation', 'notify', 'return', 'ajax', 'configprovider', 'sepa');
+        $this->controllers = array(
+            'payment',
+            'validation',
+            'notify',
+            'return',
+            'ajax',
+            'configprovider',
+            'sepa',
+            'creditcard'
+        );
 
         $this->is_eu_compatible = 1;
         $this->currencies = true;
@@ -116,11 +125,9 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->registerHook('actionPaymentConfirmation')
             || !$this->registerHook('displayOrderConfirmation')
+            || !$this->createTable('tx')
+            || !$this->createTable('cc')
             || !$this->setDefaults()) {
-            return false;
-        }
-
-        if (!$this->createTable()) {
             return false;
         }
 
@@ -551,17 +558,17 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'paypal' => new PaymentPaypal(),
-            'creditcard' => new PaymentCreditCard(),
-            'sepa' => new PaymentSepa(),
-            'ideal' => new PaymentIdeal(),
-            'sofortbanking' => new PaymentSofort(),
-            'poipia' => new PaymentPoiPia(),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
-            'alipay-xborder' => new PaymentAlipayCrossborder(),
-            'p24' => new PaymentPtwentyfour(),
-            'masterpass' => new PaymentMasterpass(),
-            'unionpayinternational' => new PaymentUnionPayInternational()
+            'paypal' => new PaymentPaypal($this),
+            'creditcard' => new PaymentCreditCard($this),
+            'sepa' => new PaymentSepa($this),
+            'ideal' => new PaymentIdeal($this),
+            'sofortbanking' => new PaymentSofort($this),
+            'poipia' => new PaymentPoiPia($this),
+            'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
+            'alipay-xborder' => new PaymentAlipayCrossborder($this),
+            'p24' => new PaymentPtwentyfour($this),
+            'masterpass' => new PaymentMasterpass($this),
+            'unionpayinternational' => new PaymentUnionPayInternational($this)
         );
 
         return $payments;
@@ -812,51 +819,61 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Create wirecard payment transaction table
+     * Create a wirecard table
      *
+     * @param string $name
      * @return bool
      * @since 1.0.0
      */
-    private function createTable()
+    private function createTable($name)
     {
-        $sql = 'CREATE TABLE IF NOT EXISTS  `' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx` (';
-        foreach ($this->getColumnDefs() as $column => $definitions) {
+        $sql = 'CREATE TABLE IF NOT EXISTS  `' . _DB_PREFIX_ . 'wirecard_payment_gateway_' .$name .'` (';
+        foreach ($this->getColumnDefsTable($name) as $column => $definitions) {
             $sql .= "\n"."\t" . $column . ' ';
             foreach ($definitions as $definition) {
                 $sql .= $definition . ' ';
             }
             $sql .= ',';
         }
-        $sql .= "\n".'PRIMARY KEY (`tx_id`)';
+        $sql .= "\n".'PRIMARY KEY (`' . $name . '_id`)';
         $sql .= "\n" . ') ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
         return Db::getInstance()->execute($sql);
     }
 
     /**
-     * Get transaction table columns
+     * Get table columns
      *
      * @return array
      * @since 1.0.0
      */
-    private function getColumnDefs()
+    private function getColumnDefsTable($name)
     {
-        return array(
-            "tx_id" => array("INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT"),
-            "transaction_id" => array("VARCHAR(36)", "NOT NULL"),
-            "parent_transaction_id" => array("VARCHAR(36)", "NULL"),
-            "order_id" => array("INT(10)", "NULL"),
-            "cart_id" => array("INT(10) UNSIGNED", "NOT NULL"),
-            "ordernumber" => array("VARCHAR(32)", "NULL"),
-            "paymentmethod" => array("VARCHAR(32)", "NOT NULL"),
-            "transaction_type" => array("VARCHAR(32)", "NOT NULL"),
-            "transaction_state" => array("VARCHAR(32)", "NOT NULL"),
-            "amount" => array("FLOAT", "NOT NULL"),
-            "currency" => array("VARCHAR(3)", "NOT NULL"),
-            "response" => array("TEXT", "NULL"),
-            "created" => array("DATETIME", "NOT NULL"),
-            "modified" => array("DATETIME", "NULL"),
-        );
+        $defs = array( 'tx' =>
+            array(
+                "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
+                "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
+                "order_id" => array( "INT(10)", "NULL" ),
+                "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
+                "ordernumber" => array( "VARCHAR(32)", "NULL" ),
+                "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
+                "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
+                "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
+                "amount" => array( "FLOAT", "NOT NULL" ),
+                "currency" => array( "VARCHAR(3)", "NOT NULL" ),
+                "response" => array( "TEXT", "NULL" ),
+                "created" => array( "DATETIME", "NOT NULL" ),
+                "modified" => array( "DATETIME", "NULL" ),
+            ),
+            'cc' => array(
+                "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                "user_id" => array( "INT(10)", "NOT NULL" ),
+                "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
+                "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
+            ) );
+
+        return $defs[$name];
     }
 
     /**
@@ -878,7 +895,8 @@ class WirecardPaymentGateway extends PaymentModule
         foreach ($this->getPayments() as $paymentMethod) {
             if ($paymentMethod->getLoadJs()) {
                 $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
-                Media::addJsDef(array('configProviderURL' => $ajaxLink));
+                $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
+                Media::addJsDef(array('configProviderURL' => $ajaxLink, 'ccVaultURL' => $ccVaultLink));
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
@@ -915,5 +933,97 @@ class WirecardPaymentGateway extends PaymentModule
                 DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'pia.tpl'
             );
         }
+    }
+
+    /**
+     * get translations for settings and other
+     *
+     * @return array
+     *
+     * @since 1.1.0
+     */
+    public function getTranslations()
+    {
+        return array(
+            'merchant_id_doc' => $this->l('Merchant Account ID'),
+            'secret_key_doc' => $this->l('Secret Key'),
+            'base_url_doc' => $this->l('Base URL'),
+            'base_url_example_doc' => $this->l('The elastic engine base url. (e.g. https://api.wirecard.com)'),
+            'http_user_doc' => $this->l('HTTP User'),
+            'http_pass_doc' => $this->l('HTTP Password'),
+            'payment_action_doc' => $this->l('Payment Action'),
+            'payment_action_auth_doc' => $this->l('Authorization'),
+            'payment_action_capture_doc' => $this->l('Capture'),
+            'basket_doc' => $this->l('Shopping Basket'),
+            'descriptor_doc' => $this->l('Descriptor'),
+            'send_addit_info_doc' => $this->l('Send Additional Information'),
+
+            'ccard_enable_doc' => $this->l('Enable Wirecard Credit Card'),
+            'ccard_title_doc' => $this->l('Wirecard Credit Card'),
+            'ccard_3d_merchant_id_doc' => $this->l('3-D Secure Merchant Account ID'),
+            'ccard_3d_secret_key_doc' => $this->l('3-D Secure Secret Key'),
+            'ccard_non_3d_max_limit_doc' => $this->l('Non 3-D Secure Max Limit'),
+            'ccard_3d_min_limit_doc' => $this->l('3-D Secure Min Limit'),
+            'ccard_one_click_doc' => $this->l('Enable One-Click Checkout'),
+            'ccard_test_config_butoon_doc' => $this->l('Test Credit Card configuration'),
+
+            'ali_enable_doc' => $this->l('Enable Wirecard Alipay Crossborder'),
+            'ali_title_doc' => $this->l('Wirecard Alipay Crossborder'),
+            'ali_test_config_butoon_doc' => $this->l('Test Alipay Crossborder configuration'),
+
+            'gua_i_enable_doc' => $this->l('Enable Wirecard Guaranteed Invoice'),
+            'gua_i_title_doc' => $this->l('Wirecard Guaranteed Invoice'),
+            'gua_i_bil_ship_doc' => $this->l('Billing/Shipping address must be identical'),
+            'gua_i_allow_ship_doc' => $this->l('Allowed shipping countries'),
+            'gua_i_allow_bill_doc' => $this->l('Allowed billing countries'),
+            'gua_i_allow_currencies_doc' => $this->l('Allowed currencies'),
+            'gua_i_min_doc' => $this->l('Minimum Amount'),
+            'gua_i_max_doc' => $this->l('Maximum Amount'),
+            'gua_i_test_config_butoon_doc' => $this->l('Test Guaranteed Invoice configuration'),
+
+            'ideal_enable_doc' => $this->l('Enable Wirecard iDEAL'),
+            'ideal_title_doc' => $this->l('Wirecard iDEAL'),
+            'ideal_test_config_butoon_doc' => $this->l('Test iDEAL configuration'),
+
+            'master_enable_doc' => $this->l('Enable Wirecard Masterpass'),
+            'master_title_doc' => $this->l('Wirecard Masterpass'),
+            'master_test_config_butoon_doc' => $this->l('Test Masterpass configuration'),
+
+            'paypal_enable_doc' => $this->l('Enable Wirecard PayPal'),
+            'paypal_title_doc' => $this->l('Wirecard PayPal'),
+            'paypal_test_config_butoon_doc' => $this->l('Test PayPal configuration'),
+
+            'poipia_enable_doc' => $this->l('Enable Wirecard Payment on Invoice / Payment in Advance'),
+            'poipia_title_doc' => $this->l('Wirecard Payment on Invoice / Payment in Advance'),
+            'poipia_payment_action_doc' => $this->l('Payment'),
+            'poipia_pia_action_doc' => $this->l('Payment in Advance'),
+            'poipia_poi_action_doc' => $this->l('Payment on Invoice'),
+            'poipia_test_config_butoon_doc' => $this->l('Test Payment on Invoice / Payment in Advance
+                configuration'),
+
+            'p24_enable_doc' => $this->l('Enable Wirecard Przelewy24'),
+            'p24_title_doc' => $this->l('Wirecard Przelewy24'),
+            'p24_test_config_butoon_doc' => $this->l('Test Przelewy24 configuration'),
+
+            'sepa_enable_doc' => $this->l('Enable Wirecard SEPA'),
+            'sepa_title_doc' => $this->l('Wirecard SEPA'),
+            'sepa_creditor_id_doc' => $this->l('Creditor ID'),
+            'sepa_creditor_name_doc' => $this->l('Creditor Name'),
+            'sepa_creditor_city_doc' => $this->l('Creditor City'),
+            'sepa_creditor_additional_text_doc' => $this->l('Additional text'),
+            'sepa_creditor_additional_text_des_doc' => $this->l('Text entered here will be shown on the SEPA
+                mandate page at the end of the first paragraph.'),
+            'sepa_creditor_additional_todo_doc' => $this->l('Click here and type your text'),
+            'sepa_bic_doc' => $this->l('BIC enabled'),
+            'sepa_test_config_butoon_doc' => $this->l('Test SEPA configuration'),
+
+            'sofort_enable_doc' => $this->l('Enable Wirecard Sofort.'),
+            'sofort_title_doc' => $this->l('Wirecard Sofort.'),
+            'sofort_test_config_butoon_doc' => $this->l('Test Sofort. configuration'),
+
+            'upi_enable_doc' => $this->l('Enable UnionPay International'),
+            'upi_title_doc' => $this->l('Wirecard UnionPay International'),
+            'upi_test_config_butoon_doc' => $this->l('Test UnionPay International configuration'),
+        );
     }
 }

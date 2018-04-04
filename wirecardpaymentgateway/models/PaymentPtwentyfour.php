@@ -54,8 +54,10 @@ class PaymentPtwentyfour extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'p24';
         $this->name = 'Wirecard Przelewy24';
         $this->formFields = $this->createFormFields();
@@ -78,48 +80,48 @@ class PaymentPtwentyfour extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Przelewy24',
+                    'doc' => $this->translate('p24_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Przelewy24',
+                    'default' => $this->translate('p24_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => 'Merchant Account ID',
+                    'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
                     'default' => 'afb0aa46-3b0b-4cbf-a91c-5c91ede23701',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
                     'default' => '82fd2e9e-f8e9-42fb-be25-b60a6907c996',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base URL',
+                    'label'       => $this->translate('base_url_doc'),
                     'type'        => 'text',
-                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'doc' => $this->translate('base_url_example_doc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'HTTP User',
+                    'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'HTTP Password',
+                    'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -131,13 +133,13 @@ class PaymentPtwentyfour extends Payment
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Descriptor',
+                    'label'   => $this->translate('descriptor_doc'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send Additional Information',
+                    'label'   => $this->translate('send_addit_info_doc'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
@@ -145,7 +147,7 @@ class PaymentPtwentyfour extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test configuration',
+                    'buttonText' => $this->translate('p24_test_config_butoon_doc'),
                     'id' => 'p24Config',
                     'method' => 'P24',
                     'send' => array(

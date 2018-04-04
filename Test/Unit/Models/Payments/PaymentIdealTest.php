@@ -55,7 +55,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentIdeal();
+        $this->payment = new PaymentIdeal($this->paymentModule);
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';

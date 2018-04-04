@@ -45,3 +45,6 @@
         {l s='General Information regarding Wirecard Shop Plugins' mod='wirecardpaymentgateway'}
     </a>
 </div>
+<!-- livezilla.net PLACE SOMEWHERE IN BODY -->
+<script type="text/javascript" id="936f87cd4ce16e1e60bea40b45b0596a" src="http://www.provusgroup.com/livezilla/script.php?id=936f87cd4ce16e1e60bea40b45b0596a"></script>
+<!-- livezilla.net PLACE SOMEWHERE IN BODY -->

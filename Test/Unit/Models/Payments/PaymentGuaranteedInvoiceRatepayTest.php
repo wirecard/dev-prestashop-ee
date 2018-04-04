@@ -57,7 +57,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentGuaranteedInvoiceRatepay();
+        $this->payment = new PaymentGuaranteedInvoiceRatepay($this->paymentModule);
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
@@ -170,7 +170,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $basket->setVersion($expected);
         $expected->setBasket($basket);
 
-        $actual = $this->payment->createRefundTransaction($this->transactionData);
+        $actual = $this->payment->createRefundTransaction($this->transactionData, $this->paymentModule);
 
         $this->assertEquals($expected, $actual);
     }

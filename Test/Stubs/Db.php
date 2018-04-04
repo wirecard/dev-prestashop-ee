@@ -54,4 +54,19 @@ class Db
     {
         return true;
     }
+
+    public static function executeS($query)
+    {
+        return $query;
+    }
+
+    public static function getRow()
+    {
+        return true;
+    }
+
+    public static function delete()
+    {
+        return true;
+    }
 }

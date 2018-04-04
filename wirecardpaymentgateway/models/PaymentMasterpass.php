@@ -55,8 +55,10 @@ class PaymentMasterpass extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'masterpass';
         $this->name = 'Wirecard Masterpass';
         $this->formFields = $this->createFormFields();
@@ -81,48 +83,48 @@ class PaymentMasterpass extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Masterpass',
+                    'doc' => $this->translate('master_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard Masterpass',
+                    'default' => $this->translate('master_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => 'Merchant Account ID',
+                    'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
                     'default' => '8bc8ed6d-81a8-43be-bd7b-75b008f89fa6',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
                     'default' => '2d96596b-9d10-4c98-ac47-4d56e22fd878',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base URL',
+                    'label'       => $this->translate('base_url_doc'),
                     'type'        => 'text',
-                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'doc' => $this->translate('base_url_example_doc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'HTTP User',
+                    'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'HTTP Password',
+                    'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -131,21 +133,21 @@ class PaymentMasterpass extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'authorization',
-                    'label'   => 'Payment Action',
+                    'label'   => $this->translate('payment_action_doc'),
                     'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
-                        array('key' => 'pay', 'value' => 'Capture'),
+                        array('key' => 'reserve', 'value' => $this->translate('payment_action_auth_doc')),
+                        array('key' => 'pay', 'value' => $this->translate('payment_action_capture_doc')),
                     ),
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Descriptor',
+                    'label'   => $this->translate('descriptor_doc'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send Additional Information',
+                    'label'   => $this->translate('send_addit_info_doc'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
@@ -153,7 +155,7 @@ class PaymentMasterpass extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test configuration',
+                    'buttonText' => $this->translate('master_test_config_butoon_doc'),
                     'id' => 'masterpassConfig',
                     'method' => 'Masterpass',
                     'send' => array(

@@ -27,48 +27,38 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
- */
-
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
-
-/**
- * @property WirecardPaymentGateway module
  *
- * @since 1.0.0
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
-class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFrontController
+
+use WirecardEE\Prestashop\Models\CreditCardVault;
+
+const USER_ID = 1;
+
+class CreditCardVaultTestTest extends PHPUnit_Framework_TestCase
 {
-    public function initContent()
+
+    private $vault;
+
+    public function setUp()
     {
-        $this->ajax = true;
-        parent::initContent();
+        $this->vault = new CreditCardVault(USER_ID);
     }
 
-    /**
-     * Generate Credit Card config
-     * @since 1.0.0
-     */
-    public function displayAjaxGetCreditCardConfig()
+    public function testGetUserCards()
     {
-        $creditCard = new PaymentCreditCard($this->module);
-        $requestData = $creditCard->getRequestData($this->module);
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        $this->assertEquals(new \DbQuery(), $this->vault->getUserCards());
     }
 
-    /**
-     * Generate UPI config
-     * @since 1.0.0
-     */
-    public function displayAjaxGetUPIConfig()
+    public function testAddCard()
     {
-        $UPI = new PaymentUnionPayInternational($this->module);
-        $requestData = $UPI->getRequestData($this->module);
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        $this->assertEquals(null, $this->vault->addCard('123', '333'));
+    }
+
+    public function testDeleteCard()
+    {
+        $this->assertEquals(true, $this->vault->deleteCard('333'));
     }
 }

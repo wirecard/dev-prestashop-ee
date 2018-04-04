@@ -56,7 +56,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentSepa();
+        $this->payment = new PaymentSepa($this->paymentModule);
     }
 
     public function testName()
