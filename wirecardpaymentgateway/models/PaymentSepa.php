@@ -54,8 +54,10 @@ class PaymentSepa extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'sepa';
         $this->name = 'Wirecard SEPA';
         $this->formFields = $this->createFormFields();
@@ -82,80 +84,79 @@ class PaymentSepa extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard SEPA',
+                    'doc' => $this->translate('sepa_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard SEPA',
+                    'default' => $this->translate('sepa_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => 'Merchant Account ID',
+                    'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
                     'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
                     'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base URL',
+                    'label'       => $this->translate('base_url_doc'),
                     'type'        => 'text',
-                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'doc' => $this->translate('base_url_example_doc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'HTTP User',
+                    'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'HTTP Password',
+                    'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
                 ),
                 array(
                     'name' => 'creditor_id',
-                    'label'   => 'Creditor ID',
+                    'label'   => $this->translate('sepa_creditor_id_doc'),
                     'type'    => 'text',
                     'default' => 'DE98ZZZ09999999999',
                     'required' => true,
                 ),
                 array(
                     'name' => 'creditor_name',
-                    'label'   => 'Creditor Name',
+                    'label'   => $this->translate('sepa_creditor_name_doc'),
                     'type'    => 'text',
                     'default' => '',
                     'required' => false,
                 ),
                 array(
                     'name' => 'creditor_city',
-                    'label'   => 'Creditor City',
+                    'label'   => $this->translate('sepa_creditor_city_doc'),
                     'type'    => 'text',
                     'default' => '',
                     'required' => false,
                 ),
                 array(
                     'name' => 'sepa_mandate_textextra',
-                    'label'   => 'Additional text',
+                    'label'   => $this->translate('sepa_creditor_additional_text_doc'),
                     'type'    => 'textarea',
-                    'doc'     => 'Text entered here will be shown on the SEPA mandate page at the end of the first 
-                    paragraph.',
-                    'empty_message' => 'Click here and type your text',
+                    'doc'     => $this->translate('sepa_creditor_additional_text_des_doc'),
+                    'empty_message' => $this->translate('sepa_creditor_additional_todo_doc'),
                     'default' => '',
                     'required' => false,
                 ),
@@ -163,27 +164,27 @@ class PaymentSepa extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'authorization',
-                    'label'   => 'Payment Action',
+                    'label'   => $this->translate('payment_action_doc'),
                     'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
-                        array('key' => 'pay', 'value' => 'Capture'),
+                        array('key' => 'reserve', 'value' => $this->translate('payment_action_auth_doc')),
+                        array('key' => 'pay', 'value' => $this->translate('payment_action_capture_doc')),
                     ),
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Descriptor',
+                    'label'   => $this->translate('descriptor_doc'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send Additional Information',
+                    'label'   => $this->translate('send_addit_info_doc'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
                 array(
                     'name' => 'enable_bic',
-                    'label'   => 'BIC enabled',
+                    'label'   => $this->translate('sepa_bic_doc'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
@@ -191,7 +192,7 @@ class PaymentSepa extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test configuration',
+                    'buttonText' => $this->translate('sepa_test_config_butoon_doc'),
                     'id' => 'SepaConfig',
                     'method' => 'SEPA',
                     'send' => array(
