@@ -573,7 +573,7 @@ class WirecardPaymentGateway extends PaymentModule
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
             'alipay-xborder' => new PaymentAlipayCrossborder($this),
             'p24' => new PaymentPtwentyfour(),
-            'masterpass' => new PaymentMasterpass(),
+            'masterpass' => new PaymentMasterpass($this),
             'unionpayinternational' => new PaymentUnionPayInternational()
         );
 
@@ -987,6 +987,10 @@ class WirecardPaymentGateway extends PaymentModule
             'ideal_enable_doc' => $this->l('Enable Wirecard iDEAL'),
             'ideal_title_doc' => $this->l('Wirecard iDEAL'),
             'ideal_test_config_butoon_doc' => $this->l('Test iDEAL configuration'),
+
+            'master_enable_doc' => $this->l('Enable Wirecard Masterpass'),
+            'master_title_doc' => $this->l('Wirecard Masterpass'),
+            'master_test_config_butoon_doc' => $this->l('Test Masterpass configuration'),
         );
     }
 }
