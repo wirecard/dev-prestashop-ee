@@ -125,15 +125,9 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->registerHook('actionPaymentConfirmation')
             || !$this->registerHook('displayOrderConfirmation')
+            || !$this->createTable('tx')
+            || !$this->createTable('cc')
             || !$this->setDefaults()) {
-            return false;
-        }
-
-        if (!$this->createTable('tx')) {
-            return false;
-        }
-
-        if (!$this->createTable('cc')) {
             return false;
         }
 
@@ -843,8 +837,10 @@ class WirecardPaymentGateway extends PaymentModule
         }
         $sql .= "\n".'PRIMARY KEY (`' . $name . '_id`)';
         $sql .= "\n" . ') ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
-
-        return Db::getInstance()->execute($sql);
+$exec = Db::getInstance()->execute($sql);
+$logger = new WirecardEE\Prestashop\Helper\Logger();
+$logger->debug($sql);
+return $exec;
     }
 
     /**
@@ -855,7 +851,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     private function getColumnDefsTable($name)
     {
-        $defs = array( 'wirecard_payment_gateway_tx' =>
+        $defs = array( 'tx' =>
             array(
                 "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
                 "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
@@ -872,7 +868,7 @@ class WirecardPaymentGateway extends PaymentModule
                 "created" => array( "DATETIME", "NOT NULL" ),
                 "modified" => array( "DATETIME", "NULL" ),
             ),
-            'wirecard_payment_gateway_cc' => array(
+            'cc' => array(
                 "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
                 "user_id" => array( "INT(10)", "NOT NULL" ),
                 "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),

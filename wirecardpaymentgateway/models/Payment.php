@@ -35,9 +35,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Context;
-use Module;
-use Translate;
 use Wirecard\PaymentSdk\Config\Config;
 
 /**
