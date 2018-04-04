@@ -376,7 +376,13 @@ class Payment
         return true;
     }
 
-    protected function translate($string) {
+    /**
+     * @param $string
+     * @return $string
+     * @since 1.0.0
+     */
+    protected function translate($string)
+    {
         $translations = $this->module->getTranslations();
 
         if( isset($translations[$string])){

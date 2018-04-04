@@ -949,7 +949,25 @@ class WirecardPaymentGateway extends PaymentModule
     public function getTranslations()
     {
         return array(
-            'enable_ccard_doc' => $this->l('Enable Wirecard Credit Card')
+            'merchant_id_doc' => $this->l('Merchant Account ID'),
+            'secret_key_doc' => $this->l('Secret Key'),
+            'base_url_doc' => $this->l('Base URL'),
+            'base_url_example_doc' => $this->l('The elastic engine base url. (e.g. https://api.wirecard.com)'),
+            'http_user_doc' => $this->l('HTTP User'),
+            'http_pass_doc' => $this->l('HTTP Password'),
+            'payment_action_doc' => $this->l('Payment Action'),
+            'payment_action_auth_doc' => $this->l('Authorization'),
+            'payment_action_capture_doc' => $this->l('Capture'),
+            'descriptor_doc' => $this->l('Descriptor'),
+            'send_addit_info_doc' => $this->l('Send Additional Information'),
+            'ccard_enable_doc' => $this->l('Enable Wirecard Credit Card'),
+            'ccard_title_doc' => $this->l('Wirecard Credit Card'),
+            'ccard_3d_merchant_id_doc' => $this->l('3-D Secure Merchant Account ID'),
+            'ccard_3d_secret_key_doc' => $this->l('3-D Secure Secret Key'),
+            'ccard_non_3d_max_limit_doc' => $this->l('Non 3-D Secure Max Limit'),
+            'ccard_3d_min_limit_doc' => $this->l('3-D Secure Min Limit'),
+            'ccard_one_click_doc' => $this->l('Enable One-Click Checkout'),
+            'ccard_test_config_butoon_doc' => $this->l('Test Credit Card configuration'),
         );
     }
 }
