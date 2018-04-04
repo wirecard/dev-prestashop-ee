@@ -66,7 +66,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
      */
     public function displayAjaxGetUPIConfig()
     {
-        $UPI = new PaymentUnionPayInternational();
+        $UPI = new PaymentUnionPayInternational($this->module);
         $requestData = $UPI->getRequestData($this->module);
         header('Content-Type: application/json; charset=utf8');
         die(Tools::jsonEncode($requestData));
