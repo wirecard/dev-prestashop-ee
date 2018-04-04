@@ -35,6 +35,9 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Context;
+use Module;
+use Translate;
 use Wirecard\PaymentSdk\Config\Config;
 
 /**
@@ -136,13 +139,18 @@ class Payment
      */
     protected $loadJs;
 
+    /**
+     * @var wirecardpaymentgateway
+     */
+    private $module;
+
 
     /**
      * WirecardPayment constructor.
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
         $this->name = 'Wirecard Payment Processing Gateway';
         $this->transactionTypes = array('authorization', 'capture');
@@ -151,6 +159,7 @@ class Payment
         $this->cancel = array('authorization');
         $this->refund = array('capture-authorization');
         $this->capture = array('authorization');
+        $this->module = $module;
     }
 
     /**
@@ -365,5 +374,14 @@ class Payment
     public function isAvailable($module, $cart)
     {
         return true;
+    }
+
+    protected function translate($string) {
+        $translations = $this->module->getTranslations();
+
+        if( isset($translations[$string])){
+            return $translations[$string];
+        }
+        return $string;
     }
 }

@@ -565,7 +565,7 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $payments = array(
             'paypal' => new PaymentPaypal(),
-            'creditcard' => new PaymentCreditCard(),
+            'creditcard' => new PaymentCreditCard($this),
             'sepa' => new PaymentSepa(),
             'ideal' => new PaymentIdeal(),
             'sofortbanking' => new PaymentSofort(),
@@ -939,5 +939,17 @@ class WirecardPaymentGateway extends PaymentModule
                 DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . 'pia.tpl'
             );
         }
+    }
+
+    /**
+     * get translations for settings and other
+     *
+     * @return array
+     */
+    public function getTranslations()
+    {
+        return array(
+            'enable_ccard_doc' => $this->l('Enable Wirecard Credit Card')
+        );
     }
 }

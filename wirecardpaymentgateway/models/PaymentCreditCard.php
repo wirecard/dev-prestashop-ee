@@ -53,8 +53,10 @@ class PaymentCreditCard extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'creditcard';
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
@@ -81,7 +83,7 @@ class PaymentCreditCard extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable Wirecard Credit Card',
+                    'doc' => $this->translate('enable_ccard_doc'),
                     'default' => 0,
                 ),
                 array(
