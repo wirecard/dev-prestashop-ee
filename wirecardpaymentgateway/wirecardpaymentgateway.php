@@ -572,7 +572,7 @@ class WirecardPaymentGateway extends PaymentModule
             'poipia' => new PaymentPoiPia($this),
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
             'alipay-xborder' => new PaymentAlipayCrossborder($this),
-            'p24' => new PaymentPtwentyfour(),
+            'p24' => new PaymentPtwentyfour($this),
             'masterpass' => new PaymentMasterpass($this),
             'unionpayinternational' => new PaymentUnionPayInternational()
         );
@@ -1003,6 +1003,10 @@ class WirecardPaymentGateway extends PaymentModule
             'poipia_pia_action_doc' => $this->l('Payment in Advance'),
             'poipia_poi_action_doc' => $this->l('Payment on Invoice'),
             'poipia_test_config_butoon_doc' => $this->l('Test Payment on Invoice / Payment in Advance configuration'),
+
+            'p24_enable_doc' => $this->l('Enable Wirecard Przelewy24'),
+            'p24_title_doc' => $this->l('Wirecard Przelewy24'),
+            'p24_test_config_butoon_doc' => $this->l('Test Przelewy24 configuration'),
         );
     }
 }
