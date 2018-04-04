@@ -314,7 +314,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return RatepayInvoiceTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData)
+    public function createRefundTransaction($transactionData, $module)
     {
         $cart = new \Cart($transactionData->cart_id);
         $currency = $transactionData->currency;

@@ -270,7 +270,7 @@ class PaymentSepa extends Payment
      * @return SepaTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData)
+    public function createRefundTransaction($transactionData, $module)
     {
         $transaction = new SepaTransaction();
 

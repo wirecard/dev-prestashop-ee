@@ -233,7 +233,7 @@ class PaymentMasterpass extends Payment
      * @return MasterpassTransaction
      * @since 1.0.0
      */
-    public function createRefundTransaction($transactionData)
+    public function createRefundTransaction($transactionData, $module)
     {
         $transaction = new CreditCardTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);

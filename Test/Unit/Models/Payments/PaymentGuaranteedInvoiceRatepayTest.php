@@ -170,7 +170,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $basket->setVersion($expected);
         $expected->setBasket($basket);
 
-        $actual = $this->payment->createRefundTransaction($this->transactionData);
+        $actual = $this->payment->createRefundTransaction($this->transactionData, $this->paymentModule);
 
         $this->assertEquals($expected, $actual);
     }
