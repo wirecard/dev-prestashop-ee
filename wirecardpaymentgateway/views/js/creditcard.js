@@ -36,19 +36,19 @@ $(document).ready(
         if ($('#payment-processing-gateway-credit-card-form').length > 0) {
             getRequestData();
         }
-        $(document).on('submit','#payment-form', function (e) {
+        $(document).on('submit', '#payment-form', function (e) {
             form = $(this);
             if (form.attr('action').search('creditcard') >= 0) {
                 placeOrder(e);
             }
         });
 
-        $("#wirecard-ccvault-modal").on('show.bs.modal',function(){
+        $("#wirecard-ccvault-modal").on('show.bs.modal', function () {
+            form = $("#payment-form", $(this).closest(".additional-information").next(".js-payment-option-form"));
             getStoredCards();
         });
 
-        function placeOrder(e)
-        {
+        function placeOrder(e) {
             if (token !== null) {
                 return;
             } else {
@@ -63,30 +63,18 @@ $(document).ready(
             }
         }
 
-        function getStoredCards(){
+        function getStoredCards() {
             $.ajax({
                 url: ccVaultURL + '?action=liststoredcards',
                 type: "GET",
                 dataType: "json",
                 success: function (response) {
-                    var table = $("#wirecard-ccvault-modal .modal-body table");
-                    table.empty();
-
-                    for(var row in response){
-                        var card = response[row];
-                        var tr = "<tr>";
-                        tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
-                        tr += "<td><button class='btn btn-success' data-value='" + card.cc_id + "'><b>+</b></button>";
-                        tr += "<button class='btn btn-danger' data-value='" + card.cc_id + "'><b>-</b></button></td>";
-                        tr += "</tr>";
-                        table.append(tr);
-                    }
+                    buildWcdStoredCardView(response);
                 }
             });
         }
 
-        function getRequestData()
-        {
+        function getRequestData() {
             $.ajax({
                 url: configProviderURL + '?action=getcreditcardconfig',
                 type: "GET",
@@ -100,8 +88,7 @@ $(document).ready(
             });
         }
 
-        function renderForm(config)
-        {
+        function renderForm(config) {
             WirecardPaymentPage.seamlessRenderForm({
                 requestData: config,
                 wrappingDivId: "payment-processing-gateway-credit-card-form",
@@ -110,28 +97,68 @@ $(document).ready(
             });
         }
 
-        function resizeIframe()
-        {
+        function resizeIframe() {
             $("#payment-processing-gateway-credit-card-form > iframe").height(550);
         }
 
-        function logCallback(response)
-        {
+        function logCallback(response) {
             console.error(response);
         }
 
-        function formSubmitSuccessHandler(response)
-        {
+        function formSubmitSuccessHandler(response) {
             token = response.token_id;
-            $('<input>').attr(
-                {
-                    type: 'hidden',
-                    name: 'tokenId',
-                    id: 'tokenId',
-                    value: token
-                }
-            ).appendTo(form);
-            form.submit();
+            var successHandler = function(token, form){
+                $('<input>').attr(
+                    {
+                        type: 'hidden',
+                        name: 'tokenId',
+                        id: 'tokenId',
+                        value: token
+                    }
+                ).appendTo(form);
+                form.submit();
+            };
+            if(response.masked_account_number !== undefined) {
+                $.ajax({
+                    url: ccVaultURL + '?action=addcard&tokenid=' + token + '&maskedpan=' + response.masked_account_number,
+                    type: "GET",
+                    success: successHandler(token, form)
+                });
+            } else {
+                successHandler(token, form);
+            }
+        }
+
+        function buildWcdStoredCardView(response) {
+            var table = $("#wirecard-ccvault-modal .modal-body table");
+            table.find(".btn-danger").unbind('click');
+            table.find(".btn-success").unbind('click');
+            table.empty();
+
+            for (var row in response) {
+                var card = response[row];
+                var tr = "<tr>";
+                tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
+                tr += "<td><button class='btn btn-success' data-tokenid='" + card.token + "'><b>+</b></button>";
+                tr += " <button class='btn btn-danger' data-cardid='" + card.cc_id + "'><b>-</b></button></td>";
+                tr += "</tr>";
+                table.append(tr);
+            }
+
+            table.find(".btn-danger").bind('click', function(){
+                $.ajax({
+                    url: ccVaultURL + '?action=deletecard&ccid=' + $(this).data('cardid'),
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        buildWcdStoredCardView(response);
+                    }
+                });
+            });
+
+            table.find(".btn-success").bind('click', function(){
+                formSubmitSuccessHandler({token_id:$(this).data('tokenid')});
+            });
         }
     }
 );
