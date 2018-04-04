@@ -960,6 +960,7 @@ class WirecardPaymentGateway extends PaymentModule
             'payment_action_capture_doc' => $this->l('Capture'),
             'descriptor_doc' => $this->l('Descriptor'),
             'send_addit_info_doc' => $this->l('Send Additional Information'),
+
             'ccard_enable_doc' => $this->l('Enable Wirecard Credit Card'),
             'ccard_title_doc' => $this->l('Wirecard Credit Card'),
             'ccard_3d_merchant_id_doc' => $this->l('3-D Secure Merchant Account ID'),
@@ -968,6 +969,11 @@ class WirecardPaymentGateway extends PaymentModule
             'ccard_3d_min_limit_doc' => $this->l('3-D Secure Min Limit'),
             'ccard_one_click_doc' => $this->l('Enable One-Click Checkout'),
             'ccard_test_config_butoon_doc' => $this->l('Test Credit Card configuration'),
+
+            'ali_enable_doc' => $this->l('Enable Wirecard Alipay Crossborder'),
+            'ali_title_doc' => $this->l('Wirecard Alipay Crossborder'),
+            'ali_test_config_butoon_doc' => $this->l('Test Alipay Crossborder configuration'),
+
         );
     }
 }
