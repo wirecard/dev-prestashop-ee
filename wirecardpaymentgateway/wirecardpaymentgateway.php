@@ -574,7 +574,7 @@ class WirecardPaymentGateway extends PaymentModule
             'alipay-xborder' => new PaymentAlipayCrossborder($this),
             'p24' => new PaymentPtwentyfour($this),
             'masterpass' => new PaymentMasterpass($this),
-            'unionpayinternational' => new PaymentUnionPayInternational()
+            'unionpayinternational' => new PaymentUnionPayInternational($this)
         );
 
         return $payments;
@@ -1024,6 +1024,10 @@ class WirecardPaymentGateway extends PaymentModule
             'sofort_enable_doc' => $this->l('Enable Wirecard Sofort.'),
             'sofort_title_doc' => $this->l('Wirecard Sofort.'),
             'sofort_test_config_butoon_doc' => $this->l('Test Sofort. configuration'),
+
+            'upi_enable_doc' => $this->l('Enable UnionPay International'),
+            'upi_title_doc' => $this->l('Wirecard UnionPay International'),
+            'upi_test_config_butoon_doc' => $this->l('Test UnionPay International configuration'),
         );
     }
 }

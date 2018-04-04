@@ -54,8 +54,10 @@ class PaymentUnionPayInternational extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct()
+    public function __construct($module)
     {
+        parent::__construct($module);
+
         $this->type = 'unionpayinternational';
         $this->name = 'Wirecard UnionPay International';
         $this->formFields = $this->createFormFields();
@@ -82,48 +84,48 @@ class PaymentUnionPayInternational extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => 'Enable UnionPay International',
+                    'doc' => $this->translate('upi_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => 'Wirecard UnionPay International',
+                    'default' => $this->translate('upi_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => 'Merchant Account ID',
+                    'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
                     'default' => 'c6e9331c-5c1f-4fc6-8a08-ef65ce09ddb0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => 'Secret Key',
+                    'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
                     'default' => '16d85b73-79e2-4c33-932a-7da99fb04a9c',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => 'Base URL',
+                    'label'       => $this->translate('base_url_doc'),
                     'type'        => 'text',
-                    'doc' => 'The elastic engine base url. (e.g. https://api.wirecard.com)',
+                    'doc' => $this->translate('base_url_example_doc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => 'HTTP User',
+                    'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
                     'default' => '70000-APILUHN-CARD',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => 'HTTP Password',
+                    'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
                     'default' => '8mhwavKVb91T',
                     'required' => true,
@@ -132,21 +134,21 @@ class PaymentUnionPayInternational extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'pay',
-                    'label'   => 'Payment Action',
+                    'label'   => $this->translate('payment_action_doc'),
                     'options' => array(
-                        array('key' => 'reserve', 'value' => 'Authorization'),
-                        array('key' => 'pay', 'value' => 'Capture'),
+                        array('key' => 'reserve', 'value' => $this->translate('payment_action_auth_doc')),
+                        array('key' => 'pay', 'value' => $this->translate('payment_action_capture_doc')),
                     ),
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => 'Descriptor',
+                    'label'   => $this->translate('descriptor_doc'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => 'Send Additional Information',
+                    'label'   => $this->translate('send_addit_info_doc'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
@@ -154,7 +156,7 @@ class PaymentUnionPayInternational extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => 'Test configuration',
+                    'buttonText' => $this->translate('upi_test_config_butoon_doc'),
                     'id' => 'creditcardConfig',
                     'method' => 'unionpayinternational',
                     'send' => array(
