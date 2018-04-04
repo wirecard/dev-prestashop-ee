@@ -297,8 +297,7 @@ class WirecardTransactionsController extends ModuleAdminController
                     'alipay-xborder',
                     'p24',
                     'masterpasss',
-                    'unionpayinternational'
-                )
+                    'unionpayinternational')
             ) && $operation == 'refund') {
             return Operation::CANCEL;
         }
