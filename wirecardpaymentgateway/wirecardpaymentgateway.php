@@ -837,10 +837,8 @@ class WirecardPaymentGateway extends PaymentModule
         }
         $sql .= "\n".'PRIMARY KEY (`' . $name . '_id`)';
         $sql .= "\n" . ') ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
-$exec = Db::getInstance()->execute($sql);
-$logger = new WirecardEE\Prestashop\Helper\Logger();
-$logger->debug($sql);
-return $exec;
+
+        return Db::getInstance()->execute($sql);
     }
 
     /**
