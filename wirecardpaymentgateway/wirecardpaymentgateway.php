@@ -964,7 +964,7 @@ class WirecardPaymentGateway extends PaymentModule
             'ccard_3d_secret_key_doc' => $this->l('3-D Secure Secret Key'),
             'ccard_non_3d_max_limit_doc' => $this->l('Non 3-D Secure Max Limit'),
             'ccard_3d_min_limit_doc' => $this->l('3-D Secure Min Limit'),
-            'ccard_one_click_doc' => $this->l('Enable One-Click Checkout'),
+            'ccard_one_click' => $this->l('Enable Recurring Payment'),
             'ccard_test_config_butoon_doc' => $this->l('Test Credit Card configuration'),
 
             'ali_enable_doc' => $this->l('Enable Wirecard Alipay Crossborder'),

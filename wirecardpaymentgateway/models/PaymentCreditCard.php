@@ -181,7 +181,7 @@ class PaymentCreditCard extends Payment
                 ),
                 array(
                     'name' => 'ccvault_enabled',
-                    'label'=> $this->translate('ccard_one_click_doc'),
+                    'label'=> $this->translate('ccard_one_click'),
                     'type' => 'onoff',
                     'default' => 0
                 ),
