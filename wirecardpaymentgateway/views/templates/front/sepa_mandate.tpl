@@ -106,7 +106,7 @@
                                         {if strlen($creditorStoreCity)}
                                             {$creditorStoreCity},
                                         {/if}
-                                        {$date}<span class="first_last_name"></span>
+                                        {$date} <span class="first_last_name"></span>
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
