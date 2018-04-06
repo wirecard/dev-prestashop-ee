@@ -33,15 +33,13 @@
 <p><strong>{l s="Pay with Wirecard Payment Processing Gateway." d='Modules.Wirecardpaymentgateway.Admin'}</strong></p>
 <div class="btn-group">
     <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
-        <i class=e"icon-mony"></i>
+        <i class="icon-money"></i>
         {l s='Transactions' mod='wirecardpaymentgateway'}
     </a>
     <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
-        <i class=e"icon-mony"></i>
         {l s='Support' mod='wirecardpaymentgateway'}
     </a>
     <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/dev-prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information#terms-of-use">
-        <i class=e"icon-mony"></i>
         {l s='General Information regarding Wirecard Shop Plugins' mod='wirecardpaymentgateway'}
     </a>
 </div>

@@ -558,17 +558,17 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'paypal' => new PaymentPaypal($this),
             'creditcard' => new PaymentCreditCard($this),
+            'paypal' => new PaymentPaypal($this),
             'sepa' => new PaymentSepa($this),
-            'ideal' => new PaymentIdeal($this),
             'sofortbanking' => new PaymentSofort($this),
-            'poipia' => new PaymentPoiPia($this),
+            'ideal' => new PaymentIdeal($this),
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
-            'alipay-xborder' => new PaymentAlipayCrossborder($this),
             'p24' => new PaymentPtwentyfour($this),
+            'poipia' => new PaymentPoiPia($this),
             'masterpass' => new PaymentMasterpass($this),
-            'unionpayinternational' => new PaymentUnionPayInternational($this)
+            'unionpayinternational' => new PaymentUnionPayInternational($this),
+            'alipay-xborder' => new PaymentAlipayCrossborder($this)
         );
 
         return $payments;
@@ -896,7 +896,12 @@ class WirecardPaymentGateway extends PaymentModule
             if ($paymentMethod->getLoadJs()) {
                 $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
                 $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
-                Media::addJsDef(array('configProviderURL' => $ajaxLink, 'ccVaultURL' => $ccVaultLink));
+                $ajaxSepaUrl = $link->getModuleLink('wirecardpaymentgateway', 'sepa');
+                Media::addJsDef(
+                    array(
+                        'configProviderURL' => $ajaxLink,
+                        'ccVaultURL' => $ccVaultLink,
+                        'ajaxsepaurl' => $ajaxSepaUrl));
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'

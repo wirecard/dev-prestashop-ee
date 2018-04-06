@@ -37,6 +37,24 @@
 		</a>
 		<script type="text/javascript">
             $(function () {
+                $(document).ready(function(){
+                    var translate = {
+                        paypal:'paypal',
+                        creditcard:'credit Card',
+                        sepa:'sepa',
+                        ideal:'ideal',
+                        sofort:'sofort.',
+                        poipia:'Payment on Invoice / Payment in Advance (POI/PIA)',
+                        invoice:'invoice',
+                        'alipay-xborder':'alipay crossborder',
+                        p24:'przelewy24',
+                        masterpass:'masterpass',
+                        unionpayinternational:'unionpay international'
+                    };
+                    $("a[data-toggle=tab]").each(function() {
+                        $(this).html(translate[$(this).html().toLowerCase()]);
+                    });
+                });
                 $('#{$input.id}').on('click', function() {
                     $.ajax({
                         type: 'POST',

@@ -33,13 +33,11 @@
 
 <div id="payment-processing-gateway-ideal-form">
     <div class="form-group row">
-        <label class="col-md-3 form-control-label required">{l s='Bank' mod='wirecardpaymentgateway'}</label>
-        <div class="col-md-6">
-            <select class="form-control" name="idealBankBic" id="idealBankBic">
-                {foreach $banks as $bank}
-                    <option value="{$bank.key}">{$bank.label}</option>
-                {/foreach}
-            </select>
-        </div>
+        <label class="form-control-label required">{l s='Bank' mod='wirecardpaymentgateway'}</label>
+        <select class="form-control" name="idealBankBic" id="idealBankBic" style="width:auto">
+            {foreach $banks as $bank}
+                <option value="{$bank.key}">{$bank.label}</option>
+            {/foreach}
+        </select>
     </div>
 </div>
