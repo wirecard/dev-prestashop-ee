@@ -558,17 +558,17 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'paypal' => new PaymentPaypal($this),
             'creditcard' => new PaymentCreditCard($this),
+            'paypal' => new PaymentPaypal($this),
             'sepa' => new PaymentSepa($this),
-            'ideal' => new PaymentIdeal($this),
             'sofortbanking' => new PaymentSofort($this),
-            'poipia' => new PaymentPoiPia($this),
+            'ideal' => new PaymentIdeal($this),
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
-            'alipay-xborder' => new PaymentAlipayCrossborder($this),
             'p24' => new PaymentPtwentyfour($this),
+            'poipia' => new PaymentPoiPia($this),
             'masterpass' => new PaymentMasterpass($this),
-            'unionpayinternational' => new PaymentUnionPayInternational($this)
+            'unionpayinternational' => new PaymentUnionPayInternational($this),
+            'alipay-xborder' => new PaymentAlipayCrossborder($this)
         );
 
         return $payments;
