@@ -896,7 +896,12 @@ class WirecardPaymentGateway extends PaymentModule
             if ($paymentMethod->getLoadJs()) {
                 $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
                 $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
-                Media::addJsDef(array('configProviderURL' => $ajaxLink, 'ccVaultURL' => $ccVaultLink));
+                $ajaxSepaUrl = $link->getModuleLink('wirecardpaymentgateway', 'sepa');
+                Media::addJsDef(
+                    array(
+                        'configProviderURL' => $ajaxLink,
+                        'ccVaultURL' => $ccVaultLink,
+                        'ajaxsepaurl' => $ajaxSepaUrl));
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
