@@ -44,7 +44,7 @@
                         sepa:'sepa',
                         ideal:'ideal',
                         sofort:'sofort.',
-                        poipia:'poi/pia',
+                        poipia:'Payment on Invoice / Payment in Advance (POI/PIA)',
                         invoice:'invoice',
                         'alipay-xborder':'alipay crossborder',
                         p24:'przelewy24',
