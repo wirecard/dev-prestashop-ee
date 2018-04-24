@@ -141,12 +141,13 @@ class WirecardTransactionsController extends ModuleAdminController
         $transaction = $this->object;
         /** @var \WirecardEE\Prestashop\Models\Payment $payment */
         $payment = $this->module->getPaymentFromType($transaction->paymentmethod);
+        $payment_method = $transaction->paymentmethod == 'sofortbanking' ? 'sofort.' : $transaction->paymentmethod;
         $response_data = json_decode($transaction->response);
         // Smarty assign
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
             'transaction_id' => $transaction->transaction_id,
-            'payment_method' => $transaction->paymentmethod,
+            'payment_method' => $payment_method,
             'transaction_type' => $transaction->transaction_type,
             'status' => $transaction->transaction_state,
             'amount' => $transaction->amount,
