@@ -31,6 +31,18 @@
 var token = null;
 var form = null;
 
+function processAjaxUrl(url, params) {
+    var querySign = '?';
+    if (url.includes("?")) {
+        querySign = '&';
+    }
+    params.forEach(function (param) {
+        url += querySign + param.index + '=' + param.data;
+        querySign = '&';
+    });
+    return url;
+}
+
 $(document).ready(
     function () {
         if ($('#payment-processing-gateway-upi-form').length > 0) {
@@ -61,8 +73,12 @@ $(document).ready(
 
         function getRequestData()
         {
+            var params = [{
+                index: 'action',
+                data: 'getupiconfig'
+            }];
             $.ajax({
-                url: configProviderURL + '?action=getupiconfig',
+                url: processAjaxUrl(configProviderURL, params),
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {

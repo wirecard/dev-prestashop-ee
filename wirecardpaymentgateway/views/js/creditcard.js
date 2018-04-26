@@ -31,6 +31,18 @@
 var token = null;
 var form = null;
 
+function processAjaxUrl(url, params) {
+    var querySign = '?';
+    if (url.includes("?")) {
+        querySign = '&';
+    }
+    params.forEach(function (param) {
+        url += querySign + param.index + '=' + param.data;
+        querySign = '&';
+    });
+    return url;
+}
+
 $(document).ready(
     function () {
         if ($('#payment-processing-gateway-credit-card-form').length > 0) {
@@ -71,8 +83,12 @@ $(document).ready(
         }
 
         function getStoredCards() {
+            var params = [{
+                index: 'action',
+                data: 'liststoredcards'
+            }];
             $.ajax({
-                url: ccVaultURL + '?action=liststoredcards',
+                url: processAjaxUrl(ccVaultURL, params),
                 type: "GET",
                 dataType: "json",
                 success: function (response) {
@@ -82,8 +98,12 @@ $(document).ready(
         }
 
         function getRequestData() {
+            var params = [{
+                index: 'action',
+                data: 'getcreditcardconfig'
+            }];
             $.ajax({
-                url: configProviderURL + '?action=getcreditcardconfig',
+                url: processAjaxUrl(configProviderURL, params),
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {
@@ -123,17 +143,31 @@ $(document).ready(
                         value: token
                     }
                 ).appendTo(form);
-                $("#payment-processing-gateway-credit-card-form").empty();
-                $("#wirecard-store-card").parent().hide();
-                $("#wirecard-ccvault-modal").modal('hide');
-                $("#stored-card").addClass('invisible');
-                $("#new-card-text").removeClass('invisible');
-                $("#new-card").removeClass('invisible');
+                if ($("#wirecard-ccvault-modal").is(':visible')) {
+                    $("#payment-processing-gateway-credit-card-form").empty();
+                    $("#wirecard-store-card").parent().hide();
+                    $("#wirecard-ccvault-modal").modal('hide');
+                    $("#stored-card").addClass('invisible');
+                    $("#new-card-text").removeClass('invisible');
+                    $("#new-card").removeClass('invisible');
+                } else {
+                    form.submit();
+                }
             };
 
             if(response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
+                var params = [{
+                    index: 'action',
+                    data: 'addcard'
+                }, {
+                    index: 'tokenid',
+                    data: token
+                }, {
+                    index: 'maskedpan',
+                    data: response.masked_account_number
+                }];
                 $.ajax({
-                    url: ccVaultURL + '?action=addcard&tokenid=' + token + '&maskedpan=' + response.masked_account_number,
+                    url: processAjaxUrl(ccVaultURL, params),
                     type: "GET",
                     success: successHandler(token, form)
                 });
@@ -159,8 +193,15 @@ $(document).ready(
             }
 
             table.find(".btn-danger").bind('click', function(){
+                var params = [{
+                    index: 'action',
+                    data: 'deletecard'
+                }, {
+                    index: 'ccid',
+                    data: $(this).data('cardid')
+                }];
                 $.ajax({
-                    url: ccVaultURL + '?action=deletecard&ccid=' + $(this).data('cardid'),
+                    url: processAjaxUrl(ccVaultURL, params),
                     type: "GET",
                     dataType: "json",
                     success: function (response) {
@@ -175,7 +216,3 @@ $(document).ready(
         }
     }
 );
-
-
-
-
