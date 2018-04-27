@@ -67,7 +67,8 @@ $(document).ready(
             getStoredCards();
         });
 
-        function placeOrder(e) {
+        function placeOrder(e)
+        {
             if (token !== null) {
                 return;
             } else {
@@ -82,7 +83,8 @@ $(document).ready(
             }
         }
 
-        function getStoredCards() {
+        function getStoredCards()
+        {
             var params = [{
                 index: 'action',
                 data: 'liststoredcards'
@@ -97,7 +99,8 @@ $(document).ready(
             });
         }
 
-        function getRequestData() {
+        function getRequestData()
+        {
             var params = [{
                 index: 'action',
                 data: 'getcreditcardconfig'
@@ -115,7 +118,8 @@ $(document).ready(
             });
         }
 
-        function renderForm(config) {
+        function renderForm(config)
+        {
             WirecardPaymentPage.seamlessRenderForm({
                 requestData: config,
                 wrappingDivId: "payment-processing-gateway-credit-card-form",
@@ -124,17 +128,20 @@ $(document).ready(
             });
         }
 
-        function resizeIframe() {
+        function resizeIframe()
+        {
             $("#payment-processing-gateway-credit-card-form > iframe").height(550);
         }
 
-        function logCallback(response) {
+        function logCallback(response)
+        {
             console.error(response);
         }
 
-        function formSubmitSuccessHandler(response) {
+        function formSubmitSuccessHandler(response)
+        {
             token = response.token_id;
-            var successHandler = function(token, form){
+            var successHandler = function (token, form) {
                 $('<input>').attr(
                     {
                         type: 'hidden',
@@ -155,7 +162,7 @@ $(document).ready(
                 }
             };
 
-            if(response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
+            if (response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
                 var params = [{
                     index: 'action',
                     data: 'addcard'
@@ -176,7 +183,8 @@ $(document).ready(
             }
         }
 
-        function buildWcdStoredCardView(response) {
+        function buildWcdStoredCardView(response)
+        {
             var table = $("#wirecard-ccvault-modal .modal-body table");
             table.find(".btn-danger").unbind('click');
             table.find(".btn-success").unbind('click');
@@ -192,7 +200,7 @@ $(document).ready(
                 table.append(tr);
             }
 
-            table.find(".btn-danger").bind('click', function(){
+            table.find(".btn-danger").bind('click', function () {
                 var params = [{
                     index: 'action',
                     data: 'deletecard'
@@ -210,7 +218,7 @@ $(document).ready(
                 });
             });
 
-            table.find(".btn-success").bind('click', function(){
+            table.find(".btn-success").bind('click', function () {
                 formSubmitSuccessHandler({token_id:$(this).data('tokenid')});
             });
         }

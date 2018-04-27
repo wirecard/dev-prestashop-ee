@@ -901,7 +901,9 @@ class WirecardPaymentGateway extends PaymentModule
                     array(
                         'configProviderURL' => $ajaxLink,
                         'ccVaultURL' => $ccVaultLink,
-                        'ajaxsepaurl' => $ajaxSepaUrl));
+                        'ajaxsepaurl' => $ajaxSepaUrl
+                    )
+                );
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'

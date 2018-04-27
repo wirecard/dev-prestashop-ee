@@ -31,7 +31,8 @@
 var token = null;
 var form = null;
 
-function processAjaxUrl(url, params) {
+function processAjaxUrl(url, params)
+{
     var querySign = '?';
     if (url.includes("?")) {
         querySign = '&';
