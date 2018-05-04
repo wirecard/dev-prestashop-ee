@@ -146,7 +146,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
             'transaction_id' => $transaction->transaction_id,
-            'payment_method' => $transaction->paymentmethod,
+            'payment_method' => $payment->getName(),
             'transaction_type' => $transaction->transaction_type,
             'status' => $transaction->transaction_state,
             'amount' => $transaction->amount,

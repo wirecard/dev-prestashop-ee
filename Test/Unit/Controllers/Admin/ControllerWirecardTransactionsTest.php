@@ -55,7 +55,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
         $expected = array(
             'current_index' => '1',
             'transaction_id' => '12l3j123kjg12kj3g123',
-            'payment_method' => 'creditcard',
+            'payment_method' => 'Wirecard Credit Card',
             'transaction_type' => 'authorization',
             'status' => 'success',
             'amount' => '20',
