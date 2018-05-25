@@ -201,7 +201,7 @@ class WirecardPaymentGateway extends PaymentModule
 
     public function uninstallTabs()
     {
-        $tabs = ['WirecardTransactions','WirecardSupport', 'WirecardAjax'];
+        $tabs = array('WirecardTransactions','WirecardSupport', 'WirecardAjax');
         foreach ($tabs as $tab) {
             $id_tab = (int)Tab::getIdFromClassName($tab);
             if ($id_tab) {
