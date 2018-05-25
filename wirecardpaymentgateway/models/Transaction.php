@@ -128,10 +128,10 @@ class Transaction extends \ObjectModel
         }
 
         $db->insert('wirecard_payment_gateway_tx', array(
-            'transaction_id' => $response->getTransactionId(),
-            'parent_transaction_id' => $parentTransactionId,
+            'transaction_id' => pSQL($response->getTransactionId()),
+            'parent_transaction_id' => pSQL($parentTransactionId),
             'order_id' => $idOrder === null ? 'NULL' : (int)$idOrder,
-            'ordernumber' => $orderNumber === null ? 'NULL' : $orderNumber,
+            'ordernumber' => $orderNumber === null ? 'NULL' : pSQL($orderNumber),
             'cart_id' => (int)$idCart,
             'paymentmethod' => pSQL($response->getPaymentMethod()),
             'transaction_state' => pSQL($transactionState),
