@@ -44,7 +44,7 @@ use WirecardEE\Prestashop\Helper\Logger;
  *
  * @since 1.0.0
  */
-class WirecardPaymentGatewayAjaxModuleFrontController extends ModuleFrontController
+class WirecardAjaxController extends ModuleAdminController
 {
     /**
      * Handle ajax actions
