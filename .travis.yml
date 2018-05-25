@@ -9,10 +9,7 @@ cache:
 addons:
   sonarcloud:
     organization: "wirecard"
-    token:
-      secure: "N9jZ6677MiYfcn2egDtbasaj4z72ma4C3iEl0cAKFklL7MWaPoEqaperYEjP8qW7vP8gYGi3SMl4dLNtRmDAioYIza3uQRWP82ggCyPSSTKEBjac2UKe5rB4dWHpKeyRI7ZxbGX86//tj4SNqodr6FSaGoMPzK7FRQ7dr+PiEi0skEU/rBaSVn+r+TRX1a11uEfTveSmSfvIBcqnNC8VenfQN3l9yW1CFPP8klpqH7VQwpEU2ZkGI/Juo3LEvwyKT9ml0d8NnurHng/kbs1Af4+R1kOvs0U41zz+1sOYCtIv61MbzfF2I4cwOmbnu90U/KjxmB9kTiGlblMLkPPk9Dq6ECIrnoSiB4kcgF+7Fa0WiWnayt5nf3WuSazbifUi6kOeIvbeheqtt6tZQH9R/CJiwb6E3SwKpcqnd1LjI2cnxenYFdFiq1pFThqsDXqMl+HXRMMaCKTPVG4BJOZXkZ7cABh48NB58/Q6HSiSYCVWROWKKHZwX8s8nNdacOtgsLPChhtZ+MU/I9fA5SeGc+iW8JO84ABqHX1aFRzymUudzqCqiDOU5JESBZvPBGcl84fW2RsEC1nKeneAztqAHN5iHh3yjxIpv8uIfw2O/tVTJboRU8QN7/+aVB0HD5HtPcX0/31ieTrnmrcfvbamZPfa0kVtyH5jWGajzC5dQUs="
-      github_token:
-        secure: "GrPeKimeHRXL7Bl1ORmmnbKRBsJP/c3kfuK9+KjfjuJYLXQDjar1duVzLLG3ErjFdas0H5W8stNi/120XH8/fwIK/PCjr828cGIkqzkV1hXbj8uWKnf3O8unxwzAyMCQNXjsmcQA0ubxTzxkgJXfWzNtwHYv/dVvu8aq5KrdOGWKBjyiqAFX7tb7/NoINrqr1CkmRvq4V4sPoErpUT0VMmptTmFfx5XY3XngkbMiRWpJR1Fjqvx3FnN65EXi0/jZ2LJSmqdPM41O0WZv0TwoR5gjsC/YF0QqFrYHAEJsiEbkmVgn9fTx/qrW+wJqsCDy3O9sGr749nNb6/qy7+2hsenAiZeTFU7J0dJCo4B1+OZOP6aFU+sGDlXzZaStydOR+p7jfizq2W1imlaZ7nybqzZTO78Yui+NP+UWOB5TQsJkjVa2XaVkLV7UCTE8a8omnVcoQ2RGgRNQl5FwxFLq6UjqerxLp1ftyGDLDHdg8gwTt5GT+e+ucUC5SRAQDzMeIaKkcAddH/dYKd8+cD3+h1eN6DUPwKV9Gh5SpDG19ndJDlrVAnqe36C4sjGf2+D8W06T8b4sVwkZvWIXJT1voHwJI4bkGM6xvfGqMuDwFRY5EMDke2PRsbCqPoWAhOfY97KA7CoQn6n1ze/wpJu2qOiMcU52TiXkdTB6nmZMtYk="
+
 php:
   - 7.1
   - 7.0
@@ -20,7 +17,10 @@ php:
 
 env:
   global:
+  - secure: ${SONAR_TOKEN}
   - COMPOSER_ARGS="--no-interaction"
+  - github_token:
+      secure: "GrPeKimeHRXL7Bl1ORmmnbKRBsJP/c3kfuK9+KjfjuJYLXQDjar1duVzLLG3ErjFdas0H5W8stNi/120XH8/fwIK/PCjr828cGIkqzkV1hXbj8uWKnf3O8unxwzAyMCQNXjsmcQA0ubxTzxkgJXfWzNtwHYv/dVvu8aq5KrdOGWKBjyiqAFX7tb7/NoINrqr1CkmRvq4V4sPoErpUT0VMmptTmFfx5XY3XngkbMiRWpJR1Fjqvx3FnN65EXi0/jZ2LJSmqdPM41O0WZv0TwoR5gjsC/YF0QqFrYHAEJsiEbkmVgn9fTx/qrW+wJqsCDy3O9sGr749nNb6/qy7+2hsenAiZeTFU7J0dJCo4B1+OZOP6aFU+sGDlXzZaStydOR+p7jfizq2W1imlaZ7nybqzZTO78Yui+NP+UWOB5TQsJkjVa2XaVkLV7UCTE8a8omnVcoQ2RGgRNQl5FwxFLq6UjqerxLp1ftyGDLDHdg8gwTt5GT+e+ucUC5SRAQDzMeIaKkcAddH/dYKd8+cD3+h1eN6DUPwKV9Gh5SpDG19ndJDlrVAnqe36C4sjGf2+D8W06T8b4sVwkZvWIXJT1voHwJI4bkGM6xvfGqMuDwFRY5EMDke2PRsbCqPoWAhOfY97KA7CoQn6n1ze/wpJu2qOiMcU52TiXkdTB6nmZMtYk="
 
 install:
   - travis_retry composer require --dev $COMPOSER_ARGS satooshi/php-coveralls:^1.0
