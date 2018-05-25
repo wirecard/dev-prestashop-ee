@@ -54,6 +54,10 @@ class CreditCardVaultTestTest extends PHPUnit_Framework_TestCase
 
     public function testAddCard()
     {
+        function pSQL($string)
+        {
+            return $string;
+        };
         $this->assertEquals(null, $this->vault->addCard('123', '333'));
     }
 

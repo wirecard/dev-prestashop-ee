@@ -101,9 +101,9 @@ class CreditCardVault
 
         try {
             $db->insert($this->table, array(
-                'masked_pan' => $maskedPan,
-                'token' => $token,
-                'user_id' => $this->userId
+                'masked_pan' => pSQL($maskedPan),
+                'token' => pSQL($token),
+                'user_id' => (int)$this->userId
             ));
         } catch (\PrestaShopDatabaseException $e) {
             $this->logger->error(__METHOD__ . $e->getMessage());
@@ -129,7 +129,7 @@ class CreditCardVault
     public function getCard($token)
     {
         $query = new \DbQuery();
-        $query->from($this->table)->where('token = ' . (int)$token);
+        $query->from($this->table)->where('token = ' . pSQL($token));
 
         return \Db::getInstance()->getRow($query);
     }

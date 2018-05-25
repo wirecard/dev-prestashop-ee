@@ -81,7 +81,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.2.0';
+        $this->version = '1.2.1';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
@@ -91,7 +91,6 @@ class WirecardPaymentGateway extends PaymentModule
             'validation',
             'notify',
             'return',
-            'ajax',
             'configprovider',
             'sepa',
             'creditcard'
@@ -187,20 +186,28 @@ class WirecardPaymentGateway extends PaymentModule
         }
         $tab->module = $this->name;
         $tab->add();
+
+        $tab = new Tab();
+        $tab->active = 1;
+        $tab->class_name = 'WirecardAjax';
+        $tab->name = array();
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = 'Wirecard Ajax';
+        }
+        $tab->module = $this->name;
+        $tab->id_parent = -1;
+        $tab->add();
     }
 
     public function uninstallTabs()
     {
-        $id_tab = (int)Tab::getIdFromClassName('WirecardTransactions');
-        if ($id_tab) {
-            $tab = new Tab($id_tab);
-            $tab->delete();
-        }
-
-        $id_tab = (int)Tab::getIdFromClassName('WirecardSupport');
-        if ($id_tab) {
-            $tab = new Tab($id_tab);
-            $tab->delete();
+        $tabs = array('WirecardTransactions','WirecardSupport', 'WirecardAjax');
+        foreach ($tabs as $tab) {
+            $id_tab = (int)Tab::getIdFromClassName($tab);
+            if ($id_tab) {
+                $tab = new Tab($id_tab);
+                $tab->delete();
+            }
         }
     }
 
@@ -236,7 +243,7 @@ class WirecardPaymentGateway extends PaymentModule
             array(
                 'module_dir' => $this->_path,
                 'link' => $this->context->link,
-                'ajax_configtest_url' => $this->context->link->getModuleLink('wirecardpaymentgateway', 'ajax')
+                'ajax_configtest_url' => $this->context->link->getAdminLink('WirecardAjax')
             )
         );
         $this->html .= $this->displayWirecardPaymentGateway();
