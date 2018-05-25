@@ -157,12 +157,12 @@ class PaymentUnionPayInternational extends Payment
                     'type' => 'linkbutton',
                     'required' => false,
                     'buttonText' => $this->translate('upi_test_config_butoon_doc'),
-                    'id' => 'creditcardConfig',
+                    'id' => 'unionpayinternationalConfig',
                     'method' => 'unionpayinternational',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_UPI_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_UPI_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_UPI_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_HTTP_PASS'
                     )
                 )
             )
