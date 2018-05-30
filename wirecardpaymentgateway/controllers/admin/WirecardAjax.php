@@ -40,7 +40,7 @@ use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
 
 /**
- * Class WirecardPaymentGatewayAjaxModuleFrontController
+ * Class WirecardAjaxController
  *
  * @since 1.0.0
  */
