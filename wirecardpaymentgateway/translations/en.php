@@ -105,6 +105,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_31e7f99eb9f1918c29abdd5
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_9109ca1876b166421ed0fcc12bd9077a'] = 'Credit Card is selected. To use another Credit Card, click on button below.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_c5187f008358919bc383597416a7d3be'] = 'Use new credit card';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_0c9c2a01eb3ea460b9790e46da5ce930'] = 'Save for later use.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_311d14b15bf1a2c4314d9a34b441317f'] = 'You are being redirected. Please wait';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ideal_eb45bd2725cb8ac50d0795432a918f86'] = 'Bank';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_87d9300471e4d003ffbb2c9fcd061c52'] = 'Please transfer the amount using the following data:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_b2f40690858b404ed10e62bdf422c704'] = 'Amount';
