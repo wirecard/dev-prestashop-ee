@@ -30,7 +30,7 @@
 
 <script language='JavaScript'>
 	var di = {
-        t:{$deviceIdent},
+        t:'{$deviceIdent}',
         v:'WDWL',
         l:'Checkout'
 	};
