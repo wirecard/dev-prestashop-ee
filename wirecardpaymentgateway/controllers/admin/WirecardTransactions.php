@@ -245,7 +245,7 @@ class WirecardTransactionsController extends ModuleAdminController
 
             if ($response instanceof SuccessResponse) {
                 $db = \Db::getInstance();
-                $where = 'transaction_id = "' . $transactionData->transaction_id . '"';
+                $where = 'transaction_id = "' . pSQL($transactionData->transaction_id) . '"';
                 $db->update('wirecard_payment_gateway_tx', array(
                     'transaction_state' => 'closed'
                 ), $where);

@@ -129,7 +129,7 @@ class CreditCardVault
     public function getCard($token)
     {
         $query = new \DbQuery();
-        $query->from($this->table)->where('token = ' . pSQL($token));
+        $query->from($this->table)->where('token = "' . pSQL($token) . '"');
 
         return \Db::getInstance()->getRow($query);
     }
