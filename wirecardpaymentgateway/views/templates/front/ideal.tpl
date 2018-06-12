@@ -36,7 +36,7 @@
         <label class="form-control-label required">{l s='Bank' mod='wirecardpaymentgateway'}</label>
         <select class="form-control" name="idealBankBic" id="idealBankBic" style="width:auto">
             {foreach $banks as $bank}
-                <option value="{$bank.key}">{$bank.label}</option>
+                <option value="{$bank.key|escape:'htmlall':'UTF-8'}">{$bank.label|escape:'htmlall':'UTF-8'}</option>
             {/foreach}
         </select>
     </div>

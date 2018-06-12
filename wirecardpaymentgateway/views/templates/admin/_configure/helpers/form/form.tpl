@@ -58,13 +58,12 @@
                 $('#{$input.id}').on('click', function() {
                     $.ajax({
                         type: 'POST',
-                        {** this url doesn't work when escaped *}
-                        url: '{$ajax_configtest_url}',
+                        url: '{$ajax_configtest_url|escape:'quotes'}',
                         dataType: 'json',
                         data: {
                             action: 'TestConfig',
                     {foreach $input.send as $datasend}
-                    {$datasend}:$('input[name={$datasend|escape:'htmlall':'UTF-8'}]').val(),
+                    {$datasend|escape:'htmlall':'UTF-8'}:$('input[name={$datasend|escape:'htmlall':'UTF-8'}]').val(),
                     {/foreach}
                         method: '{$input.method|escape:'htmlall':'UTF-8'}',
                         ajax: true
