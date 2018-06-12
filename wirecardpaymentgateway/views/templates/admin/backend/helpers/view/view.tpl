@@ -79,7 +79,7 @@
                         </td>
                     </tr>
                     {foreach from=$response_data key=k item=v}
-                        <tr><td>{$k}</td><td>{$v}</td></tr>
+                        <tr><td>{$k|escape:'htmlall':'UTF-8'}</td><td>{$v|escape:'htmlall':'UTF-8'}</td></tr>
                     {/foreach}
                 </table>
             </div>

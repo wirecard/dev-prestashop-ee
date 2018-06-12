@@ -31,7 +31,7 @@
 {extends file="helpers/form/form.tpl"}
 {block name="input"}
     {if $input.type == 'linkbutton'}
-		<a class="btn btn-default" id="{$input.id}" href="#">
+		<a class="btn btn-default" id="{$input.id|escape:'htmlall':'UTF-8'}" href="#">
 			<i class="icon-check"></i>
             {l s=$input.buttonText mod='wirecardpaymentgateway'}
 		</a>
@@ -64,9 +64,9 @@
                         data: {
                             action: 'TestConfig',
                     {foreach $input.send as $datasend}
-                    {$datasend}:$('input[name={$datasend}]').val(),
+                    {$datasend}:$('input[name={$datasend|escape:'htmlall':'UTF-8'}]').val(),
                     {/foreach}
-                        method: '{$input.method}',
+                        method: '{$input.method|escape:'htmlall':'UTF-8'}',
                         ajax: true
                 },
                     success: function (jsonData) {

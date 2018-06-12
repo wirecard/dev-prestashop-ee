@@ -31,5 +31,5 @@
 * @license GPLv3
 *}
 <div id="payment-processing-gateway-ratepay-form">
-    <input type="hidden" class="form-control" name="invoiceDeviceIdent" id="invoiceDeviceIdent" value="{$deviceIdent}"/>
+    <input type="hidden" class="form-control" name="invoiceDeviceIdent" id="invoiceDeviceIdent" value="{$deviceIdent|escape:'htmlall':'UTF-8'}"/>
 </div>
