@@ -2,3 +2,4 @@
 wirecardpaymentgateway/vendor/*
 composer.lock
 wirecardpaymentgateway/config*.xml
+.DS_Store

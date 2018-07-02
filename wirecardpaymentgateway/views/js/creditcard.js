@@ -142,6 +142,28 @@ $(document).ready(
         function formSubmitSuccessHandler(response)
         {
             token = response.token_id;
+            if (response.hasOwnProperty('card_token') && response.card_token.hasOwnProperty( 'token' )) {
+            	token = response.card_token.token;
+            	
+            	var fields = [ "expiration_month", "expiration_year" ];
+
+				for ( var el in  fields ) {
+					el = fields[el];
+					var element = $( "#" + el );
+					if ( element.length > 0 ) {
+						element.remove();
+					} else {
+						jQuery( '<input>' ).attr(
+							{
+								type: 'hidden',
+								name: el,
+								id: '#' + el,
+								value: response.card[el]
+							}
+						).appendTo(form);
+					}
+				}
+            }
             var successHandler = function (token, form) {
                 $('<input>').attr(
                     {
