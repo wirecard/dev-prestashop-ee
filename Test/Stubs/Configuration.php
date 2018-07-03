@@ -116,6 +116,8 @@ class Configuration
             case 'WIRECARD_PAYMENT_GATEWAY_SEPA_DESCRIPTOR':
                 return 1;
                 break;
+            case 'WIRECARD_OS_AUTHORIZATION':
+                return 0;
             default:
                 return $param;
         }

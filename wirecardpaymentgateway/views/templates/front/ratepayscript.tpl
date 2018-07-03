@@ -26,18 +26,22 @@
 *
 * By installing the plugin into the shop system the customer agrees to these terms of use.
 * Please do not use the plugin if you do not agree to these terms of use!
-* @author Wirecard AG
-* @copyright Wirecard AG
-* @license GPLv3
 *}
 
-<div id="payment-processing-gateway-ideal-form">
-    <div class="form-group row">
-        <label class="form-control-label required">{l s='Bank' mod='wirecardpaymentgateway'}</label>
-        <select class="form-control" name="idealBankBic" id="idealBankBic" style="width:auto">
-            {foreach $banks as $bank}
-                <option value="{$bank.key|escape:'htmlall':'UTF-8'}">{$bank.label|escape:'htmlall':'UTF-8'}</option>
-            {/foreach}
-        </select>
-    </div>
-</div>
+<script language='JavaScript'>
+	var di = {
+        t:'{$deviceIdent|escape:'htmlall':'UTF-8'}',
+        v:'WDWL',
+        l:'Checkout'
+	};
+</script>
+<script type='text/javascript' src='//d.ratepay.com/WDWL/di.js'>
+</script>
+<noscript>
+	<link rel='stylesheet' type='text/css' href='//d.ratepay.com/di.css?t={$deviceIdent|escape:'htmlall':'UTF-8'}&v=WDWL&l=Checkout'>
+</noscript>
+<object type='application/x-shockwave-flash' data='//d.ratepay.com/WDWL/c.swf' width='0' height='0'>
+	<param name='movie' value='//d.ratepay.com/WDWL/c.swf' />
+	<param name='flashvars' value='t={$deviceIdent|escape:'htmlall':'UTF-8'}&v=WDWL'/>
+	<param name='AllowScriptAccess' value='always'/>
+</object>

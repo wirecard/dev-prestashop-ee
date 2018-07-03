@@ -41,15 +41,15 @@
         </tr>
         <tr>
             <td>IBAN</td>
-            <td>{$iban}</td>
+            <td>{$iban|escape:'htmlall':'UTF-8'}</td>
         </tr>
         <tr>
             <td>BIC</td>
-            <td>{$bic}</td>
+            <td>{$bic|escape:'htmlall':'UTF-8'}</td>
         </tr>
         <tr>
             <td>{l s='Provider transaction reference id' mod='wirecardpaymentgateway'}</td>
-            <td>{$refId}</td>
+            <td>{$refId|escape:'htmlall':'UTF-8'}</td>
         </tr>
     </tbody>
 </table>

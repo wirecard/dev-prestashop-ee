@@ -147,7 +147,8 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
             'requested_amount' => 0,
             'requested_amount_currency' => 'EUR',
             'locale' => 'en',
-            'payment_method' => 'creditcard'
+            'payment_method' => 'creditcard',
+            'attempt_three_d' => false
         );
 
         for ($i = 0; $i <= 4; $i++) {

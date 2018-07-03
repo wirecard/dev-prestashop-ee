@@ -48,6 +48,11 @@ class Tools
         return strtoupper($string);
     }
 
+    public static function strtolower($string)
+    {
+        return strtolower($string);
+    }
+
     public static function getValue($string)
     {
         switch ($string) {

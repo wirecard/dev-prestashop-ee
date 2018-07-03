@@ -39,13 +39,13 @@
                                 <tr>
                                     <td class="text11justify">
                                         <i>{l s='Creditor' mod='wirecardpaymentgateway'}</i><br />
-                                        {$creditorName}
+                                        {$creditorName|escape:'htmlall':'UTF-8'}
                                         {if strlen($creditorName)}
                                             ,
                                         {/if}
-                                        {$creditorStoreCity}
+                                        {$creditorStoreCity|escape:'htmlall':'UTF-8'}
                                         {if strlen($creditorName) || strlen($creditorStoreCity)}<br />{/if}
-                                        {l s='Creditor ID:' mod='wirecardpaymentgateway'}{$creditorId}<br />
+                                        {l s='Creditor ID:' mod='wirecardpaymentgateway'}{$creditorId|escape:'htmlall':'UTF-8'}<br />
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
@@ -75,9 +75,9 @@
                                 <tr>
                                     <td class="text11justify">
                                         {l s='I authorize the creditor ' mod='wirecardpaymentgateway'}
-                                        {$creditorName}
+                                        {$creditorName|escape:'htmlall':'UTF-8'}
                                         {l s=' to send instructions to my bank to collect one single direct debit from my account. At the same time I instruct my bank to debit my account in accordance with the instructions from the creditor ' mod='wirecardpaymentgateway'}
-                                        {$creditorName} {$additionalText}
+                                        {$creditorName|escape:'htmlall':'UTF-8'} {$additionalText|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
@@ -90,7 +90,7 @@
                                 <tr>
                                     <td class="text11justify">
                                         {l s='I irrevocably agree that, in the event that the direct debit is not honored, or objection against the direct debit exists, my bank will disclose to the creditor ' mod='wirecardpaymentgateway'}
-                                        {$creditorName}
+                                        {$creditorName|escape:'htmlall':'UTF-8'}
                                         {l s=' my full name, address and date of birth.' mod='wirecardpaymentgateway'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
@@ -104,9 +104,9 @@
                                 <tr>
                                     <td class="text11justify">
                                         {if strlen($creditorStoreCity)}
-                                            {$creditorStoreCity},
+                                            {$creditorStoreCity|escape:'htmlall':'UTF-8'},
                                         {/if}
-                                        {$date} <span class="first_last_name"></span>
+                                        {$date|escape:'htmlall':'UTF-8'} <span class="first_last_name"></span>
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>

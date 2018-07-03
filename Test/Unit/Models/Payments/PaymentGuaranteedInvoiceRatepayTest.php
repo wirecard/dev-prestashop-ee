@@ -133,6 +133,36 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($actual);
     }
 
+    public function testIsAvailableVirtual()
+    {
+        $cart = $this->getMockBuilder(Cart::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $cart->id_customer = 2;
+        $cart->method('getOrderTotal')->willReturn(40);
+        $cart->method('isVirtualCart')->willReturn(true);
+
+        $actual = $this->payment->isAvailable($this->paymentModule, $cart);
+
+        $this->assertFalse($actual);
+    }
+
+    public function testIsAvailableLimit()
+    {
+        $cart = $this->getMockBuilder(Cart::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $cart->id_customer = 2;
+        $cart->method('getOrderTotal')->willReturn(15);
+
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(20);
+        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn(3500);
+
+        $actual = $this->payment->isAvailable($this->paymentModule, $cart);
+
+        $this->assertFalse($actual);
+    }
+
 
     public function testCreateCancelTransaction()
     {

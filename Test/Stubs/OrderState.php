@@ -35,8 +35,15 @@
 
 class OrderState
 {
+    public $id;
+
     public static function getOrderStates($id)
     {
         return array(array('id_order_state' => 'id', 'name' => 'name'));
+    }
+
+    public static function add()
+    {
+        return;
     }
 }

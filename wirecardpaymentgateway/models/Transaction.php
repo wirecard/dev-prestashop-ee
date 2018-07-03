@@ -120,7 +120,7 @@ class Transaction extends \ObjectModel
             'refund-request',
             'refund-debit'
         );
-        if (self::get($response->getParentTransactionId())) {
+        if ((new Transaction)->get($response->getParentTransactionId())) {
             $parentTransactionId = $response->getParentTransactionId();
             if (in_array($response->getTransactionType(), $closedTransactions)) {
                 $transactionState = 'closed';

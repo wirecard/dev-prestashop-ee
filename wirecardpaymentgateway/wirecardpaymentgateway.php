@@ -81,7 +81,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.2.1';
+        $this->version = '1.2.3';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
@@ -336,6 +336,7 @@ class WirecardPaymentGateway extends PaymentModule
                 'paymentType' => $paymentMethod->getType(),
             );
             if ('invoice' == $paymentMethod->getType()) {
+                /** @var PaymentGuaranteedInvoiceRatepay $paymentMethod */
                 $this->createRatepayScript($paymentMethod);
             }
             $payment = new PaymentOption();
@@ -377,20 +378,15 @@ class WirecardPaymentGateway extends PaymentModule
             $this->context->cookie->wirecardDeviceIdent = $deviceIdent;
         }
 
-        echo "<script language='JavaScript'>
-          var di = {t:'" . $this->context->cookie->wirecardDeviceIdent ."',v:'WDWL',l:'Checkout'};
-          </script>
-          <script type='text/javascript' src='//d.ratepay.com/WDWL/di.js'>
-          </script>
-          <noscript>
-          <link rel='stylesheet' type='text/css' href='//d.ratepay.com/di.css?t=" .
-            $this->context->cookie->wirecardDeviceIdent . "&v=WDWL&l=Checkout'>
-          </noscript>
-          <object type='application/x-shockwave-flash' data='//d.ratepay.com/WDWL/c.swf' width='0' height='0'>
-          <param name='movie' value='//d.ratepay.com/WDWL/c.swf' />
-          <param name='flashvars' value='t=" . $this->context->cookie->wirecardDeviceIdent .
-            "&v=WDWL'/><param name='AllowScriptAccess' value='always'/>
-          </object>";
+        $this->context->smarty->assign(array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent));
+
+        try {
+            echo $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
+                'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+                'ratepayscript.tpl');
+        } catch (SmartyException $e) {
+        } catch (Exception $e) {
+        }
 
         $paymentMethod->setAdditionalInformationTemplate(
             'invoice',
