@@ -71,11 +71,11 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected $html;
 
-	/**
-	 * @var array
-	 * @since 1.3.0
-	 */
-	protected $linkMap;
+    /**
+     * @var array
+     * @since 1.3.0
+     */
+    protected $linkMap;
 
     /**
      * WirecardPaymentGateway constructor.
@@ -117,20 +117,20 @@ class WirecardPaymentGateway extends PaymentModule
         $this->config = $this->getPaymentFields();
 
         $this->linkMap = array(
-        	'core' => array(
-        		'de|es|it|fr' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=psdeesitfr_ELASTIC',
-				'en' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=psgb_ELASTIC',
-				'nl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=psnl_Elastic',
-				'pl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=pspl_ELASTIC',
-			),
+            'core' => array(
+                'de|es|it|fr' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=psdeesitfr_ELASTIC',
+                'en' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=psgb_ELASTIC',
+                'nl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=psnl_Elastic',
+                'pl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=pspl_ELASTIC',
+            ),
 
-			'non_core' => array(
-				'de|es|it|fr' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovdeesitfr',
-				'en' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovgb',
-				'nl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovNL',
-				'pl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovpl',
-			)
-		);
+            'non_core' => array(
+                'de|es|it|fr' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovdeesitfr',
+                'en' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovgb',
+                'nl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovNL',
+                'pl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovpl',
+            )
+        );
     }
 
     /**
@@ -534,28 +534,28 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected function displayWirecardPaymentGateway()
     {
-		$this->context->smarty->assign('registrationLink', $this->getRegistrationLink());
+        $this->context->smarty->assign('registrationLink', $this->getRegistrationLink());
 
         return $this->display(__FILE__, 'infos.tpl');
     }
 
-	/**
-	 * Get the correct registration link to display in the backend
-	 *
-	 * @return string
-	 * @since 1.3.0
-	 */
+    /**
+     * Get the correct registration link to display in the backend
+     *
+     * @return string
+     * @since 1.3.0
+     */
     public function getRegistrationLink()
-	{
-		$cookie = $this->context->cookie;
-		$isoCode = Language::getIsoById($cookie->id_lang);
-		$relevantMap = IS_CORE ? $this->linkMap['core'] : $this->linkMap['non_core'];
-		$relevantLink = array_filter($relevantMap, function($key) use ($isoCode) {
-			return preg_match("/$key/", $isoCode);
-		}, ARRAY_FILTER_USE_KEY);
+    {
+        $cookie = $this->context->cookie;
+        $isoCode = Language::getIsoById($cookie->id_lang);
+        $relevantMap = IS_CORE ? $this->linkMap['core'] : $this->linkMap['non_core'];
+        $relevantLink = array_filter($relevantMap, function ($key) use ($isoCode) {
+            return preg_match("/$key/", $isoCode);
+        }, ARRAY_FILTER_USE_KEY);
 
-		return reset($relevantLink);
-	}
+        return reset($relevantLink);
+    }
 
     /**
      * return available country iso codes
