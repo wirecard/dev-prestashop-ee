@@ -145,6 +145,8 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(true, $this->gateway->hookActionFrontControllerSetMedia());
     }
 
+    // Disabling line-length here because the link is really long.
+    // @codingStandardsIgnoreStart Generic.Files.LineLength
     public function testGetRegistrationLink()
     {
         $actual = $this->gateway->getRegistrationLink();
@@ -153,4 +155,5 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
             'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovgb'
         );
     }
+    // @codingStandardsIgnoreEnd
 }

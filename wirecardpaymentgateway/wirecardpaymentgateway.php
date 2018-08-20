@@ -116,6 +116,8 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->config = $this->getPaymentFields();
 
+        // Disabling line-length here because the links are really long.
+        // @codingStandardsIgnoreStart Generic.Files.LineLength
         $this->linkMap = array(
             'core' => array(
                 'de|es|it|fr' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=dopiewrt33&package_id=psdeesitfr_ELASTIC',
@@ -131,6 +133,7 @@ class WirecardPaymentGateway extends PaymentModule
                 'pl' => 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovpl',
             )
         );
+        // @codingStandardsIgnoreEnd
     }
 
     /**
