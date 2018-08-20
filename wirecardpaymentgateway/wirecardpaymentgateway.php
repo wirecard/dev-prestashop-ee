@@ -534,7 +534,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected function displayWirecardPaymentGateway()
     {
-		$this->smarty->assign('registrationLink', $this->getRegistrationLink());
+		$this->context->smarty->assign('registrationLink', $this->getRegistrationLink());
 
         return $this->display(__FILE__, 'infos.tpl');
     }
@@ -545,7 +545,7 @@ class WirecardPaymentGateway extends PaymentModule
 	 * @return string
 	 * @since 1.3.0
 	 */
-    protected function getRegistrationLink()
+    public function getRegistrationLink()
 	{
 		$cookie = $this->context->cookie;
 		$isoCode = Language::getIsoById($cookie->id_lang);

@@ -39,6 +39,9 @@ require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php
 
 class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var WirecardPaymentGateway
+	 */
     private $gateway;
 
     public function setUp()
@@ -141,4 +144,10 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(true, $this->gateway->hookActionFrontControllerSetMedia());
     }
+
+    public function testGetRegistrationLink()
+	{
+		$actual = $this->gateway->getRegistrationLink();
+		$this->assertEquals($actual, 'https://dashboard.checkoutportal.com/en_GB/signup/?reseller_id=9283vbz7t89c9csraxy0&package_id=prestashopwdpovgb');
+	}
 }
