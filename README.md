@@ -17,7 +17,7 @@ It lists all available [payment methods](https://github.com/wirecard/dev-prestas
 Furthermore, it includes extensive instructions how to [install](https://github.com/wirecard/dev-prestashop-ee/wiki/Installation) and [configure](https://github.com/wirecard/dev-prestashop-ee/wiki/Configuration).
 
 ***
-## CheckoutPortal
+## Checkout Portal
 All Wirecard shop plugins my be downloaded and tested completely **free of charge**.
 
 You are able to use this shop-plugin as open-source and free of charge. However if you want to process real payments via this shop-plugin you may need to conclude a contract with Wirecard. Therefore you can use our Checkout Portal which enables you to order your required payment methods.
