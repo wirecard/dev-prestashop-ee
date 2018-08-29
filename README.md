@@ -22,6 +22,6 @@ All Wirecard shop plugins my be downloaded and tested completely **free of charg
 
 You are able to use this shop-plugin as open-source and free of charge. However if you want to process real payments via this shop-plugin you may need to conclude a contract with Wirecard. Therefore you can use our Checkout Portal which enables you to order your required payment methods.
 
-**[Click here to sign-up at our Checkout Portal.](https://checkout.wirecard.com/cop/?shopsystem=Prestashop&shopversion=1.7.4.2&integration=EE&pluginversion=1.3.0)**
+**[Click here to sign-up at our Checkout Portal.](https://checkout.wirecard.com/cop/?shopsystem=Prestashop&integration=EE)**
 
 If you have further questions, or do not want to use the automated sign-up process in our Checkout Portal please contact our [support](https://github.com/wirecard/prestashop-ee/wiki/Contact-Information) or [sales](https://github.com/wirecard/prestashop-ee/wiki/Contact-Information) teams.
