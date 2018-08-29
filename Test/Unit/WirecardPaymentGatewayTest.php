@@ -33,6 +33,8 @@
  * @license GPLv3
  */
 
+define('_PS_VERSION_', '9.9.9.9');
+
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 
 require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';

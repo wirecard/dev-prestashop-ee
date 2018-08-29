@@ -519,10 +519,10 @@ class WirecardPaymentGateway extends PaymentModule
     protected function displayWirecardPaymentGateway()
     {
         $this->context->smarty->assign(array(
-			'shopversion' => _PS_VERSION_,
-			'pluginversion' => $this->version,
-			'integration' => IS_CORE ? 'EE_Core' : 'EE',
-		));
+            'shopversion' => _PS_VERSION_,
+            'pluginversion' => $this->version,
+            'integration' => IS_CORE ? 'EE_Core' : 'EE',
+        ));
 
         return $this->display(__FILE__, 'infos.tpl');
     }
