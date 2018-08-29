@@ -129,4 +129,5 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ea4788705e6873b424c65
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_70d9be9b139893aa6c69b5e77e614311'] = 'Potwierdz';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_31112aca11d0e9e6eb7db96f317dda49'] = 'Transakcje';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_db5eb84117d06047c97c9a0191b5fffe'] = 'Pomoc techniczna';
+$_MODULE['<{wirecardpaymentgateway}prestashop>infos_e4bb1d85b05e3ba4ae43614f9903dc75'] = 'Rejestracja dla nowych klientów';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_ed1ee759e0022e265c7f41a3b5865f39'] = 'Informacje o wtyczkach sklepowych Wirecard';

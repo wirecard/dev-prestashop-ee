@@ -47,6 +47,8 @@ use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
+define('IS_CORE', false);
+
 /**
  * Class WirecardPaymentGateway
  *
@@ -81,10 +83,10 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.2.3';
+        $this->version = '1.3.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.3.4');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.4.2');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
@@ -510,6 +512,12 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected function displayWirecardPaymentGateway()
     {
+        $this->context->smarty->assign(array(
+            'shopversion' => _PS_VERSION_,
+            'pluginversion' => $this->version,
+            'integration' => IS_CORE ? 'EE_Core' : 'EE',
+        ));
+
         return $this->display(__FILE__, 'infos.tpl');
     }
 
