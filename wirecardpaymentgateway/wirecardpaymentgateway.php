@@ -72,12 +72,6 @@ class WirecardPaymentGateway extends PaymentModule
     protected $html;
 
     /**
-     * @var array
-     * @since 1.3.0
-     */
-    protected $linkMap;
-
-    /**
      * WirecardPaymentGateway constructor.
      *
      * @since 1.0.0
