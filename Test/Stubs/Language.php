@@ -41,9 +41,4 @@ class Language
     {
         return array(array('id_lang' => 'de', 'iso_code' => 'de'), array('id_lang' => 'en', 'iso_code' => 'en'));
     }
-
-    public static function getIsoById($id)
-	{
-		return "en";
-	}
 }
