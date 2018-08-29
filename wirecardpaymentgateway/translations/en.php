@@ -81,6 +81,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_ac5742c34d7b5f6195
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_94966d90747b97d1f0f206c98a8b1ac3'] = 'Send';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_232af38d3a74ae8be0a56ab9a9fdf0b7'] = 'There was an error during e-mail delivery';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_fc857af0493671d809f8ab52b4c301d6'] = 'E-Mail sent successfully';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ajax_caeeed371c2430eeccd1d60ea54e99a9'] = 'Please check your credentials.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ajax_1b600b2774dee5d5f5271487938a3aed'] = 'The merchant configuration was successfully tested.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_6d20985dbc6eecd155b9341579e3e2d1'] = 'You have canceled the payment process.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_98bfb0bbdabef6022f69f81e23c76721'] = 'Something went wrong during the payment process.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_07d799ec6591cb484ec0ab41afd0798a'] = 'Test result';
