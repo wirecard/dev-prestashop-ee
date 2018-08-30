@@ -7,14 +7,14 @@
 
 ***
 ## General information
-Before proceeding, we recommend to read [general information](https://github.com/wirecard/dev-prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information), as it provides information on Wirecard shop plugins functionality and features.
+Before proceeding, we recommend to read [general information](https://github.com/wirecard/prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information), as it provides information on Wirecard shop plugins functionality and features.
 
 ***
 ## PrestaShop Payment Processing Gateway documentation - Wiki
 
-[PrestaShop Payment Processing Gateway Wiki](https://github.com/wirecard/dev-prestashop-ee/wiki) provides detailed technical documentation.
-It lists all available [payment methods](https://github.com/wirecard/dev-prestashop-ee/wiki/Home#Supported_payment_methods).
-Furthermore, it includes extensive instructions how to [install](https://github.com/wirecard/dev-prestashop-ee/wiki/Installation) and [configure](https://github.com/wirecard/dev-prestashop-ee/wiki/Configuration).
+[PrestaShop Payment Processing Gateway Wiki](https://github.com/wirecard/prestashop-ee/wiki) provides detailed technical documentation.
+It lists all available [payment methods](https://github.com/wirecard/prestashop-ee/wiki#supported-payment-methods).
+Furthermore, it includes extensive instructions how to [install](https://github.com/wirecard/prestashop-ee/wiki/Installation) and [configure](https://github.com/wirecard/prestashop-ee/wiki/Configuration).
 
 ***
 ## Checkout Portal
