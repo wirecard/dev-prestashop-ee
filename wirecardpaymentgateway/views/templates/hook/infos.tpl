@@ -39,9 +39,10 @@
     <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
         {l s='Support' mod='wirecardpaymentgateway'}
     </a>
-    <a class="btn btn-default" id="wirecardSignUp" href="https://checkout.wirecard.com/cop/?shopsystem=Prestashop&shopversion={$shopversion|escape:'htmlall':'UTF-8'}&integration={$integration|escape:'htmlall':'UTF-8'}&pluginversion={$pluginversion|escape:'htmlall':'UTF-8'}">
+    {* Please leave this commented until such a time that TPWDCEE-1238 is clarified *}
+    {* <a class="btn btn-default" id="wirecardSignUp" href="https://checkout.wirecard.com/cop/?shopsystem=Prestashop&shopversion={$shopversion|escape:'htmlall':'UTF-8'}&integration={$integration|escape:'htmlall':'UTF-8'}&pluginversion={$pluginversion|escape:'htmlall':'UTF-8'}">
         {l s='Registration for new customers' mod='wirecardpaymentgateway'}
-    </a>
+    </a> *}
     <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/dev-prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information#terms-of-use">
         {l s='General Information regarding Wirecard Shop Plugins' mod='wirecardpaymentgateway'}
     </a>
