@@ -7,19 +7,19 @@
 
 ***
 ## General information
-Before proceeding, we recommend to read [general information](https://github.com/wirecard/dev-prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information), as it provides information on Wirecard shop plugins functionality and features.
+Before proceeding, we recommend to read [general information](https://github.com/wirecard/prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information), as it provides information on Wirecard shop plugins functionality and features.
 
 ***
 ## PrestaShop Payment Processing Gateway documentation - Wiki
 
-[PrestaShop Payment Processing Gateway Wiki](https://github.com/wirecard/dev-prestashop-ee/wiki) provides detailed technical documentation.
-It lists all available [payment methods](https://github.com/wirecard/dev-prestashop-ee/wiki/Home#Supported_payment_methods).
-Furthermore, it includes extensive instructions how to [install](https://github.com/wirecard/dev-prestashop-ee/wiki/Installation) and [configure](https://github.com/wirecard/dev-prestashop-ee/wiki/Configuration).
+[PrestaShop Payment Processing Gateway Wiki](https://github.com/wirecard/prestashop-ee/wiki) provides detailed technical documentation.
+It lists all available [payment methods](https://github.com/wirecard/prestashop-ee/wiki#supported-payment-methods).
+Furthermore, it includes extensive instructions how to [install](https://github.com/wirecard/prestashop-ee/wiki/Installation) and [configure](https://github.com/wirecard/prestashop-ee/wiki/Configuration).
 
 <!--- Please leave this commented until such a time that TPWDCEE-1238 has been clarified
 ***
 ## Checkout Portal
-All Wirecard shop plugins my be downloaded and tested completely **free of charge**.
+All Wirecard shop plugins may be downloaded and tested completely **free of charge**.
 
 You are able to use this shop-plugin as open-source and free of charge. However if you want to process real payments via this shop-plugin you may need to conclude a contract with Wirecard. Therefore you can use our Checkout Portal which enables you to order your required payment methods.
 
