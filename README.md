@@ -15,16 +15,3 @@ Before proceeding, we recommend to read [general information](https://github.com
 [PrestaShop Payment Processing Gateway Wiki](https://github.com/wirecard/prestashop-ee/wiki) provides detailed technical documentation.
 It lists all available [payment methods](https://github.com/wirecard/prestashop-ee/wiki#supported-payment-methods).
 Furthermore, it includes extensive instructions how to [install](https://github.com/wirecard/prestashop-ee/wiki/Installation) and [configure](https://github.com/wirecard/prestashop-ee/wiki/Configuration).
-
-<!--- Please leave this commented until such a time that TPWDCEE-1238 has been clarified
-***
-## Checkout Portal
-All Wirecard shop plugins may be downloaded and tested completely **free of charge**.
-
-You are able to use this shop-plugin as open-source and free of charge. However if you want to process real payments via this shop-plugin you may need to conclude a contract with Wirecard. Therefore you can use our Checkout Portal which enables you to order your required payment methods.
-
-**[Click here to sign-up at our Checkout Portal.](https://checkout.wirecard.com/cop/?shopsystem=Prestashop&integration=EE)**
-
-If you have further questions, or do not want to use the automated sign-up process in our Checkout Portal please contact our [support](https://github.com/wirecard/prestashop-ee/wiki/Contact-Information) or [sales](https://github.com/wirecard/prestashop-ee/wiki/Contact-Information) teams.
-
--->
