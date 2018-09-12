@@ -117,7 +117,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
               'expiration_month'=>'01',
               'expiration_year'=>'2018'
             ),
-            'ADB123');
+            'ADB123'
+        );
 
         $expected = 'creditcard';
         $this->assertEquals($expected, $actual::NAME);
