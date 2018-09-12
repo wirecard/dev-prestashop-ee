@@ -169,7 +169,9 @@ class AdditionalInformation
             $accountHolder->setFirstName($billing->firstname);
             $accountHolder->setLastName($billing->lastname);
             $accountHolder->setPhone($billing->phone);
-            $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
+            if ( isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
+                $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
+            }
         }
 
         return $accountHolder;
