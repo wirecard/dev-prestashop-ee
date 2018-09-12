@@ -34,6 +34,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Entity\Card;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
@@ -280,6 +281,13 @@ class PaymentCreditCard extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new CreditCardTransaction();
+
+        if (isset($values['expiration_year']) && isset($values['expiration_month'])) {
+            $card = new Card();
+            $card->setExpirationYear(intval($values['expiration_year']));
+            $card->setExpirationMonth(intval($values['expiration_month']));
+            $transaction->setCard($card);
+        }
 
         return $transaction;
     }

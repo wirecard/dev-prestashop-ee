@@ -110,7 +110,15 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
     public function testCreateTransaction()
     {
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
-        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
+        $actual = $this->payment->createTransaction(
+            new PaymentModule(),
+            new Cart(),
+            array(
+              'expiration_month'=>'01',
+              'expiration_year'=>'2018'
+            ),
+            'ADB123'
+        );
 
         $expected = 'creditcard';
         $this->assertEquals($expected, $actual::NAME);
