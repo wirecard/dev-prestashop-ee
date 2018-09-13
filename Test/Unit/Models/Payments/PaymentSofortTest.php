@@ -111,7 +111,7 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
 
     public function testCreateRefundTransaction()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
+        $actual = new \Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction();
         $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
         $accountHolder->setDateOfBirth(new \DateTime('01-01-1980'));
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));

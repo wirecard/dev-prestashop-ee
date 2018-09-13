@@ -114,7 +114,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
 
     public function testCreateRefundTransaction()
     {
-        $expected = new \Wirecard\PaymentSdk\Transaction\SepaTransaction();
+        $expected = new \Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction();
 
         $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));

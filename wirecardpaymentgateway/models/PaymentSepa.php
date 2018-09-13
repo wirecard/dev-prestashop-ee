@@ -34,7 +34,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
+use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use Wirecard\PaymentSdk\Entity\AccountHolder;
@@ -222,7 +222,7 @@ class PaymentSepa extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new SepaConfig($merchantAccountId, $secret);
+        $paymentConfig = new SepaConfig(SepaDirectDebitTransaction::NAME, $merchantAccountId, $secret);
         $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
         $config->add($paymentConfig);
 
@@ -236,12 +236,12 @@ class PaymentSepa extends Payment
      * @param \Cart $cart
      * @param array $values
      * @param int $orderId
-     * @return null|SepaTransaction
+     * @return null|SepaDirectDebitTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new SepaTransaction();
+        $transaction = new SepaDirectDebitTransaction();
         if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
             $account_holder = new AccountHolder();
             $account_holder->setFirstName($values['sepaFirstName']);
@@ -264,15 +264,15 @@ class PaymentSepa extends Payment
     }
 
     /**
-     * Create refund SepaTransaction
+     * Create refund SepaDirectDebitTransaction
      *
      * @param Transaction $transactionData
-     * @return SepaTransaction
+     * @return SepaDirectDebitTransaction
      * @since 1.0.0
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $transaction = new SepaTransaction();
+        $transaction = new SepaDirectDebitTransaction();
 
         $additionalInformation = new AdditionalInformation();
         $cart = new \Cart($transactionData->cart_id);
