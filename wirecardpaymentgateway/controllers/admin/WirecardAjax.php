@@ -56,6 +56,9 @@ class WirecardAjaxController extends ModuleAdminController
         switch (Tools::getValue('action')) {
             case 'TestConfig':
                 $method = Tools::getValue('method');
+                if ($method === 'sofortbanking') {
+                    $method = 'sofort';
+                }
                 $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
                 $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
                 $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));

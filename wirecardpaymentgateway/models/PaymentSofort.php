@@ -149,9 +149,9 @@ class PaymentSofort extends Payment
                     'id' => 'sofortbankingConfig',
                     'method' => 'sofortbanking',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT._BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT._HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT._HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_HTTP_PASS'
                     )
                 )
             )
