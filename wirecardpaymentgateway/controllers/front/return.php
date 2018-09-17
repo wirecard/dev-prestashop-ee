@@ -60,6 +60,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $response = $_REQUEST;
         $paymentType = Tools::getValue('payment_type');
         $paymentState = Tools::getValue('payment_state');
+        $orderId = Tools::getValue('id_cart');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
         if ($paymentState == 'success') {
@@ -67,7 +68,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                 $transactionService = new TransactionService($config, new WirecardLogger());
                 $result = $transactionService->handleResponse($response);
                 if ($result instanceof SuccessResponse) {
-                    $this->processSuccess($result);
+                    $this->processSuccess($result, $orderId);
                 } elseif ($result instanceof FailureResponse) {
                     $errors = "";
                     foreach ($result->getStatusCollection()->getIterator() as $item) {
@@ -112,12 +113,12 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
      * Create order and redirect for success response
      *
      * @param SuccessResponse $response
+     * @param string $orderId
      * @since 1.0.0
      */
-    public function processSuccess($response)
+    public function processSuccess($response, $orderId)
     {
         sleep(1);
-        $orderId = $response->getCustomFields()->get('orderId');
         $order = new Order($orderId);
         $cartId = $order->id_cart;
         $cart = new Cart((int)($cartId));
