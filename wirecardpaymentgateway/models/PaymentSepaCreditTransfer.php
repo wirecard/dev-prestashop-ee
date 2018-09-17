@@ -187,19 +187,6 @@ class PaymentSepaCreditTransfer extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new SepaCreditTransferTransaction();
-        if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
-            $account_holder = new AccountHolder();
-            $account_holder->setFirstName($values['sepaFirstName']);
-            $account_holder->setLastName($values['sepaLastName']);
-
-            $transaction->setAccountHolder($account_holder);
-            $transaction->setIban($values['sepaIban']);
-
-
-            $mandate = new Mandate($this->generateMandateId($module, $orderId));
-            $transaction->setMandate($mandate);
-        }
-
         return $transaction;
     }
 
