@@ -41,7 +41,8 @@
                     var translate = {
                         paypal:'paypal',
                         creditcard:'credit Card',
-                        sepa:'sepa',
+                        sepadirectdebit:'sepa direct debit',
+                        sepacredittransfer:'sepa credit transfer',
                         ideal:'ideal',
                         sofort:'sofort.',
                         poipia:'Payment on Invoice / Payment in Advance (POI/PIA)',

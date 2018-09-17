@@ -218,7 +218,7 @@ class PaymentIdeal extends Payment
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepa($module);
+        $sepa = new PaymentSepaCreditTransfer($module);
         return $sepa->createRefundTransaction($transactionData, $module);
     }
 

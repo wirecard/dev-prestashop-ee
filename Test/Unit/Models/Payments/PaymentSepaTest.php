@@ -33,7 +33,7 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentSepa;
+use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
 use Wirecard\PaymentSdk\Config\SepaConfig;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 
@@ -58,14 +58,14 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentSepa($this->paymentModule);
+        $this->payment = new PaymentSepaDirectDebit($this->paymentModule);
     }
 
     public function testName()
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard SEPA';
+        $expected = 'Wirecard SEPA Direct Debit';
 
         $this->assertEquals($expected, $actual);
     }

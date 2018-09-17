@@ -81,7 +81,7 @@ class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
     {
         $paymentController = new \WirecardPaymentGatewayPaymentModuleFrontController();
         $tools = new Tools();
-        $tools::$paymentType = 'sepadirectdebit';
+        $tools::$paymentType = 'sepa';
         $paymentController->setAmount(2.00);
         $paymentController->setCartId('123');
         $actual = $paymentController->postProcess();

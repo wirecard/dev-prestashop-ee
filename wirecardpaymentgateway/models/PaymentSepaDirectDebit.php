@@ -41,16 +41,16 @@ use Wirecard\PaymentSdk\Entity\AccountHolder;
 use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
- * Class PaymentSepa
+ * Class PaymentSepaDirectDebit
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentSepa extends Payment
+class PaymentSepaDirectDebit extends Payment
 {
     /**
-     * PaymentSepa constructor.
+     * PaymentSepaDirectDebit constructor.
      *
      * @since 1.0.0
      */
@@ -58,8 +58,8 @@ class PaymentSepa extends Payment
     {
         parent::__construct($module);
 
-        $this->type = 'sepa';
-        $this->name = 'Wirecard SEPA';
+        $this->type = 'sepadirectdebit';
+        $this->name = 'Wirecard SEPA Direct Debit';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
@@ -78,7 +78,7 @@ class PaymentSepa extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'SEPA',
+            'tab' => 'sepadirectdebit',
             'fields' => array(
                 array(
                     'name' => 'enabled',
@@ -98,14 +98,14 @@ class PaymentSepa extends Payment
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
+                    'default' => '933ad170-88f0-4c3d-a862-cff315ecfbc0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
-                    'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
+                    'default' => '5caf2ed9-5f79-4e65-98cb-0b70d6f569aa',
                     'required' => true,
                 ),
                 array(
@@ -120,14 +120,14 @@ class PaymentSepa extends Payment
                     'name' => 'http_user',
                     'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
-                    'default' => '70000-APITEST-AP',
+                    'default' => '16390-testing',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
-                    'default' => 'qD2wzQ_hrc!8',
+                    'default' => '3!3013=D3fD8X7',
                     'required' => true,
                 ),
                 array(
@@ -193,12 +193,12 @@ class PaymentSepa extends Payment
                     'type' => 'linkbutton',
                     'required' => false,
                     'buttonText' => $this->translate('sepa_test_config_butoon_doc'),
-                    'id' => 'SepaConfig',
-                    'method' => 'SEPA',
+                    'id' => 'SepaDirectDebitConfig',
+                    'method' => 'sepadirectdebit',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_HTTP_PASS'
                     )
                 )
             )
@@ -250,7 +250,7 @@ class PaymentSepa extends Payment
             $transaction->setAccountHolder($account_holder);
             $transaction->setIban($values['sepaIban']);
 
-            if ($module->getConfigValue('sepa', 'enable_bic')) {
+            if ($module->getConfigValue('sepadirectdebit', 'enable_bic')) {
                 if (isset($values['sepaBic'])) {
                     $transaction->setBic($values['sepaBic']);
                 }

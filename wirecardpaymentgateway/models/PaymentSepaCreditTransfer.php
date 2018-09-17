@@ -27,29 +27,30 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
-use Wirecard\PaymentSdk\Transaction\SofortTransaction;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
+use Wirecard\PaymentSdk\Config\SepaConfig;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use Wirecard\PaymentSdk\Entity\AccountHolder;
+use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
- * Class PaymentSofort
+ * Class PaymentSepaDirectDebit
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentSofort extends Payment
+class PaymentSepaCreditTransfer extends Payment
 {
     /**
-     * PaymentSofort constructor.
+     * PaymentSepaDirectDebit constructor.
      *
      * @since 1.0.0
      */
@@ -57,15 +58,28 @@ class PaymentSofort extends Payment
     {
         parent::__construct($module);
 
-        $this->type = 'sofortbanking';
-        $this->name = 'Wirecard Sofort.';
+        $this->type = 'sepacredittransfer';
+        $this->name = 'Wirecard SEPA Credit Transfer';
         $this->formFields = $this->createFormFields();
+        $this->setLoadJs(true);
 
+        $this->cancel  = array('pending-debit');
+        $this->capture = array('authorization');
         $this->refund  = array('debit');
     }
 
     /**
-     * Create form fields for Sofort.
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @return bool
+     */
+    public function isAvailable($module, $cart)
+    {
+        return false;
+    }
+
+    /**
+     * Create form fields for SEPA
      *
      * @return array|null
      * @since 1.0.0
@@ -73,34 +87,27 @@ class PaymentSofort extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'Sofort',
+            'tab' => 'sepacredittransfer',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => $this->translate('sofort_enable_doc'),
+                    'doc' => $this->translate('sepa_enable_doc'),
                     'default' => 0,
-                ),
-                array(
-                    'name' => 'title',
-                    'label' => 'Title',
-                    'type' => 'text',
-                    'default' => $this->translate('sofort_title_doc'),
-                    'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => 'c021a23a-49a5-4987-aa39-e8e858d29bad',
+                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default' => 'ecdf5990-0372-47cd-a55d-037dccfe9d25',
                     'required' => true,
                 ),
                 array(
@@ -115,43 +122,28 @@ class PaymentSofort extends Payment
                     'name' => 'http_user',
                     'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
-                    'default' => '70000-APITEST-AP',
+                    'default' => '16390-testing',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
-                    'default' => 'qD2wzQ_hrc!8',
+                    'default' => '3!3013=D3fD8X7',
                     'required' => true,
                 ),
-                array(
-                    'name' => 'payment_action',
-                    'type'    => 'hidden',
-                    'default' => 'pay',
-                ),
-                array(
-                    'name' => 'descriptor',
-                    'type'    => 'hidden',
-                    'default' => 1,
-                ),
-                array(
-                    'name' => 'send_additional',
-                    'label'   => $this->translate('send_addit_info_doc'),
-                    'type'    => 'onoff',
-                    'default' => 1,
-                ),
+
                 array(
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => $this->translate('sofort_test_config_butoon_doc'),
-                    'id' => 'sofortbankingConfig',
-                    'method' => 'sofortbanking',
+                    'buttonText' => $this->translate('sepa_test_config_butoon_doc'),
+                    'id' => 'SepaCreditTransferConfig',
+                    'method' => 'sepacredittransfer',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SOFORT_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SEPACREDITTRANSFER_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPACREDITTRANSFER_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPACREDITTRANSFER_HTTP_PASS'
                     )
                 )
             )
@@ -159,7 +151,7 @@ class PaymentSofort extends Payment
     }
 
     /**
-     * Create config for Sofort. transactions
+     * Create config for SEPA transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
@@ -175,44 +167,74 @@ class PaymentSofort extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(
-            SofortTransaction::NAME,
-            $merchantAccountId,
-            $secret
-        );
+        $paymentConfig = new SepaConfig(SepaCreditTransferTransaction::NAME, $merchantAccountId, $secret);
+        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create sofort transaction
+     * Create sepa transaction
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @param array $values
      * @param int $orderId
-     * @return null|SofortTransaction
+     * @return null|SepaCreditTransferTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new SofortTransaction();
+        $transaction = new SepaCreditTransferTransaction();
+        if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
+            $account_holder = new AccountHolder();
+            $account_holder->setFirstName($values['sepaFirstName']);
+            $account_holder->setLastName($values['sepaLastName']);
+
+            $transaction->setAccountHolder($account_holder);
+            $transaction->setIban($values['sepaIban']);
+
+
+            $mandate = new Mandate($this->generateMandateId($module, $orderId));
+            $transaction->setMandate($mandate);
+        }
 
         return $transaction;
     }
 
     /**
-     * Create refund Sofort.
+     * Create refund SepaCreditTransferTransaction
      *
      * @param Transaction $transactionData
-     * @param module
-     * @return SepaTransaction
+     * @return SepaCreditTransferTransaction
      * @since 1.0.0
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepaCreditTransfer($module);
-        return $sepa->createRefundTransaction($transactionData, $module);
+        $transaction = new SepaCreditTransferTransaction();
+
+        $additionalInformation = new AdditionalInformation();
+        $cart = new \Cart($transactionData->cart_id);
+        $transaction->setAccountHolder($additionalInformation->createAccountHolder(
+            $cart,
+            'billing'
+        ));
+        $transaction->setParentTransactionId($transactionData->transaction_id);
+
+        return $transaction;
+    }
+
+    /**
+     * Generate the mandate id for SEPA
+     *
+     * @param int $orderId
+     * @return string
+     * @since 1.0.0
+     */
+    public function generateMandateId($paymentModule, $orderId)
+    {
+        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
+            . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }
