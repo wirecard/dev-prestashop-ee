@@ -67,7 +67,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
                     $errors .= $item->getDescription() . "<br>";
                 }
                 $logger->error($errors);
-                $this->processFailure($result);
+                $this->processFailure($result, $orderId);
             }
         } catch (\InvalidArgumentException $exception) {
             $this->errors = 'Invalid Argument: ' . $exception->getMessage();
@@ -134,12 +134,11 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      * Update order for failure response
      *
      * @param FailureResponse $response
+     * @param string $orderId
      * @since 1.0.0
      */
-    private function processFailure($response)
+    private function processFailure($response, $orderId)
     {
-        $orderId = $response->getCustomFields()->get('orderId');
-
         if ($orderId) {
             $order = new Order($orderId);
             $order->setCurrentState('PS_OS_ERROR');
