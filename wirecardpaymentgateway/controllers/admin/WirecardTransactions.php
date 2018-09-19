@@ -292,7 +292,6 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         if (in_array($paymentType, array(
-                    'creditcard',
                     'paypal',
                     'alipay-xborder',
                     'p24',
