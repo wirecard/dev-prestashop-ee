@@ -88,7 +88,6 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                 $this->redirectWithNotifications($this->context->link->getPageLink('order'));
             }
         } else {
-            $cartId = Tools::getValue('id_cart');
             $orderId = Order::getIdByCartId((int)$cartId);
             $order = new Order($orderId);
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
