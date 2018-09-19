@@ -51,7 +51,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
     public function postProcess()
     {
         $paymentType = Tools::getValue('payment_type');
-        $orderId = Tools::getValue('id_cart');
+        $cartId = Tools::getValue('id_cart');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
         $notification = Tools::file_get_contents('php://input');
@@ -60,7 +60,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             $transactionService = new TransactionService($config, $logger);
             $result = $transactionService->handleNotification($notification);
             if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
-                $this->processSuccess($result, $orderId);
+                $this->processSuccess($result, $cartId);
             } elseif ($result instanceof FailureResponse) {
                 $errors = "";
                 foreach ($result->getStatusCollection()->getIterator() as $item) {
@@ -90,11 +90,12 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      * Create/Update order and handle notification
      *
      * @param SuccessResponse $response
-     * @param string $orderId
+     * @param string $cartId
      * @since 1.0.0
      */
-    private function processSuccess($response, $orderId)
+    private function processSuccess($response, $cartId)
     {
+        $orderId = Order::getOrderByCartId((int)($cartId));
         if ('masterpass' == $response->getPaymentMethod() && (
             \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_DEBIT == $response->getTransactionType() ||
             \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION == $response->getTransactionType())) {
