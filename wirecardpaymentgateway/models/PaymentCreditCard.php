@@ -314,7 +314,7 @@ class PaymentCreditCard extends Payment
      *
      * @param $transactionData
      * @return CreditCardTransaction
-     * @since 1.3.0
+     * @since 1.2.5
      */
     public function createRefundTransaction($transactionData)
     {
