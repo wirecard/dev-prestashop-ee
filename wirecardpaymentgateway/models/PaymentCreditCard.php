@@ -310,6 +310,18 @@ class PaymentCreditCard extends Payment
     }
 
     /**
+     * Create refund transaction
+     *
+     * @param $transactionData
+     * @return CreditCardTransaction
+     * @since 1.2.5
+     */
+    public function createRefundTransaction($transactionData)
+    {
+        return $this->createCancelTransaction($transactionData);
+    }
+
+    /**
      * Create pay transaction
      *
      * @param Transaction $transactionData

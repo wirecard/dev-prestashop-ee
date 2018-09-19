@@ -15,6 +15,7 @@
             <file>wirecardpaymentgateway/wirecardpaymentgateway.php</file>
             <exclude>
                 <directory>wirecardpaymentgateway/vendor</directory>
+                <directory>wirecardpaymentgateway/translations</directory>
                 <file>wirecardpaymentgateway/index.php</file>
                 <file>wirecardpaymentgateway/controllers/index.php</file>
                 <file>wirecardpaymentgateway/controllers/front/index.php</file>
