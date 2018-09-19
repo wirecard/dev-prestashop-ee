@@ -100,7 +100,7 @@ class PaymentSepaCreditTransfer extends Payment
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
+                    'default' => '59a01668-693b-49f0-8a1f-f3c1ba025d45',
                     'required' => true,
                 ),
                 array(

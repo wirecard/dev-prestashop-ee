@@ -99,7 +99,7 @@ class PaymentIdeal extends Payment
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => 'b4ca14c0-bb9a-434d-8ce3-65fbff2c2267',
+                    'default' => '4aeccf39-0d47-47f6-a399-c05c1f2fc819',
                     'required' => true,
                 ),
                 array(
@@ -121,14 +121,14 @@ class PaymentIdeal extends Payment
                     'name' => 'http_user',
                     'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
-                    'default' => '70000-APITEST-AP',
+                    'default' => '16390-testing',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
-                    'default' => 'qD2wzQ_hrc!8',
+                    'default' => '3!3013=D3fD8X7',
                     'required' => true,
                 ),
                 array(

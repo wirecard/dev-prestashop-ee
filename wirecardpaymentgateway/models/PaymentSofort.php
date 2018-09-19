@@ -93,7 +93,7 @@ class PaymentSofort extends Payment
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => 'c021a23a-49a5-4987-aa39-e8e858d29bad',
+                    'default' => '6c0e7efd-ee58-40f7-9bbd-5e7337a052cd',
                     'required' => true,
                 ),
                 array(
@@ -115,14 +115,14 @@ class PaymentSofort extends Payment
                     'name' => 'http_user',
                     'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
-                    'default' => '70000-APITEST-AP',
+                    'default' => '16390-testing',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
-                    'default' => 'qD2wzQ_hrc!8',
+                    'default' => '3!3013=D3fD8X7',
                     'required' => true,
                 ),
                 array(
