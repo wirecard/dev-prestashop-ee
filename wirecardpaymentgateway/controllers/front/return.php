@@ -60,6 +60,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $response = $_REQUEST;
         $paymentType = Tools::getValue('payment_type');
         $paymentState = Tools::getValue('payment_state');
+        $cartId = Tools::getValue('id_cart');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
         if ($paymentState == 'success') {
@@ -67,7 +68,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                 $transactionService = new TransactionService($config, new WirecardLogger());
                 $result = $transactionService->handleResponse($response);
                 if ($result instanceof SuccessResponse) {
-                    $this->processSuccess($result);
+                    $this->processSuccess($result, $cartId);
                 } elseif ($result instanceof FailureResponse) {
                     $errors = "";
                     foreach ($result->getStatusCollection()->getIterator() as $item) {
@@ -87,7 +88,6 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                 $this->redirectWithNotifications($this->context->link->getPageLink('order'));
             }
         } else {
-            $cartId = Tools::getValue('id_cart');
             $orderId = Order::getIdByCartId((int)$cartId);
             $order = new Order($orderId);
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
@@ -112,12 +112,13 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
      * Create order and redirect for success response
      *
      * @param SuccessResponse $response
+     * @param string $cartId
      * @since 1.0.0
      */
-    public function processSuccess($response)
+    public function processSuccess($response, $cartId)
     {
         sleep(1);
-        $orderId = $response->getCustomFields()->get('orderId');
+        $orderId = Order::getOrderByCartId((int)($cartId));
         $order = new Order($orderId);
         $cartId = $order->id_cart;
         $cart = new Cart((int)($cartId));
