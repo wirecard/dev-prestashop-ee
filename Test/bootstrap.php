@@ -60,6 +60,7 @@ require __DIR__ . '/Stubs/Cart.php';
 require __DIR__ . '/Stubs/Customer.php';
 require __DIR__ . '/Stubs/Address.php';
 require __DIR__ . '/Stubs/Country.php';
+require __DIR__ . '/Stubs/State.php';
 require __DIR__ . '/Stubs/PrestaShopLogger.php';
 require __DIR__ . '/Stubs/Db.php';
 require __DIR__ . '/Stubs/Tab.php';

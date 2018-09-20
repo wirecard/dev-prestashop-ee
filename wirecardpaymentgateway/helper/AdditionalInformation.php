@@ -188,14 +188,30 @@ class AdditionalInformation
     public function createAddressData($source, $type)
     {
         $country = new \Country($source->id_country);
+        $state = (new \State($source->id_state))->iso_code;
+
+        // The only diversion from ISO-3166 so we can safely/reasonably do this.
+        if ($country->iso_code === 'ID' && \Tools::strlen($state)) {
+            $state = str_replace('ID-', '', $state);
+        }
+
         if ('shipping' == $type) {
             $address = new Address($country->iso_code, $source->city, $source->address1);
             $address->setPostalCode($source->postcode);
+
+            if (\Tools::strlen($state)) {
+                $address->setState($state);
+            }
         } else {
             $address = new Address($country->iso_code, $source->city, $source->address1);
             $address->setPostalCode($source->postcode);
+
             if (\Tools::strlen($source->address2)) {
                 $address->setStreet2($source->address2);
+            }
+
+            if (\Tools::strlen($state)) {
+                $address->setState($state);
             }
         }
 
