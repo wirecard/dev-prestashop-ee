@@ -144,7 +144,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         $context = new Context();
 
         $expected = array(
-            'transaction_type' => 'authorization',
+            'transaction_type' => 'tokenize',
             'merchant_account_id' => 'merchant_account_id',
             'requested_amount' => 0,
             'requested_amount_currency' => 'EUR',
