@@ -272,17 +272,8 @@ class PaymentSepaDirectDebit extends Payment
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $transaction = new SepaDirectDebitTransaction();
-
-        $additionalInformation = new AdditionalInformation();
-        $cart = new \Cart($transactionData->cart_id);
-        $transaction->setAccountHolder($additionalInformation->createAccountHolder(
-            $cart,
-            'billing'
-        ));
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $transaction;
+        $sepa = new PaymentSepaCreditTransfer($module);
+        return $sepa->createRefundTransaction($transactionData, $module);
     }
 
     /**
