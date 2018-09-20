@@ -217,7 +217,7 @@ class WirecardTransactionsController extends ModuleAdminController
             switch ($operation) {
                 case Operation::REFUND:
                     $transaction = $payment->createRefundTransaction($transactionData, $this->module);
-                    if (in_array($paymentType, array('ideal', 'sofortbanking', 'sepacredittransfer'))) {
+                    if (in_array($paymentType, array('ideal', 'sofortbanking', 'sepadirectdebit'))) {
                         $payment = $this->module->getPaymentFromType('sepacredittransfer');
                         $config = $payment->createPaymentConfig($this->module);
                         $operation = Operation::CREDIT;
