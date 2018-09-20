@@ -58,6 +58,7 @@ class Context
     {
         $this->link = new Link();
         $this->language = new Language();
+        $this->currency = new Currency();
         $this->smarty = new Smarty();
         $this->cart = new Cart();
         $this->cookie = new Cookie();

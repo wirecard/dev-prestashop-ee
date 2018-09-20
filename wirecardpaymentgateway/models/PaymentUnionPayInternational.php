@@ -200,14 +200,18 @@ class PaymentUnionPayInternational extends Payment
      * Create request data for UnionPayInternational UI
      *
      * @param \WirecardPaymentGateway $module
+     * @param \Context $context
      * @return mixed
      * @since 1.0.0
      */
-    public function getRequestData($module)
+    public function getRequestData($module, $context)
     {
+        $languageCode = $context->language->iso_code;
+        $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
-        return $transactionService->getDataForUpiUi();
+
+        return $transactionService->getDataForUpiUi($languageCode, new Amount(0, $currencyCode));
     }
 
     /**
