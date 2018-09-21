@@ -114,9 +114,11 @@ class AdditionalInformation
      */
     public function createDescriptor($id)
     {
+        $shopName = preg_replace('/[^a-zA-Z0-9]/', '', \Configuration::get('PS_SHOP_NAME'));
+
         return sprintf(
             '%s %s',
-            \Tools::substr(\Configuration::get('PS_SHOP_NAME'), 0, 9),
+            \Tools::substr($shopName, 0, 9),
             $id
         );
     }
