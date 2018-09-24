@@ -106,7 +106,7 @@ class PaymentIdeal extends Payment
                     'name' => 'secret',
                     'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default' => '7a353766-23b5-4992-ae96-cb4232998954',
                     'required' => true,
                 ),
                 array(

@@ -100,7 +100,7 @@ class PaymentSofort extends Payment
                     'name' => 'secret',
                     'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default' => '58764ab3-5c56-450e-b747-7237a24e92a7',
                     'required' => true,
                 ),
                 array(
