@@ -93,7 +93,7 @@ class PaymentSepaCreditTransfer extends Payment
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => $this->translate('sepa_enable_doc'),
+                    'doc' => $this->translate('sepact_enable_doc'),
                     'default' => 0,
                 ),
                 array(

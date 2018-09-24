@@ -1026,6 +1026,7 @@ class WirecardPaymentGateway extends PaymentModule
             'p24_test_config_butoon_doc' => $this->l('Test Przelewy24 configuration'),
 
             'sepa_enable_doc' => $this->l('Enable Wirecard SEPA'),
+            'sepact_enable_doc' => $this->l('Enable Wirecard SEPA Credit Transfer'),
             'sepa_title_doc' => $this->l('Wirecard SEPA'),
             'sepa_creditor_id_doc' => $this->l('Creditor ID'),
             'sepa_creditor_name_doc' => $this->l('Creditor Name'),
