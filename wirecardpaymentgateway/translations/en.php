@@ -75,6 +75,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_8a8af77cef0
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b695b40f9d8f749782d216294f0c5083'] = 'Enable Wirecard UnionPay International';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_0ede785f63dda327d452366fadda6384'] = 'Wirecard UnionPay International';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a99b0a82353c7e7de04274731ba685c1'] = 'Test configuration';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_caeeed371c2430eeccd1d60ea54e99a9'] = 'Please check your credentials.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_1b600b2774dee5d5f5271487938a3aed'] = 'The merchant configuration was successfully tested.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_86d46d7af9f146c0ed0619c5e814384b'] = 'Submit support request';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_cb7a0a41ef8d2fb632ae4a56d04fbc7f'] = 'Your e-mail address:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_ac5742c34d7b5f61950e48841eaf0937'] = 'Your message:';
@@ -126,6 +128,10 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ff342be8205b815771dd6
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_1f2da6d218c4c9349808a0788df08401'] = 'I have read and accepted the SEPA Direct Debit Mandate information.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ea4788705e6873b424c65e91c2846b19'] = 'Cancel';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_70d9be9b139893aa6c69b5e77e614311'] = 'Confirm';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_20db0bfeecd8fe60533206a2b5e9891a'] = 'First name';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_8d3f5eff9c40ee315d452392bed5309b'] = 'Last name';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_350e17d65ded375d643259e7eed26e2a'] = 'IBAN';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_bec758a8de99a38d16087f2196b48103'] = 'BIC';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_31112aca11d0e9e6eb7db96f317dda49'] = 'Transactions';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_db5eb84117d06047c97c9a0191b5fffe'] = 'Support';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_ed1ee759e0022e265c7f41a3b5865f39'] = 'General Information regarding Wirecard Shop Plugins';
