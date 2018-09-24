@@ -75,9 +75,6 @@ class WirecardSupportController extends ModuleAdminController
     public function renderForm()
     {
         $this->fields_form = array(
-            'legend' => array(
-                'title' => $this->l('Send support request to <shop-systems-support@wirecard.com>'),
-            ),
             'input' => array(
                 array(
                     'type' => 'text',
