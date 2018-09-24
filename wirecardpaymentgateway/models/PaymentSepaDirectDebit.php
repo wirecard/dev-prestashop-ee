@@ -45,14 +45,14 @@ use Wirecard\PaymentSdk\Entity\Mandate;
  *
  * @extends Payment
  *
- * @since 1.0.0
+ * @since 1.3.0
  */
 class PaymentSepaDirectDebit extends Payment
 {
     /**
      * PaymentSepaDirectDebit constructor.
      *
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function __construct($module)
     {
@@ -73,7 +73,7 @@ class PaymentSepaDirectDebit extends Payment
      * Create form fields for SEPA
      *
      * @return array|null
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function createFormFields()
     {
@@ -210,7 +210,7 @@ class PaymentSepaDirectDebit extends Payment
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function createPaymentConfig($paymentModule)
     {
@@ -237,7 +237,7 @@ class PaymentSepaDirectDebit extends Payment
      * @param array $values
      * @param int $orderId
      * @return null|SepaDirectDebitTransaction
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
@@ -268,7 +268,7 @@ class PaymentSepaDirectDebit extends Payment
      *
      * @param Transaction $transactionData
      * @return SepaDirectDebitTransaction
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function createRefundTransaction($transactionData, $module)
     {
@@ -280,7 +280,7 @@ class PaymentSepaDirectDebit extends Payment
      * Set template variables
      *
      * @return array
-     * @since 1.0.0
+     * @since 1.3.0
      */
     private function setTemplateData()
     {
@@ -300,7 +300,7 @@ class PaymentSepaDirectDebit extends Payment
      *
      * @param int $orderId
      * @return string
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function generateMandateId($paymentModule, $orderId)
     {
