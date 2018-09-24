@@ -37,7 +37,7 @@ class Currency
 {
     public $id;
     public $name;
-    public $iso_code;
+    public $iso_code = 'EUR';
 
     public function __construct($id = null, $idLang = null, $idShop = null)
     {

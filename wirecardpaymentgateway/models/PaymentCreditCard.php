@@ -258,14 +258,18 @@ class PaymentCreditCard extends Payment
      * Create request data for credit card ui
      *
      * @param \WirecardPaymentGateway $module
+     * @param \Context $context
      * @return mixed
      * @since 1.0.0
      */
-    public function getRequestData($module)
+    public function getRequestData($module, $context)
     {
+        $languageCode = $context->language->iso_code;
+        $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
-        return $transactionService->getDataForCreditCardUi();
+
+        return $transactionService->getDataForCreditCardUi($languageCode, new Amount(0, $currencyCode));
     }
 
     /**

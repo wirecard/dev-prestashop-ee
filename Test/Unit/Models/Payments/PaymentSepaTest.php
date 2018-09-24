@@ -33,7 +33,9 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentSepa;
+use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
+use Wirecard\PaymentSdk\Config\SepaConfig;
+use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 
 class PaymentSepaTest extends PHPUnit_Framework_TestCase
 {
@@ -56,14 +58,14 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->payment = new PaymentSepa($this->paymentModule);
+        $this->payment = new PaymentSepaDirectDebit($this->paymentModule);
     }
 
     public function testName()
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard SEPA';
+        $expected = 'Wirecard SEPA Direct Debit';
 
         $this->assertEquals($expected, $actual);
     }
@@ -82,7 +84,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\SepaConfig('merchant_account_id', 'secret');
+        $expectedPaymentConfig = new SepaConfig(SepaDirectDebitTransaction::NAME, 'merchant_account_id', 'secret');
         $expectedPaymentConfig->setCreditorId('creditor_id');
         $expected->add($expectedPaymentConfig);
 
@@ -102,7 +104,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), $values, 'ADB123');
 
-        $expected = 'sepa';
+        $expected = 'sepadirectdebit';
         $this->assertEquals($expected, $actual::NAME);
     }
 

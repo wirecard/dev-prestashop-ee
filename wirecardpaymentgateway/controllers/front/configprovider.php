@@ -55,7 +55,8 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
     public function displayAjaxGetCreditCardConfig()
     {
         $creditCard = new PaymentCreditCard($this->module);
-        $requestData = $creditCard->getRequestData($this->module);
+        $requestData = $creditCard->getRequestData($this->module, $this->context);
+
         header('Content-Type: application/json; charset=utf8');
         die(Tools::jsonEncode($requestData));
     }
@@ -67,7 +68,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
     public function displayAjaxGetUPIConfig()
     {
         $UPI = new PaymentUnionPayInternational($this->module);
-        $requestData = $UPI->getRequestData($this->module);
+        $requestData = $UPI->getRequestData($this->module, $this->context);
         header('Content-Type: application/json; charset=utf8');
         die(Tools::jsonEncode($requestData));
     }

@@ -34,23 +34,23 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
+use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use Wirecard\PaymentSdk\Entity\AccountHolder;
 use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
- * Class PaymentSepa
+ * Class PaymentSepaDirectDebit
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentSepa extends Payment
+class PaymentSepaCreditTransfer extends Payment
 {
     /**
-     * PaymentSepa constructor.
+     * PaymentSepaDirectDebit constructor.
      *
      * @since 1.0.0
      */
@@ -58,15 +58,24 @@ class PaymentSepa extends Payment
     {
         parent::__construct($module);
 
-        $this->type = 'sepa';
-        $this->name = 'Wirecard SEPA';
+        $this->type = 'sepacredittransfer';
+        $this->name = 'Wirecard SEPA Credit Transfer';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
 
         $this->cancel  = array('pending-debit');
         $this->capture = array('authorization');
         $this->refund  = array('debit');
+    }
+
+    /**
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @return bool
+     */
+    public function isAvailable($module, $cart)
+    {
+        return false;
     }
 
     /**
@@ -78,7 +87,7 @@ class PaymentSepa extends Payment
     public function createFormFields()
     {
         return array(
-            'tab' => 'SEPA',
+            'tab' => 'sepacredittransfer',
             'fields' => array(
                 array(
                     'name' => 'enabled',
@@ -88,17 +97,10 @@ class PaymentSepa extends Payment
                     'default' => 0,
                 ),
                 array(
-                    'name' => 'title',
-                    'label' => 'Title',
-                    'type' => 'text',
-                    'default' => $this->translate('sepa_title_doc'),
-                    'required' => true,
-                ),
-                array(
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => '4c901196-eff7-411e-82a3-5ef6b6860d64',
+                    'default' => '59a01668-693b-49f0-8a1f-f3c1ba025d45',
                     'required' => true,
                 ),
                 array(
@@ -120,85 +122,28 @@ class PaymentSepa extends Payment
                     'name' => 'http_user',
                     'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
-                    'default' => '70000-APITEST-AP',
+                    'default' => '16390-testing',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
-                    'default' => 'qD2wzQ_hrc!8',
+                    'default' => '3!3013=D3fD8X7',
                     'required' => true,
                 ),
-                array(
-                    'name' => 'creditor_id',
-                    'label'   => $this->translate('sepa_creditor_id_doc'),
-                    'type'    => 'text',
-                    'default' => 'DE98ZZZ09999999999',
-                    'required' => true,
-                ),
-                array(
-                    'name' => 'creditor_name',
-                    'label'   => $this->translate('sepa_creditor_name_doc'),
-                    'type'    => 'text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
-                    'name' => 'creditor_city',
-                    'label'   => $this->translate('sepa_creditor_city_doc'),
-                    'type'    => 'text',
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
-                    'name' => 'sepa_mandate_textextra',
-                    'label'   => $this->translate('sepa_creditor_additional_text_doc'),
-                    'type'    => 'textarea',
-                    'doc'     => $this->translate('sepa_creditor_additional_text_des_doc'),
-                    'empty_message' => $this->translate('sepa_creditor_additional_todo_doc'),
-                    'default' => '',
-                    'required' => false,
-                ),
-                array(
-                    'name' => 'payment_action',
-                    'type'    => 'select',
-                    'default' => 'authorization',
-                    'label'   => $this->translate('payment_action_doc'),
-                    'options' => array(
-                        array('key' => 'reserve', 'value' => $this->translate('payment_action_auth_doc')),
-                        array('key' => 'pay', 'value' => $this->translate('payment_action_capture_doc')),
-                    ),
-                ),
-                array(
-                    'name' => 'descriptor',
-                    'label'   => $this->translate('descriptor_doc'),
-                    'type'    => 'onoff',
-                    'default' => 0,
-                ),
-                array(
-                    'name' => 'send_additional',
-                    'label'   => $this->translate('send_addit_info_doc'),
-                    'type'    => 'onoff',
-                    'default' => 1,
-                ),
-                array(
-                    'name' => 'enable_bic',
-                    'label'   => $this->translate('sepa_bic_doc'),
-                    'type'    => 'onoff',
-                    'default' => 0,
-                ),
+
                 array(
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
                     'buttonText' => $this->translate('sepa_test_config_butoon_doc'),
-                    'id' => 'SepaConfig',
-                    'method' => 'SEPA',
+                    'id' => 'SepaCreditTransferConfig',
+                    'method' => 'sepacredittransfer',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SEPACREDITTRANSFER_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPACREDITTRANSFER_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPACREDITTRANSFER_HTTP_PASS'
                     )
                 )
             )
@@ -222,7 +167,7 @@ class PaymentSepa extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new SepaConfig($merchantAccountId, $secret);
+        $paymentConfig = new SepaConfig(SepaCreditTransferTransaction::NAME, $merchantAccountId, $secret);
         $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
         $config->add($paymentConfig);
 
@@ -236,43 +181,25 @@ class PaymentSepa extends Payment
      * @param \Cart $cart
      * @param array $values
      * @param int $orderId
-     * @return null|SepaTransaction
+     * @return null|SepaCreditTransferTransaction
      * @since 1.0.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new SepaTransaction();
-        if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
-            $account_holder = new AccountHolder();
-            $account_holder->setFirstName($values['sepaFirstName']);
-            $account_holder->setLastName($values['sepaLastName']);
-
-            $transaction->setAccountHolder($account_holder);
-            $transaction->setIban($values['sepaIban']);
-
-            if ($module->getConfigValue('sepa', 'enable_bic')) {
-                if (isset($values['sepaBic'])) {
-                    $transaction->setBic($values['sepaBic']);
-                }
-            }
-
-            $mandate = new Mandate($this->generateMandateId($module, $orderId));
-            $transaction->setMandate($mandate);
-        }
-
+        $transaction = new SepaCreditTransferTransaction();
         return $transaction;
     }
 
     /**
-     * Create refund SepaTransaction
+     * Create refund SepaCreditTransferTransaction
      *
      * @param Transaction $transactionData
-     * @return SepaTransaction
+     * @return SepaCreditTransferTransaction
      * @since 1.0.0
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $transaction = new SepaTransaction();
+        $transaction = new SepaCreditTransferTransaction();
 
         $additionalInformation = new AdditionalInformation();
         $cart = new \Cart($transactionData->cart_id);
@@ -283,25 +210,6 @@ class PaymentSepa extends Payment
         $transaction->setParentTransactionId($transactionData->transaction_id);
 
         return $transaction;
-    }
-
-    /**
-     * Set template variables
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    private function setTemplateData()
-    {
-        $test = \Configuration::get(
-            sprintf(
-                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-                \Tools::strtoupper($this->type),
-                \Tools::strtoupper('enable_bic')
-            )
-        );
-
-        return array('bicEnabled' => (bool) $test);
     }
 
     /**
