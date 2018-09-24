@@ -37,7 +37,7 @@
  *
  * @since 1.0.0
  */
-class WirecardPaymentGatewaySepaModuleFrontController extends ModuleFrontController
+class WirecardPaymentGatewaySepaDirectDebitModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
@@ -52,11 +52,11 @@ class WirecardPaymentGatewaySepaModuleFrontController extends ModuleFrontControl
     public function displayAjaxSepaMandate()
     {
         $data = array();
-        $data['creditorName']      = $this->module->getConfigValue('sepa', 'creditor_name');
-        $data['creditorStoreCity'] = $this->module->getConfigValue('sepa', 'creditor_city');
-        $data['creditorId']        = $this->module->getConfigValue('sepa', 'creditor_id');
-        $data['enableBic']         = (bool) $this->module->getConfigValue('sepa', 'creditor_name');
-        $data['additionalText']    = $this->module->getConfigValue('sepa', 'sepa_mandate_textextra');
+        $data['creditorName']      = $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
+        $data['creditorStoreCity'] = $this->module->getConfigValue('sepadirectdebit', 'creditor_city');
+        $data['creditorId']        = $this->module->getConfigValue('sepadirectdebit', 'creditor_id');
+        $data['enableBic']         = (bool) $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
+        $data['additionalText']    = $this->module->getConfigValue('sepadirectdebit', 'sepa_mandate_textextra');
         $data['date']              = date('d.m.Y');
 
         $this->context->smarty->assign($data);

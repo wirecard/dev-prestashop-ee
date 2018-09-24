@@ -37,7 +37,7 @@ $(document).ready(
     function () {
         $(document).on('submit','#payment-form', function (e) {
             form = $(this);
-            if (form.attr('action').search('sepa') >= 0) {
+            if (form.attr('action').search('sepadirectdebit') >= 0) {
                 placeOrder(e);
             }
         });

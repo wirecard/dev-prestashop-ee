@@ -93,14 +93,14 @@ class PaymentSofort extends Payment
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => 'c021a23a-49a5-4987-aa39-e8e858d29bad',
+                    'default' => '6c0e7efd-ee58-40f7-9bbd-5e7337a052cd',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default' => '58764ab3-5c56-450e-b747-7237a24e92a7',
                     'required' => true,
                 ),
                 array(
@@ -115,14 +115,14 @@ class PaymentSofort extends Payment
                     'name' => 'http_user',
                     'label'   => $this->translate('http_user_doc'),
                     'type'    => 'text',
-                    'default' => '70000-APITEST-AP',
+                    'default' => '16390-testing',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->translate('http_pass_doc'),
                     'type'    => 'text',
-                    'default' => 'qD2wzQ_hrc!8',
+                    'default' => '3!3013=D3fD8X7',
                     'required' => true,
                 ),
                 array(
@@ -212,7 +212,7 @@ class PaymentSofort extends Payment
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepa($module);
+        $sepa = new PaymentSepaCreditTransfer($module);
         return $sepa->createRefundTransaction($transactionData, $module);
     }
 }

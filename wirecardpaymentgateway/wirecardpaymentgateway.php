@@ -37,7 +37,8 @@ use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
-use WirecardEE\Prestashop\Models\PaymentSepa;
+use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
+use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\PaymentSofort;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
 use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
@@ -83,7 +84,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.2.5';
+        $this->version = '1.3.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.4.2');
@@ -94,7 +95,7 @@ class WirecardPaymentGateway extends PaymentModule
             'notify',
             'return',
             'configprovider',
-            'sepa',
+            'sepadirectdebit',
             'creditcard'
         );
 
@@ -571,7 +572,8 @@ class WirecardPaymentGateway extends PaymentModule
         $payments = array(
             'creditcard' => new PaymentCreditCard($this),
             'paypal' => new PaymentPaypal($this),
-            'sepa' => new PaymentSepa($this),
+            'sepadirectdebit' => new PaymentSepaDirectDebit($this),
+            'sepacredittransfer' => new PaymentSepaCreditTransfer($this),
             'sofortbanking' => new PaymentSofort($this),
             'ideal' => new PaymentIdeal($this),
             'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
@@ -907,7 +909,7 @@ class WirecardPaymentGateway extends PaymentModule
             if ($paymentMethod->getLoadJs()) {
                 $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
                 $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
-                $ajaxSepaUrl = $link->getModuleLink('wirecardpaymentgateway', 'sepa');
+                $ajaxSepaUrl = $link->getModuleLink('wirecardpaymentgateway', 'sepadirectdebit');
                 Media::addJsDef(
                     array(
                         'configProviderURL' => $ajaxLink,

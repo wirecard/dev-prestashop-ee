@@ -27,86 +27,85 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * @author    WirecardCEE
+ * @copyright WirecardCEE
+ * @license   GPLv3
  */
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Entity\Mandate;
-use Wirecard\PaymentSdk\Transaction\IdealTransaction;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\IdealBic;
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
+use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
+use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
-use Wirecard\PaymentSdk\Transaction\Operation;
+use Wirecard\PaymentSdk\Entity\AccountHolder;
+use Wirecard\PaymentSdk\Entity\Mandate;
 
 /**
- * Class PaymentiDEAL
+ * Class PaymentSepaDirectDebit
  *
  * @extends Payment
  *
- * @since 1.0.0
+ * @since 1.3.0
  */
-class PaymentIdeal extends Payment
+class PaymentSepaDirectDebit extends Payment
 {
     /**
-     * PaymentiDEAL constructor.
+     * PaymentSepaDirectDebit constructor.
      *
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function __construct($module)
     {
         parent::__construct($module);
 
-        $this->type = 'ideal';
-        $this->name = 'Wirecard iDEAL';
+        $this->type = 'sepadirectdebit';
+        $this->name = 'Wirecard SEPA Direct Debit';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
 
+        $this->cancel  = array('pending-debit');
+        $this->capture = array('authorization');
         $this->refund  = array('debit');
     }
 
     /**
-     * Create form fields for iDEAL
+     * Create form fields for SEPA
      *
      * @return array|null
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function createFormFields()
     {
         return array(
-            'tab' => 'ideal',
+            'tab' => 'sepadirectdebit',
             'fields' => array(
                 array(
                     'name' => 'enabled',
                     'label' => 'Enable',
                     'type' => 'onoff',
-                    'doc' => $this->translate('ideal_enable_doc'),
+                    'doc' => $this->translate('sepa_enable_doc'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
                     'label' => 'Title',
                     'type' => 'text',
-                    'default' => $this->translate('ideal_title_doc'),
+                    'default' => $this->translate('sepa_title_doc'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
                     'label'   => $this->translate('merchant_id_doc'),
                     'type'    => 'text',
-                    'default' => '4aeccf39-0d47-47f6-a399-c05c1f2fc819',
+                    'default' => '933ad170-88f0-4c3d-a862-cff315ecfbc0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => $this->translate('secret_key_doc'),
                     'type'    => 'text',
-                    'default' => '7a353766-23b5-4992-ae96-cb4232998954',
+                    'default' => '5caf2ed9-5f79-4e65-98cb-0b70d6f569aa',
                     'required' => true,
                 ),
                 array(
@@ -132,9 +131,44 @@ class PaymentIdeal extends Payment
                     'required' => true,
                 ),
                 array(
+                    'name' => 'creditor_id',
+                    'label'   => $this->translate('sepa_creditor_id_doc'),
+                    'type'    => 'text',
+                    'default' => 'DE98ZZZ09999999999',
+                    'required' => true,
+                ),
+                array(
+                    'name' => 'creditor_name',
+                    'label'   => $this->translate('sepa_creditor_name_doc'),
+                    'type'    => 'text',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
+                    'name' => 'creditor_city',
+                    'label'   => $this->translate('sepa_creditor_city_doc'),
+                    'type'    => 'text',
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
+                    'name' => 'sepa_mandate_textextra',
+                    'label'   => $this->translate('sepa_creditor_additional_text_doc'),
+                    'type'    => 'textarea',
+                    'doc'     => $this->translate('sepa_creditor_additional_text_des_doc'),
+                    'empty_message' => $this->translate('sepa_creditor_additional_todo_doc'),
+                    'default' => '',
+                    'required' => false,
+                ),
+                array(
                     'name' => 'payment_action',
-                    'type'    => 'hidden',
-                    'default' => 'pay',
+                    'type'    => 'select',
+                    'default' => 'authorization',
+                    'label'   => $this->translate('payment_action_doc'),
+                    'options' => array(
+                        array('key' => 'reserve', 'value' => $this->translate('payment_action_auth_doc')),
+                        array('key' => 'pay', 'value' => $this->translate('payment_action_capture_doc')),
+                    ),
                 ),
                 array(
                     'name' => 'descriptor',
@@ -149,16 +183,22 @@ class PaymentIdeal extends Payment
                     'default' => 1,
                 ),
                 array(
+                    'name' => 'enable_bic',
+                    'label'   => $this->translate('sepa_bic_doc'),
+                    'type'    => 'onoff',
+                    'default' => 0,
+                ),
+                array(
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => $this->translate('ideal_test_config_butoon_doc'),
-                    'id' => 'idealConfig',
-                    'method' => 'iDEAL',
+                    'buttonText' => $this->translate('sepa_test_config_butoon_doc'),
+                    'id' => 'SepaDirectDebitConfig',
+                    'method' => 'sepadirectdebit',
                     'send' => array(
-                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_BASE_URL',
-                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_HTTP_USER',
-                        'WIRECARD_PAYMENT_GATEWAY_IDEAL_HTTP_PASS'
+                        'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_HTTP_USER',
+                        'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_HTTP_PASS'
                     )
                 )
             )
@@ -166,11 +206,11 @@ class PaymentIdeal extends Payment
     }
 
     /**
-     * Create config for iDEAL transactions
+     * Create config for SEPA transactions
      *
      * @param \WirecardPaymentGateway $paymentModule
      * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
+     * @since 1.3.0
      */
     public function createPaymentConfig($paymentModule)
     {
@@ -182,39 +222,53 @@ class PaymentIdeal extends Payment
         $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(IdealTransaction::NAME, $merchantAccountId, $secret);
+        $paymentConfig = new SepaConfig(SepaDirectDebitTransaction::NAME, $merchantAccountId, $secret);
+        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
         $config->add($paymentConfig);
 
         return $config;
     }
 
     /**
-     * Create ideal transaction
+     * Create sepa transaction
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @param array $values
      * @param int $orderId
-     * @return null|IdealTransaction
-     * @since 1.0.0
+     * @return null|SepaDirectDebitTransaction
+     * @since 1.3.0
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new IdealTransaction();
-        if (isset($values['idealBankBic'])) {
-            $transaction->setBic($values['idealBankBic']);
+        $transaction = new SepaDirectDebitTransaction();
+        if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
+            $account_holder = new AccountHolder();
+            $account_holder->setFirstName($values['sepaFirstName']);
+            $account_holder->setLastName($values['sepaLastName']);
+
+            $transaction->setAccountHolder($account_holder);
+            $transaction->setIban($values['sepaIban']);
+
+            if ($module->getConfigValue('sepadirectdebit', 'enable_bic')) {
+                if (isset($values['sepaBic'])) {
+                    $transaction->setBic($values['sepaBic']);
+                }
+            }
+
+            $mandate = new Mandate($this->generateMandateId($module, $orderId));
+            $transaction->setMandate($mandate);
         }
 
         return $transaction;
     }
 
     /**
-     * Create refund iDEALTransaction
+     * Create refund SepaDirectDebitTransaction
      *
-     * @param $transactionData
-     * @param module
-     * @return SepaTransaction
-     * @since 1.0.0
+     * @param Transaction $transactionData
+     * @return SepaDirectDebitTransaction
+     * @since 1.3.0
      */
     public function createRefundTransaction($transactionData, $module)
     {
@@ -223,24 +277,34 @@ class PaymentIdeal extends Payment
     }
 
     /**
-     * Returns all supported banks from iDEAL
+     * Set template variables
      *
      * @return array
-     * @since 1.0.0
+     * @since 1.3.0
      */
     private function setTemplateData()
     {
-        return array('banks' => array(
-            array('key' => IdealBic::ABNANL2A, 'label' => 'ABN Amro Bank'),
-            array('key' => IdealBic::ASNBNL21, 'label' => 'ASN Bank'),
-            array('key' => IdealBic::BUNQNL2A, 'label' => 'bunq'),
-            array('key' => IdealBic::INGBNL2A, 'label' => 'ING'),
-            array('key' => IdealBic::KNABNL2H, 'label' => 'Knab'),
-            array('key' => IdealBic::RABONL2U, 'label' => 'Rabobank'),
-            array('key' => IdealBic::RGGINL21, 'label' => 'Regio Bank'),
-            array('key' => IdealBic::SNSBNL2A, 'label' => 'SNS Bank'),
-            array('key' => IdealBic::TRIONL2U, 'label' => 'Triodos Bank'),
-            array('key' => IdealBic::FVLBNL22, 'label' => 'Van Lanschot Bankiers')
-        ));
+        $test = \Configuration::get(
+            sprintf(
+                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
+                \Tools::strtoupper($this->type),
+                \Tools::strtoupper('enable_bic')
+            )
+        );
+
+        return array('bicEnabled' => (bool) $test);
+    }
+
+    /**
+     * Generate the mandate id for SEPA
+     *
+     * @param int $orderId
+     * @return string
+     * @since 1.3.0
+     */
+    public function generateMandateId($paymentModule, $orderId)
+    {
+        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
+            . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

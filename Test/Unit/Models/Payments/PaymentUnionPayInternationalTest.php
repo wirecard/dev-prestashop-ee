@@ -141,6 +141,8 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
 
     public function testGetRequestData()
     {
+        $context = new Context();
+
         $expected = array(
             'transaction_type' => 'tokenize',
             'merchant_account_id' => 'merchant_account_id',
@@ -154,7 +156,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         for ($i = 0; $i <= 4; $i++) {
             $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
         }
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule));
+        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context));
         //unset the generated request id as it is different every time
         unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
 
