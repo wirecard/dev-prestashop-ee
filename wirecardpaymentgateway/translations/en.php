@@ -59,8 +59,9 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_261280804ae
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_2ac67fc29b72691134dddeb6fd243681'] = 'Enable Wirecard Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_05276388004ffb8a566ad86641eb2288'] = 'Wirecard Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6b30bcb4ba9a4540dce094cca752babf'] = 'Test configuration';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_426548edc19870e962b044729e278831'] = 'Enable Wirecard SEPA Direct Debit Core';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f65bdb1c5182d7d8d77a0b11aaa343a6'] = 'Wirecard SEPA Direct Debit Core';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_426548edc19870e962b044729e278831'] = 'Enable Wirecard SEPA Direct Debit';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_aed28b72507b13143d19b6c77f13fbfa'] = 'Enable Wirecard SEPA Credit Transfer';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f65bdb1c5182d7d8d77a0b11aaa343a6'] = 'Wirecard SEPA Direct Debit';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_346c7b891f475e4bc134649bcdf1d7e1'] = 'Creditor ID';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f3705af8c33f89b5b4c0ee7a088b5835'] = 'Creditor Name';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_3eb201ccc510e8fefd34b471773245bb'] = 'Creditor City';
@@ -80,8 +81,6 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_ac5742c34d7b5f6195
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_94966d90747b97d1f0f206c98a8b1ac3'] = 'Submit';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_232af38d3a74ae8be0a56ab9a9fdf0b7'] = 'E-mail delivery error';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_fc857af0493671d809f8ab52b4c301d6'] = 'E-mail sent successfully';
-$_MODULE['<{wirecardpaymentgateway}prestashop>ajax_caeeed371c2430eeccd1d60ea54e99a9'] = 'Please check your credentials.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>ajax_1b600b2774dee5d5f5271487938a3aed'] = 'Merchant configuration was successfully tested.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_6d20985dbc6eecd155b9341579e3e2d1'] = 'You have canceled the payment process.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_98bfb0bbdabef6022f69f81e23c76721'] = 'An error occurred during the payment process.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_07d799ec6591cb484ec0ab41afd0798a'] = 'Test result';
@@ -101,7 +100,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_d3d2e617335f08df8359966
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_402801b058fe4fc69937364667da0418'] = 'Credit card selection';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ea4788705e6873b424c65e91c2846b19'] = 'Cancel';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_31e7f99eb9f1918c29abdd5d4e2e912a'] = 'Use saved credit card';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_9109ca1876b166421ed0fcc12bd9077a'] = 'Credit Card is selected. To use another Credit Card, click "Use new Credit Card"';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_9109ca1876b166421ed0fcc12bd9077a'] = 'Credit Card is selected. To use another Credit Card, click \"Use new Credit Card\"';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_c5187f008358919bc383597416a7d3be'] = 'Use new Credit Card';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_0c9c2a01eb3ea460b9790e46da5ce930'] = 'Save for later use.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_311d14b15bf1a2c4314d9a34b441317f'] = 'You are being redirected. Please wait';
@@ -122,12 +121,11 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_a0610cdb3720a50171c65
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_08ee425c0aac8ca9fbcf8c34abdd30ca'] = 'I authorize the creditor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_73ead7098acb92ad0d54c24680b320d8'] = 'to send instructions to my bank to collect one single direct debit from my account. At the same time I instruct my bank to debit my account in accordance with the instructions from the creditor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_37ccbaa9c68c539791a4b57fbbf6e65f'] = 'Note: As part of my rights, I am entitled to a refund under the terms and conditions of my agreement with my bank. A refund must be claimed within 8 weeks starting from the date on which my account was debited.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_349f45fb83d427f33f8f244dcbde4170'] =  'I irrevocably agree that, in the event that the direct debit is not honored, or objection against the direct debit exists, my bank will disclose to the creditor creditor name my full name, address and date of birth.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_349f45fb83d427f33f8f244dcbde4170'] = 'I irrevocably agree that, in the event that the direct debit is not honored, or objection against the direct debit exists, my bank will disclose to the creditor creditor name my full name, address and date of birth.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ff342be8205b815771dd652808802afe'] = 'my full name, address and date of birth.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_1f2da6d218c4c9349808a0788df08401'] = 'I have read and accepted the SEPA Direct Debit Mandate information.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ea4788705e6873b424c65e91c2846b19'] = 'Cancel';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_70d9be9b139893aa6c69b5e77e614311'] = 'Confirm';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_31112aca11d0e9e6eb7db96f317dda49'] = 'Transactions';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_db5eb84117d06047c97c9a0191b5fffe'] = 'Support';
-$_MODULE['<{wirecardpaymentgateway}prestashop>infos_e4bb1d85b05e3ba4ae43614f9903dc75'] = 'Registration for new customers';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_ed1ee759e0022e265c7f41a3b5865f39'] = 'General Information regarding Wirecard Shop Plugins';
