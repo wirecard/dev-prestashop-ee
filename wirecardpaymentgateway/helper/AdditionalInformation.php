@@ -190,15 +190,19 @@ class AdditionalInformation
     public function createAddressData($source, $type)
     {
         $country = new \Country($source->id_country);
-        if ('shipping' == $type) {
-            $address = new Address($country->iso_code, $source->city, $source->address1);
-            $address->setPostalCode($source->postcode);
-        } else {
-            $address = new Address($country->iso_code, $source->city, $source->address1);
-            $address->setPostalCode($source->postcode);
-            if (\Tools::strlen($source->address2)) {
-                $address->setStreet2($source->address2);
-            }
+
+        $state = (new \State($source->id_state))->iso_code;
+        $state = $this->sanitizeState($country, $state);
+
+        $address = new Address($country->iso_code, $source->city, $source->address1);
+        $address->setPostalCode($source->postcode);
+
+        if (\Tools::strlen($source->address2)) {
+            $address->setStreet2($source->address2);
+        }
+
+        if (\Tools::strlen($state)) {
+            $address->setState($state);
         }
 
         return $address;
@@ -227,5 +231,23 @@ class AdditionalInformation
         } else {
             return \Tools::getRemoteAddr();
         }
+    }
+
+    /**
+     * Sanitizes the state before conversion.
+     *
+     * @param Prestashop\Country $country
+     * @param string $state
+     * @return string
+     * @since 1.2.0
+     */
+    private function sanitizeState($country, $state)
+    {
+        // The only diversion from ISO 3166 so we can safely/reasonably do this.
+        if ($country->iso_code === 'ID' && \Tools::strlen($state)) {
+            $state = str_replace('ID-', '', $state);
+        }
+
+        return $state;
     }
 }
