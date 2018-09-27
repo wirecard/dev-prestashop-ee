@@ -288,8 +288,12 @@ class PaymentCreditCard extends Payment
 
         if (isset($values['expiration_year']) && isset($values['expiration_month'])) {
             $card = new Card();
-            $card->setExpirationYear(intval($values['expiration_year']));
-            $card->setExpirationMonth(intval($values['expiration_month']));
+
+            $expirationYear = (int) $values['expiration_year'];
+            $expirationMonth = (int) $values['expiration_month'];
+
+            $card->setExpirationYear($expirationYear);
+            $card->setExpirationMonth($expirationMonth);
             $transaction->setCard($card);
         }
 
