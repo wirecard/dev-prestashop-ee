@@ -89,7 +89,7 @@ class PaymentSepaDirectDebit extends Payment
                 ),
                 array(
                     'name' => 'title',
-                    'label' => 'Title',
+                    'label' => $this->translate('title'),
                     'type' => 'text',
                     'default' => $this->translate('sepa_title_doc'),
                     'required' => true,
@@ -156,7 +156,6 @@ class PaymentSepaDirectDebit extends Payment
                     'label'   => $this->translate('sepa_creditor_additional_text_doc'),
                     'type'    => 'textarea',
                     'doc'     => $this->translate('sepa_creditor_additional_text_des_doc'),
-                    'empty_message' => $this->translate('sepa_creditor_additional_todo_doc'),
                     'default' => '',
                     'required' => false,
                 ),

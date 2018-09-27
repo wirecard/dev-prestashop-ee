@@ -90,7 +90,7 @@ class PaymentIdeal extends Payment
                 ),
                 array(
                     'name' => 'title',
-                    'label' => 'Title',
+                    'label' => $this->translate('title'),
                     'type' => 'text',
                     'default' => $this->translate('ideal_title_doc'),
                     'required' => true,
