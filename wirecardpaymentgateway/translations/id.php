@@ -57,7 +57,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_163033f9311
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_c453a4b8e8d98e82f35b67f433e3b4da'] = 'Pembayaran';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b7eb9cae77e1fbef8b41be2571d75525'] = 'Pembayaran di Muka untuk Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_261280804ae66abef799911d663fa943'] = 'Pembayaran Berdasarkan Faktur untuk Wirecard';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4af6d13f8098e3cff9ddb697747b8b44'] = 'Test configuration';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4af6d13f8098e3cff9ddb697747b8b44'] = 'Konfigurasi tes';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_2ac67fc29b72691134dddeb6fd243681'] = 'Aktifkan Przelewy24 Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_05276388004ffb8a566ad86641eb2288'] = 'Przelewy24 Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6b30bcb4ba9a4540dce094cca752babf'] = 'Konfigurasi tes';
