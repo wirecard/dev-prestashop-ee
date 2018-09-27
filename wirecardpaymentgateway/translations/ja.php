@@ -10,6 +10,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_00d23a76e43
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b9f5c797ebbf55adccdd8539a65a0241'] = 'Disabled';//no translation
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_860e567ae53d5ead9d222c8f3e54ad27'] = 'Payment method settings';//no translation
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_c9cc8cce247e49bae79f15173ce97354'] = '保存する';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b78a3223503896721cca1303f776159b'] = 'Title';//no translation
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_be55169924f6f08c5527fe6606d302a2'] = 'MAID';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_5eb6bb157528b365f84c27bb4784031b'] = 'シークレットキー';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_ade86bc4899761ad46c52e381b6228bb'] =  'ベースURL';
@@ -56,6 +57,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_163033f9311
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_c453a4b8e8d98e82f35b67f433e3b4da'] = '支払';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b7eb9cae77e1fbef8b41be2571d75525'] = '事前のWirecard支払';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_261280804ae66abef799911d663fa943'] = '請求書でのWirecard支払';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4af6d13f8098e3cff9ddb697747b8b44'] = '試験の構成';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_2ac67fc29b72691134dddeb6fd243681'] = 'Wirecard Przelewy24を有効化する';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_05276388004ffb8a566ad86641eb2288'] = 'Wirecard Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6b30bcb4ba9a4540dce094cca752babf'] = '試験の構成';
@@ -66,7 +68,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_346c7b891f4
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f3705af8c33f89b5b4c0ee7a088b5835'] = '債権者名';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_3eb201ccc510e8fefd34b471773245bb'] = '債権者の都市';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_2b2ea3c3ca866b487bd8fba2148ca475'] = '追加のテキスト';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4e50ab54852a41efc3e581c82d89fe79'] = 'このテキストはSEPA Direct Debit Mandateページの第１段落の終わり に表示されます。';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6b6ad9459bb228148b2d7e3aeeba2b39'] = 'このテキストはSEPA Direct Debit Mandateページの第１段落の終わり に表示されます。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_7132f671f703ea974161a73f59c074cd'] = 'BICが有効です。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a8f1bb2e53016177743a46b32011111b'] = '試験の構成';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_24c32a5c4652330d5e87c6d1b64bfe2a'] = 'Wirecard Sofortを有効化する';
@@ -123,8 +125,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_a0610cdb3720a50171c65
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_08ee425c0aac8ca9fbcf8c34abdd30ca'] = '債権者が';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_73ead7098acb92ad0d54c24680b320d8'] = '私の口座から1回のダイレクトデビットを回収するように、私の銀行に指示を送信することを許可します。同時に、私は、債権者からの指示に従い、私の銀行が口座から引き落とすように銀行に指示します。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_37ccbaa9c68c539791a4b57fbbf6e65f'] = '注記：私の権利の一部として、私は、銀行との合意の条項および条件に基づき、返金を受け取る資格があります。返金は、私の口座から引き落としがあった日から起算して8週間以内に請求する必要があります。';
-$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_349f45fb83d427f33f8f244dcbde4170'] = '私は、取消不能の形式で、ダイレクトデビットが無効になった場合や、ダイレクトデビットに対する異議が存在する場合には、私の銀行が債権者creditor nameに対して私の氏名、住所、生年月日を開示することに同意します。';
-$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ff342be8205b815771dd652808802afe'] = 'my full name, address and date of birth.';//no translation
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_349f45fb83d427f33f8f244dcbde4170'] = '私は、取消不能の形式で、ダイレクトデビットが無効になった場合や、ダイレクトデビットに対する異議が存在する場合には、私の銀行が債権者';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ff342be8205b815771dd652808802afe'] = 'に対して私の氏名、住所、生年月日を開示することに同意します。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_1f2da6d218c4c9349808a0788df08401'] = '私は、SEPAダイレクトデビットマンデート情報を読んで同意しました。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ea4788705e6873b424c65e91c2846b19'] = 'キャンセルする';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_70d9be9b139893aa6c69b5e77e614311'] = '確認する';

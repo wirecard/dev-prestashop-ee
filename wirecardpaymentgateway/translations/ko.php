@@ -10,6 +10,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_00d23a76e43
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b9f5c797ebbf55adccdd8539a65a0241'] = 'Disabled';//no translation
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_860e567ae53d5ead9d222c8f3e54ad27'] = 'Payment method settings';//no translation
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_c9cc8cce247e49bae79f15173ce97354'] = '저장';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b78a3223503896721cca1303f776159b'] = 'Title';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_be55169924f6f08c5527fe6606d302a2'] = 'MAID';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_5eb6bb157528b365f84c27bb4784031b'] = '비밀키';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_ade86bc4899761ad46c52e381b6228bb'] = '기본 URL';
@@ -56,6 +57,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_163033f9311
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_c453a4b8e8d98e82f35b67f433e3b4da'] = '결제';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b7eb9cae77e1fbef8b41be2571d75525'] = 'Wirecard 사전 결제';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_261280804ae66abef799911d663fa943'] = 'Wirecard 송장 결제';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4af6d13f8098e3cff9ddb697747b8b44'] = '테스트 구성';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_2ac67fc29b72691134dddeb6fd243681'] = 'Wirecard Przelewy24 사용';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_05276388004ffb8a566ad86641eb2288'] = 'Wirecard Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6b30bcb4ba9a4540dce094cca752babf'] = '테스트 구성';
@@ -66,7 +68,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_346c7b891f4
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f3705af8c33f89b5b4c0ee7a088b5835'] = '채권자 이름';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_3eb201ccc510e8fefd34b471773245bb'] = '채권자 도시';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_2b2ea3c3ca866b487bd8fba2148ca475'] = '추가 텍스트';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4e50ab54852a41efc3e581c82d89fe79'] = '이 텍스트는 SEPA 자동 이체 위임 페이지의 첫 번째 문단 마지막에 표시됩니다.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6b6ad9459bb228148b2d7e3aeeba2b39'] = '이 텍스트는 SEPA 자동 이체 위임 페이지의 첫 번째 문단 마지막에 표시됩니다.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_7132f671f703ea974161a73f59c074cd'] = 'BIC 사용 설정됨';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a8f1bb2e53016177743a46b32011111b'] = '테스트 구성';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_24c32a5c4652330d5e87c6d1b64bfe2a'] = 'Wirecard Sofort. 사용';
@@ -123,8 +125,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_a0610cdb3720a50171c65
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_08ee425c0aac8ca9fbcf8c34abdd30ca'] = '본인은 채권자가 본인의 계좌에서';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_73ead7098acb92ad0d54c24680b320d8'] = '한 건의 자동 이체를 수취할 수 있도록 은행에 요청합니다. 또한, 본인은 채권자의 지시에 따라 계좌에서 금액을 인출하도록 은행에 요청합니다';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_37ccbaa9c68c539791a4b57fbbf6e65f'] = '참고: 본인은 권리의 일부로서, 은행 이용 약관에 따라 환불받을 권리가 있습니다. 환불은 본인 계좌에서 인출된 날로부터 8주 이내에 청구되어야 합니다.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_349f45fb83d427f33f8f244dcbde4170'] = '본인의 계좌에서 금액이 이체되지 않거나 계좌 이체에 이의가 제기될 경우, 은행은 채권자 creditor name에게 본인의 성명, 주소, 생년월일을 제공합니다.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ff342be8205b815771dd652808802afe'] = 'my full name, address and date of birth.';//no translation
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_349f45fb83d427f33f8f244dcbde4170'] = '본인의 계좌에서 금액이 이체되지 않거나 계좌 이체에 이의가 제기될 경우, 은행은 채권자';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ff342be8205b815771dd652808802afe'] = '에게 본인의 성명, 주소, 생년월일을 제공합니다.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_1f2da6d218c4c9349808a0788df08401'] = '본인은 SEPA 자동 이체 신청서를 확인했으며 이에 동의합니다.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_ea4788705e6873b424c65e91c2846b19'] = '취소';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_70d9be9b139893aa6c69b5e77e614311'] = '확인';

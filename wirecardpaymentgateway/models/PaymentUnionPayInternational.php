@@ -89,7 +89,7 @@ class PaymentUnionPayInternational extends Payment
                 ),
                 array(
                     'name' => 'title',
-                    'label' => 'Title',
+                    'label' => $this->translate('title'),
                     'type' => 'text',
                     'default' => $this->translate('upi_title_doc'),
                     'required' => true,

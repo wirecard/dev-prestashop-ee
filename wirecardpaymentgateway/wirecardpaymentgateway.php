@@ -965,6 +965,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function getTranslations()
     {
         return array(
+            'title' => $this->l('Title'),
             'merchant_id_doc' => $this->l('Merchant Account ID'),
             'secret_key_doc' => $this->l('Secret Key'),
             'base_url_doc' => $this->l('Base URL'),
@@ -1018,8 +1019,7 @@ class WirecardPaymentGateway extends PaymentModule
             'poipia_payment_action_doc' => $this->l('Payment'),
             'poipia_pia_action_doc' => $this->l('Payment in Advance'),
             'poipia_poi_action_doc' => $this->l('Payment on Invoice'),
-            'poipia_test_config_butoon_doc' => $this->l('Test Payment on Invoice / Payment in Advance
-                configuration'),
+            'poipia_test_config_butoon_doc' => $this->l('Test Payment on Invoice / Payment in Advance configuration'),
 
             'p24_enable_doc' => $this->l('Enable Wirecard Przelewy24'),
             'p24_title_doc' => $this->l('Wirecard Przelewy24'),
@@ -1032,9 +1032,7 @@ class WirecardPaymentGateway extends PaymentModule
             'sepa_creditor_name_doc' => $this->l('Creditor Name'),
             'sepa_creditor_city_doc' => $this->l('Creditor City'),
             'sepa_creditor_additional_text_doc' => $this->l('Additional text'),
-            'sepa_creditor_additional_text_des_doc' => $this->l('Text entered here will be shown on the SEPA
-                mandate page at the end of the first paragraph.'),
-            'sepa_creditor_additional_todo_doc' => $this->l('Click here and type your text'),
+            'sepa_creditor_additional_text_des_doc' => $this->l('Text entered here will be shown on the SEPA mandate page at the end of the first paragraph.'),
             'sepa_bic_doc' => $this->l('BIC enabled'),
             'sepa_test_config_butoon_doc' => $this->l('Test SEPA configuration'),
 
