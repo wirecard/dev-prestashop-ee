@@ -87,7 +87,7 @@ class PaymentPaypal extends Payment
                 ),
                 array(
                     'name' => 'title',
-                    $this->translate('title'),
+                    'label' => $this->translate('title'),
                     'type' => 'text',
                     'default' => $this->translate('paypal_title_doc'),
                     'required' => true,
