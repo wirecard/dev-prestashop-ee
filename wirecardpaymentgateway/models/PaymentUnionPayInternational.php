@@ -206,7 +206,8 @@ class PaymentUnionPayInternational extends Payment
      */
     public function getRequestData($module, $context)
     {
-        $languageCode = $context->language->iso_code;
+        $baseUrl = $module->getConfigValue($this->type, 'base_url');
+        $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
         $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
@@ -264,5 +265,40 @@ class PaymentUnionPayInternational extends Payment
         $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
+    }
+
+    /**
+     * Get supported language code for hpp seamless form renderer
+     *
+     * @param string $baseUrl
+     * @param \Context $context
+     * @return mixed|string
+     * @since 1.3.3
+     */
+    private function getSupportedHppLangCode($baseUrl, $context)
+    {
+        $isoCode = $context->language->iso_code;
+        $languageCode = $context->language->language_code;
+        $language = 'en';
+        //special case for chinese languages
+        switch ($languageCode) {
+            case 'zh-tw':
+                $isoCode = 'zh_TW';
+                break;
+            case 'zh-cn':
+                $isoCode = 'zh_CN';
+                break;
+            default:
+                break;
+        }
+        try {
+            $supportedLang = json_decode(file_get_contents($baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'));
+            if (key_exists($isoCode, $supportedLang)) {
+                $language = $isoCode;
+            }
+        } catch (\Exception $exception) {
+            return 'en';
+        }
+        return $language;
     }
 }
