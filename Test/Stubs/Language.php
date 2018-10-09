@@ -40,6 +40,6 @@ class Language
 
     public static function getLanguages()
     {
-        return array(array('id_lang' => 'de', 'iso_code' => 'de'), array('id_lang' => 'en', 'iso_code' => 'en'));
+        return array(array('id_lang' => 'de', 'iso_code' => 'de', 'language_code' => 'de-de'), array('id_lang' => 'en', 'iso_code' => 'en', 'language_code' => 'en-en'));
     }
 }
