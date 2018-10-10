@@ -87,11 +87,11 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn($this->config[0]);
-        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn($this->config[1]);
-        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn($this->config[2]);
-        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn($this->config[3]);
-        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[4]);
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn($this->config[1]);
+        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn($this->config[2]);
+        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn($this->config[3]);
+        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn($this->config[4]);
+        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[5]);
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config(
