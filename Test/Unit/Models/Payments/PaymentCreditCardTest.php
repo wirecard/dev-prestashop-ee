@@ -93,8 +93,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        for ($i = 1; $i <= 14; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
+        for ($i = 0; $i <= 13; $i++) {
+            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i + 1]);
         }
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
