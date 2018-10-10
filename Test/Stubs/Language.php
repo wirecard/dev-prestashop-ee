@@ -37,6 +37,7 @@ class Language
 {
     public $id = 'test';
     public $iso_code = 'en';
+    public $language_code = 'en-us';
 
     public static function getLanguages()
     {

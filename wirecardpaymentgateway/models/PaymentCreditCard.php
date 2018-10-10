@@ -390,7 +390,9 @@ class PaymentCreditCard extends Payment
                 break;
         }
         try {
-            $supportedLang = json_decode(file_get_contents($baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'));
+            $supportedLang = json_decode(file_get_contents(
+                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
+            ));
             if (key_exists($isoCode, $supportedLang)) {
                 $language = $isoCode;
             }
