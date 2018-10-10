@@ -49,7 +49,7 @@ $(document).ready(
                 e.preventDefault();
 
                 $.ajax({
-                    url: ajaxsepaurl + '?action=sepamandate',
+                    url: ajaxsepaurl.indexOf('?') ? ajaxsepaurl + '&action=sepamandate' : ajaxsepaurl + '?action=sepamandate',
                     type: "GET",
                     dataType: 'json',
                     success: function (response) {
