@@ -2,14 +2,6 @@ sudo: false
 dist: trusty
 language: php
 
-cache:
-  directories:
-    - $HOME/.sonar/cache
-
-addons:
-  sonarcloud:
-    organization: "wirecard"
-
 php:
   - 7.1
   - 7.0

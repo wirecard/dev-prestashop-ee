@@ -49,6 +49,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
     {
         $this->config = array(
             'base_url',
+            'base_url',
             'http_user',
             'http_pass',
             'merchant_account_id',
@@ -86,11 +87,11 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn($this->config[0]);
-        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn($this->config[1]);
-        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn($this->config[2]);
-        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn($this->config[3]);
-        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[4]);
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn($this->config[1]);
+        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn($this->config[2]);
+        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn($this->config[3]);
+        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn($this->config[4]);
+        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn($this->config[5]);
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config(
@@ -153,7 +154,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
             'attempt_three_d' => false
         );
 
-        for ($i = 0; $i <= 4; $i++) {
+        for ($i = 0; $i <= 5; $i++) {
             $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
         }
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context));
