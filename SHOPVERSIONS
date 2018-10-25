@@ -1,0 +1,35 @@
+[
+  {
+    "release": "1.3.2",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.4.3",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Update English language strings",
+      "Update handling of credit card expiration dates"
+    ]
+  },
+
+  {
+    "release": "1.3.1",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.4.2",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Update paymentSDK version",
+      "Split SEPA into SEPA Direct Debit and SEPA Credit Transfer payment methods",
+      "Add state variable to PayPal",
+      "Implemented compatibility with PrestaShop 1.7.4.2"
+    ]
+  },
+
+  {
+    "release": "1.2.5",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.3.4",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Update of plugin order identification"
+    ]
+  }
+]
