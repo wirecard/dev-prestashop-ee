@@ -10,6 +10,7 @@
 
     <!-- Paths to check -->
     <file>.</file>
+    <exclude-pattern>./.bin/*</exclude-pattern>
     <exclude-pattern>./vendor/*</exclude-pattern>
     <exclude-pattern>./Test/stubs/*</exclude-pattern>
     <exclude-pattern>./translations/*</exclude-pattern>
