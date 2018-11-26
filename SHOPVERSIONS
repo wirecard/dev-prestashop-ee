@@ -1,5 +1,17 @@
 [
   {
+    "release": "1.3.3",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.4.3",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Add seamless renderform language support",
+      "Add automatic release scripts",
+      "Update code quality tools"
+    ]
+  },
+  
+  {
     "release": "1.3.2",
     "shopsystem": "PrestaShop",
     "tested": "1.7.4.3",
