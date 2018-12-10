@@ -29,6 +29,6 @@
  *}
 
 <section>
-  <p>{l s='If additional information implement here' d='wirecardpaymentgateway'}
+  <p>{l s='if_additional_info_add_here' d='wirecardpaymentgateway'}
   </p>
 </section>

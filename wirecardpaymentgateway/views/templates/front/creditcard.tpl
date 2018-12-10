@@ -33,10 +33,10 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="{l s='Close' mod='wirecardpaymentgateway'}">
+                <button type="button" class="close" data-dismiss="modal" aria-label="{l s='text_close' mod='wirecardpaymentgateway'}">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h2>{l s='Credit card selection' mod='wirecardpaymentgateway'}</h2>
+                <h2>{l s='text_creditcard_selection' mod='wirecardpaymentgateway'}</h2>
             </div>
             <div class="modal-body">
                 <table class="table table-hover">
@@ -44,18 +44,18 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{l s='Cancel' mod='wirecardpaymentgateway'}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{l s='cancel' mod='wirecardpaymentgateway'}</button>
             </div>
         </div>
     </div>
 </div>
 
-<button id="stored-card" class="btn btn-primary" data-toggle="modal" data-target="#wirecard-ccvault-modal">{l s='Use stored credit card' mod='wirecardpaymentgateway'}</button>
-<div id="new-card-text" class="invisible">{l s='Credit Card is selected. To use another Credit Card, click on button below.' mod='wirecardpaymentgateway'}</div>
-<button id="new-card" class="invisible btn btn-primary">{l s='Use new credit card' mod='wirecardpaymentgateway'}</button>
+<button id="stored-card" class="btn btn-primary" data-toggle="modal" data-target="#wirecard-ccvault-modal">{l s='vault_use_existing_text' mod='wirecardpaymentgateway'}</button>
+<div id="new-card-text" class="invisible">{l s='selected_creditcard_info' mod='wirecardpaymentgateway'}</div>
+<button id="new-card" class="invisible btn btn-primary">{l s='vault_use_new_text' mod='wirecardpaymentgateway'}</button>
 {/if}
 <div id="payment-processing-gateway-credit-card-form">
 </div>
 {if $ccvaultenabled == 'true'}
-    <label for="wirecard-store-card"><input type="checkbox" id="wirecard-store-card" /> {l s='Save for later use.' mod='wirecardpaymentgateway'}</label>
+    <label for="wirecard-store-card"><input type="checkbox" id="wirecard-store-card" /> {l s='vault_save_text' mod='wirecardpaymentgateway'}</label>
 {/if}

@@ -39,18 +39,18 @@
             $(function () {
                 $(document).ready(function(){
                     var translate = {
-                        paypal:'paypal',
-                        creditcard:'credit Card',
-                        sepadirectdebit:'sepa direct debit',
-                        sepacredittransfer:'sepa credit transfer',
-                        ideal:'ideal',
-                        sofort:'sofort.',
-                        poipia:'Payment on Invoice / Payment in Advance (POI/PIA)',
-                        invoice:'invoice',
-                        'alipay-xborder':'alipay crossborder',
-                        p24:'przelewy24',
-                        masterpass:'masterpass',
-                        unionpayinternational:'unionpay international'
+                        paypal:'{l s='paypal' mod='wirecardpaymentgateway'}',
+                        creditcard:'{l s='creditcard' mod='wirecardpaymentgateway'}',
+                        sepadirectdebit:'{l s='sepadd' mod='wirecardpaymentgateway'}',
+                        sepacredittransfer:'{l s='sepact' mod='wirecardpaymentgateway'}',
+                        ideal:'{l s='ideal' mod='wirecardpaymentgateway'}',
+                        sofort:'{l s='sofortbanking' mod='wirecardpaymentgateway'}',
+                        poipia:'{l s='poi_pia' mod='wirecardpaymentgateway'}',
+                        invoice:'{l s='ratepayinvoice' mod='wirecardpaymentgateway'}',
+                        'alipay-xborder':'{l s='alipay_crossborder' mod='wirecardpaymentgateway'}',
+                        p24:'{l s='ptwentyfour' mod='wirecardpaymentgateway'}',
+                        masterpass:'{l s='masterpass' mod='wirecardpaymentgateway'}',
+                        unionpayinternational:'{l s='upi' mod='wirecardpaymentgateway'}'
                     };
                     $("a[data-toggle=tab]").each(function() {
                         $(this).html(translate[$(this).html().toLowerCase()]);
@@ -73,10 +73,10 @@
                         if (jsonData) {
                             $.fancybox({
                                 fitToView: true,
-                                content: '<div><fieldset><legend>{l s='Test result' mod='wirecardpaymentgateway'}</legend>' +
-                                '<label>{l s='Status' mod='wirecardpaymentgateway'}:</label>' +
+                                content: '<div><fieldset><legend>{l s='text_test_result' mod='wirecardpaymentgateway'}</legend>' +
+                                '<label>{l s='config_status' mod='wirecardpaymentgateway'}:</label>' +
                                 '<div class="margin-form" style="text-align:left;">' + jsonData.status + '</div><br />' +
-                                '<label>{l s='Message' mod='wirecardpaymentgateway'}:</label>' +
+                                '<label>{l s='text_message' mod='wirecardpaymentgateway'}:</label>' +
                                 '<div class="margin-form" style="text-align:left;">' + jsonData.message + '</div></fieldset></div>'
                             });
                         }
