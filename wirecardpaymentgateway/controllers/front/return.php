@@ -97,10 +97,10 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                     'id_order' => (int)$orderId
                 );
                 if ($paymentState == 'cancel') {
-                    $this->errors = $this->l('You have canceled the payment process.');
+                    $this->errors = $this->l('canceled_payment_process');
                 }
             } else {
-                $this->errors = $this->l('Something went wrong during the payment process.');
+                $this->errors = $this->l('order_error');
             }
             $this->redirectWithNotifications(
                 $this->context->link->getPageLink('order', true, $order->id_lang, $params)

@@ -67,10 +67,10 @@ class WirecardAjaxController extends ModuleAdminController
                 $transactionService = new TransactionService($config, new Logger());
 
                 $status = 'error';
-                $message = $this->l('Please check your credentials.');
+                $message = $this->l('error_credentials');
                 if ($transactionService->checkCredentials()) {
                     $status = 'ok';
-                    $message = $this->l('The merchant configuration was successfully tested.');
+                    $message = $this->l('success_credentials');
                 }
 
                 die(Tools::jsonEncode(

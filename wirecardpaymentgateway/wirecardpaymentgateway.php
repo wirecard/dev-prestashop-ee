@@ -105,9 +105,9 @@ class WirecardPaymentGateway extends PaymentModule
 
         parent::__construct();
 
-        $this->displayName = $this->l('Wirecard Payment Processing Gateway');
-        $this->description = $this->l('Wirecard Payment Processing Gateway Plugin for Prestashop.');
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
+        $this->displayName = $this->l('module_display_name');
+        $this->description = $this->l('module_description');
+        $this->confirmUninstall = $this->l('confirm_uninstall');
 
         $this->config = $this->getPaymentFields();
     }
@@ -170,32 +170,56 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function installTabs()
     {
+        $key = 'heading_title_transaction_details';
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardTransactions';
         $tab->name = array();
+        $tab->name[1] = $key;
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = 'Wirecard Transactions';
+            $translated_string = $this->getTranslationForLanguage(
+                $lang['iso_code'],
+                $key,
+                $this->name
+            );
+            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
+                $translated_string : $tab->name[1];
         }
         $tab->module = $this->name;
         $tab->add();
 
+        $key = 'heading_title_support';
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardSupport';
         $tab->name = array();
+        $tab->name[1] = $key;
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = 'Wirecard Support';
+            $translated_string = $this->getTranslationForLanguage(
+                $lang['iso_code'],
+                $key,
+                $this->name
+            );
+            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
+                $translated_string : $tab->name[1];
         }
         $tab->module = $this->name;
         $tab->add();
 
+        $key = 'heading_title_ajax';
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardAjax';
         $tab->name = array();
+        $tab->name[1] = $key;
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = 'Wirecard Ajax';
+            $translated_string = $this->getTranslationForLanguage(
+                $lang['iso_code'],
+                $key,
+                $this->name
+            );
+            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
+                $translated_string : $tab->name[1];
         }
         $tab->module = $this->name;
         $tab->id_parent = -1;
@@ -604,7 +628,7 @@ class WirecardPaymentGateway extends PaymentModule
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
-        $this->html .= $this->displayConfirmation($this->l('Settings updated'));
+        $this->html .= $this->displayConfirmation($this->l('settings_updated'));
     }
 
     /**
@@ -621,12 +645,12 @@ class WirecardPaymentGateway extends PaymentModule
             array(
                 'id' => 'active_on',
                 'value' => 1,
-                'label' => $this->l('Enabled')
+                'label' => $this->l('text_enabled')
             ),
             array(
                 'id' => 'active_off',
                 'value' => 0,
-                'label' => $this->l('Disabled')
+                'label' => $this->l('text_disabled')
             )
         );
 
@@ -638,12 +662,12 @@ class WirecardPaymentGateway extends PaymentModule
             'form' => array(
                 'tabs' => $tabs,
                 'legend' => array(
-                    'title' => $this->l('Payment method settings'),
+                    'title' => $this->l('payment_method_settings'),
                     'icon' => 'icon-cogs'
                 ),
                 'input' => $inputFields,
                 'submit' => array(
-                    'title' => $this->l('Save')
+                    'title' => $this->l('text_save')
                 )
             ),
         );
@@ -956,97 +980,30 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * get translations for settings and other
+     * Return the translation for a string given a language iso code 'en' 'fr' ..
      *
-     * @return array
+     * @param string $iso_lang language iso code
+     * @param string $key key to translate
+     * @param string $file_name file name without extension
      *
-     * @since 1.1.0
+     * @return string translation
+     * @since 1.3.4?
      */
-    public function getTranslations()
+    public function getTranslationForLanguage($iso_lang, $key, $file_name)
     {
-        return array(
-            'title' => $this->l('Title'),
-            'merchant_id_doc' => $this->l('Merchant Account ID'),
-            'secret_key_doc' => $this->l('Secret Key'),
-            'base_url_doc' => $this->l('Base URL'),
-            'base_url_example_doc' => $this->l('The elastic engine base url. (e.g. https://api.wirecard.com)'),
-            'http_user_doc' => $this->l('HTTP User'),
-            'http_pass_doc' => $this->l('HTTP Password'),
-            'payment_action_doc' => $this->l('Payment Action'),
-            'payment_action_auth_doc' => $this->l('Authorization'),
-            'payment_action_capture_doc' => $this->l('Capture'),
-            'basket_doc' => $this->l('Shopping Basket'),
-            'descriptor_doc' => $this->l('Descriptor'),
-            'send_addit_info_doc' => $this->l('Send Additional Information'),
+        $file = dirname(__FILE__).'/translations/'.$iso_lang.'.php';
+        if (!file_exists($file)) {
+            return $key;
+        }
 
-            'ccard_enable_doc' => $this->l('Enable Wirecard Credit Card'),
-            'ccard_title_doc' => $this->l('Wirecard Credit Card'),
-            'ccard_3d_merchant_id_doc' => $this->l('3-D Secure Merchant Account ID'),
-            'ccard_3d_secret_key_doc' => $this->l('3-D Secure Secret Key'),
-            'ccard_non_3d_max_limit_doc' => $this->l('Non 3-D Secure Max Limit'),
-            'ccard_3d_min_limit_doc' => $this->l('3-D Secure Min Limit'),
-            'ccard_one_click' => $this->l('Enable Recurring Payment'),
-            'ccard_test_config_butoon_doc' => $this->l('Test Credit Card configuration'),
+        include($file);
+        $hashed_key = md5($key);
+        $translation_key = strtolower('<{'.$this->name.'}prestashop>'.$file_name).'_'.$hashed_key;
 
-            'ali_enable_doc' => $this->l('Enable Wirecard Alipay Crossborder'),
-            'ali_title_doc' => $this->l('Wirecard Alipay Crossborder'),
-            'ali_test_config_butoon_doc' => $this->l('Test Alipay Crossborder configuration'),
-
-            'gua_i_enable_doc' => $this->l('Enable Wirecard Guaranteed Invoice'),
-            'gua_i_title_doc' => $this->l('Wirecard Guaranteed Invoice'),
-            'gua_i_bil_ship_doc' => $this->l('Billing/Shipping address must be identical'),
-            'gua_i_allow_ship_doc' => $this->l('Allowed shipping countries'),
-            'gua_i_allow_bill_doc' => $this->l('Allowed billing countries'),
-            'gua_i_allow_currencies_doc' => $this->l('Allowed currencies'),
-            'gua_i_min_doc' => $this->l('Minimum Amount'),
-            'gua_i_max_doc' => $this->l('Maximum Amount'),
-            'gua_i_test_config_butoon_doc' => $this->l('Test Guaranteed Invoice configuration'),
-
-            'ideal_enable_doc' => $this->l('Enable Wirecard iDEAL'),
-            'ideal_title_doc' => $this->l('Wirecard iDEAL'),
-            'ideal_test_config_butoon_doc' => $this->l('Test iDEAL configuration'),
-
-            'master_enable_doc' => $this->l('Enable Wirecard Masterpass'),
-            'master_title_doc' => $this->l('Wirecard Masterpass'),
-            'master_test_config_butoon_doc' => $this->l('Test Masterpass configuration'),
-
-            'paypal_enable_doc' => $this->l('Enable Wirecard PayPal'),
-            'paypal_title_doc' => $this->l('Wirecard PayPal'),
-            'paypal_test_config_butoon_doc' => $this->l('Test PayPal configuration'),
-
-            'poipia_enable_doc' => $this->l('Enable Wirecard Payment on Invoice / Payment in Advance'),
-            'poipia_title_doc' => $this->l('Wirecard Payment on Invoice / Payment in Advance'),
-            'poipia_payment_action_doc' => $this->l('Payment'),
-            'poipia_pia_action_doc' => $this->l('Payment in Advance'),
-            'poipia_poi_action_doc' => $this->l('Payment on Invoice'),
-            // @codingStandardsIgnoreStart
-            'poipia_test_config_butoon_doc' => $this->l('Test Payment on Invoice / Payment in Advance configuration'),
-            // @codingStandardsIgnoreEnd
-
-            'p24_enable_doc' => $this->l('Enable Wirecard Przelewy24'),
-            'p24_title_doc' => $this->l('Wirecard Przelewy24'),
-            'p24_test_config_butoon_doc' => $this->l('Test Przelewy24 configuration'),
-
-            'sepa_enable_doc' => $this->l('Enable Wirecard SEPA'),
-            'sepact_enable_doc' => $this->l('Enable Wirecard SEPA Credit Transfer'),
-            'sepa_title_doc' => $this->l('Wirecard SEPA'),
-            'sepa_creditor_id_doc' => $this->l('Creditor ID'),
-            'sepa_creditor_name_doc' => $this->l('Creditor Name'),
-            'sepa_creditor_city_doc' => $this->l('Creditor City'),
-            'sepa_creditor_additional_text_doc' => $this->l('Additional text'),
-            // @codingStandardsIgnoreStart
-            'sepa_creditor_additional_text_des_doc' => $this->l('Text entered here will be shown on the SEPA mandate page at the end of the first paragraph.'),
-            // @codingStandardsIgnoreEnd
-            'sepa_bic_doc' => $this->l('BIC enabled'),
-            'sepa_test_config_butoon_doc' => $this->l('Test SEPA configuration'),
-
-            'sofort_enable_doc' => $this->l('Enable Wirecard Sofort.'),
-            'sofort_title_doc' => $this->l('Wirecard Sofort.'),
-            'sofort_test_config_butoon_doc' => $this->l('Test Sofort. configuration'),
-
-            'upi_enable_doc' => $this->l('Enable UnionPay International'),
-            'upi_title_doc' => $this->l('Wirecard UnionPay International'),
-            'upi_test_config_butoon_doc' => $this->l('Test UnionPay International configuration'),
-        );
+        if (isset($_MODULE[$translation_key])) {
+            return $_MODULE[$translation_key];
+        } else {
+            return $key;
+        }
     }
 }

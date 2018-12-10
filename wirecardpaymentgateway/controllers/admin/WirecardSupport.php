@@ -62,8 +62,8 @@ class WirecardSupportController extends ModuleAdminController
 
         switch ($this->display) {
             case 'add':
-                $this->toolbar_title[] = $this->l('Send support request');
-                $this->addMetaTitle($this->l('Send support request'));
+                $this->toolbar_title[] = $this->l('support_email_title');
+                $this->addMetaTitle($this->l('support_email_title'));
                 break;
         }
     }
@@ -78,7 +78,7 @@ class WirecardSupportController extends ModuleAdminController
             'input' => array(
                 array(
                     'type' => 'text',
-                    'label' => $this->l('Your e-mail address:'),
+                    'label' => $this->l('config_email'),
                     'name' => 'replyto',
                     'required' => true,
                     'validation' => 'isEmail',
@@ -86,13 +86,13 @@ class WirecardSupportController extends ModuleAdminController
                 ),
                 array(
                     'type' => 'textarea',
-                    'label' => $this->l('Your message:'),
+                    'label' => $this->l('config_message'),
                     'name' => 'message'
                 ),
             ),
             'submit' => array(
                 'name' => 'sendrequest',
-                'title' => $this->l('Send'),
+                'title' => $this->l('send_email'),
             )
 
         );
@@ -110,11 +110,11 @@ class WirecardSupportController extends ModuleAdminController
         $this->display = 'add';
         if (Tools::isSubmit('sendrequest')) {
             if (!Tools::getValue('replyto') || !Validate::isEmail(Tools::getValue('replyto'))) {
-                $this->errors[] = Tools::displayError('Please enter a valid e-mail address');
+                $this->errors[] = Tools::displayError($this->l('enter_valid_email_error'));
             }
 
             if (!Tools::getValue('message')) {
-                $this->errors[] = Tools::displayError('Please enter your message');
+                $this->errors[] = Tools::displayError($this->l('enter_email_message_error'));
             }
 
             if (!count($this->errors)) {
@@ -172,9 +172,9 @@ class WirecardSupportController extends ModuleAdminController
         );
 
         if ($res === false) {
-            $this->errors[] = $this->l('There was an error during e-mail delivery');
+            $this->errors[] = $this->l('error_email');
         } else {
-            $this->confirmations[] = $this->l('E-Mail sent successfully');
+            $this->confirmations[] = $this->l('success_email');
         }
     }
 }
