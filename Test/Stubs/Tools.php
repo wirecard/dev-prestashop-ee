@@ -104,4 +104,9 @@ class Tools
     {
         return json_decode($var);
     }
+
+    public static function file_get_contents($var)
+    {
+        return file_get_contents($var);
+    }
 }
