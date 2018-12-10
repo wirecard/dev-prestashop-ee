@@ -394,6 +394,6 @@ class Payment
     private function getClassNameLower()
     {
         $class = get_class($this);
-        return strtolower(substr($class, strrpos($class, '\\') + 1));
+        return \Tools::strtolower(\Tools::substr($class, strrpos($class, '\\') + 1));
     }
 }

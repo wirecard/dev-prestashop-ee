@@ -996,9 +996,10 @@ class WirecardPaymentGateway extends PaymentModule
             return $key;
         }
 
+        $_MODULE = null;
         include($file);
         $hashed_key = md5($key);
-        $translation_key = strtolower('<{'.$this->name.'}prestashop>'.$file_name).'_'.$hashed_key;
+        $translation_key = \Tools::strtolower('<{'.$this->name.'}prestashop>'.$file_name).'_'.$hashed_key;
 
         if (isset($_MODULE[$translation_key])) {
             return $_MODULE[$translation_key];
