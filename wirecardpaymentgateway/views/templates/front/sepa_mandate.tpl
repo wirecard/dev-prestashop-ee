@@ -45,7 +45,7 @@
                                         {/if}
                                         {$creditorStoreCity|escape:'htmlall':'UTF-8'}
                                         {if strlen($creditorName) || strlen($creditorStoreCity)}<br />{/if}
-                                        {l s='creditor_id_input' mod='wirecardpaymentgateway'}{$creditorId|escape:'htmlall':'UTF-8'}<br />
+                                        {l s='creditor_id_input' mod='wirecardpaymentgateway'}: {$creditorId|escape:'htmlall':'UTF-8'}<br />
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
@@ -58,10 +58,10 @@
                                 <tr>
                                     <td class="text11">
                                         <i>{l s='debtor' mod='wirecardpaymentgateway'}</i><br />
-                                        {l s='debtor_acc_owner' mod='wirecardpaymentgateway'}<span class="first_last_name"></span><br />
-                                        {l s='iban' mod='wirecardpaymentgateway'}<span class="bank_iban"></span><br />
+                                        {l s='debtor_acc_owner' mod='wirecardpaymentgateway'}: <span class="first_last_name"></span><br />
+                                        {l s='iban' mod='wirecardpaymentgateway'}: <span class="bank_iban"></span><br />
                                         {if $enableBic == true }
-                                            {l s='bic' mod='wirecardpaymentgateway'}<span class="bank_bic"></span><br />
+                                            {l s='bic' mod='wirecardpaymentgateway'}: <span class="bank_bic"></span><br />
                                         {/if}
                                     </td>
                                     <td width="10%">&nbsp;</td>

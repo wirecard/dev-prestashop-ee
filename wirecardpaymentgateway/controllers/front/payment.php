@@ -74,7 +74,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
-        $paymentType = Tools::getValue('paymentType');
+        $paymentType = \Tools::getValue('paymentType');
         $orderId = $this->createOrder($cart, $paymentType);
 
         /** @var Payment $payment */
@@ -114,11 +114,21 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             }
 
             if ($this->module->getConfigValue($paymentType, 'send_additional')) {
+                $first_name = null;
+                $last_name = null;
+
+                if (\Tools::getValue('first_name') && \Tools::getValue('last_name')) {
+                    $first_name = \Tools::getValue('first_name');
+                    $last_name = \Tools::getValue('last_name');
+                }
+
                 $transaction = $additionalInformation->createAdditionalInformation(
                     $cart,
                     $orderId,
                     $transaction,
-                    $currency->iso_code
+                    $currency->iso_code,
+                    $first_name,
+                    $last_name
                 );
             }
             return $this->executeTransaction($transaction, $config, $operation, $orderId);

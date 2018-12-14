@@ -378,7 +378,7 @@ class Payment
      *
      * @param string $key
      * @return string
-     * @since 1.3.4?
+     * @since >1.3.3
      */
     protected function l($key)
     {
@@ -389,7 +389,7 @@ class Payment
      * Returns the lower case class name of the child class
      *
      * @return string
-     * @since 1.3.4?
+     * @since >1.3.3
      */
     private function getClassNameLower()
     {

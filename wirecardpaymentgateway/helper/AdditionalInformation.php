@@ -130,13 +130,27 @@ class AdditionalInformation
      * @param string $id
      * @param Transaction $transaction
      * @param string $currency
+     * @param string $first_name (optional)
+     * @param string $last_name (optional)
      * @return Transaction
      * @since 1.0.0
      */
-    public function createAdditionalInformation($cart, $id, $transaction, $currency)
-    {
+    public function createAdditionalInformation(
+        $cart,
+        $id,
+        $transaction,
+        $currency,
+        $first_name = null,
+        $last_name = null
+    ) {
         $transaction->setDescriptor($this->createDescriptor($id));
-        $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing'));
+
+        if ($first_name && $last_name) {
+            $transaction->setAccountHolder($this->createCreditCardAccountHolder($cart, $first_name, $last_name));
+        } else {
+            $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing'));
+        }
+
         $transaction->setShipping($this->createAccountHolder($cart, 'shipping'));
         $transaction->setOrderNumber($id);
         $transaction->setBasket($this->createBasket($cart, $transaction, $currency));
@@ -174,6 +188,34 @@ class AdditionalInformation
             if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
                 $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
             }
+        }
+
+        return $accountHolder;
+    }
+
+    /**
+     * Create accountholder for creditcard transaction
+     *
+     * @param Cart $cart
+     * @param string $first_name
+     * @param string $last_name
+     * @return AccountHolder
+     * @since >1.3.3
+     */
+    public function createCreditCardAccountHolder($cart, $first_name, $last_name)
+    {
+        $customer = new \Customer($cart->id_customer);
+        $billing = new \Address($cart->id_address_invoice);
+
+        $accountHolder = new AccountHolder();
+
+        $accountHolder->setAddress($this->createAddressData($billing, 'billing'));
+        $accountHolder->setEmail($customer->email);
+        $accountHolder->setFirstName($first_name);
+        $accountHolder->setLastName($last_name);
+        $accountHolder->setPhone($billing->phone);
+        if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
+            $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
         }
 
         return $accountHolder;
