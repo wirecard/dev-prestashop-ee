@@ -130,8 +130,8 @@ class AdditionalInformation
      * @param string $id
      * @param Transaction $transaction
      * @param string $currency
-     * @param string $first_name (optional)
-     * @param string $last_name (optional)
+     * @param string $firstName (optional)
+     * @param string $lastName (optional)
      * @return Transaction
      * @since 1.0.0
      */
@@ -140,13 +140,13 @@ class AdditionalInformation
         $id,
         $transaction,
         $currency,
-        $first_name = null,
-        $last_name = null
+        $firstName = null,
+        $lastName = null
     ) {
         $transaction->setDescriptor($this->createDescriptor($id));
 
-        if ($first_name && $last_name) {
-            $transaction->setAccountHolder($this->createCreditCardAccountHolder($cart, $first_name, $last_name));
+        if ($lastName) {
+            $transaction->setAccountHolder($this->createCreditCardAccountHolder($cart, $firstName, $lastName));
         } else {
             $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing'));
         }
@@ -197,12 +197,12 @@ class AdditionalInformation
      * Create accountholder for creditcard transaction
      *
      * @param Cart $cart
-     * @param string $first_name
-     * @param string $last_name
+     * @param string $firstName
+     * @param string $lastName
      * @return AccountHolder
-     * @since >1.3.3
+     * @since 1.3.4
      */
-    public function createCreditCardAccountHolder($cart, $first_name, $last_name)
+    public function createCreditCardAccountHolder($cart, $firstName, $lastName)
     {
         $customer = new \Customer($cart->id_customer);
         $billing = new \Address($cart->id_address_invoice);
@@ -211,8 +211,10 @@ class AdditionalInformation
 
         $accountHolder->setAddress($this->createAddressData($billing, 'billing'));
         $accountHolder->setEmail($customer->email);
-        $accountHolder->setFirstName($first_name);
-        $accountHolder->setLastName($last_name);
+        if ($firstName) {
+            $accountHolder->setFirstName($firstName);
+        }
+        $accountHolder->setLastName($lastName);
         $accountHolder->setPhone($billing->phone);
         if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
             $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));

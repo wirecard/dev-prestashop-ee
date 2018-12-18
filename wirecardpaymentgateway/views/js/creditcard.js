@@ -164,23 +164,28 @@ $(document).ready(
                 }
             }
 
-            if (response.hasOwnProperty('first_name') && response.hasOwnProperty('last_name')) {
-                var fields = [ "first_name", "last_name" ];
-                for (var el in  fields) {
-                    el = fields[el];
-                    var element = $("#" + el);
-                    if (element.length > 0) {
-                        element.remove();
-                    } else {
-                        jQuery('<input>').attr(
-                            {
-                                type: 'hidden',
-                                name: el,
-                                id: '#' + el,
-                                value: response[el]
-                            }
-                        ).appendTo(form);
-                    }
+            var fields = [];
+            if (response.hasOwnProperty('last_name')) {
+                fields.push("last_name");
+
+                if (response.hasOwnProperty('first_name')) {
+                    fields.push("first_name");
+                }
+            }
+            for (var el in  fields) {
+                el = fields[el];
+                var element = $("#" + el);
+                if (element.length > 0) {
+                    element.remove();
+                } else {
+                    jQuery('<input>').attr(
+                        {
+                            type: 'hidden',
+                            name: el,
+                            id: '#' + el,
+                            value: response[el]
+                        }
+                    ).appendTo(form);
                 }
             }
 

@@ -987,7 +987,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @param string $file_name file name without extension
      *
      * @return string translation
-     * @since >1.3.3
+     * @since 1.3.4
      */
     public function getTranslationForLanguage($iso_lang, $key, $file_name)
     {

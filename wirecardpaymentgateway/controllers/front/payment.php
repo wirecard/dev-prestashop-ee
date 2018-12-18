@@ -114,12 +114,15 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             }
 
             if ($this->module->getConfigValue($paymentType, 'send_additional')) {
-                $first_name = null;
-                $last_name = null;
+                $firstName = null;
+                $lastName = null;
 
-                if (\Tools::getValue('first_name') && \Tools::getValue('last_name')) {
-                    $first_name = \Tools::getValue('first_name');
-                    $last_name = \Tools::getValue('last_name');
+                if (\Tools::getValue('last_name')) {
+                    $lastName = \Tools::getValue('last_name');
+
+                    if (\Tools::getValue('first_name')) {
+                        $firstName = \Tools::getValue('first_name');
+                    }
                 }
 
                 $transaction = $additionalInformation->createAdditionalInformation(
@@ -127,8 +130,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                     $orderId,
                     $transaction,
                     $currency->iso_code,
-                    $first_name,
-                    $last_name
+                    $firstName,
+                    $lastName
                 );
             }
             return $this->executeTransaction($transaction, $config, $operation, $orderId);
