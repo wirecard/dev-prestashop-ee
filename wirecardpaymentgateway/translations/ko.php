@@ -249,6 +249,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>form_fdfdc9b072cbb18c8956190275b47
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_a60dee7af8c325090597391f009b9125'] = '상태';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_df671beba83658f3f51777f302c59a6e'] = '메시지';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_93f05ad4c93885541f619d9bb1320106'] = '리디렉션 중입니다. 잠시 기다려주십시오';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'I herewith confirm that I have read the <a href=\"https://www.wirecardbank.com/privacy-documents/datenschutzhinweise-fuer-die-wirecard-zahlarten/\" target=\"_blank\">privacy notice</a> and <a target=\"_blank\" href=\"https://www.wirecardbank.com/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/\">additional terms and conditions</a> for Wirecard payment types and that I accept their validity.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_3471b47ae35836a5c315c049f13b211e'] = 'You must agree to the privacy notice and additional terms of Wirecard payment methods.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_65c55738e0d21515c1e026a8dd7eae21'] = '이름';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_b7250955039269f0611a6dab9c340ae9'] = '성';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_945122a0f892e1b60519029eff19f89e'] = 'IBAN';

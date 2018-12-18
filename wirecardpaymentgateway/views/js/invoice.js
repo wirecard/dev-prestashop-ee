@@ -32,12 +32,30 @@ var form = null;
 
 $(document).ready(
     function () {
+        if ($('#payment-processing-gateway-ratepay-form').length > 0) {
+            setDataProtectionInfo();
+        }
         $(document).on('submit','#payment-form', function (e) {
             form = $(this);
+
             if (form.attr('action').search('invoice') >= 0) {
-                $('#invoiceDeviceIdent').attr('type', 'hidden').appendTo(form);
+                if ($('#invoiceDataProtectionCheckbox:checked').val() === '1') {
+                    $('#invoiceDeviceIdent').attr('type', 'hidden').appendTo(form);
+                } else {
+                    e.preventDefault();
+
+                    var hint = document.getElementById('invoiceDataProtectionHint');
+                    hint.style.display = "block";
+                }
             }
         });
+        function setDataProtectionInfo()
+        {
+            var dataProtectionLabelElement = $('#invoiceDataProtectionLabel');
+            var dataProtectionInfo = dataProtectionLabelElement.text();
+            dataProtectionLabelElement.text('');
+            dataProtectionLabelElement.append(dataProtectionInfo);
+        }
     }
 );
 

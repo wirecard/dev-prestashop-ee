@@ -249,6 +249,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>form_fdfdc9b072cbb18c8956190275b47
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_a60dee7af8c325090597391f009b9125'] = 'Status';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_df671beba83658f3f51777f302c59a6e'] = 'Nachricht';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_93f05ad4c93885541f619d9bb1320106'] = 'Sie werden weitergeleitet. Bitte warten.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'Hiermit bestätige ich, dass ich die <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/\">Datenschutzhinweise</a> und zusätzliche <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/\">Geschäftsbedingungen</a> für Wirecard-Zahlarten zur Kenntnis genommen habe und mit deren Geltung einverstanden bin.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_3471b47ae35836a5c315c049f13b211e'] = 'Sie müssen den Datenschutzhinweisen und zusätzlichen Geschäftsbedingungen für Wirecard-Zahlarten zustimmen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_65c55738e0d21515c1e026a8dd7eae21'] = 'First name';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_b7250955039269f0611a6dab9c340ae9'] = 'Last name';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_945122a0f892e1b60519029eff19f89e'] = 'IBAN';
