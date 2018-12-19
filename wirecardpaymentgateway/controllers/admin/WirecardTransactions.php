@@ -77,46 +77,46 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $this->fields_list = array(
             'tx_id' => array(
-                'title' => $this->translator->trans('ID'),
+                'title' => $this->l('panel_transaction'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
             'transaction_id' => array(
-                'title' => $this->translator->trans('Transaction ID'),
+                'title' => $this->l('panel_transcation_id'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
             'parent_transaction_id' => array(
-                'title' => $this->translator->trans('Parent Transaction ID'),
+                'title' => $this->l('panel_parent_transaction_id'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
             'amount' => array(
-                'title' => $this->translator->trans('Amount'),
+                'title' => $this->l('panel_amount'),
                 'align' => 'text-right',
                 'class' => 'fixed-width-xs',
                 'type' => 'price',
             ),
             'currency' => array(
-                'title' => $this->translator->trans('Currency'),
+                'title' => $this->l('panel_currency'),
                 'class' => 'fixed-width-xs',
                 'align' => 'text-right',
             ),
 
             'ordernumber' => array(
-                'title' => $this->translator->trans('Order number'),
+                'title' => $this->l('panel_order_number'),
                 'class' => 'fixed-width-lg',
             ),
             'paymentmethod' => array(
-                'title' => $this->translator->trans('Payment method'),
+                'title' => $this->l('panel_payment_method'),
                 'class' => 'fixed-width-lg',
             ),
             'transaction_type' => array(
-                'title' => $this->translator->trans('Transaction Type'),
+                'title' => $this->l('transactionType'),
                 'class' => 'fixed-width-xs',
             ),
             'transaction_state' => array(
-                'title' => $this->translator->trans('Transaction State'),
+                'title' => $this->l('transactionState'),
                 'class' => 'fixed-width-xs',
             ),
 
@@ -135,7 +135,7 @@ class WirecardTransactionsController extends ModuleAdminController
     public function renderView()
     {
         if (!\Validate::isLoadedObject($this->object)) {
-            $this->errors[] = \Tools::displayError('The transaction cannot be found within your database.');
+            $this->errors[] = \Tools::displayError($this->l('error_no_transaction'));
         }
 
         $transaction = $this->object;
@@ -188,7 +188,7 @@ class WirecardTransactionsController extends ModuleAdminController
         if (\Tools::getValue('action') && \Tools::getValue('tx')) {
             $transaction = $this->createTransaction(\Tools::getValue('tx'));
             if (!Validate::isLoadedObject($transaction)) {
-                $this->errors[] = Tools::displayError('The transcation cannot be found within your database.');
+                $this->errors[] = Tools::displayError($this->l('error_no_transaction'));
             }
 
             $this->handleTransaction($transaction, \Tools::getValue('action'));
@@ -266,7 +266,7 @@ class WirecardTransactionsController extends ModuleAdminController
                 $this->errors[] = $errors;
             }
         } else {
-            $this->errors[] = \Tools::displayError('No valid payment for this transaction found.');
+            $this->errors[] = \Tools::displayError($this->l('transaction_payment_not_found_error'));
         }
         return parent::postProcess();
     }

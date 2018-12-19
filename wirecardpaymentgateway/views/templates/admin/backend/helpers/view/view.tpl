@@ -37,11 +37,11 @@
 {block name="override_tpl"}
     <div class="col-lg-12">
         <div class="panel" style="width: 100%">
-            <h3><i class="icon-group"></i> {l s='Transaction information' mod='wirecardpaymentgateway'}</h3>
-            <h2>{l s='Transaction' mod='wirecardpaymentgateway'} {$transaction_id|escape:'htmlall':'UTF-8'}</h2>
+            <h3><i class="icon-group"></i> {l s='heading_transaction_details' mod='wirecardpaymentgateway'}</h3>
+            <h2>{l s='text_transaction' mod='wirecardpaymentgateway'} {$transaction_id|escape:'htmlall':'UTF-8'}</h2>
             <br>
             <h3>
-                {l s='Payment via' mod='wirecardpaymentgateway'} {$payment_method|escape:'htmlall':'UTF-8'}
+                {$payment_method|escape:'htmlall':'UTF-8'} {l s='payment_suffix' mod='wirecardpaymentgateway'}
             </h3>
             <div><b>{$transaction_type|escape:'htmlall':'UTF-8'}</b> |
                 {if $status == 'closed'}
@@ -52,27 +52,27 @@
             </div>
             <br>
             <div class="wc-order-data-row">
-                <a href="{$backButton|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Back' mod='wirecardpaymentgateway'}</a>
+                <a href="{$backButton|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='back_button' mod='wirecardpaymentgateway'}</a>
                 {if $status != 'closed' and $canCancel }
-                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Cancel Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='text_cancel_transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status != 'closed' and $canCapture }
-                    <a href="{$captureLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Capture Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$captureLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='text_capture_transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status != 'closed' and $canRefund }
-                    <a href="{$refundLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='Refund Transaction' mod='wirecardpaymentgateway'}</a>
+                    <a href="{$refundLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{l s='text_refund_transaction' mod='wirecardpaymentgateway'}</a>
                 {/if}
                 {if $status == 'closed' }
-                    <p class='add-items'>{l s='No Back-end operations available for this transaction' mod='wirecardpaymentgateway'}</p>
+                    <p class='add-items'>{l s='no_post_processing_operations' mod='wirecardpaymentgateway'}</p>
                 {/if}
             </div>
             <hr>
-            <h3>{l s='Responsedata:' mod='wirecardpaymentgateway'}</h3>
+            <h3>{l s='text_response_data' mod='wirecardpaymentgateway'}</h3>
             <div class="order_data_column_container table table-striped">
                 <table>
                     <tr>
                         <td>
-                            <b>{l s='Total' mod='wirecardpaymentgateway'}</b>
+                            <b>{l s='text_total' mod='wirecardpaymentgateway'}</b>
                         </td>
                         <td>
                             <b>{$amount|escape:'htmlall':'UTF-8'} {$currency|escape:'htmlall':'UTF-8'}</b>

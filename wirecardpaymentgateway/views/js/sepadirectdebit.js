@@ -48,8 +48,12 @@ $(document).ready(
             } else {
                 e.preventDefault();
 
+                var params = [{
+                    index: 'action',
+                    data: 'sepamandate'
+                }];
                 $.ajax({
-                    url: ajaxsepaurl.indexOf('?') ? ajaxsepaurl + '&action=sepamandate' : ajaxsepaurl + '?action=sepamandate',
+                    url: processAjaxUrl(ajaxsepaurl, params),
                     type: "GET",
                     dataType: 'json',
                     success: function (response) {
@@ -107,6 +111,7 @@ $(document).ready(
         }
     }
 );
+
 
 
 

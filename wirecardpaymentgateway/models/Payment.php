@@ -139,7 +139,7 @@ class Payment
     /**
      * @var wirecardpaymentgateway
      */
-    private $module;
+    protected $module;
 
 
     /**
@@ -374,17 +374,26 @@ class Payment
     }
 
     /**
-     * @param $string
-     * @return $string
-     * @since 1.0.0
+     * Translation function for payment classes
+     *
+     * @param string $key
+     * @return string
+     * @since 1.3.4?
      */
-    protected function translate($string)
+    protected function l($key)
     {
-        $translations = $this->module->getTranslations();
+        return $this->module->l($key, $this->getClassNameLower());
+    }
 
-        if (isset($translations[$string])) {
-            return $translations[$string];
-        }
-        return $string;
+    /**
+     * Returns the lower case class name of the child class
+     *
+     * @return string
+     * @since 1.3.4?
+     */
+    private function getClassNameLower()
+    {
+        $class = get_class($this);
+        return \Tools::strtolower(\Tools::substr($class, strrpos($class, '\\') + 1));
     }
 }

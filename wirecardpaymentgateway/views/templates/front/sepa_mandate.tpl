@@ -38,14 +38,14 @@
                             <table border="0" width="100%">
                                 <tr>
                                     <td class="text11justify">
-                                        <i>{l s='Creditor' mod='wirecardpaymentgateway'}</i><br />
+                                        <i>{l s='creditor' mod='wirecardpaymentgateway'}</i><br />
                                         {$creditorName|escape:'htmlall':'UTF-8'}
                                         {if strlen($creditorName)}
                                             ,
                                         {/if}
                                         {$creditorStoreCity|escape:'htmlall':'UTF-8'}
                                         {if strlen($creditorName) || strlen($creditorStoreCity)}<br />{/if}
-                                        {l s='Creditor ID:' mod='wirecardpaymentgateway'}{$creditorId|escape:'htmlall':'UTF-8'}<br />
+                                        {l s='creditor_id_input' mod='wirecardpaymentgateway'}{$creditorId|escape:'htmlall':'UTF-8'}<br />
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
@@ -57,11 +57,11 @@
                             <table border="0" width="100%">
                                 <tr>
                                     <td class="text11">
-                                        <i>{l s='Debtor' mod='wirecardpaymentgateway'}</i><br />
-                                        {l s='Account owner:' mod='wirecardpaymentgateway'}<span class="first_last_name"></span><br />
-                                        {l s='IBAN:' mod='wirecardpaymentgateway'}<span class="bank_iban"></span><br />
+                                        <i>{l s='debtor' mod='wirecardpaymentgateway'}</i><br />
+                                        {l s='debtor_acc_owner' mod='wirecardpaymentgateway'}<span class="first_last_name"></span><br />
+                                        {l s='iban' mod='wirecardpaymentgateway'}<span class="bank_iban"></span><br />
                                         {if $enableBic == true }
-                                            {l s='BIC:' mod='wirecardpaymentgateway'}<span class="bank_bic"></span><br />
+                                            {l s='bic' mod='wirecardpaymentgateway'}<span class="bank_bic"></span><br />
                                         {/if}
                                     </td>
                                     <td width="10%">&nbsp;</td>
@@ -74,24 +74,24 @@
                             <table border="0" width="100%">
                                 <tr>
                                     <td class="text11justify">
-                                        {l s='I authorize the creditor ' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_1' mod='wirecardpaymentgateway'}
                                         {$creditorName|escape:'htmlall':'UTF-8'}
-                                        {l s=' to send instructions to my bank to collect one single direct debit from my account. At the same time I instruct my bank to debit my account in accordance with the instructions from the creditor ' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_2' mod='wirecardpaymentgateway'}
                                         {$creditorName|escape:'htmlall':'UTF-8'} {$additionalText|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td class="text11justify">
-                                        {l s='Note: As part of my rights, I am entitled to a refund under the terms and conditions of my agreement with my bank. A refund must be claimed within 8 weeks starting from the date on which my account was debited.' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_3' mod='wirecardpaymentgateway'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td class="text11justify">
-                                        {l s='I irrevocably agree that, in the event that the direct debit is not honored, or objection against the direct debit exists, my bank will disclose to the creditor ' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_4' mod='wirecardpaymentgateway'}
                                         {$creditorName|escape:'htmlall':'UTF-8'}
-                                        {l s=' my full name, address and date of birth.' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_5' mod='wirecardpaymentgateway'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
@@ -117,10 +117,10 @@
             </div>
             <div class="modal-footer">
                 <div class="w-100" style="text-align: left;">
-                    <input type="checkbox" id="sepaCheck">&nbsp;<label for="sepaCheck">{l s='I have read and accepted the SEPA Direct Debit Mandate information.' mod='wirecardpaymentgateway'}</label>
+                    <input type="checkbox" id="sepaCheck">&nbsp;<label for="sepaCheck">{l s='sepa_text_6' mod='wirecardpaymentgateway'}</label>
                 </div>
-                <button class="btn btn-primary" id="sepaCancelButton">{l s='Cancel' mod='wirecardpaymentgateway'}</button>
-                <button class="btn btn-primary disabled" id="sepaConfirmButton">{l s='Confirm' mod='wirecardpaymentgateway'}</button>
+                <button class="btn btn-primary" id="sepaCancelButton">{l s='cancel' mod='wirecardpaymentgateway'}</button>
+                <button class="btn btn-primary disabled" id="sepaConfirmButton">{l s='text_confirm' mod='wirecardpaymentgateway'}</button>
             </div>
         </div>
     </div>
