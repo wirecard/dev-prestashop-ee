@@ -263,6 +263,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_90670c9825ff22ac3b244
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_71353177545077b0c97f8c9075f7fc0e'] = 'BIC';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_57f4ff8becdd21208472e3d09f559fd5'] = 'Upoważniam odbiorce';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_611a2f2d26601b6c7047646c83ba931e'] = 'aby wysłać instrukcje do mojego banku na pobranie jednego pojedynczego polecenia zapłaty z mojego konta. Tym samym upoważniam mój bank do obciążania mojego konta zgodnie z instrukcjami odbiorcy.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_cc3c3e790926bfa8dd07838c06121ee0'] = '.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_63abdba9b6dbccdb53ca1fd0f2e2ad12'] = 'Uwaga: W ramach moich praw, mam upoważnienie do zwrotu na mocy zasad i warunków umowy z moim bankiem. O refundację muszę wystąpić w ciągu 8 tygodni od dnia, w którym moje konto zostało obciążone.  ';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_31c4756b8961934302d919b693e2e3a1'] = 'Nieodwołalnie zezwalam, że w przypadku, gdy polecenie zapłaty nie jest honorowane lub istnieje sprzeciw wobec zapłaty, mój bank może ujawnić to do odbiorcy.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_4f75ff5e69e0c6f3dd89447b2b39c4e7'] = 'Moje pełne imię, adres oraz data urodzenia.';

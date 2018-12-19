@@ -263,6 +263,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_90670c9825ff22ac3b244
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_71353177545077b0c97f8c9075f7fc0e'] = 'BIC:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_57f4ff8becdd21208472e3d09f559fd5'] = '我授權債權人';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_611a2f2d26601b6c7047646c83ba931e'] = '向我的銀行傳送指令，從我的帳戶直接扣除單筆款項。同時，我指示我的銀行依照債權人的指示從我的賬戶中扣款';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_cc3c3e790926bfa8dd07838c06121ee0'] = '。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_63abdba9b6dbccdb53ca1fd0f2e2ad12'] = '附註：作為我的權利的一部分，我有權根據我與我的銀行達成的協議條款及條件退款。退款必須在從我的賬戶中扣款之日起的 8 週內申請。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_31c4756b8961934302d919b693e2e3a1'] = '我不可撤銷地同意，倘若直接扣款未獲兌現或對直接扣款存在異議，我的銀行將向債權人';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_4f75ff5e69e0c6f3dd89447b2b39c4e7'] = '披露我的全名、地址以及出生日期。';

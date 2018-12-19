@@ -263,6 +263,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_90670c9825ff22ac3b244
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_71353177545077b0c97f8c9075f7fc0e'] = 'BIC';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_57f4ff8becdd21208472e3d09f559fd5'] = 'I authorize the creditor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_611a2f2d26601b6c7047646c83ba931e'] = 'to send instructions to my bank to collect one single direct debit from my account. At the same time I instruct my bank to debit my account in accordance with the instructions from the creditor';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_cc3c3e790926bfa8dd07838c06121ee0'] = '.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_63abdba9b6dbccdb53ca1fd0f2e2ad12'] = 'Note: As part of my rights, I am entitled to a refund under the terms and conditions of my agreement with my bank. A refund must be claimed within 8 weeks starting from the date on which my account was debited.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_31c4756b8961934302d919b693e2e3a1'] = 'I irrevocably agree that, in the event that the direct debit is not honored, or objection against the direct debit exists, my bank will disclose to the creditor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_4f75ff5e69e0c6f3dd89447b2b39c4e7'] = 'my full name, address and date of birth.';

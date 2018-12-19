@@ -263,6 +263,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_90670c9825ff22ac3b244
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_71353177545077b0c97f8c9075f7fc0e'] = 'BIC:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_57f4ff8becdd21208472e3d09f559fd5'] = 'Saya mengizinkan kreditor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_611a2f2d26601b6c7047646c83ba931e'] = 'untuk mengirimkan instruksi ke bank saya untuk mengumpulkan satu debit langsung dari akun saya. Pada waktu yang sama saya menginstruksikan bank untuk mendebit akun saya sesuai dengan instruksi dari kreditor';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_cc3c3e790926bfa8dd07838c06121ee0'] = '.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_63abdba9b6dbccdb53ca1fd0f2e2ad12'] = 'Catatan: Sebagai bagian dari hak saya, saya berhak atas pengembalian dana sesuai dengan syarat dan ketentuan perjanjian saya dengan bank. Pengembalian dana harus diklaim dalam waktu 8 minggu dimulai dari tanggal akun saya didebit.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_31c4756b8961934302d919b693e2e3a1'] = 'Saya menyatakan persetujuan yang tidak dapat dibatalkan bahwa jika debit langsung tidak ditanggapi, atau terdapat keberatan atas debit langsung tersebut, bank saya akan mengungkapkan kepada kreditor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_4f75ff5e69e0c6f3dd89447b2b39c4e7'] = 'nama lengkap, alamat, dan tanggal lahir saya.';

@@ -263,6 +263,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_90670c9825ff22ac3b244
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_71353177545077b0c97f8c9075f7fc0e'] = 'BIC:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_57f4ff8becdd21208472e3d09f559fd5'] = '債権者が';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_611a2f2d26601b6c7047646c83ba931e'] = '私の口座から1回のダイレクトデビットを回収するように、私の銀行に指示を送信することを許可します。同時に、私は、債権者からの指示に従い、私の銀行が口座から引き落とすように銀行に指示します。';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_cc3c3e790926bfa8dd07838c06121ee0'] = '.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_63abdba9b6dbccdb53ca1fd0f2e2ad12'] = '注記：私の権利の一部として、私は、銀行との合意の条項および条件に基づき、返金を受け取る資格があります。返金は、私の口座から引き落としがあった日から起算して8週間以内に請求する必要があります。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_31c4756b8961934302d919b693e2e3a1'] = '私は、取消不能の形式で、ダイレクトデビットが無効になった場合や、ダイレクトデビットに対する異議が存在する場合には、私の銀行が債権者';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_4f75ff5e69e0c6f3dd89447b2b39c4e7'] = 'に対して私の氏名、住所、生年月日を開示することに同意します。';
