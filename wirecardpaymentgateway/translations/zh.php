@@ -2,12 +2,12 @@
 
 global $_MODULE;
 $_MODULE = array();
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Wirecard 交易';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = '支持';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a5ffbe10bf416c7db8773f0ed801a022'] = 'Wirecard 支付流程网关';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_62e5cde27ad49944de104bbe346fd8e8'] = 'PrestaShop　Wirecard 支付流程网关购物模块';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_fec1fd6c6e6d2422514a8107cc9784c1'] = '您确定要卸载吗？';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Wirecard 交易';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = '支持';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_abfa4ee8f05fae13b8954098fca4f0f4'] = '设置更新成功';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f9e92a0727609b56780f28afa11da702'] = '已启用';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_9963e13ca603bfe6f09af5673b058eb7'] = '禁用';
@@ -151,7 +151,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_3ea9eb5a6ed4332
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_36245276e84306a410a410785ac986b3'] = '发送附加信息';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_7daacf9143e60bd1d97b926e8d0754d6'] = '测试配置';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Enable';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9d0dd088dea7f5a3b989e10b4b96323b'] = '启用 Wirecard 支付宝跨境';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7c98f6003387a22f8930e088861ac1d1'] = '启用 Wirecard 支付宝跨境';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2433374a7348266aa2a46eab61a2fc5b'] = '名称';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e7dda81ba5340ef49d1f556b1b9600f'] = 'Wirecard 支付宝跨境';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_dcf1eada7b5e21500790ee75ebc2be5b'] = '商家账户 ID';
@@ -215,7 +215,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_c2fb8155114a173b41
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_66a375d1669793eb4a2c0a2cb3a4202b'] = '您的电子邮件地址';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_9b1ef1976b69fb0212b8ed98e58d2f32'] = '您的消息';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_39d37ff8e221d53d5194c6f6671c3bfe'] = '提交';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_778d0b0b5edd889594936ce6c3805808'] = 'Please enter a valid e-mail address';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_778d0b0b5edd889594936ce6c3805808'] = '请输入有效的邮箱地址。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_868c36a6745a69f4b55a97b34f4357a0'] = 'Please enter your message';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_58a11874af64f29c004aafe016301f72'] = '电子邮件发送出现错误';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_661a6723d5ca05ecf89b413850f09947'] = '电子邮件已发送成功';

@@ -2,12 +2,12 @@
 
 global $_MODULE;
 $_MODULE = array();
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Wirecard Transactions';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = 'Wirecard Support';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a5ffbe10bf416c7db8773f0ed801a022'] = 'bramka płatnicza Wirecard ';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_62e5cde27ad49944de104bbe346fd8e8'] = 'bramka płatnicza Wirecard dla Prestashop';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_fec1fd6c6e6d2422514a8107cc9784c1'] = 'Na pewno deinstalować?';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Wirecard Transactions';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = 'Wirecard Support';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_abfa4ee8f05fae13b8954098fca4f0f4'] = 'Ustawiena zaktualnizowane';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f9e92a0727609b56780f28afa11da702'] = 'Uaktywniony';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_9963e13ca603bfe6f09af5673b058eb7'] = 'Zdeaktywowany';
@@ -151,7 +151,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_3ea9eb5a6ed4332
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_36245276e84306a410a410785ac986b3'] = 'Wyślij dodatkową informację';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test konfiguracji kart kredytowych';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Enable';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9d0dd088dea7f5a3b989e10b4b96323b'] = 'Uaktywnić Wirecard Alipay Crossborder';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7c98f6003387a22f8930e088861ac1d1'] = 'Uaktywnić Wirecard Alipay Crossborder';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2433374a7348266aa2a46eab61a2fc5b'] = 'Title';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e7dda81ba5340ef49d1f556b1b9600f'] = 'Wirecard Alipay Crossborder';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_dcf1eada7b5e21500790ee75ebc2be5b'] = 'Merchant Account ID';
