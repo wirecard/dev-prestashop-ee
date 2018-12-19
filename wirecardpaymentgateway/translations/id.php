@@ -151,7 +151,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_3ea9eb5a6ed4332
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_36245276e84306a410a410785ac986b3'] = 'Kirim informasi tambahan';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_7daacf9143e60bd1d97b926e8d0754d6'] = 'Konfigurasi tes';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Enable';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9d0dd088dea7f5a3b989e10b4b96323b'] = 'Aktifkan Alipay Cross-border Wirecard';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7c98f6003387a22f8930e088861ac1d1'] = 'Aktifkan Alipay Cross-border Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2433374a7348266aa2a46eab61a2fc5b'] = 'Judul';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e7dda81ba5340ef49d1f556b1b9600f'] = 'Alipay Cross-border Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_dcf1eada7b5e21500790ee75ebc2be5b'] = 'Identitas Rekening Penjual';

@@ -151,7 +151,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_3ea9eb5a6ed4332
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_36245276e84306a410a410785ac986b3'] = 'Send Additional Information';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test configuration';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Enable';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9d0dd088dea7f5a3b989e10b4b96323b'] = 'Enable Wirecard Alipay Cross-border';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7c98f6003387a22f8930e088861ac1d1'] = 'Enable Wirecard Alipay Cross-border';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2433374a7348266aa2a46eab61a2fc5b'] = 'Title';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e7dda81ba5340ef49d1f556b1b9600f'] = 'Wirecard Alipay Cross-border';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_dcf1eada7b5e21500790ee75ebc2be5b'] = 'MAID';
@@ -214,7 +214,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_801af80081d36
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_c2fb8155114a173b41a33639e58fb5b7'] = 'Send support request';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_66a375d1669793eb4a2c0a2cb3a4202b'] = 'Your email address';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_9b1ef1976b69fb0212b8ed98e58d2f32'] = 'Your message';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_39d37ff8e221d53d5194c6f6671c3bfe'] = 'Submit';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_39d37ff8e221d53d5194c6f6671c3bfe'] = 'Send';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_778d0b0b5edd889594936ce6c3805808'] = 'Please enter a valid e-mail address';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_868c36a6745a69f4b55a97b34f4357a0'] = 'Please enter your message';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_58a11874af64f29c004aafe016301f72'] = 'Email delivery error.';
