@@ -170,7 +170,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function installTabs()
     {
-        $key = 'heading_title_transaction_details';
+        $key = $this->l('heading_title_transaction_details');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardTransactions';
@@ -188,7 +188,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->module = $this->name;
         $tab->add();
 
-        $key = 'heading_title_support';
+        $key = $this->l('heading_title_support');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardSupport';
@@ -206,7 +206,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->module = $this->name;
         $tab->add();
 
-        $key = 'heading_title_ajax';
+        $key = $this->l('heading_title_ajax');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardAjax';

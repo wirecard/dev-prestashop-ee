@@ -5,3 +5,7 @@ wirecardpaymentgateway/config*.xml
 .DS_Store
 *.iml
 wirecardpaymentgateway.zip
+.bin/*
+!.bin/phraseapp
+!.bin/*.*
+wirecardpaymentgateway/translations/*.json
