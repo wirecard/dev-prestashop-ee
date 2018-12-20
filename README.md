@@ -10,7 +10,7 @@
 
 ***
 ## General Information
-Before you proceed, please read our [General Information](https://github.com/wirecard/prestashop-ee/wiki/Wirecard-Shop-Plugin-General-Information) for more details on Wirecard Shop Extension functionality and features.
+Before you proceed, please read our [General Information](https://github.com/wirecard/prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information) for more details on Wirecard Shop Extension functionality and features.
 
 ***
 ## Documentation
