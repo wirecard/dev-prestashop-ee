@@ -32,4 +32,22 @@
 *}
 <div id="payment-processing-gateway-ratepay-form">
     <input type="hidden" class="form-control" name="invoiceDeviceIdent" id="invoiceDeviceIdent" value="{$deviceIdent|escape:'htmlall':'UTF-8'}"/>
+    <form id="invoiceDataProtection" method="GET">
+        <ul>
+            <li>
+                <div class="float-xs-left">
+                    <span class="custom-checkbox">
+                        <input id="invoiceDataProtectionCheckbox" name="invoiceDataProtectionCheckbox" required="" type="checkbox" value="1" class="ps-shown-by-js">
+                        <span><i class="material-icons rtl-no-flip checkbox-checked"></i></span>
+                    </span>
+                </div>
+                <div class="condition-label">
+                    <label id="invoiceDataProtectionLabel" for="invoiceDataProtectionCheckbox">
+                        {l s='text_terms_accept' mod='wirecardpaymentgateway'}
+                    </label>
+                </div>
+            </li>
+        </ul>
+        <small id="invoiceDataProtectionHint" class="text-danger" style="display: none;">{l s='text_terms_notice' mod='wirecardpaymentgateway'}</small>
+    </form>
 </div>

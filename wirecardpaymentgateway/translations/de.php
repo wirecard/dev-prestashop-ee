@@ -249,6 +249,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>form_fdfdc9b072cbb18c8956190275b47
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_a60dee7af8c325090597391f009b9125'] = 'Status';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_df671beba83658f3f51777f302c59a6e'] = 'Nachricht';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_93f05ad4c93885541f619d9bb1320106'] = 'Sie werden weitergeleitet. Bitte warten.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'Hiermit bestätige ich, dass ich die <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/\">Datenschutzhinweise</a> und zusätzliche <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/\">Geschäftsbedingungen</a> für Wirecard-Zahlarten zur Kenntnis genommen habe und mit deren Geltung einverstanden bin.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_3471b47ae35836a5c315c049f13b211e'] = 'Sie müssen den Datenschutzhinweisen und zusätzlichen Geschäftsbedingungen für Wirecard-Zahlarten zustimmen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_65c55738e0d21515c1e026a8dd7eae21'] = 'First name';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_b7250955039269f0611a6dab9c340ae9'] = 'Last name';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_945122a0f892e1b60519029eff19f89e'] = 'IBAN';
@@ -261,6 +263,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_90670c9825ff22ac3b244
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_71353177545077b0c97f8c9075f7fc0e'] = 'BIC:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_57f4ff8becdd21208472e3d09f559fd5'] = 'Ich ermächtige die Firma';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_611a2f2d26601b6c7047646c83ba931e'] = 'einmalig eine Zahlung von meinem Konto mittels SEPA Lastschrift einzuziehen. Zugleich weise ich mein Kreditinstitut an, die von der Firma';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_cc3c3e790926bfa8dd07838c06121ee0'] = 'auf mein Konto gezogene SEPA Lastschrift einzulösen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_63abdba9b6dbccdb53ca1fd0f2e2ad12'] = 'Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrags verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_31c4756b8961934302d919b693e2e3a1'] = 'Für den Fall der Nichteinlösung der Lastschrift oder des Widerspruchs gegen die Lastschrift weise ich meine Bank unwiderruflich an, der Firma';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_4f75ff5e69e0c6f3dd89447b2b39c4e7'] = 'oder Dritten auf Anforderung meinen Namen, Adresse und Geburtsdatum vollständig mitzuteilen.';

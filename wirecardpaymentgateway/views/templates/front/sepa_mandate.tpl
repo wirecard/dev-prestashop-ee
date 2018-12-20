@@ -78,6 +78,7 @@
                                         {$creditorName|escape:'htmlall':'UTF-8'}
                                         {l s='sepa_text_2' mod='wirecardpaymentgateway'}
                                         {$creditorName|escape:'htmlall':'UTF-8'} {$additionalText|escape:'htmlall':'UTF-8'}
+                                        {l s='sepa_text_2b' mod='wirecardpaymentgateway'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
