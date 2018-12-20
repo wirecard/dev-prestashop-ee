@@ -2,12 +2,12 @@
 
 global $_MODULE;
 $_MODULE = array();
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Transaksi Wirecard';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = 'サポート';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a5ffbe10bf416c7db8773f0ed801a022'] = 'Wirecard決済ゲートウェイ';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_62e5cde27ad49944de104bbe346fd8e8'] = 'PrestaShop Wirecard決済ゲートウェイ・ショップモジュール';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_fec1fd6c6e6d2422514a8107cc9784c1'] = '本当にアンインストールしますか？';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Transaksi Wirecard';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = 'サポート';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_abfa4ee8f05fae13b8954098fca4f0f4'] = '設定が更新されました。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f9e92a0727609b56780f28afa11da702'] = '有効';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_9963e13ca603bfe6f09af5673b058eb7'] = '無効';
