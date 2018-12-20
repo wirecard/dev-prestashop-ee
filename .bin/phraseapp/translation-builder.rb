@@ -12,27 +12,17 @@ class TranslationBuilder
     end
 
     plugin_path = Const::PLUGIN_DIR
-    gen_translations_path = Const::PLUGIN_I18N_DIR
+    generated_translations_path = Const::PLUGIN_I18N_DIR
     phraseapp_translations_path = Const::PLUGIN_I18N_DIR
-
-    static_translation_keys = Array.[](
-      'heading_title_transaction_details',
-      'heading_title_support',
-      'heading_title_ajax'
-    )
 
     translations_file_path = File.join(phraseapp_translations_path, "#{iso_lang}.json")
     translations_file = File.open(translations_file_path, 'r')
     translations = translations_file.read
     translations_file.close
 
-    translation_file_path = File.join(gen_translations_path, "#{iso_lang}.php")
+    translation_file_path = File.join(generated_translations_path, "#{iso_lang}.php")
     translation_file = File.open(translation_file_path, 'w')
     add_file_header(translation_file)
-
-    static_translation_keys.each do |key|
-      translation_file.puts(get_translation_entry('wirecardpaymentgateway', key, get_translated_string(translations, key, log)))
-    end
 
     get_needed_php_files(plugin_path).each do |file_path|
       file_name_start_index = file_path.rindex('/') + 1
@@ -40,7 +30,7 @@ class TranslationBuilder
       file_name = file_path[file_name_start_index..file_name_end_index]
 
       get_keys_for_php_file(file_path).each do |key|
-        translation_file.puts(get_translation_entry(file_name, key[0], get_translated_string(translations, key[0], log)))
+        translation_file.puts(get_translation_entry(file_name, key[0], generate_translation_entry(translations, key[0], log)))
       end
     end
 
@@ -50,13 +40,32 @@ class TranslationBuilder
       file_name = file_path[file_name_start_index..file_name_end_index]
 
       get_keys_for_tpl_file(file_path).each do |key|
-        translation_file.puts(get_translation_entry(file_name, key[0], get_translated_string(translations, key[0], log)))
+        translation_file.puts(get_translation_entry(file_name, key[0], generate_translation_entry(translations, key[0], log)))
       end
     end
 
     translation_file.close
 
     log.info("Built translation file #{translation_file_path}")
+  end
+
+  def self.get_all_keys()
+    plugin_path = Const::PLUGIN_DIR
+    keys = Array.new
+
+    get_needed_php_files(plugin_path).each do |file_path|
+      get_keys_for_php_file(file_path).each do |key|
+        keys.push(key)
+      end
+    end
+
+    get_needed_tpl_files(plugin_path).each do |file_path|
+      get_keys_for_tpl_file(file_path).each do |key|
+        keys.push(key)
+      end
+    end
+
+    return keys.uniq
   end
 
   def self.get_keys_for_php_file(file_path)
@@ -99,7 +108,15 @@ class TranslationBuilder
     return files
   end
 
-  def self.get_translated_string(translations, translation_key, log)
+  def self.get_translated_keys(file_path)
+    file = File.open(file_path, 'r')
+    translation_keys = file.read.scan(/  "(.*)": /)
+    file.close
+
+    return translation_keys
+  end
+
+  def self.generate_translation_entry(translations, translation_key, log)
     translation_string = translations.match(/"#{translation_key}": "(.*)"/)
 
     if !translation_string

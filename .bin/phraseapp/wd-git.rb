@@ -22,5 +22,6 @@ class WdGit
     )
   rescue Git::GitExecuteError => e
     @log.warn(e)
+    exit(1)
   end
 end

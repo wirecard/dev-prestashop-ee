@@ -33,7 +33,7 @@ class WdPhraseApp
 
   # Returns true if PhraseApp keys are in sync with the project, false otherwise.
   def is_in_sync?
-    pull_pot && !WdProject.new.worktree_has_key_changes?
+    pull_locale("#{@locale_specific_map[@phraseapp_fallback_locale] || @phraseapp_fallback_locale}") && !WdProject.new.worktree_has_key_changes?
   end
 
   # Returns an array of locale ids available on the PhraseApp project.
@@ -52,35 +52,38 @@ class WdPhraseApp
     end
   end
 
-  # Downloads locale files for all locale ids into the plugin i18n dir.
+  # Downloads locale files for all locale ids into the plugin i18n dir and generate translation files for plugin.
   def pull_locales()
     @log.info('Downloading locales...'.cyan.bright)
+
+    get_locale_ids.each do |id|
+      pull_locale(id)
+      TranslationBuilder.build("#{@locale_specific_map[id.to_sym] || id}")
+    end
+  end
+
+  # Downloads a locale file into the plugin i18n dir.
+  def pull_locale(id)
     params = OpenStruct.new({
       :encoding => 'UTF-8',
       :fallback_locale_id => @phraseapp_fallback_locale,
+      :file_format => 'simple_json',
       :include_empty_translations => true,
       :include_translated_keys => true,
       :include_unverified_translations => true,
       :tags => @phraseapp_tag,
     })
 
-    get_locale_ids.each do |id|
-      @log.info("Downloading locale files for #{id}...".bright)
+    @log.info("Downloading locale files for #{id}...".bright)
+    file_basename = "#{@locale_specific_map[id.to_sym] || id}"
 
-      file_basename = "#{@locale_specific_map[id.to_sym] || id}"
-
-      # json
-      params.file_format = 'simple_json'
-      json, err = @phraseapp.locale_download(@phraseapp_id, id, params)
-      if err.nil?
-        File.write(File.join(@plugin_i18n_dir, "#{file_basename}.json"), json)
-      else
-        @log.error("An error occurred while downloading locale #{id}.json from PhraseApp.".red.bright)
-        @log.debug(err)
-        exit(1)
-      end
-
-      TranslationBuilder.build(file_basename)
+    json, err = @phraseapp.locale_download(@phraseapp_id, id, params)
+    if err.nil?
+      File.write(File.join(@plugin_i18n_dir, "#{file_basename}.json"), json)
+    else
+      @log.error("An error occurred while downloading locale #{id}.json from PhraseApp.".red.bright)
+      @log.debug(err)
+      exit(1)
     end
   end
 
@@ -113,20 +116,20 @@ class WdPhraseApp
     end
   end
 
-  # Uploads previously generated POT file to the PhraseApp branch.
+  # Uploads previously generated json file to the PhraseApp branch.
   def push_keys
     project = WdProject.new
-    pot_new_path = project.pot_new_path
-    pot_path = project.pot_path
+    translations_new_path = project.translations_new_path
+    translations_path = project.translations_path
 
-    if !File.exist?(pot_new_path) || !File.exist?(pot_path)
-      @log.fatal('Couldn\'t find the POT files.'.red.bright) && exit(1)
+    if !File.exist?(translations_new_path) || !File.exist?(translations_path)
+      @log.fatal('Couldn\'t find the files.'.red.bright) && exit(1)
     end
 
     begin
-      File.rename(pot_new_path, pot_path)
+      File.rename(translations_new_path, translations_path)
     rescue => e
-      @log.error("Error while renaming file #{pot_new_path} to #{pot_path}.")
+      @log.error("Error while renaming file #{translations_new_path} to #{translations_path}.")
       @log.debug(e.inspect)
       exit(1)
     end
@@ -134,9 +137,9 @@ class WdPhraseApp
     upload, err = @phraseapp.upload_create(@phraseapp_id, OpenStruct.new({
       :autotranslate => false,
       :branch => branch_name,
-      :file => pot_path,
+      :file => translations_path,
       :file_encoding => 'UTF-8',
-      :file_format => 'gettext_template',
+      :file_format => 'simple_json',
       :locale_id => @phraseapp_fallback_locale,
       :tags => @phraseapp_tag,
       :update_descriptions => false,

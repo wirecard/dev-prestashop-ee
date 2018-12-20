@@ -6,8 +6,8 @@ module Const
   PHRASEAPP_PROJECT_ID = '9036e89959d471e0c2543431713b7ba1'.freeze
   PHRASEAPP_FALLBACK_LOCALE = 'en_US'.freeze
 
-  # project-specific
-  PHRASEAPP_TAG = ''#'prestashop'.freeze #TODO change back after testing
+  # project-specific mappings for locales to filenames
+  PHRASEAPP_TAG = 'prestashop'.freeze
   LOCALE_SPECIFIC_MAP = {
     'en_US': 'en',
     'de_DE': 'de',
