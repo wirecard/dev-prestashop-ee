@@ -190,7 +190,15 @@ $shopVersions = parseVersionsFile(VERSION_FILE);
 
 // Grab the Travis config for parsing the supported PHP versions
 $travisConfig = Yaml::parseFile(TRAVIS_FILE);
-$phpVersions = $travisConfig['php'];
+$travisMatrix = $travisConfig['matrix'];
+$phpVersions = [];
+foreach  ($travisMatrix["include"] as $version){
+    if (!empty($version["php"])) {
+        if (!in_array($version["php"], $phpVersions)) {
+            array_push($phpVersions, $version["php"]);
+        }
+    }
+}
 
 // Get the arguments passed to the command line script.
 $options = getopt('wr');
