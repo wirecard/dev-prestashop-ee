@@ -121,6 +121,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function install()
     {
         if (!parent::install()
+            || !$this->registerHook('actionDispatcher')
             || !$this->registerHook('paymentOptions')
             || !$this->registerHook('paymentReturn')
             || !$this->registerHook('displayPaymentEU')
@@ -176,7 +177,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->class_name = 'WirecardTransactions';
         $tab->name = array();
         $tab->name[1] = $key;
-        foreach (Language::getLanguages(true) as $lang) {
+        foreach (Language::getLanguages(false) as $lang) {
             $translated_string = $this->getTranslationForLanguage(
                 $lang['iso_code'],
                 $key,
@@ -194,7 +195,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->class_name = 'WirecardSupport';
         $tab->name = array();
         $tab->name[1] = $key;
-        foreach (Language::getLanguages(true) as $lang) {
+        foreach (Language::getLanguages(false) as $lang) {
             $translated_string = $this->getTranslationForLanguage(
                 $lang['iso_code'],
                 $key,
@@ -212,7 +213,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->class_name = 'WirecardAjax';
         $tab->name = array();
         $tab->name[1] = $key;
-        foreach (Language::getLanguages(true) as $lang) {
+        foreach (Language::getLanguages(false) as $lang) {
             $translated_string = $this->getTranslationForLanguage(
                 $lang['iso_code'],
                 $key,
@@ -989,22 +990,94 @@ class WirecardPaymentGateway extends PaymentModule
      * @return string translation
      * @since 1.3.4
      */
-    public function getTranslationForLanguage($iso_lang, $key, $file_name)
+    public static function getTranslationForLanguage($iso_lang, $key, $file_name)
     {
         $file = dirname(__FILE__).'/translations/'.$iso_lang.'.php';
         if (!file_exists($file)) {
             return $key;
         }
 
-        $_MODULE = null;
+        global $_MODULE;
         include($file);
         $hashed_key = md5($key);
-        $translation_key = \Tools::strtolower('<{'.$this->name.'}prestashop>'.$file_name).'_'.$hashed_key;
+        $translation_key = '<{'.'wirecardpaymentgateway'.'}prestashop>'.\Tools::strtolower($file_name).'_'.$hashed_key;
 
         if (isset($_MODULE[$translation_key])) {
             return $_MODULE[$translation_key];
         } else {
             return $key;
         }
+    }
+
+    /**
+     * Hook for registering new functions to smarty
+     *
+     * @since 1.3.4
+     */
+    public function hookActionDispatcher()
+    {
+        $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
+    }
+
+    /**
+     * Translation function for tpl files (called by smarty)
+     *
+     * @param array $params parameter of the smarty function
+     * @param class &$smarty reference to smarty
+     *
+     * @return string translation
+     * @since 1.3.4
+     */
+    public static function lFallback($params, &$smarty)
+    {
+        if (!isset($params['mod'])) {
+            $params['mod'] = false;
+        }
+        if (!isset($params['sprintf'])) {
+            $params['sprintf'] = array();
+        }
+
+        $key = $params['s'];
+        $basename = basename($smarty->source->name, '.tpl');
+
+        $translation = Translate::smartyPostProcessTranslation(
+            Translate::getModuleTranslation(
+                $params['mod'],
+                $key,
+                $basename,
+                $params['sprintf']
+            ),
+            $params
+        );
+
+        if ($translation === $key) {
+            $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $basename);
+        }
+
+        return $translation;
+    }
+
+    /**
+     * Overwritten translation function, uses the modules translation function with fallback language functionality
+     *
+     * @param string $key translation key
+     * @param string|bool $specific filename of the translation key
+     * @param string|null $locale not used!
+     *
+     * @return string translation
+     * @since 1.3.4
+     */
+    public function l($key, $specific = false, $locale = null)
+    {
+        if (!$specific) {
+            $specific = $this->name;
+        }
+
+        $translation = parent::l($key, $specific);
+        if ($translation === $key) {
+            $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $specific);
+        }
+
+        return $translation;
     }
 }

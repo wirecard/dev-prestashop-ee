@@ -33,24 +33,24 @@
     {if $input.type == 'linkbutton'}
 		<a class="btn btn-default" id="{$input.id|escape:'htmlall':'UTF-8'}" href="#">
 			<i class="icon-check"></i>
-            {l s=$input.buttonText mod='wirecardpaymentgateway'}
+            {lFallback s=$input.buttonText mod='wirecardpaymentgateway'}
 		</a>
 		<script type="text/javascript">
             $(function () {
                 $(document).ready(function(){
                     var translate = {
-                        paypal:'{l s='paypal' mod='wirecardpaymentgateway'}',
-                        creditcard:'{l s='creditcard' mod='wirecardpaymentgateway'}',
-                        sepadirectdebit:'{l s='sepadd' mod='wirecardpaymentgateway'}',
-                        sepacredittransfer:'{l s='sepact' mod='wirecardpaymentgateway'}',
-                        ideal:'{l s='ideal' mod='wirecardpaymentgateway'}',
-                        sofort:'{l s='sofortbanking' mod='wirecardpaymentgateway'}',
-                        poipia:'{l s='poi_pia' mod='wirecardpaymentgateway'}',
-                        invoice:'{l s='ratepayinvoice' mod='wirecardpaymentgateway'}',
-                        'alipay-xborder':'{l s='alipay_crossborder' mod='wirecardpaymentgateway'}',
-                        p24:'{l s='ptwentyfour' mod='wirecardpaymentgateway'}',
-                        masterpass:'{l s='masterpass' mod='wirecardpaymentgateway'}',
-                        unionpayinternational:'{l s='upi' mod='wirecardpaymentgateway'}'
+                        paypal:'{lFallback s='paypal' mod='wirecardpaymentgateway'}',
+                        creditcard:'{lFallback s='creditcard' mod='wirecardpaymentgateway'}',
+                        sepadirectdebit:'{lFallback s='sepadd' mod='wirecardpaymentgateway'}',
+                        sepacredittransfer:'{lFallback s='sepact' mod='wirecardpaymentgateway'}',
+                        ideal:'{lFallback s='ideal' mod='wirecardpaymentgateway'}',
+                        sofort:'{lFallback s='sofortbanking' mod='wirecardpaymentgateway'}',
+                        poipia:'{lFallback s='poi_pia' mod='wirecardpaymentgateway'}',
+                        invoice:'{lFallback s='ratepayinvoice' mod='wirecardpaymentgateway'}',
+                        'alipay-xborder':'{lFallback s='alipay_crossborder' mod='wirecardpaymentgateway'}',
+                        p24:'{lFallback s='ptwentyfour' mod='wirecardpaymentgateway'}',
+                        masterpass:'{lFallback s='masterpass' mod='wirecardpaymentgateway'}',
+                        unionpayinternational:'{lFallback s='upi' mod='wirecardpaymentgateway'}'
                     };
                     $("a[data-toggle=tab]").each(function() {
                         $(this).html(translate[$(this).html().toLowerCase()]);
@@ -73,10 +73,10 @@
                         if (jsonData) {
                             $.fancybox({
                                 fitToView: true,
-                                content: '<div><fieldset><legend>{l s='text_test_result' mod='wirecardpaymentgateway'}</legend>' +
-                                '<label>{l s='config_status' mod='wirecardpaymentgateway'}:</label>' +
+                                content: '<div><fieldset><legend>{lFallback s='text_test_result' mod='wirecardpaymentgateway'}</legend>' +
+                                '<label>{lFallback s='config_status' mod='wirecardpaymentgateway'}:</label>' +
                                 '<div class="margin-form" style="text-align:left;">' + jsonData.status + '</div><br />' +
-                                '<label>{l s='text_message' mod='wirecardpaymentgateway'}:</label>' +
+                                '<label>{lFallback s='text_message' mod='wirecardpaymentgateway'}:</label>' +
                                 '<div class="margin-form" style="text-align:left;">' + jsonData.message + '</div></fieldset></div>'
                             });
                         }

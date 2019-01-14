@@ -43,11 +43,11 @@
                 </div>
                 <div class="condition-label">
                     <label id="invoiceDataProtectionLabel" for="invoiceDataProtectionCheckbox">
-                        {l s='text_terms_accept' mod='wirecardpaymentgateway'}
+                        {lFallback s='text_terms_accept' mod='wirecardpaymentgateway'}
                     </label>
                 </div>
             </li>
         </ul>
-        <small id="invoiceDataProtectionHint" class="text-danger" style="display: none;">{l s='text_terms_notice' mod='wirecardpaymentgateway'}</small>
+        <small id="invoiceDataProtectionHint" class="text-danger" style="display: none;">{lFallback s='text_terms_notice' mod='wirecardpaymentgateway'}</small>
     </form>
 </div>
