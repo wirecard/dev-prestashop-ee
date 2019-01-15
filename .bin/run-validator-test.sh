@@ -24,7 +24,6 @@ ${PHANTOM}/bin/phantomjs test.js
 cd wirecardpaymentgateway
 vendor/bin/codecept run acceptance --env validator --steps
 
-#cat ${REPORT_FILE}
 #process validator test results
 cd ..
 python .bin/process-validator-report.py
