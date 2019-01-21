@@ -64,7 +64,7 @@
                         data: {
                             action: 'TestConfig',
                     {foreach $input.send as $datasend}
-                    {$datasend|escape:'htmlall':'UTF-8'}:$('input[name={$datasend|escape:'htmlall':'UTF-8'}]').val(),
+                    '{$datasend|escape:'htmlall':'UTF-8'}': $('input[name={$datasend|escape:'htmlall':'UTF-8'}]').val(),
                     {/foreach}
                         method: '{$input.method|escape:'htmlall':'UTF-8'}',
                         ajax: true
