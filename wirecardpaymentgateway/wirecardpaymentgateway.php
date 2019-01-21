@@ -81,7 +81,7 @@ class WirecardPaymentGateway extends PaymentModule
     {
         require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
             DIRECTORY_SEPARATOR.'autoload.php');
-        
+
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
         $this->version = '1.3.3';
@@ -1023,12 +1023,12 @@ class WirecardPaymentGateway extends PaymentModule
      * Translation function for tpl files (called by smarty)
      *
      * @param array $params parameter of the smarty function
-     * @param class &$smarty reference to smarty
+     * @param class $smarty smarty object
      *
      * @return string translation
      * @since 1.3.4
      */
-    public static function lFallback($params, &$smarty)
+    public static function lFallback($params, $smarty)
     {
         if (!isset($params['mod'])) {
             $params['mod'] = false;
