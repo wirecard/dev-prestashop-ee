@@ -17,12 +17,12 @@ class TranslationBuilder
     phraseapp_translations_path = Const::PLUGIN_I18N_DIR
 
     translations_file_path = File.join(phraseapp_translations_path, "#{iso_lang}.json")
-    translations_file = File.open(translations_file_path, 'r')
+    translations_file = File.open(translations_file_path, 'r:utf-8')
     translations = JSON.parse(translations_file.read)
     translations_file.close
 
     translation_file_path = File.join(generated_translations_path, "#{iso_lang}.php")
-    translation_file = File.open(translation_file_path, 'w')
+    translation_file = File.open(translation_file_path, 'w:utf-8')
     add_file_header(translation_file)
 
     get_needed_php_files(plugin_path).each do |file_path|
@@ -74,7 +74,7 @@ class TranslationBuilder
   end
 
   def self.get_keys_for_php_file(file_path)
-    file = File.open(file_path, 'r')
+    file = File.open(file_path, 'r:utf-8')
     translation_keys = file.read.scan(/->l\(\'(.*)\'\)/).uniq
     file.close
 
@@ -82,7 +82,7 @@ class TranslationBuilder
   end
 
   def self.get_keys_for_tpl_file(file_path)
-    file = File.open(file_path, 'r')
+    file = File.open(file_path, 'r:utf-8')
     translation_keys = file.read.scan(/\{l s=\'(.*)\' mod/).uniq
     file.close
 
@@ -114,7 +114,7 @@ class TranslationBuilder
   end
 
   def self.get_translated_keys(file_path)
-    file = File.open(file_path, 'r')
+    file = File.open(file_path, 'r:utf-8')
     translation_keys = file.read.scan(/  "(.*)": /)
     file.close
 

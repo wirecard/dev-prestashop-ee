@@ -63,7 +63,7 @@ class WdProject
 
     source_keys = TranslationBuilder.get_all_keys
 
-    translations_file = File.open(translations_path, 'r')
+    translations_file = File.open(translations_path, 'r:utf-8')
     translations_object = JSON.parse(translations_file.read)
     translations_file.close
 
@@ -78,7 +78,7 @@ class WdProject
       end
     end
 
-    new_file = File.open(translations_new_path, 'w')
+    new_file = File.open(translations_new_path, 'w:utf-8')
     new_file.puts JSON.pretty_generate(key_value_object)
     new_file.close
 
