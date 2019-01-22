@@ -39,7 +39,7 @@
     <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
         {l s='text_support' mod='wirecardpaymentgateway'}
     </a>
-    <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/dev-prestashop-ee/wiki/Wirecard-Shop-Plugins-General-Information#terms-of-use">
+    <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/prestashop-ee/wiki/Terms-of-Use">
         {l s='terms_of_use' mod='wirecardpaymentgateway'}
     </a>
 </div>

@@ -81,7 +81,7 @@ class PaymentAlipayCrossborder extends Payment
                     'name' => 'enabled',
                     'label' => $this->l('text_enable'),
                     'type' => 'onoff',
-                    'doc' => $this->l('enable_heading_title_alipay_crossboarder'),
+                    'doc' => $this->l('enable_heading_title_alipay_crossborder'),
                     'default' => 0,
                 ),
                 array(
