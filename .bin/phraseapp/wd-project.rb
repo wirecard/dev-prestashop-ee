@@ -35,7 +35,6 @@ class WdProject
   # Compares the keys from source and PhraseApp and returns true if they have any difference in keys, false otherwise.
   def has_key_changes?
     source_keys = TranslationBuilder.get_all_keys
-    file_name = "#{@locale_specific_map[@phraseapp_fallback_locale.to_sym] || @phraseapp_fallback_locale}.json"
     translated_keys = TranslationBuilder.get_translated_keys(@translations_path)
 
     @log.info("Number of unique keys in source: #{source_keys.length}")
