@@ -31,7 +31,9 @@ class TranslationBuilder
       file_name = file_path[file_name_start_index..file_name_end_index]
 
       get_keys_for_php_file(file_path).each do |key|
-        translation_file.puts(get_translation_entry(file_name, key[0], generate_translation_entry(translations, key[0], log)))
+        translation_file.puts(
+          get_translation_entry(file_name, key[0], generate_translation_entry(translations, key[0], log))
+        )
       end
     end
 
@@ -41,7 +43,9 @@ class TranslationBuilder
       file_name = file_path[file_name_start_index..file_name_end_index]
 
       get_keys_for_tpl_file(file_path).each do |key|
-        translation_file.puts(get_translation_entry(file_name, key[0], generate_translation_entry(translations, key[0], log)))
+        translation_file.puts(
+          get_translation_entry(file_name, key[0], generate_translation_entry(translations, key[0], log))
+        )
       end
     end
 
@@ -52,7 +56,7 @@ class TranslationBuilder
 
   def self.get_all_keys()
     plugin_path = Const::PLUGIN_DIR
-    keys = Array.new
+    keys = []
 
     get_needed_php_files(plugin_path).each do |file_path|
       get_keys_for_php_file(file_path).each do |key|
@@ -66,7 +70,7 @@ class TranslationBuilder
       end
     end
 
-    return keys.uniq
+    keys.uniq
   end
 
   def self.get_keys_for_php_file(file_path)
@@ -74,7 +78,7 @@ class TranslationBuilder
     translation_keys = file.read.scan(/->l\(\'(.*)\'\)/).uniq
     file.close
 
-    return translation_keys
+    translation_keys
   end
 
   def self.get_keys_for_tpl_file(file_path)
@@ -82,23 +86,23 @@ class TranslationBuilder
     translation_keys = file.read.scan(/\{l s=\'(.*)\' mod/).uniq
     file.close
 
-    return translation_keys
+    translation_keys
   end
 
   def self.get_needed_php_files(parent_folder)
-    files = Array.new
+    files = []
 
     Dir.glob(parent_folder + '/**/*.php') do |file|
-      if !file.include? '/vendor' and !file.include? '/translation'
-          files.push(file)
+      if !file.include?('/vendor') && !file.include?('/translation')
+        files.push(file)
       end
     end
 
-    return files
+    files
   end
 
   def self.get_needed_tpl_files(parent_folder)
-    files = Array.new
+    files = []
 
     Dir.glob(parent_folder + '/**/*.tpl') do |file|
       if !file.include? '/vendor'
@@ -106,7 +110,7 @@ class TranslationBuilder
       end
     end
 
-    return files
+    files
   end
 
   def self.get_translated_keys(file_path)
@@ -114,7 +118,7 @@ class TranslationBuilder
     translation_keys = file.read.scan(/  "(.*)": /)
     file.close
 
-    return translation_keys
+    translation_keys
   end
 
   def self.generate_translation_entry(translations, translation_key, log)
@@ -139,12 +143,12 @@ class TranslationBuilder
     entry += translation_string
     entry += "';"
 
-    return entry
+    entry
   end
 
   def self.add_file_header(translation_file)
     translation_file.puts("<?php")
-    translation_file.puts()
+    translation_file.puts("")
     translation_file.puts("global $_MODULE;")
     translation_file.puts("$_MODULE = array();")
   end

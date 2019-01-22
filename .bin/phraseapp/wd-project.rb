@@ -20,7 +20,10 @@ class WdProject
 
     @phraseapp_fallback_locale = Const::PHRASEAPP_FALLBACK_LOCALE
     @locale_specific_map = Const::LOCALE_SPECIFIC_MAP
-    @translations_path = File.join(Const::PLUGIN_I18N_DIR, "#{@locale_specific_map[@phraseapp_fallback_locale.to_sym] || @phraseapp_fallback_locale}.json")
+    @translations_path = File.join(
+      Const::PLUGIN_I18N_DIR,
+      "#{@locale_specific_map[@phraseapp_fallback_locale.to_sym] || @phraseapp_fallback_locale}.json"
+    )
     @translations_new_path = @translations_path + '.new'
   end
 
@@ -31,7 +34,7 @@ class WdProject
 
   # Compares the keys from source and PhraseApp and returns true if they have any difference in keys, false otherwise.
   def has_key_changes?
-    source_keys = TranslationBuilder.get_all_keys()
+    source_keys = TranslationBuilder.get_all_keys
     file_name = "#{@locale_specific_map[@phraseapp_fallback_locale.to_sym] || @phraseapp_fallback_locale}.json"
     translated_keys = TranslationBuilder.get_translated_keys(@translations_path)
 
@@ -52,14 +55,14 @@ class WdProject
     end
 
     @log.info('No changes to translatable keys have been detected in the working tree.'.green.bright)
-    return false
+    false
   end
 
   # Generates a new json file with all keys and the available en translations.
   def json_generate
     @log.info('Generate new translations json file for PhraseApp upload')
 
-    source_keys = TranslationBuilder.get_all_keys()
+    source_keys = TranslationBuilder.get_all_keys
 
     translations_file = File.open(translations_path, 'r')
     translations_object = JSON.parse(translations_file.read)
@@ -68,7 +71,7 @@ class WdProject
     key_value_object = {}
 
     source_keys.each do |source_key|
-      if translations_object.has_key?(source_key[0])
+      if translations_object.key?(source_key[0])
         key_value_object[source_key[0]] = translations_object[source_key[0]]
       else
         @log.warn("New Key found: #{source_key[0]}".yellow.bright)
