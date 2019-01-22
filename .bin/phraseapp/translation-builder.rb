@@ -1,4 +1,5 @@
 require 'digest'
+require 'json'
 require 'logger'
 require_relative 'const.rb'
 
@@ -17,7 +18,7 @@ class TranslationBuilder
 
     translations_file_path = File.join(phraseapp_translations_path, "#{iso_lang}.json")
     translations_file = File.open(translations_file_path, 'r')
-    translations = translations_file.read
+    translations = JSON.parse(translations_file.read)
     translations_file.close
 
     translation_file_path = File.join(generated_translations_path, "#{iso_lang}.php")
@@ -117,14 +118,14 @@ class TranslationBuilder
   end
 
   def self.generate_translation_entry(translations, translation_key, log)
-    translation_string = translations.match(/"#{translation_key}": "(.*)"/)
+    translation_string = translations["#{translation_key}"]
 
     if !translation_string
       log.error("Error: Missing translation for key: #{translation_key}")
       return translation_key
     end
 
-    return translation_string[1]
+    translation_string.strip
   end
 
   def self.get_translation_entry(file_name, translation_key, translation_string)
