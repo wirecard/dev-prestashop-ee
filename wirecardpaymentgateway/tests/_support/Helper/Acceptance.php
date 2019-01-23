@@ -1,4 +1,5 @@
-{*
+<?php
+/**
  * Shop System Plugins - Terms of Use
  *
  * The plugins offered are provided free of charge by Wirecard AG and are explicitly not part
@@ -26,23 +27,18 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *}
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
+ */
 
-<img src="../modules/wirecardpaymentgateway/logo.png">
-<br>
-<p><strong>{lFallback s='pay_with_gateway' mod='wirecardpaymentgateway'}</strong></p>
-<div class="btn-group">
-    <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
-        <i class="icon-money"></i>
-        {lFallback s='text_list' mod='wirecardpaymentgateway'}
-    </a>
-    <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
-        {lFallback s='text_support' mod='wirecardpaymentgateway'}
-    </a>
-    <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/prestashop-ee/wiki/Terms-of-Use">
-        {lFallback s='terms_of_use' mod='wirecardpaymentgateway'}
-    </a>
-</div>
-<!-- livezilla.net PLACE SOMEWHERE IN BODY -->
-<script type="text/javascript" id="936f87cd4ce16e1e60bea40b45b0596a" src="https://provusgroup.com/livezilla/script.php?id=936f87cd4ce16e1e60bea40b45b0596a"></script>
-<!-- livezilla.net PLACE SOMEWHERE IN BODY -->
+namespace Helper;
+
+// here you can define custom actions
+// all public methods declared in helper class will be available in $I
+
+class Acceptance extends \Codeception\Module
+{
+
+}
