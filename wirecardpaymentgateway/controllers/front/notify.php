@@ -176,6 +176,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             case 'debit':
             case 'capture':
             case 'purchase':
+            case 'deposit':
             default:
                 return _PS_OS_PAYMENT_;
         }
