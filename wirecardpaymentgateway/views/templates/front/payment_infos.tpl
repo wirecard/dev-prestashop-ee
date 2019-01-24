@@ -29,6 +29,6 @@
  *}
 
 <section>
-  <p>{l s='if_additional_info_add_here' mod='wirecardpaymentgateway'}
+  <p>{lFallback s='if_additional_info_add_here' mod='wirecardpaymentgateway'}
   </p>
 </section>
