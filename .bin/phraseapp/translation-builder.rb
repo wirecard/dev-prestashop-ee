@@ -83,7 +83,7 @@ class TranslationBuilder
 
   def self.get_keys_for_tpl_file(file_path)
     file = File.open(file_path, 'r:utf-8')
-    translation_keys = file.read.scan(/\{l s=\'(.*)\' mod/).uniq
+    translation_keys = file.read.scan(/\{l(?>Fallback)? s=\'(.*)\' mod/).uniq
     file.close
 
     translation_keys
