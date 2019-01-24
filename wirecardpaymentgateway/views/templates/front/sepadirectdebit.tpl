@@ -29,7 +29,7 @@
 *}
 <div id="payment-processing-gateway-sepa-form">
     <div class="form-group row">
-        <label class="col-md-3 form-control-label">{l s='first_name_input' mod='wirecardpaymentgateway'}</label>
+        <label class="col-md-3 form-control-label">{lFallback s='first_name_input' mod='wirecardpaymentgateway'}</label>
         <div class="col-md-6">
             <input type="text" class="form-control" name="sepaFirstName" id="sepaFirstName" />
         </div>
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-group row">
-        <label class="col-md-3 form-control-label">{l s='last_name_input' mod='wirecardpaymentgateway'}</label>
+        <label class="col-md-3 form-control-label">{lFallback s='last_name_input' mod='wirecardpaymentgateway'}</label>
         <div class="col-md-6">
             <input type="text" class="form-control" name="sepaLastName" id="sepaLastName" />
         </div>
@@ -47,7 +47,7 @@
     </div>
 
     <div class="form-group row">
-        <label class="col-md-3 form-control-label required"> {l s='iban_input' mod='wirecardpaymentgateway'}</label>
+        <label class="col-md-3 form-control-label required"> {lFallback s='iban_input' mod='wirecardpaymentgateway'}</label>
         <div class="col-md-6">
             <input type="tel" class="form-control" name="sepaIban" id="sepaIban" />
         </div>
@@ -57,7 +57,7 @@
 
     {if $bicEnabled == 'true' }
         <div class="form-group row">
-            <label class="col-md-3 form-control-label required"> {l s='bic_input' mod='wirecardpaymentgateway'}</label>
+            <label class="col-md-3 form-control-label required"> {lFallback s='bic_input' mod='wirecardpaymentgateway'}</label>
             <div class="col-md-6">
                 <input type="tel" class="form-control" name="sepaBic" id="sepaBic" />
             </div>

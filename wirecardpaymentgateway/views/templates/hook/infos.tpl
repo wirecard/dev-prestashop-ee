@@ -30,17 +30,17 @@
 
 <img src="../modules/wirecardpaymentgateway/logo.png">
 <br>
-<p><strong>{l s='pay_with_gateway' mod='wirecardpaymentgateway'}</strong></p>
+<p><strong>{lFallback s='pay_with_gateway' mod='wirecardpaymentgateway'}</strong></p>
 <div class="btn-group">
     <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
         <i class="icon-money"></i>
-        {l s='text_list' mod='wirecardpaymentgateway'}
+        {lFallback s='text_list' mod='wirecardpaymentgateway'}
     </a>
     <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
-        {l s='text_support' mod='wirecardpaymentgateway'}
+        {lFallback s='text_support' mod='wirecardpaymentgateway'}
     </a>
     <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/prestashop-ee/wiki/Terms-of-Use">
-        {l s='terms_of_use' mod='wirecardpaymentgateway'}
+        {lFallback s='terms_of_use' mod='wirecardpaymentgateway'}
     </a>
 </div>
 <!-- livezilla.net PLACE SOMEWHERE IN BODY -->

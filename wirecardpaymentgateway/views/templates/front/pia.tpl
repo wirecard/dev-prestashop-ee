@@ -31,12 +31,12 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <td scope="col" colspan="2"><b>{l s='transfer_notice' mod='wirecardpaymentgateway'}</b></td>
+            <td scope="col" colspan="2"><b>{lFallback s='transfer_notice' mod='wirecardpaymentgateway'}</b></td>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>{l s='amount' mod='wirecardpaymentgateway'}</td>
+            <td>{lFallback s='amount' mod='wirecardpaymentgateway'}</td>
             <td>{$amount|string_format:"%.2f"} {$currency|escape:'htmlall':'UTF-8'}</td>
         </tr>
         <tr>
@@ -48,7 +48,7 @@
             <td>{$bic|escape:'htmlall':'UTF-8'}</td>
         </tr>
         <tr>
-            <td>{l s='ptrid' mod='wirecardpaymentgateway'}</td>
+            <td>{lFallback s='ptrid' mod='wirecardpaymentgateway'}</td>
             <td>{$refId|escape:'htmlall':'UTF-8'}</td>
         </tr>
     </tbody>

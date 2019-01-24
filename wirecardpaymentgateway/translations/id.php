@@ -252,12 +252,12 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_f0a5e748d9be590b9fc4a95
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_de1c13a642c022356636de5f2b6ed8c6'] = 'Pilihan kartu kredit';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_10aec35353f9c4096a71c38654c3d402'] = 'Cancel';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_4eb57eb6288bc1ae4efd419ff4a3b4ca'] = 'Gunakan Kartu Kredit yang tersimpan';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_dd6655a20f19076c518afd9a4e534da5'] = 'Kartu Kredit dipilih. Untuk menggunakan Kartu Kredit lain, klik \\\"Gunakan Kartu Kredit baru\\\"';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_dd6655a20f19076c518afd9a4e534da5'] = 'Kartu Kredit dipilih. Untuk menggunakan Kartu Kredit lain, klik \"Gunakan Kartu Kredit baru\"';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5809325b75110f574df44ec5eec4032b'] = 'Gunakan Kartu Kredit baru';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5a8a180808e7b94259768ce42bab4c4e'] = 'Simpan untuk digunakan di kemudian hari.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_93f05ad4c93885541f619d9bb1320106'] = 'Koneksi Anda sedang dialihkan, harap menunggu';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ideal_cc58efdf2d5748696717291d583d9ef8'] = 'Bank';
-$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'I herewith confirm that I have read the <a href=\"https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/\" target=\"_blank\">privacy notice</a> and <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/\">additional terms and conditions</a> for Wirecard payment types and that I accept their validity.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'I herewith confirm that I have read the <a href="https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/" target="_blank">privacy notice</a> and <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/">additional terms and conditions</a> for Wirecard payment types and that I accept their validity.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>invoice_3471b47ae35836a5c315c049f13b211e'] = 'You must agree to the privacy notice and additional terms of Wirecard payment methods.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>payment_infos_cf277798cf7aac4f868b64b537a9e821'] = 'If additional information implement here...';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_f8b13c2ea0fa8968dc0503b4ef5a3110'] = 'Harap transfer jumlah tersebut menggunakan data berikut ini:';

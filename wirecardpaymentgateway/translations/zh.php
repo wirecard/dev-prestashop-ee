@@ -141,7 +141,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_3ea9eb5a6ed433246bc7
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_36245276e84306a410a410785ac986b3'] = '发送附加信息';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_7daacf9143e60bd1d97b926e8d0754d6'] = '测试配置';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Enable';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_e9696579c40fb2a7daf25594ba555752'] = ' 启用 Wirecard Przelewy24';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_e9696579c40fb2a7daf25594ba555752'] = '启用 Wirecard Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_2433374a7348266aa2a46eab61a2fc5b'] = '名称';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_cc62e102080e81b2596fa62e26099947'] = 'Wirecard Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_dcf1eada7b5e21500790ee75ebc2be5b'] = '商家账户 ID';
@@ -257,7 +257,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5809325b75110f574df44ec
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5a8a180808e7b94259768ce42bab4c4e'] = '保存以备后用。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_93f05ad4c93885541f619d9bb1320106'] = '您正在重定向。请稍候';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ideal_cc58efdf2d5748696717291d583d9ef8'] = '银行';
-$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'I herewith confirm that I have read the <a href=\"https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/\" target=\"_blank\">privacy notice</a> and <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/\">additional terms and conditions</a> for Wirecard payment types and that I accept their validity.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'I herewith confirm that I have read the <a href="https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/" target="_blank">privacy notice</a> and <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/">additional terms and conditions</a> for Wirecard payment types and that I accept their validity.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>invoice_3471b47ae35836a5c315c049f13b211e'] = 'You must agree to the privacy notice and additional terms of Wirecard payment methods.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>payment_infos_cf277798cf7aac4f868b64b537a9e821'] = 'If additional information implement here...';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_f8b13c2ea0fa8968dc0503b4ef5a3110'] = '请使用以下数据转账：';

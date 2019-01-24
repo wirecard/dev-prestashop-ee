@@ -33,7 +33,7 @@
 
 <div id="payment-processing-gateway-ideal-form">
     <div class="form-group row">
-        <label class="form-control-label required">{l s='bank_label' mod='wirecardpaymentgateway'}</label>
+        <label class="form-control-label required">{lFallback s='bank_label' mod='wirecardpaymentgateway'}</label>
         <select class="form-control" name="idealBankBic" id="idealBankBic" style="width:auto">
             {foreach $banks as $bank}
                 <option value="{$bank.key|escape:'htmlall':'UTF-8'}">{$bank.label|escape:'htmlall':'UTF-8'}</option>

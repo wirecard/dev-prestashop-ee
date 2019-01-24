@@ -8,7 +8,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_c2fb8155114a173b41
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_66a375d1669793eb4a2c0a2cb3a4202b'] = 'Ihre E-Mail-Adresse';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_9b1ef1976b69fb0212b8ed98e58d2f32'] = 'Ihre Nachricht';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_39d37ff8e221d53d5194c6f6671c3bfe'] = 'Senden';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_778d0b0b5edd889594936ce6c3805808'] = 'Geben Sie eine gültige E-Mail-Adresse ein.\n';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_778d0b0b5edd889594936ce6c3805808'] = 'Geben Sie eine gültige E-Mail-Adresse ein.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_868c36a6745a69f4b55a97b34f4357a0'] = 'Geben Sie Ihre Nachricht ein.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_58a11874af64f29c004aafe016301f72'] = 'E-Mail-Versand fehlgeschlagen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_661a6723d5ca05ecf89b413850f09947'] = 'E-Mail wurde erfolgreich versendet.';
@@ -22,7 +22,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_d7fd63c15bed6
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_ced02f721e522c9c96aa344901916d43'] = 'Transaktionstyp';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_4621508b093588359d89d15019b0c713'] = 'Transaktionsstatus';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_3bd56bbf8734eb9b2d39537bbbf92cdd'] = 'Es wurde keine Transaktion gefunden.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_801af80081d36bd4abbc956818f28de9'] = 'Es wurde keine gültige Zahlung für diese Transaktion gefunden.\n';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_801af80081d36bd4abbc956818f28de9'] = 'Es wurde keine gültige Zahlung für diese Transaktion gefunden.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_fb8974a2d9268f875990859be9dcb769'] = 'Sie haben den Bezahlprozess abgebrochen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_c5932c4717881c8965cea94ead28e157'] = 'Beim Bezahlprozess ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Aktivieren';
@@ -252,15 +252,15 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_f0a5e748d9be590b9fc4a95
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_de1c13a642c022356636de5f2b6ed8c6'] = 'Kreditkartenauswahl';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_10aec35353f9c4096a71c38654c3d402'] = 'Abbrechen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_4eb57eb6288bc1ae4efd419ff4a3b4ca'] = 'Gespeicherte Kreditkarte verwenden';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_dd6655a20f19076c518afd9a4e534da5'] = 'Kreditkarte ausgewählt. Um eine andere Kreditkarte zu verwenden, klicken Sie  \"Neue Kreditkarte verwenden\".';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_dd6655a20f19076c518afd9a4e534da5'] = 'Kreditkarte ausgewählt. Um eine andere Kreditkarte zu verwenden, klicken Sie  "Neue Kreditkarte verwenden".';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5809325b75110f574df44ec5eec4032b'] = 'Neue Kreditkarte verwenden';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5a8a180808e7b94259768ce42bab4c4e'] = 'Für spätere Verwendung speichern.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_93f05ad4c93885541f619d9bb1320106'] = 'Sie werden weitergeleitet. Bitte warten.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ideal_cc58efdf2d5748696717291d583d9ef8'] = 'Bank';
-$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'Hiermit bestätige ich, dass ich die <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/\">Datenschutzhinweise</a> und <a target=\"_blank\" href=\"https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/\">zusätzlichen Geschäftsbedingungen</a> für Wirecard-Zahlarten zur Kenntnis genommen habe und mit deren Geltung einverstanden bin.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'Hiermit bestätige ich, dass ich die <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/">Datenschutzhinweise</a> und <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/">zusätzlichen Geschäftsbedingungen</a> für Wirecard-Zahlarten zur Kenntnis genommen habe und mit deren Geltung einverstanden bin.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>invoice_3471b47ae35836a5c315c049f13b211e'] = 'Sie müssen den Datenschutzhinweisen und zusätzlichen Geschäftsbedingungen für Wirecard-Zahlarten zustimmen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>payment_infos_cf277798cf7aac4f868b64b537a9e821'] = 'If additional information implement here...';
-$_MODULE['<{wirecardpaymentgateway}prestashop>pia_f8b13c2ea0fa8968dc0503b4ef5a3110'] = 'Verwenden Sie für die Überweisung die folgenden Daten:\n';
+$_MODULE['<{wirecardpaymentgateway}prestashop>pia_f8b13c2ea0fa8968dc0503b4ef5a3110'] = 'Verwenden Sie für die Überweisung die folgenden Daten:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_e9f40e1f1d1658681dad2dac4ae0971e'] = 'Betrag';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_45eaff517a0479ed43fd7dd8de339ec3'] = 'Provider Transaction Reference ID';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_65c55738e0d21515c1e026a8dd7eae21'] = 'Vorname';
@@ -279,7 +279,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_cc3c3e790926bfa8dd078
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_63abdba9b6dbccdb53ca1fd0f2e2ad12'] = 'Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrags verlangen. Es gelten dabei die mit meiner Bank vereinbarten Bedingungen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_31c4756b8961934302d919b693e2e3a1'] = 'Für den Fall der Nichteinlösung der Lastschrift oder des Widerspruchs gegen die Lastschrift weise ich meine Bank unwiderruflich an, dem Creditor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_4f75ff5e69e0c6f3dd89447b2b39c4e7'] = 'oder Dritten auf Anforderung meinen Namen, Adresse und Geburtsdatum vollständig mitzuteilen.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_963781e40052d2e34f572c9f7b66db3f'] = 'Ich habe die Informationen zum SEPA-Lastschriftmandat gelesen und verstanden.\n';
+$_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_963781e40052d2e34f572c9f7b66db3f'] = 'Ich habe die Informationen zum SEPA-Lastschriftmandat gelesen und verstanden.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_10aec35353f9c4096a71c38654c3d402'] = 'Abbrechen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepa_mandate_016ee38c4b145a0841684d8b22d3db84'] = 'Bestätigen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_841061061b3e6d814c1b275405fd2d6f'] = 'Via Wirecard Payment Processing Gateway bezahlen.';
