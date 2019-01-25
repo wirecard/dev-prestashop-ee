@@ -30,8 +30,7 @@ matrix:
       - bash .bin/run-validator-test.sh
       after_script: skip
 
-  - &phraseapp-pull
-    stage: phraseapp-pull
+  - stage: phraseapp-pull
     if: env(PHRASEAPP_PULL) = '1'
     language: ruby
     ruby: 2.5.3
@@ -42,8 +41,7 @@ matrix:
     - .bin/rake phraseapp:ci_update
     after_script: skip
     
-  - &phraseapp-check-if-in-sync
-    stage: phraseapp-check-if-in-sync
+  - stage: phraseapp-check-if-in-sync
     if: branch = master OR type = pull_request
     language: ruby
     ruby: 2.5.3
