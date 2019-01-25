@@ -7,37 +7,28 @@ env:
     - COMPOSER_ARGS="--no-interaction"
     - github_token:
         secure: "GrPeKimeHRXL7Bl1ORmmnbKRBsJP/c3kfuK9+KjfjuJYLXQDjar1duVzLLG3ErjFdas0H5W8stNi/120XH8/fwIK/PCjr828cGIkqzkV1hXbj8uWKnf3O8unxwzAyMCQNXjsmcQA0ubxTzxkgJXfWzNtwHYv/dVvu8aq5KrdOGWKBjyiqAFX7tb7/NoINrqr1CkmRvq4V4sPoErpUT0VMmptTmFfx5XY3XngkbMiRWpJR1Fjqvx3FnN65EXi0/jZ2LJSmqdPM41O0WZv0TwoR5gjsC/YF0QqFrYHAEJsiEbkmVgn9fTx/qrW+wJqsCDy3O9sGr749nNb6/qy7+2hsenAiZeTFU7J0dJCo4B1+OZOP6aFU+sGDlXzZaStydOR+p7jfizq2W1imlaZ7nybqzZTO78Yui+NP+UWOB5TQsJkjVa2XaVkLV7UCTE8a8omnVcoQ2RGgRNQl5FwxFLq6UjqerxLp1ftyGDLDHdg8gwTt5GT+e+ucUC5SRAQDzMeIaKkcAddH/dYKd8+cD3+h1eN6DUPwKV9Gh5SpDG19ndJDlrVAnqe36C4sjGf2+D8W06T8b4sVwkZvWIXJT1voHwJI4bkGM6xvfGqMuDwFRY5EMDke2PRsbCqPoWAhOfY97KA7CoQn6n1ze/wpJu2qOiMcU52TiXkdTB6nmZMtYk="
+
 matrix:
   allow_failures:
     - stage: acceptance-test
   include:
   - php: 5.6
-    if: type != cron
+    if: env(PHRASEAPP_PULL) != '1' && type != cron
   - php: 7.0
-    if: type != cron
+    if: env(PHRASEAPP_PULL) != '1' && type != cron
   - php: 7.1
-    if: type != cron
+    if: env(PHRASEAPP_PULL) != '1' && type != cron
 
   - stage: validator-test
     if: type != cron
-    php: 7.1
-    before_script:
+      php: 7.1
+      before_script:
       - pip install --user bs4
       - bash .bin/generate-release-package.sh
       - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception
-    script:
+      script:
       - bash .bin/run-validator-test.sh
-    after_script: skip
-
-
-matrix:
-  include:
-  - php: 5.6
-    if: env(PHRASEAPP_PULL) != '1'
-  - php: 7.0
-    if: env(PHRASEAPP_PULL) != '1'
-  - php: 7.1
-    if: env(PHRASEAPP_PULL) != '1'
+      after_script: skip
 
   - &phraseapp-pull
     stage: phraseapp-pull
