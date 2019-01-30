@@ -62,6 +62,7 @@ script:
 
 after_script:
   - travis_retry composer upload-coverage
+  - bash .bin/generate-tag.sh
 
 before_deploy:
   - export REPO_NAME=`echo $TRAVIS_REPO_SLUG | awk -F'/' '{print $2}'`
