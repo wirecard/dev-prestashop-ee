@@ -13,6 +13,7 @@ module Const
   LOCALE_SPECIFIC_MAP = {
     'en_US': 'en',
     'de_DE': 'de',
+    'fr_FR': 'fr',
     'id_ID': 'id',
     'ja_JP': 'ja',
     'ko_KR': 'ko',
