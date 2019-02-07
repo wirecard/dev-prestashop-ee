@@ -15,3 +15,4 @@ Before you proceed, please read our [General Information](https://github.com/wir
 ***
 ## Documentation
 Our [documentation](https://github.com/wirecard/prestashop-ee/wiki) provides detailed technical information: it includes extensive instructions on how to [install](https://github.com/wirecard/prestashop-ee/wiki/Installation) and [configure](https://github.com/wirecard/prestashop-ee/wiki/Configuration) the module. It also lists all available [payment methods](https://github.com/wirecard/prestashop-ee/wiki#supported-payment-methods) and post-processing operations.
+
