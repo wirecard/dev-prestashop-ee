@@ -84,7 +84,7 @@ deploy:
 
 after_deploy:
   - export TMPDIR=/tmp/wirecard
-  - git clone -b master --depth 1 https://$GITHUB_TOKEN@github.com/$DEPLOYMENT_PROJECT $TMPDIR
+  - git clone -b master --depth 1 https://$WIRECARD_CEE_GITHUB_TOKEN@github.com/$DEPLOYMENT_PROJECT $TMPDIR
   - cd $TMPDIR && travis_retry bundle install
   - bin/rake trigger_build
 
