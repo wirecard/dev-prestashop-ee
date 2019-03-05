@@ -6,8 +6,8 @@ services:
     image: mysql
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=supersecret
-      - MYSQL_DATABASE=prestashop
+      - MYSQL_ROOT_PASSWORD=${PRESTASHOP_DB_PASSWORD}
+      - MYSQL_DATABASE=${PRESTASHOP_DB_NAME}
     networks:
       - prestashop-net
     command:
@@ -23,9 +23,9 @@ services:
     build:
       context: .
     environment:
-      - DB_SERVER=prestashop-database
-      - DB_PASSWD=supersecret
-      - DB_NAME=prestashop
+      - DB_SERVER=${PRESTASHOP_DB_SERVER}
+      - DB_PASSWD=${PRESTASHOP_DB_PASSWORD}
+      - DB_NAME=${PRESTASHOP_DB_NAME}
       - PS_INSTALL_AUTO=1
       - PS_FOLDER_ADMIN=backend
       - PS_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN}
