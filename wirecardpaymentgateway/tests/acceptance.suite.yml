@@ -7,15 +7,31 @@
 actor: AcceptanceTester
 modules:
   enabled:
-     - WebDriver:
-         url: '%NGROK_URL%'
-         browser: chrome # 'chrome' or 'firefox'
-     - \Helper\Acceptance
+    - WebDriver:
+        url: 'http://localhost:8080'
+        browser: chrome # 'chrome' or 'firefox'
+    - \Helper\Acceptance
+
 
 env:
-    validator:
-         modules:
-            config:
-                WebDriver:
-                    browser: 'phantomjs'
-                    url: 'https://validator.prestashop.com'
+  ui_test:
+    modules:
+      config:
+        WebDriver:
+          host: 'hub-cloud.browserstack.com'
+          port: 80
+          url: 'http://localhost:8080'
+          browser: chrome # 'chrome' or 'firefox'
+          capabilities:
+            'build': '%VERSION%'
+            'project': 'prestashop-ee-%GATEWAY%'
+            'browserstack.local': 'true'
+            'browserstack.user': '%BROWSERSTACK_USER%'
+            'browserstack.key': '%BROWSERSTACK_ACCESS_KEY%'
+
+  validator:
+    modules:
+      config:
+        WebDriver:
+          browser: 'phantomjs'
+          url: 'https://validator.prestashop.com'

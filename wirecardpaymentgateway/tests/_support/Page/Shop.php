@@ -33,50 +33,23 @@
  * @license GPLv3
  */
 
-namespace Helper;
+namespace Page;
 
-// here you can define custom actions
-// all public methods declared in helper class will be available in $I
-
-use Codeception\Lib\Generator\PageObject;
-
-class Acceptance extends \Codeception\Module
+class Shop extends Base
 {
 
-
     /**
-     * Method getDataFromDataFile
-     * @param string $fileName
-     * @return string
-     *
+     * @var string
      * @since 1.3.4
      */
-    public static function getDataFromDataFile($fileName)
-    {
-        // decode the JSON feed
-        $json_data = json_decode(file_get_contents($fileName));
-        if (! $json_data) {
-            $error = error_get_last();
-            echo 'Failed to get customer data from tests/_data/CustomerData.json. Error was: ' . $error['message'];
-        } else {
-            return $json_data;
-        }
-    }
+    // include url of current page
+    public $URL = '/index.php';
 
     /**
-     * Method fillFieldsWithData
-     *
-     * @param string $dataType
-     * @param PageObject $page
-     *
+     * @var array
      * @since 1.3.4
      */
-    public static function fillFieldsWithData($dataType, $page)
-    {
-        if (strpos($dataType, 'Customer') !== false) {
-            $page->fillBillingDetails();
-        } elseif (strpos($dataType, 'Credit Card') !== false) {
-            $page->fillCreditCardDetails();
-        }
-    }
+    public $elements = array(
+        'First Product in the Product List' => '//*[@id="content"]/section/div/article[1]/div/div[1]/h3/a',
+    );
 }

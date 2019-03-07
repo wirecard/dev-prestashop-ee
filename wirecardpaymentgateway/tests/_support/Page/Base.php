@@ -33,50 +33,90 @@
  * @license GPLv3
  */
 
-namespace Helper;
+namespace Page;
 
-// here you can define custom actions
-// all public methods declared in helper class will be available in $I
-
-use Codeception\Lib\Generator\PageObject;
-
-class Acceptance extends \Codeception\Module
+class Base
 {
 
+    /**
+     * @var string
+     * @since 1.3.4
+     */
+    protected $URL = '';
 
     /**
-     * Method getDataFromDataFile
-     * @param string $fileName
+     * @var array
+     * @since 1.3.4
+     */
+    protected $elements = array();
+
+    /**
+     * @var string
+     * @since 1.3.4
+     */
+    protected $tester;
+
+    /**
+     * @var AcceptanceTester
+     * @since 1.3.4
+     */
+    public function __construct(\AcceptanceTester $I)
+    {
+        $this->tester = $I;
+    }
+
+    /**
+     * Method getElement
+     *
+     * @param string $name
      * @return string
      *
      * @since 1.3.4
      */
-    public static function getDataFromDataFile($fileName)
+    public function getElement($name)
     {
-        // decode the JSON feed
-        $json_data = json_decode(file_get_contents($fileName));
-        if (! $json_data) {
-            $error = error_get_last();
-            echo 'Failed to get customer data from tests/_data/CustomerData.json. Error was: ' . $error['message'];
-        } else {
-            return $json_data;
-        }
+        return $this->elements[$name];
     }
 
     /**
-     * Method fillFieldsWithData
+     * Method getURL
      *
-     * @param string $dataType
-     * @param PageObject $page
+     * @return string
      *
      * @since 1.3.4
      */
-    public static function fillFieldsWithData($dataType, $page)
+    public function getURL()
     {
-        if (strpos($dataType, 'Customer') !== false) {
-            $page->fillBillingDetails();
-        } elseif (strpos($dataType, 'Credit Card') !== false) {
-            $page->fillCreditCardDetails();
-        }
+        return $this->URL;
+    }
+
+    /**
+     * Method fillBillingDetails
+     *
+     * @since 1.3.4
+     */
+    public function fillBillingDetails()
+    {
+        ;
+    }
+
+    /**
+     * Method fillCreditCardDetails
+     *
+     * @since 1.3.4
+     */
+    public function fillCreditCardDetails()
+    {
+        ;
+    }
+
+    /**
+     * Method checkBox
+     * @param string $box
+     * @since 1.3.4
+     */
+    public function checkBox($box)
+    {
+        $this->tester->checkOption($this->getElement($box));
     }
 }

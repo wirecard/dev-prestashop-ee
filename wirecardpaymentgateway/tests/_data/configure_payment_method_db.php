@@ -27,6 +27,10 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
 // the path for different config files, each named as <paymentmethod>.json
@@ -43,7 +47,7 @@ $defaultConfig = [
         'base_url' => 'https://api-test.wirecard.com',
         'http_user' => '70000-APITEST-AP',
         'http_pass' => 'qD2wzQ_hrc!8',
-        'three_d_maid' => '508b8896-b37d-4614-845c-26bf8bf2c948',
+        'three_d_merchant_account_id' => '508b8896-b37d-4614-845c-26bf8bf2c948',
         'three_d_secret' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
         'merchant_account_id' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
         'secret' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
