@@ -9,7 +9,7 @@ Feature: checkCreditCard3DSFunctionalityHappyPath
     And I fill fields with "Customer data"
     Then I see "Wirecard Credit Card"
 
-  @env ui_test
+  @env ui_test @ui_test
   Scenario: try purchaseCheck
     Given I fill fields with "Valid Credit Card Data"
     When I check "I agree to the terms of service"
