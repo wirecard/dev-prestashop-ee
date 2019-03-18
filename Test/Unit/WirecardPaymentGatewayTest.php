@@ -139,7 +139,7 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->gateway->hookPaymentOptions(array('cart' => new Cart()));
 
-        $this->assertCount(10, $actual);
+        $this->assertCount(11, $actual);
     }
 
     public function testHookActionFrontControllerSetMedia()
