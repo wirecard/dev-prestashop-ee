@@ -59,10 +59,13 @@ class WirecardAjaxController extends ModuleAdminController
                 if ($method === 'sofortbanking') {
                     $method = 'sofort';
                 }
+                if ($method === 'wechat-qrpay') {
+                    $method = 'wechat';
+                }
                 $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
                 $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
                 $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
-                
+
                 $config = new Config($baseUrl, $httpUser, $httpPass);
                 $transactionService = new TransactionService($config, new Logger());
 
