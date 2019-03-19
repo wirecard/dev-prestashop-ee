@@ -608,7 +608,7 @@ class WirecardPaymentGateway extends PaymentModule
             'masterpass' => new PaymentMasterpass($this),
             'unionpayinternational' => new PaymentUnionPayInternational($this),
             'alipay-xborder' => new PaymentAlipayCrossborder($this),
-            'paylib' => new PaymentPaylib($this)
+            'paylib' => new PaymentPaylib($this),
         );
 
         return $payments;
