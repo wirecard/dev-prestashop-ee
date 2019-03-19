@@ -61,27 +61,22 @@ class Configuration
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_PAYMENT_ACTION':
                 return 'reserve';
                 break;
+
             case 'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL':
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL':
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL':
                 return 'https://api-test.wirecard.com';
                 break;
-            case 'WIRECARD_PAYMENT_GATEWAY_WECHAT_BASE_URL':
-                return 'https://api-wdcee-test.wirecard.com';
             case 'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_USER':
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_USER':
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_USER':
                 return '70000-APITEST-AP';
                 break;
-            case 'WIRECARD_PAYMENT_GATEWAY_WECHAT_HTTP_USER':
-                return 'wechat_sandbox';
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_HTTP_PASS':
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_PASS':
             case 'WIRECARD_PAYMENT_GATEWAY_SEPA_HTTP_PASS':
                 return 'qD2wzQ_hrc!8';
                 break;
-            case 'WIRECARD_PAYMENT_GATEWAY_WECHAT_HTTP_PASS':
-                return '9p0q8w8i';
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_MERCHANT_ACCOUNT_ID':
                 return '2a0e9351-24ed-4110-9a1b-fd0fee6bec26';
                 break;
