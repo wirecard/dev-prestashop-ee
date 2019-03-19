@@ -38,7 +38,6 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\PaylibTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
-use Wirecard\PaymentSdk\Entity\SubMerchantInfo;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
