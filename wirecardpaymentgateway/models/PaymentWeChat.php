@@ -216,7 +216,6 @@ class PaymentWeChat extends Payment
         $transaction = new WeChatTransaction();
 
         $additionalInformation = new AdditionalInformation();
-        $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setOrderDetail($additionalInformation->createDescriptor($orderId));
 
         $subMerchantInfo = new SubMerchantInfo();
