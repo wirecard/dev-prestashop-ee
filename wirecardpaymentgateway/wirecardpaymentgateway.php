@@ -625,26 +625,35 @@ class WirecardPaymentGateway extends PaymentModule
     private function postProcess()
     {
         if (Tools::isSubmit('btnSubmit')) {
-            // iterate over parameters to check the required fields, bail if any of them are not given
-            foreach ($this->getAllConfigurationParameters() as $parameter) {
-                $val = Tools::getValue($parameter['param_name']);
+            $configuration = [];
+            $requiredFieldMissing = false;
 
-                if (isset($parameter['required']) && $parameter['required'] === true && empty($val)) {
+            // iterate over parameters, get values, detect if any required fields were left empty
+            foreach ($this->getAllConfigurationParameters() as $parameter) {
+                $value = Tools::getValue($parameter['param_name']);
+
+                if (isset($parameter['required']) && $parameter['required'] === true && empty($value)) {
                     $this->html .= $this->displayError(
                         sprintf($this->l('settings_error_required_field_missing'), $parameter['label'])
                     );
-                    return;
+                    $requiredFieldMissing = true;
                 }
+
+                if (is_array($value)) {
+                    $value = Tools::jsonEncode($value);
+                }
+
+                $configuration += [$parameter['param_name'] => $value];
             }
 
-            // iterate over parameters and save
-            foreach ($this->getAllConfigurationParameters() as $parameter) {
-                $val = Tools::getValue($parameter['param_name']);
+            // bail without saving on missing required fields
+            if ($requiredFieldMissing) {
+                return;
+            }
 
-                if (is_array($val)) {
-                    $val = Tools::jsonEncode($val);
-                }
-                Configuration::updateValue($parameter['param_name'], $val);
+            // save configuration
+            foreach ($configuration as $parameter => $value) {
+                Configuration::updateValue($parameter, $value);
             }
         }
         $this->html .= $this->displayConfirmation($this->l('settings_updated'));
