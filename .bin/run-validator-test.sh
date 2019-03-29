@@ -22,7 +22,7 @@ ${PHANTOM}/bin/phantomjs test.js
 
 #run validator  tests
 cd wirecardpaymentgateway
-vendor/bin/codecept run acceptance --env validator --steps
+vendor/bin/codecept run acceptance --env validator -g validator --steps
 
 #process validator test results
 cd ..
