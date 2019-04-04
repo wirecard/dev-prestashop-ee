@@ -87,7 +87,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->version = '1.3.4';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.4.3');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.1');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
@@ -624,7 +624,7 @@ class WirecardPaymentGateway extends PaymentModule
                 $val = Tools::getValue($parameter['param_name']);
 
                 if (is_array($val)) {
-                    $val = Tools::jsonEncode($val);
+                    $val = json_encode($val);
                 }
                 Configuration::updateValue($parameter['param_name'], $val);
             }
@@ -775,6 +775,8 @@ class WirecardPaymentGateway extends PaymentModule
      * @param $fields
      * @return mixed
      * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function createForm($fields)
     {
@@ -933,12 +935,10 @@ class WirecardPaymentGateway extends PaymentModule
         foreach ($this->getPayments() as $paymentMethod) {
             if ($paymentMethod->getLoadJs()) {
                 $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
-                $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
                 $ajaxSepaUrl = $link->getModuleLink('wirecardpaymentgateway', 'sepadirectdebit');
                 Media::addJsDef(
                     array(
                         'configProviderURL' => $ajaxLink,
-                        'ccVaultURL' => $ccVaultLink,
                         'ajaxsepaurl' => $ajaxSepaUrl
                     )
                 );

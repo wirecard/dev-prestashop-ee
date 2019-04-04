@@ -161,11 +161,11 @@ class PaymentCreditCard extends Payment
                 array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'pay',
+                    'default' => 'purchase',
                     'label'   => $this->l('config_payment_action'),
                     'options' => array(
-                        array('key' => 'reserve', 'value' => $this->l('text_payment_action_reserve')),
-                        array('key' => 'pay', 'value' => $this->l('text_payment_action_pay')),
+                        array('key' => 'authorization', 'value' => $this->l('text_payment_action_reserve')),
+                        array('key' => 'purchase', 'value' => $this->l('text_payment_action_pay')),
                     ),
                 ),
                 array(

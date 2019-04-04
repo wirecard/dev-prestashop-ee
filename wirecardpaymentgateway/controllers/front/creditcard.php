@@ -32,8 +32,9 @@
  * @license   GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use \WirecardEE\Prestashop\Models\CreditCardVault;
+use Wirecard\PaymentSdk\TransactionService;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Models\CreditCardVault;
 
 /**
  * @property WirecardPaymentGateway module
@@ -52,6 +53,24 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $this->ajax = true;
         $this->vaultModel = new CreditCardVault($this->context->customer->id);
         parent::initContent();
+    }
+
+    public function postProcess() {
+        $payload = \Tools::getAllValues();
+        $paymentMethod = \Tools::getValue('payment_method');
+        $url = $this->context->link->getModuleLink(
+            $this->module->name,
+            'return',
+            array(
+                'payment_type' => $paymentMethod,
+                'payment_state' => 'success',
+            )
+        );
+        $payment = $this->module->getPaymentFromType($paymentMethod);
+        $config = $payment->createPaymentConfig($this->module);
+        $transactionService = new TransactionService($config, new WirecardLogger());
+        $response = $transactionService->processJsResponse($payload, $url);
+        return $response->getRedirectUrl();
     }
 
     /**

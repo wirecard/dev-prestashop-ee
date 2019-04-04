@@ -58,7 +58,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
         $requestData = $creditCard->getRequestData($this->module, $this->context);
 
         header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        die(json_encode($requestData));
     }
 
     /**
@@ -70,6 +70,6 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
         $UPI = new PaymentUnionPayInternational($this->module);
         $requestData = $UPI->getRequestData($this->module, $this->context);
         header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode($requestData));
+        die(json_encode($requestData));
     }
 }

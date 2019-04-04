@@ -40,11 +40,12 @@ use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
-use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -61,8 +62,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      *
      * @since 1.0.0
      */
-    public function postProcess()
-    {
+    public function postProcess() {
         $cart = $this->context->cart;
         $cartId = $cart->id;
         $additionalInformation = new AdditionalInformation();
@@ -91,8 +91,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             );
 
             /** @var Transaction $transaction */
-            $transaction = $payment->createTransaction($this->module, $cart, Tools::getAllValues(), $orderId);
-            $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $paymentType));
+            $transaction = $payment->createTransaction($this->module, $cart, Tools::getAllValues(),
+                $orderId);
+            $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId,
+                $paymentType));
             $transaction->setRedirect($redirectUrls);
             $transaction->setAmount(new Amount($amount, $currency->iso_code));
 
@@ -100,13 +102,15 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $customFields->add(new CustomField('orderId', $orderId));
             $transaction->setCustomFields($customFields);
 
-            if ($transaction instanceof  \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
+            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
                 $transaction->setTokenId(Tools::getValue('tokenId'));
-                $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType, 'success'));
+                $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType,
+                    'success'));
             }
 
             if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
-                $transaction->setBasket($additionalInformation->createBasket($cart, $transaction, $currency->iso_code));
+                $transaction->setBasket($additionalInformation->createBasket($cart, $transaction,
+                    $currency->iso_code));
             }
 
             if ($this->module->getConfigValue($paymentType, 'descriptor')) {
@@ -134,6 +138,22 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                     $lastName
                 );
             }
+
+            if ('creditcard' === $paymentType) {
+                $transactionService = new TransactionService($config, new WirecardLogger());
+                $creditCardConfig = $config->get(CreditCardTransaction::NAME);
+                $transaction->setConfig($creditCardConfig);
+                $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
+                $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
+                $language = $this->getSupportedHppLangCode($baseUrl, $this->context);
+                $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
+                    $paymentAction, $language);
+                $data['paymentPageLoader'] = $baseUrl . '/engine/hpp/paymentPageLoader.js';
+                $link = $this->context->link->getModuleLink('wirecardpaymentgateway', 'creditcard',
+                    [], true);
+                $data['actionUrl'] = $link;
+                die($this->goToCreditCardUi($data));
+            }
             return $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
     }
@@ -145,10 +165,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
      * @param int $orderId
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation, $orderId)
-    {
+    public function executeTransaction($transaction, $config, $operation, $orderId) {
         $transactionService = new TransactionService($config, new WirecardLogger());
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
@@ -186,9 +207,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @return string
      * @since 1.0.0
      */
-    private function createPostForm($data)
-    {
-        $logger = new \WirecardEE\Prestashop\Helper\Logger();
+    private function createPostForm($data) {
+        $logger = new WirecardLogger();
         try {
             $this->context->smarty->assign($data);
 
@@ -204,15 +224,40 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     }
 
     /**
+     * redirect to ui for credit card
+     */
+    private function goToCreditCardUi($data) {
+        $this->setMedia();
+        $this->assignGeneralPurposeVariables();
+        $this->context->controller->addJS(_PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
+            . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
+
+        $templateVars = array(
+            'layout'         => $this->getLayout(),
+            'stylesheets'    => $this->getStylesheets(),
+            'javascript'     => $this->getJavascript(),
+            'js_custom_vars' => Media::getJsDef(),
+            'notifications'  => $this->prepareNotifications(),
+            'HOOK_HEADER'    => Hook::exec('displayHeader'),
+        );
+
+        $data = array_merge($data, $templateVars);
+        $this->context->smarty->assign($data);
+        $this->context->smarty->escape_html = false;
+        return $this->context->smarty->fetch('module:wirecardpaymentgateway/views/templates/front/creditcard_ui.tpl');
+    }
+
+    /**
      * Create order
      *
      * @param Cart $cart
      * @param string $paymentMethod
      * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
-    private function createOrder($cart, $paymentMethod)
-    {
+    private function createOrder($cart, $paymentMethod) {
         $orderManager = new OrderManager($this->module);
 
         $order = new Order($orderManager->createOrder(
@@ -228,20 +273,58 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * Recover failed order
      *
      * @param $orderId
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
-    private function processFailure($orderId)
-    {
+    private function processFailure($orderId) {
         $order = new Order($orderId);
         if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
             $order->setCurrentState(_PS_OS_ERROR_);
             $params = array(
                 'submitReorder' => true,
-                'id_order' => (int)$orderId
+                'id_order'      => (int) $orderId
             );
             $this->redirectWithNotifications(
                 $this->context->link->getPageLink('order', true, $order->id_lang, $params)
             );
         }
     }
+
+    /**
+     * Get supported language code for hpp seamless form renderer
+     *
+     * @param string $baseUrl
+     * @param \Context $context
+     * @return mixed|string
+     * @since 1.3.3
+     */
+    private function getSupportedHppLangCode($baseUrl, $context) {
+        $isoCode = $context->language->iso_code;
+        $languageCode = $context->language->language_code;
+        $language = 'en';
+        //special case for chinese languages
+        switch ($languageCode) {
+            case 'zh-tw':
+                $isoCode = 'zh_TW';
+                break;
+            case 'zh-cn':
+                $isoCode = 'zh_CN';
+                break;
+            default:
+                break;
+        }
+        try {
+            $supportedLang = json_decode(\Tools::file_get_contents(
+                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
+            ));
+            if (key_exists($isoCode, $supportedLang)) {
+                $language = $isoCode;
+            }
+        } catch (\Exception $exception) {
+            return 'en';
+        }
+        return $language;
+    }
+
 }
