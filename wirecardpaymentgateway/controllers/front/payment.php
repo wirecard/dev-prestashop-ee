@@ -57,6 +57,7 @@ use WirecardEE\Prestashop\Helper\OrderManager;
  */
 class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontController
 {
+
     /**
      * Process payment via transaction service
      *
@@ -146,6 +147,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
                 $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
                 $language = $this->getSupportedHppLangCode($baseUrl, $this->context);
+                $data['orderId'] = $orderId;
                 $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
                     $paymentAction, $language);
                 $data['paymentPageLoader'] = $baseUrl . '/engine/hpp/paymentPageLoader.js';
@@ -183,9 +185,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $redirect = $response->getRedirectUrl();
             Tools::redirect($redirect);
         } elseif ($response instanceof FormInteractionResponse) {
-            $data                = null;
-            $data['url']         = $response->getUrl();
-            $data['method']      = $response->getMethod();
+            $data = null;
+            $data['url'] = $response->getUrl();
+            $data['method'] = $response->getMethod();
             $data['form_fields'] = $response->getFormFields();
             die($this->createPostForm($data));
         } elseif ($response instanceof FailureResponse) {
@@ -228,8 +230,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     private function goToCreditCardUi($data) {
         $this->setMedia();
+        $this->display_header = false;
         $this->assignGeneralPurposeVariables();
-        $this->context->controller->addJS(_PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
+        $this->context->controller->addJS(
+            _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
 
         $templateVars = array(

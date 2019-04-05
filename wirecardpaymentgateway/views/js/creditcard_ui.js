@@ -44,47 +44,37 @@ function processAjaxUrl(url, params) {
 }
 
 function placeOrder(e) {
-        e.preventDefault();
-        WirecardPaymentPage.seamlessSubmitForm(
-            {
-                onSuccess: formSubmitSuccessHandler,
-                onError: logCallback,
-                wrappingDivId: "payment-processing-gateway-credit-card-form"
-            }
-        );
+    e.preventDefault();
+    WirecardPaymentPage.seamlessSubmitForm(
+        {
+            onSuccess: formSubmitSuccessHandler,
+            onError: logCallback,
+            wrappingDivId: "payment-processing-gateway-credit-card-form"
+        }
+    );
 }
 
 function formSubmitSuccessHandler(response) {
-    console.log(response);
-    response.forEach(function (element) {
-        jQuery('<input>').attr(
-            {
-                type: 'hidden',
-                name: element.index,
-                id: '#' + element.value,
-                value: response.card[el]
-            }
-        ).appendTo(form);
+    console.log('Sending to prestashop:', response);
+    $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        dataType: 'json',
+        data: {
+            orderId : orderId,
+            payload: response,
+            ajax: true
+        },
+        success: function (sucess) {
+            console.log('juppii', sucess);
+            window.location.href = sucess.url;
+        },
+        error: function (error) {
+            console.log('error', error);
+            window.location.href = error.url;
+        }
     });
 
-    form.submit();
-    // let url = form.attr("action");
-    // console.log('Sucess:', response,url);
-    // $.ajax({
-    //     url: url,
-    //     dataType: 'json',
-    //     method: 'POST',
-    //     data: response,
-    //     beforeSend: function () {
-    //         console.log('sending to shop', response);
-    //     }
-    // }).done(function (result) {
-    //     console.log('final:', result);
-    //     if (typeof result === undefined) {
-    //         $.growl.error({message: "No answer received from server"});
-    //     }
-    //     //
-    // });
 }
 
 function logCallback(response) {

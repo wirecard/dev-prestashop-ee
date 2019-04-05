@@ -4,6 +4,7 @@
     <script src="{$paymentPageLoader}"></script>
     <script>
         let requestData = {$requestData};
+        let orderId = {$orderId};
     </script>
 
     <div class="container">
