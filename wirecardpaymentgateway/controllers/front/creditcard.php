@@ -70,7 +70,6 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $customer = new Customer($cart->id_customer);
         $response = $transactionService->processJsResponse($payload, '');
 
-
         if ($paymentState == 'success') {
             if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
                 $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
@@ -82,13 +81,15 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             }
             header('Content-Type: application/json; charset=utf8');
 
-            $url = __PS_BASE_URI__ . 'index.php?controller=order-confirmation&id_cart='
-                .$cart->id.'&id_module='
-                .$this->module->id.'&id_order='
-                .$this->module->currentOrder.'&key='
-                .$customer->secure_key;
-
-            die(json_encode([ "url" => $url]));
+            $params = [
+                'id_cart'   => $cart->id,
+                'id_module' => $this->module->id,
+                'id_order'  => $orderId,
+                'key'       => $customer->secure_key
+            ];
+            $url = $this->context->link->getPageLink('order-confirmation', true, $order->id_lang,
+                $params);
+            die(json_encode(["url" => $url]));
         } else {
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $order->setCurrentState(_PS_OS_ERROR_);
@@ -104,7 +105,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
                 $this->errors = $this->l('order_error');
             }
             header('Content-Type: application/json; charset=utf8');
-            die(json_encode([ "url" => $url]));
+            die(json_encode(["url" => $url]));
         }
     }
 
