@@ -29,19 +29,15 @@
  */
 
 var form = null;
-
-
-function processAjaxUrl(url, params) {
-    let querySign = '?';
-    if (url.includes("?")) {
-        querySign = '&';
-    }
-    params.forEach(function (param) {
-        url += querySign + param.index + '=' + param.data;
-        querySign = '&';
+var submitForm;
+// This must be applied to a form (or an object inside a form).
+$.fn.addHidden = function (name, value) {
+    return this.each(function () {
+        var input = $("<input>").attr("type", "hidden").attr("name", name).val(value);
+        $(this).append($(input));
     });
-    return url;
-}
+};
+
 
 function placeOrder(e) {
     e.preventDefault();
@@ -56,26 +52,31 @@ function placeOrder(e) {
 
 function formSubmitSuccessHandler(response) {
     console.log('Sending to prestashop:', response);
-    $.ajax({
-        type: 'POST',
-        url: form.attr('action'),
-        dataType: 'json',
-        data: {
-            orderId : orderId,
-            payload: response,
-            ajax: true
-        },
-        success: function (sucess) {
-            console.log('juppii', sucess);
-            window.location.href = sucess.url;
-        },
-        error: function (error) {
-            console.log('error', error);
-            window.location.href = error.url;
-        }
-    });
+    submitForm.addHidden( 'orderId', orderId);
+    submitForm.addHidden( 'payload', JSON.stringify(response));
+    submitForm.submit();
+    // $.ajax({
+    //     type: 'POST',
+    //     url: form.attr('action'),
+    //     dataType: 'json',
+    //     data: {
+    //         orderId : orderId,
+    //         payload: response,
+    //         ajax: true
+    //     },
+    //     success: function (sucess) {
+    //         console.log('Success:', sucess);
+    //         //window.location.href = sucess.url;
+    //     },
+    //     error: function (error) {
+    //         console.log('error', error);
+    //         window.location.href = error.url;
+    //     }
+    // });
 
 }
+
+
 
 function logCallback(response) {
     console.log('Error:', response);
@@ -94,6 +95,7 @@ $(document).ready(function () {
         onError: logCallback
     });
 
+    submitForm = $('#credit_card_submit_form');
     // ### Submit handler for the form
     $(document).on('submit', '#payment-creditcard-form', function (e) {
         form = $(this);

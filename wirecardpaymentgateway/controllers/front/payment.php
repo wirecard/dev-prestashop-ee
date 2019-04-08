@@ -147,6 +147,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
                 $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
                 $language = $this->getSupportedHppLangCode($baseUrl, $this->context);
+                $transaction->setThreeD(true);
                 $data['orderId'] = $orderId;
                 $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
                     $paymentAction, $language);
@@ -202,28 +203,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->processFailure($orderId);
     }
 
-    /**
-     * Create post form for credit card
-     *
-     * @param array $data
-     * @return string
-     * @since 1.0.0
-     */
-    private function createPostForm($data) {
-        $logger = new WirecardLogger();
-        try {
-            $this->context->smarty->assign($data);
-
-            return $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-                'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-                'creditcard_submitform.tpl');
-        } catch (SmartyException $e) {
-            $logger->error($e->getMessage());
-        } catch (Exception $e) {
-            $logger->error($e->getMessage());
-        }
-        return '';
-    }
 
     /**
      * redirect to ui for credit card

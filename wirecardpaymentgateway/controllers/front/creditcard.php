@@ -57,7 +57,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
     public function postProcess() {
         $orderId = \Tools::getValue('orderId');
-        $payload = \Tools::getValue('payload');
+        $payload = json_decode(\Tools::getValue('payload'),true);
         $paymentMethod = $payload['payment_method'];
         $paymentState = $payload['transaction_state'];
         $payment = $this->module->getPaymentFromType($paymentMethod);
@@ -79,17 +79,19 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
                 $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
                 $orderPayments[count($orderPayments) - 1]->save();
             }
-            header('Content-Type: application/json; charset=utf8');
 
-            $params = [
-                'id_cart'   => $cart->id,
-                'id_module' => $this->module->id,
-                'id_order'  => $orderId,
-                'key'       => $customer->secure_key
-            ];
-            $url = $this->context->link->getPageLink('order-confirmation', true, $order->id_lang,
-                $params);
-            die(json_encode(["url" => $url]));
+            $data = null;
+            $x=$response->getUrl();
+            $y=urlencode($x);
+            $z = htmlspecialchars_decode($x);
+            $data['url'] = http_build_query($response->getUrl());
+            $data['method'] = $response->getMethod();
+            $data['form_fields'] = $response->getFormFields();
+            die($this->createPostForm($data));
+
+//            $url = $this->context->link->getPageLink('order-confirmation', true, $order->id_lang,
+//                $params);
+//            die(json_encode(["url" => $url]));
         } else {
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $order->setCurrentState(_PS_OS_ERROR_);
@@ -104,6 +106,9 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             } else {
                 $this->errors = $this->l('order_error');
             }
+
+
+
             header('Content-Type: application/json; charset=utf8');
             die(json_encode(["url" => $url]));
         }
@@ -153,4 +158,29 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
         $this->displayAjaxListStoredCards();
     }
+
+
+    /**
+     * Create post form for credit card
+     *
+     * @param array $data
+     * @return string
+     * @since 1.0.0
+     */
+    private function createPostForm($data) {
+        $logger = new WirecardLogger();
+        try {
+            $this->context->smarty->assign($data);
+
+            return $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
+                'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+                'creditcard_submitform.tpl');
+        } catch (SmartyException $e) {
+            $logger->error($e->getMessage());
+        } catch (Exception $e) {
+            $logger->error($e->getMessage());
+        }
+        return '';
+    }
+
 }
