@@ -147,7 +147,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
                 $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
                 $language = $this->getSupportedHppLangCode($baseUrl, $this->context);
-                $transaction->setThreeD(true);
                 $data['orderId'] = $orderId;
                 $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
                     $paymentAction, $language);
@@ -164,10 +163,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Execute transactions with operation pay and reserve
      *
-     * @param Transaction $transaction
+     * @param Transaction                        $transaction
      * @param \Wirecard\PaymentSdk\Config\Config $config
-     * @param string $operation
-     * @param int $orderId
+     * @param string                             $operation
+     * @param int                                $orderId
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
@@ -203,7 +202,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->processFailure($orderId);
     }
 
-
     /**
      * redirect to ui for credit card
      */
@@ -215,14 +213,15 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
 
-        $templateVars = array(
-            'layout'         => $this->getLayout(),
-            'stylesheets'    => $this->getStylesheets(),
-            'javascript'     => $this->getJavascript(),
+        $templateVars = [
+            'content_only ' => true,
+            'layout' => $this->getLayout(),
+            'stylesheets' => $this->getStylesheets(),
+            'javascript' => $this->getJavascript(),
             'js_custom_vars' => Media::getJsDef(),
-            'notifications'  => $this->prepareNotifications(),
-            'HOOK_HEADER'    => Hook::exec('displayHeader'),
-        );
+            'notifications' => $this->prepareNotifications(),
+            'HOOK_HEADER' => false,
+        ];
 
         $data = array_merge($data, $templateVars);
         $this->context->smarty->assign($data);
@@ -233,7 +232,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Create order
      *
-     * @param Cart $cart
+     * @param Cart   $cart
      * @param string $paymentMethod
      * @return int
      * @throws PrestaShopDatabaseException
@@ -264,10 +263,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $order = new Order($orderId);
         if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
             $order->setCurrentState(_PS_OS_ERROR_);
-            $params = array(
+            $params = [
                 'submitReorder' => true,
-                'id_order'      => (int) $orderId
-            );
+                'id_order' => (int)$orderId
+            ];
             $this->redirectWithNotifications(
                 $this->context->link->getPageLink('order', true, $order->id_lang, $params)
             );
@@ -277,7 +276,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Get supported language code for hpp seamless form renderer
      *
-     * @param string $baseUrl
+     * @param string   $baseUrl
      * @param \Context $context
      * @return mixed|string
      * @since 1.3.3
