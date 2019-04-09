@@ -30,6 +30,20 @@
 
 var form = null;
 var submitForm = null;
+var tokenId = null;
+
+function processAjaxUrl(url, params) {
+    var querySign = '?';
+    if (url.includes("?")) {
+        querySign = '&';
+    }
+    params.forEach(function (param) {
+        url += querySign + param.index + '=' + param.data;
+        querySign = '&';
+    });
+    return url;
+}
+
 // This must be applied to a form (or an object inside a form).
 $.fn.addHidden = function (name, value) {
     return this.each(function () {
@@ -38,19 +52,28 @@ $.fn.addHidden = function (name, value) {
     });
 };
 
-
+/**
+ * Place order function.
+ * @param e
+ */
 function placeOrder(e) {
     e.preventDefault();
-    WirecardPaymentPage.seamlessSubmitForm(
-        {
-            onSuccess: formSubmitSuccessHandler,
-            onError: logCallback,
-            wrappingDivId: "payment-processing-gateway-credit-card-form"
-        }
-    );
+
+    if ("new" !== tokenId) {
+        formSubmitSuccessHandler('');
+    } else {
+        WirecardPaymentPage.seamlessSubmitForm(
+            {
+                onSuccess: formSubmitSuccessHandler,
+                onError: logCallback,
+                wrappingDivId: "payment-processing-gateway-credit-card-form"
+            }
+        );
+    }
 }
 
 function formSubmitSuccessHandler(response) {
+    submitForm.addHidden('tokenId', tokenId);
     submitForm.addHidden('orderId', orderId);
     submitForm.addHidden('payload', JSON.stringify(response));
     submitForm.submit();
@@ -76,6 +99,12 @@ $(document).ready(function () {
 
     submitForm = $('#submit-credit-card-form');
     form = $('#payment-credit-card-form');
+
+    form.on('change', function () {
+        tokenId = $('input[name=card-selection]:checked').val()
+        console.log(tokenId);
+    });
+
     // ### Submit handler for the form
     form.on('submit', placeOrder);
 });

@@ -60,10 +60,21 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     public function postProcess()
     {
         $orderId = \Tools::getValue('orderId');
+        $saveCard = \Tools::getValue('saveCard');
+        $tokenId = \Tools::getValue('tokenId');
         $textPayload = html_entity_decode(\Tools::getValue('payload'));
         $payload = json_decode($textPayload, true);
+
+        if('on' === $saveCard){
+            $vault = new CreditCardVault($this->context->customer->id);
+            $token = $payload['token_id'];
+            $maskedPan = $payload['masked_account_number'];
+            $vault->addCard($maskedPan, $token);
+        }
+
         $paymentMethod = $payload['payment_method'];
         $paymentState = $payload['transaction_state'];
+        /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentMethod);
         $config = $payment->createPaymentConfig($this->module);
         $transactionService = new TransactionService($config, new WirecardLogger());
@@ -98,26 +109,22 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
                 $data['form_fields'] = $response->getFormFields();
                 die($this->createPostForm($data));
             }
-            Tools::redirect($url);
         } else {
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $order->setCurrentState(_PS_OS_ERROR_);
-                $params = array(
-                    'submitReorder' => true,
-                    'id_order' => (int)$orderId
-                );
-                $url = $this->context->link->getPageLink('order', true, $order->id_lang, $params);
                 if ($paymentState == 'cancel') {
                     $this->errors = $this->module->l('canceled_payment_process');
                 }
             } else {
                 $this->errors = $this->module->l('order_error');
             }
-
-
-            header('Content-Type: application/json; charset=utf8');
-            die(json_encode(["url" => $url]));
+            $params = array(
+                'submitReorder' => true,
+                'id_order' => (int)$orderId
+            );
+            $url = $this->context->link->getPageLink('order', true, $order->id_lang, $params);
         }
+        Tools::redirect($url);
     }
 
     /**

@@ -33,12 +33,35 @@
 {block name='page_content'}
     <div class="container">
         <form id="payment-credit-card-form" method="post" action="{$actionUrl}">
-            <div id="payment-processing-gateway-credit-card-form">
-            </div>
+            {if $ccvaultenabled == 'true'}
+                {l s='Credit card selection' mod='Modules.WirecardPaymentGateway'}
+                <div class="card-selection">
+
+                    {foreach from=$userCards  key=key item=value}
+                        <label for="card-{$value.cc_id|escape:'htmlall':'UTF-8'}">
+                            <input type="radio"
+                                   id="card-{$value.cc_id|escape:'htmlall':'UTF-8'}"
+                                   name="card-selection"
+                                   value="{$value.token|escape:'htmlall':'UTF-8'}"/>
+                            {$value.masked_pan|escape:'htmlall':'UTF-8'}</label>
+                        </br>
+                    {/foreach}
+                    <label for="card-new">
+                        <input type="radio"
+                               id="card-new"
+                               name="card-selection"
+                               value="new">
+                        {l s='Use new credit card' mod='Modules.WirecardPaymentGateway'}</label>
+                    <div id="payment-processing-gateway-credit-card-form">
+                    </div>
+                </div>
+            {/if}
             <button type="submit" class="btn btn-primary">{l s='Save' d='Shop.Theme.Actions'}</button>
         </form>
 
         <form id="submit-credit-card-form" method="post" action="{$actionUrl}">
+            <span class="checkbox"><input id="saveCard" name="saveCard" type="checkbox"></span>
+            <label for="saveCard">{l s='Save for later use.' mod='Modules.WirecardPaymentGateway'}</label>
         </form>
 
     </div>

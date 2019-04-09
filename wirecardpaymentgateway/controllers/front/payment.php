@@ -38,7 +38,6 @@ use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
@@ -46,6 +45,7 @@ use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Models\CreditCardVault;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -200,6 +200,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * redirect to ui for credit card
      */
     private function goToCreditCardUi($data) {
+        $vault = new CreditCardVault($this->context->customer->id);
         $this->setMedia();
         $this->assignGeneralPurposeVariables();
         Media::addJsDef([
@@ -214,6 +215,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
 
         $templateVars = [
+            'userCards' => $vault->getUserCards(),
             'content_only ' => true,
             'layout' => $this->getLayout(),
             'stylesheets' => $this->getStylesheets(),
@@ -221,6 +223,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             'js_custom_vars' => Media::getJsDef(),
             'notifications' => $this->prepareNotifications(),
             'HOOK_HEADER' => false,
+            'ccvaultenabled' => true
         ];
 
         $data = array_merge($data, $templateVars);
