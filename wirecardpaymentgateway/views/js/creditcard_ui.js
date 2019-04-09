@@ -29,7 +29,7 @@
  */
 
 var form = null;
-var submitForm;
+var submitForm = null;
 // This must be applied to a form (or an object inside a form).
 $.fn.addHidden = function (name, value) {
     return this.each(function () {
@@ -51,31 +51,10 @@ function placeOrder(e) {
 }
 
 function formSubmitSuccessHandler(response) {
-    console.log('Sending to prestashop:', response);
-    submitForm.addHidden( 'orderId', orderId);
-    submitForm.addHidden( 'payload', JSON.stringify(response));
+    submitForm.addHidden('orderId', orderId);
+    submitForm.addHidden('payload', JSON.stringify(response));
     submitForm.submit();
-    // $.ajax({
-    //     type: 'POST',
-    //     url: form.attr('action'),
-    //     dataType: 'json',
-    //     data: {
-    //         orderId : orderId,
-    //         payload: response,
-    //         ajax: true
-    //     },
-    //     success: function (sucess) {
-    //         console.log('Success:', sucess);
-    //         //window.location.href = sucess.url;
-    //     },
-    //     error: function (error) {
-    //         console.log('error', error);
-    //         window.location.href = error.url;
-    //     }
-    // });
-
 }
-
 
 
 function logCallback(response) {
@@ -89,17 +68,14 @@ function resizeIframe() {
 $(document).ready(function () {
     // This function will render the credit card UI in the specified div.
     WirecardPaymentPage.seamlessRenderForm({
-        requestData: requestData,
+        requestData: JSON.parse(requestData),
         wrappingDivId: "payment-processing-gateway-credit-card-form",
         onSuccess: resizeIframe,
         onError: logCallback
     });
 
-    submitForm = $('#credit_card_submit_form');
+    submitForm = $('#submit-credit-card-form');
+    form = $('#payment-credit-card-form');
     // ### Submit handler for the form
-    $(document).on('submit', '#payment-creditcard-form', function (e) {
-        form = $(this);
-        console.log('submit:', form);
-        placeOrder(e);
-    });
+    form.on('submit', placeOrder);
 });

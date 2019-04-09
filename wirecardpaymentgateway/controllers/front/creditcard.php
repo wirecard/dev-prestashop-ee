@@ -69,7 +69,18 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $transactionService = new TransactionService($config, new WirecardLogger());
 
         $order = new Order($orderId);
-        $response = $transactionService->processJsResponse($payload, '');
+        $cartId = $order->id_cart;
+        $cart = new Cart((int)($cartId));
+        $customer = new Customer($cart->id_customer);
+        $params = [
+            'id_cart' => $cart->id,
+            'id_module' => $this->module->id,
+            'id_order' => $orderId,
+            'key' => $customer->secure_key
+        ];
+        $url = $this->context->link->getPageLink('order-confirmation', true, $order->id_lang,
+            $params);
+        $response = $transactionService->processJsResponse($payload, $url);
 
         if ($paymentState == 'success') {
             if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
@@ -87,17 +98,6 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
                 $data['form_fields'] = $response->getFormFields();
                 die($this->createPostForm($data));
             }
-            $cartId = $order->id_cart;
-            $cart = new Cart((int)($cartId));
-            $customer = new Customer($cart->id_customer);
-            $params = [
-                'id_cart' => $cart->id,
-                'id_module' => $this->module->id,
-                'id_order' => $orderId,
-                'key' => $customer->secure_key
-            ];
-            $url = $this->context->link->getPageLink('order-confirmation', true, $order->id_lang,
-                $params);
             Tools::redirect($url);
         } else {
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
@@ -108,10 +108,10 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
                 );
                 $url = $this->context->link->getPageLink('order', true, $order->id_lang, $params);
                 if ($paymentState == 'cancel') {
-                    $this->errors = $this->l('canceled_payment_process');
+                    $this->errors = $this->module->l('canceled_payment_process');
                 }
             } else {
-                $this->errors = $this->l('order_error');
+                $this->errors = $this->module->l('order_error');
             }
 
 

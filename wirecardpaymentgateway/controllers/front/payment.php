@@ -184,12 +184,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
             Tools::redirect($redirect);
-        } elseif ($response instanceof FormInteractionResponse) {
-            $data = null;
-            $data['url'] = $response->getUrl();
-            $data['method'] = $response->getMethod();
-            $data['form_fields'] = $response->getFormFields();
-            die($this->createPostForm($data));
         } elseif ($response instanceof FailureResponse) {
             $errors = '';
             foreach ($response->getStatusCollection()->getIterator() as $item) {
@@ -207,8 +201,14 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     private function goToCreditCardUi($data) {
         $this->setMedia();
-        $this->display_header = false;
         $this->assignGeneralPurposeVariables();
+        Media::addJsDef([
+            'requestData' => $data['requestData'],
+            'orderId' => $data['orderId']
+        ]);
+        $this->context->controller->addJS(
+            $data['paymentPageLoader']
+        );
         $this->context->controller->addJS(
             _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
