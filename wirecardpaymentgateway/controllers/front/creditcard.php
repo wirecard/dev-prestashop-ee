@@ -33,7 +33,10 @@
  */
 
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\TransactionService;
+use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Models\CreditCardVault;
@@ -50,22 +53,24 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     private $vaultModel;
 
-    public function initContent()
-    {
+    public function initContent() {
         $this->ajax = true;
         $this->vaultModel = new CreditCardVault($this->context->customer->id);
         parent::initContent();
     }
 
-    public function postProcess()
-    {
+    public function postProcess() {
+
+        if(\Tools::getValue('ajax')){
+            return true;
+        }
         $orderId = \Tools::getValue('orderId');
         $saveCard = \Tools::getValue('saveCard');
         $tokenId = \Tools::getValue('tokenId');
         $textPayload = html_entity_decode(\Tools::getValue('payload'));
         $payload = json_decode($textPayload, true);
 
-        if('on' === $saveCard){
+        if ('on' === $saveCard) {
             $vault = new CreditCardVault($this->context->customer->id);
             $token = $payload['token_id'];
             $maskedPan = $payload['masked_account_number'];
@@ -73,7 +78,6 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         }
 
         $paymentMethod = $payload['payment_method'];
-        $paymentState = $payload['transaction_state'];
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentMethod);
         $config = $payment->createPaymentConfig($this->module);
@@ -91,9 +95,17 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         ];
         $url = $this->context->link->getPageLink('order-confirmation', true, $order->id_lang,
             $params);
-        $response = $transactionService->processJsResponse($payload, $url);
-
-        if ($paymentState == 'success') {
+        if ('new' !== $tokenId) {
+            $amount = new Amount($payload['requested_amount'], $payload['requested_amount_currency']);
+            $transaction = new CreditCardTransaction();
+            $transaction->setAmount($amount);
+            $transaction->setTokenId($tokenId);
+            $transaction->setTermUrl($url);
+            $response = $transactionService->pay($transaction);
+        } else {
+            $response = $transactionService->processJsResponse($payload, $url);
+        }
+        if ($response instanceof SuccessResponse) {
             if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
                 $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
             }
@@ -102,59 +114,26 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
                 $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
                 $orderPayments[count($orderPayments) - 1]->save();
             }
-            if ($response instanceof FormInteractionResponse) {
-                $data = null;
-                $data['url'] = $response->getUrl();
-                $data['method'] = $response->getMethod();
-                $data['form_fields'] = $response->getFormFields();
-                die($this->createPostForm($data));
-            }
+        } else if ($response instanceof FormInteractionResponse) {
+            $data = null;
+            $data['url'] = $response->getUrl();
+            $data['method'] = $response->getMethod();
+            $data['form_fields'] = $response->getFormFields();
+            die($this->createPostForm($data));
         } else {
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $order->setCurrentState(_PS_OS_ERROR_);
-                if ($paymentState == 'cancel') {
-                    $this->errors = $this->module->l('canceled_payment_process');
-                }
+                $this->errors = $this->module->l('canceled_payment_process');
             } else {
                 $this->errors = $this->module->l('order_error');
             }
-            $params = array(
+            $params = [
                 'submitReorder' => true,
                 'id_order' => (int)$orderId
-            );
+            ];
             $url = $this->context->link->getPageLink('order', true, $order->id_lang, $params);
         }
         Tools::redirect($url);
-    }
-
-    /**
-     * list user credit cards from the vault
-     *
-     * @since 1.1.0
-     */
-    public function displayAjaxListStoredCards()
-    {
-        header('Content-Type: application/json; charset=utf8');
-        die(json_encode($this->vaultModel->getUserCards()));
-    }
-
-    /**
-     * add a card and return a list of stored user credit cards
-     *
-     * @since 1.1.0
-     */
-    public function displayAjaxAddCard()
-    {
-        $tokenId = Tools::getValue('tokenid');
-        $maskedpan = Tools::getValue('maskedpan');
-
-        if (!$tokenId || !$maskedpan) {
-            $this->displayAjaxListStoredCards();
-        }
-
-        $this->vaultModel->addCard($maskedpan, $tokenId);
-
-        $this->displayAjaxListStoredCards();
     }
 
     /**
@@ -162,19 +141,12 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      *
      * @since 1.1.0
      */
-    public function displayAjaxDeleteCard()
-    {
+    public function displayAjaxDeleteCard() {
         $ccid = Tools::getValue('ccid');
-
-        if (!$ccid) {
-            $this->displayAjaxListStoredCards();
-        }
-
-        $this->vaultModel->deleteCard($ccid);
-
-        $this->displayAjaxListStoredCards();
+        $success = $this->vaultModel->deleteCard($ccid);
+        header('Content-Type: application/json; charset=utf8');
+        die(json_encode(['succes'=> $success]));
     }
-
 
     /**
      * Create post form for credit card
@@ -183,8 +155,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @return string
      * @since 1.0.0
      */
-    private function createPostForm($data)
-    {
+    private function createPostForm($data) {
         $logger = new WirecardLogger();
         try {
             $this->context->smarty->assign($data);

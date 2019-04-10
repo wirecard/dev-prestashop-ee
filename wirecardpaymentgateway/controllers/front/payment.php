@@ -154,6 +154,15 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $link = $this->context->link->getModuleLink('wirecardpaymentgateway', 'creditcard',
                     [], true);
                 $data['actionUrl'] = $link;
+
+                if ($this->module->getConfigValue($paymentType, 'ccvault_enabled')) {
+                    $vault = new CreditCardVault($this->context->customer->id);
+                    $data['userCards'] = $vault->getUserCards();
+                    $data['ccvaultenabled'] = true;
+                } else {
+                    $data['userCards'] = [];
+                    $data['ccvaultenabled'] = false;
+                }
                 die($this->goToCreditCardUi($data));
             }
             return $this->executeTransaction($transaction, $config, $operation, $orderId);
@@ -200,7 +209,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * redirect to ui for credit card
      */
     private function goToCreditCardUi($data) {
-        $vault = new CreditCardVault($this->context->customer->id);
         $this->setMedia();
         $this->assignGeneralPurposeVariables();
         Media::addJsDef([
@@ -215,15 +223,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
 
         $templateVars = [
-            'userCards' => $vault->getUserCards(),
             'content_only ' => true,
             'layout' => $this->getLayout(),
             'stylesheets' => $this->getStylesheets(),
             'javascript' => $this->getJavascript(),
             'js_custom_vars' => Media::getJsDef(),
             'notifications' => $this->prepareNotifications(),
-            'HOOK_HEADER' => false,
-            'ccvaultenabled' => true
+            'HOOK_HEADER' => false
         ];
 
         $data = array_merge($data, $templateVars);

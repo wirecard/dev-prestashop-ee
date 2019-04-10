@@ -31,7 +31,16 @@
 var form = null;
 var submitForm = null;
 var tokenId = null;
+var wrapDivPayment = 'payment-processing-gateway-credit-card-form';
+var newCard = null;
+var saveCard = null;
 
+    /**
+ * Set data to URL
+ * @param url
+ * @param params
+ * @returns {*}
+ */
 function processAjaxUrl(url, params) {
     var querySign = '?';
     if (url.includes("?")) {
@@ -41,10 +50,17 @@ function processAjaxUrl(url, params) {
         url += querySign + param.index + '=' + param.data;
         querySign = '&';
     });
+    url += querySign + 'ajax=true';
     return url;
 }
 
-// This must be applied to a form (or an object inside a form).
+/**
+ * Add hidden fields to form.
+ * This must be applied to a form (or an object inside a form).
+ * @param name
+ * @param value
+ * @returns {*}
+ */
 $.fn.addHidden = function (name, value) {
     return this.each(function () {
         var input = $("<input>").attr("type", "hidden").attr("name", name).val(value);
@@ -58,20 +74,26 @@ $.fn.addHidden = function (name, value) {
  */
 function placeOrder(e) {
     e.preventDefault();
-
+    if (tokenId === undefined) {
+        return;
+    }
     if ("new" !== tokenId) {
-        formSubmitSuccessHandler('');
+        formSubmitSuccessHandler(JSON.parse(requestData));
     } else {
         WirecardPaymentPage.seamlessSubmitForm(
             {
                 onSuccess: formSubmitSuccessHandler,
                 onError: logCallback,
-                wrappingDivId: "payment-processing-gateway-credit-card-form"
+                wrappingDivId: wrapDivPayment
             }
         );
     }
 }
 
+/**
+ * Submit to prestashop function
+ * @param response
+ */
 function formSubmitSuccessHandler(response) {
     submitForm.addHidden('tokenId', tokenId);
     submitForm.addHidden('orderId', orderId);
@@ -79,32 +101,89 @@ function formSubmitSuccessHandler(response) {
     submitForm.submit();
 }
 
-
+/**
+ * Show Error in console
+ * @param response
+ */
 function logCallback(response) {
     console.log('Error:', response);
 }
 
+/**
+ * Resize Iframe
+ */
 function resizeIframe() {
-    $("#payment-processing-gateway-credit-card-form > iframe").height(350);
+    $("#" + wrapDivPayment + " > iframe").height(350);
+    $('#loader').hide();
 }
 
-$(document).ready(function () {
-    // This function will render the credit card UI in the specified div.
+/**
+ * Render  WirecardPaymentPage seamlessRenderForm
+ */
+function seamlessRenderForm() {
+    $('#loader').show();
     WirecardPaymentPage.seamlessRenderForm({
         requestData: JSON.parse(requestData),
-        wrappingDivId: "payment-processing-gateway-credit-card-form",
+        wrappingDivId: wrapDivPayment,
         onSuccess: resizeIframe,
         onError: logCallback
     });
+}
 
-    submitForm = $('#submit-credit-card-form');
-    form = $('#payment-credit-card-form');
+function removeCard(cardId) {
+    console.log('Remove card:', cardId);
+    let params = [{
+        index: 'action',
+        data: 'deletecard'
+    }, {
+        index: 'ccid',
+        data: cardId
+    }];
 
-    form.on('change', function () {
-        tokenId = $('input[name=card-selection]:checked').val()
-        console.log(tokenId);
+    $.ajax({
+        url:  processAjaxUrl(submitForm.attr('action'), params),
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+            tokenId = undefined;
+            $('#remove-card-'+ cardId).parent().parent().remove();
+        }
     });
 
+}
+
+function showNewCreditCardForm() {
+    if (newCard.is(':checked')) {
+        $('#' + wrapDivPayment).show();
+        saveCard.removeAttr("disabled");
+    } else {
+        $('#' + wrapDivPayment).hide();
+        saveCard.attr('disabled', 'disabled').removeAttr('checked');
+    }
+}
+
+/**
+ * Set listeners.
+ */
+$(document).ready(function () {
+    // This function will render the credit card UI in the specified div.
+    saveCard = $('#saveCard');
+    newCard = $('input[name=card-selection][value="new"]');
+    submitForm = $('#submit-credit-card-form');
+    form = $('#payment-credit-card-form');
     // ### Submit handler for the form
     form.on('submit', placeOrder);
+
+    if(undefined !== newCard){
+        newCard.one('click', seamlessRenderForm);
+        showNewCreditCardForm();
+        $('input[name=card-selection]').change(showNewCreditCardForm);
+        tokenId = $('input[name=card-selection]:checked').val();
+        form.on('change', function () {
+            tokenId = $('input[name=card-selection]:checked').val()
+        });
+    } else{
+        seamlessRenderForm();
+        tokenId = 'new';
+    }
 });
