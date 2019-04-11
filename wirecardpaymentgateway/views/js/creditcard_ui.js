@@ -32,10 +32,9 @@ var form = null;
 var submitForm = null;
 var tokenId = null;
 var wrapDivPayment = 'payment-processing-gateway-credit-card-form';
-var newCard = null;
 var saveCard = null;
 
-    /**
+/**
  * Set data to URL
  * @param url
  * @param params
@@ -95,6 +94,7 @@ function placeOrder(e) {
  * @param response
  */
 function formSubmitSuccessHandler(response) {
+    submitForm.addHidden('saveCard', saveCard.attr(':checked'));
     submitForm.addHidden('tokenId', tokenId);
     submitForm.addHidden('orderId', orderId);
     submitForm.addHidden('payload', JSON.stringify(response));
@@ -113,7 +113,13 @@ function logCallback(response) {
  * Resize Iframe
  */
 function resizeIframe() {
-    $("#" + wrapDivPayment + " > iframe").height(350);
+    let iframe = $("#" + wrapDivPayment + " > iframe");
+    console.log($(window).width());
+    if ($(window).width() > 600) {
+        iframe.height(300);
+    } else {
+        iframe.height(450);
+    }
     $('#loader').hide();
 }
 
@@ -141,25 +147,25 @@ function removeCard(cardId) {
     }];
 
     $.ajax({
-        url:  processAjaxUrl(submitForm.attr('action'), params),
+        url: processAjaxUrl(submitForm.attr('action'), params),
         type: "GET",
         dataType: "json",
         success: function (response) {
             tokenId = undefined;
-            $('#remove-card-'+ cardId).parent().parent().remove();
+            $('#remove-card-row-' + cardId).remove();
         }
     });
 
 }
 
-function showNewCreditCardForm() {
-    if (newCard.is(':checked')) {
-        $('#' + wrapDivPayment).show();
-        saveCard.removeAttr("disabled");
-    } else {
-        $('#' + wrapDivPayment).hide();
-        saveCard.attr('disabled', 'disabled').removeAttr('checked');
-    }
+
+/**
+ * Cancel payment
+ */
+function cancel() {
+    submitForm.addHidden('orderId', orderId);
+    submitForm.addHidden('cancel', true);
+    submitForm.submit();
 }
 
 /**
@@ -168,22 +174,21 @@ function showNewCreditCardForm() {
 $(document).ready(function () {
     // This function will render the credit card UI in the specified div.
     saveCard = $('#saveCard');
-    newCard = $('input[name=card-selection][value="new"]');
     submitForm = $('#submit-credit-card-form');
     form = $('#payment-credit-card-form');
     // ### Submit handler for the form
-    form.on('submit', placeOrder);
-
-    if(undefined !== newCard){
-        newCard.one('click', seamlessRenderForm);
-        showNewCreditCardForm();
-        $('input[name=card-selection]').change(showNewCreditCardForm);
-        tokenId = $('input[name=card-selection]:checked').val();
-        form.on('change', function () {
-            tokenId = $('input[name=card-selection]:checked').val()
+    seamlessRenderForm();
+    if ($('#accordion-card').length) {
+        $('#collapse-existing-card').on('show.bs.collapse', function () {
+            tokenId = $('input[name=card-selection]:checked').val();
+            console.log(tokenId);
         });
-    } else{
-        seamlessRenderForm();
+        $('#collapse-new-card').on('show.bs.collapse', function () {
+            tokenId = 'new';
+            console.log(tokenId);
+        })
+    } else {
         tokenId = 'new';
     }
+    form.on('submit', placeOrder);
 });

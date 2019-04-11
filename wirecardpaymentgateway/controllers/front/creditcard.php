@@ -55,26 +55,36 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
     public function initContent() {
         $this->ajax = true;
-        $this->vaultModel = new CreditCardVault($this->context->customer->id);
         parent::initContent();
     }
 
+    /**
+     * @return bool|void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function postProcess() {
+        $this->vaultModel = new CreditCardVault($this->context->customer->id);
 
-        if(\Tools::getValue('ajax')){
+        // If its ajax call don't do anything
+        if (\Tools::getValue('ajax')) {
             return true;
         }
+
         $orderId = \Tools::getValue('orderId');
+        $order = new Order($orderId);
+
+        if (\Tools::getValue('cancel')) {
+            $this->cancelOrder($order);
+        }
+
         $saveCard = \Tools::getValue('saveCard');
         $tokenId = \Tools::getValue('tokenId');
         $textPayload = html_entity_decode(\Tools::getValue('payload'));
         $payload = json_decode($textPayload, true);
 
         if ('on' === $saveCard) {
-            $vault = new CreditCardVault($this->context->customer->id);
-            $token = $payload['token_id'];
-            $maskedPan = $payload['masked_account_number'];
-            $vault->addCard($maskedPan, $token);
+            $this->addCard($payload);
         }
 
         $paymentMethod = $payload['payment_method'];
@@ -83,7 +93,6 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $config = $payment->createPaymentConfig($this->module);
         $transactionService = new TransactionService($config, new WirecardLogger());
 
-        $order = new Order($orderId);
         $cartId = $order->id_cart;
         $cart = new Cart((int)($cartId));
         $customer = new Customer($cart->id_customer);
@@ -102,6 +111,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             $transaction->setTokenId($tokenId);
             $transaction->setTermUrl($url);
             $response = $transactionService->pay($transaction);
+            $this->vaultModel->updateLastUsed($tokenId);
         } else {
             $response = $transactionService->processJsResponse($payload, $url);
         }
@@ -121,19 +131,35 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             $data['form_fields'] = $response->getFormFields();
             die($this->createPostForm($data));
         } else {
-            if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $order->setCurrentState(_PS_OS_ERROR_);
-                $this->errors = $this->module->l('canceled_payment_process');
-            } else {
-                $this->errors = $this->module->l('order_error');
-            }
-            $params = [
-                'submitReorder' => true,
-                'id_order' => (int)$orderId
-            ];
-            $url = $this->context->link->getPageLink('order', true, $order->id_lang, $params);
+            $this->cancelOrder($order);
         }
         Tools::redirect($url);
+    }
+
+    /**
+     * @param Order $order
+     */
+    private function cancelOrder($order){
+        if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $order->setCurrentState(_PS_OS_ERROR_);
+            $this->errors = $this->module->l('canceled_payment_process');
+        } else {
+            $this->errors = $this->module->l('order_error');
+        }
+        $params = [
+            'submitReorder' => true,
+            'id_order' => (int)$order->id
+        ];
+        Tools::redirect($this->context->link->getPageLink('order', true, $order->id_lang, $params));
+    }
+
+    /**
+     * @param array $payload
+     */
+    public function addCard($payload){
+        $token = $payload['token_id'];
+        $maskedPan = $payload['masked_account_number'];
+        $this->vaultModel->addCard($maskedPan, $token);
     }
 
     /**

@@ -71,7 +71,7 @@ class CreditCardVault
     {
         $query = new \DbQuery();
         $query->from($this->table)->where('user_id = ' . (int)$this->userId);
-        $query->orderBy('cc_id');
+        $query->orderBy('last_used DESC,cc_id DESC');
 
         try {
             return \Db::getInstance()->executeS($query);
@@ -116,6 +116,32 @@ class CreditCardVault
         }
 
         return $db->Insert_ID();
+    }
+
+    /**
+     * @param $tokenId
+     * @return int
+     */
+    public function updateLastUsed($tokenId){
+        $db = \Db::getInstance();
+        try {
+            $where = 'token = "' . pSQL($tokenId) . '"';
+            $db->update($this->table, [
+                'last_used' => [
+                    'value' => 'CURRENT_TIMESTAMP',
+                    'type' => 'sql'
+                ],
+            ], $where);
+        } catch (\PrestaShopDatabaseException $e) {
+            $this->logger->error(__METHOD__ . $e->getMessage());
+            return 0;
+        }
+
+        if ($db->getNumberError() > 0) {
+            $this->logger->error(__METHOD__ . $db->getMsgError());
+            return 0;
+        }
+        return $db->Affected_Rows();
     }
 
     /**

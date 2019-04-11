@@ -218,10 +218,16 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->context->controller->addJS(
             $data['paymentPageLoader']
         );
-        $this->context->controller->addJS(
-            _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
-            . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
 
+        $viewsPath = _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
+            . DIRECTORY_SEPARATOR;
+
+        $this->context->controller->addJS(
+            $viewsPath . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
+
+        $this->context->controller->addCSS(
+            $viewsPath . 'css' . DIRECTORY_SEPARATOR . 'app.css'
+        );
         $templateVars = [
             'content_only ' => true,
             'layout' => $this->getLayout(),
