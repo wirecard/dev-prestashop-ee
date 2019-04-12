@@ -94,7 +94,7 @@ function placeOrder(e) {
  * @param response
  */
 function formSubmitSuccessHandler(response) {
-    submitForm.addHidden('saveCard', saveCard.attr(':checked'));
+    submitForm.addHidden('saveCard', saveCard.prop("checked"));
     submitForm.addHidden('tokenId', tokenId);
     submitForm.addHidden('orderId', orderId);
     submitForm.addHidden('payload', JSON.stringify(response));
@@ -114,7 +114,6 @@ function logCallback(response) {
  */
 function resizeIframe() {
     let iframe = $("#" + wrapDivPayment + " > iframe");
-    console.log($(window).width());
     if ($(window).width() > 600) {
         iframe.height(300);
     } else {
@@ -179,13 +178,18 @@ $(document).ready(function () {
     // ### Submit handler for the form
     seamlessRenderForm();
     if ($('#accordion-card').length) {
+        tokenId = $('input[name=card-selection]:checked').val();
+        $('input[name=card-selection]').change(function () {
+            tokenId = $('input[name=card-selection]:checked').val();
+        });
+
         $('#collapse-existing-card').on('show.bs.collapse', function () {
             tokenId = $('input[name=card-selection]:checked').val();
-            console.log(tokenId);
+            saveCard.prop('checked', false);
         });
+
         $('#collapse-new-card').on('show.bs.collapse', function () {
             tokenId = 'new';
-            console.log(tokenId);
         })
     } else {
         tokenId = 'new';

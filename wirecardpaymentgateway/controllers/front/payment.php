@@ -42,6 +42,7 @@ use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
+use WirecardEE\Prestashop\Helper\SupportedHppLangCode;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\OrderManager;
@@ -65,15 +66,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function postProcess() {
         $cart = $this->context->cart;
-        $cartId = $cart->id;
-        $additionalInformation = new AdditionalInformation();
-
-        if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
-            !$this->module->active
-        ) {
-            $this->errors = 'An error occured during the checkout process. Please try again.';
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        }
+        $this->checkCart($cart);
 
         $paymentType = \Tools::getValue('paymentType');
         $orderId = $this->createOrder($cart, $paymentType);
@@ -82,71 +75,15 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
             $config = $payment->createPaymentConfig($this->module);
-            $amount = round($cart->getOrderTotal(), 2);
-            $currency = new Currency($cart->id_currency);
             $operation = $this->module->getConfigValue($paymentType, 'payment_action');
-            $redirectUrls = new Redirect(
-                $this->module->createRedirectUrl($cartId, $paymentType, 'success'),
-                $this->module->createRedirectUrl($cartId, $paymentType, 'cancel'),
-                $this->module->createRedirectUrl($cartId, $paymentType, 'failure')
-            );
-
-            /** @var Transaction $transaction */
-            $transaction = $payment->createTransaction($this->module, $cart, Tools::getAllValues(),
-                $orderId);
-            $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId,
-                $paymentType));
-            $transaction->setRedirect($redirectUrls);
-            $transaction->setAmount(new Amount($amount, $currency->iso_code));
-
-            $customFields = new CustomFieldCollection();
-            $customFields->add(new CustomField('orderId', $orderId));
-            $transaction->setCustomFields($customFields);
-
-            if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
-                $transaction->setTokenId(Tools::getValue('tokenId'));
-                $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType,
-                    'success'));
-            }
-
-            if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
-                $transaction->setBasket($additionalInformation->createBasket($cart, $transaction,
-                    $currency->iso_code));
-            }
-
-            if ($this->module->getConfigValue($paymentType, 'descriptor')) {
-                $transaction->setDescriptor($additionalInformation->createDescriptor($orderId));
-            }
-
-            if ($this->module->getConfigValue($paymentType, 'send_additional')) {
-                $firstName = null;
-                $lastName = null;
-
-                if (\Tools::getValue('last_name')) {
-                    $lastName = \Tools::getValue('last_name');
-
-                    if (\Tools::getValue('first_name')) {
-                        $firstName = \Tools::getValue('first_name');
-                    }
-                }
-
-                $transaction = $additionalInformation->createAdditionalInformation(
-                    $cart,
-                    $orderId,
-                    $transaction,
-                    $currency->iso_code,
-                    $firstName,
-                    $lastName
-                );
-            }
-
+            $transaction = $this->createTransaction($payment, $cart, $paymentType, $orderId);
             if ('creditcard' === $paymentType) {
                 $transactionService = new TransactionService($config, new WirecardLogger());
                 $creditCardConfig = $config->get(CreditCardTransaction::NAME);
                 $transaction->setConfig($creditCardConfig);
                 $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
                 $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
-                $language = $this->getSupportedHppLangCode($baseUrl, $this->context);
+                $language = SupportedHppLangCode::getSupportedHppLangCode($baseUrl, $this->context);
                 $data['orderId'] = $orderId;
                 $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
                     $paymentAction, $language);
@@ -163,9 +100,88 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                     $data['userCards'] = [];
                     $data['ccvaultenabled'] = false;
                 }
-                die($this->goToCreditCardUi($data));
+                $this->goToCreditCardUi($data);
             }
             return $this->executeTransaction($transaction, $config, $operation, $orderId);
+        }
+    }
+
+    /**
+     * @param $payment
+     * @param $cart
+     * @param $paymentType
+     * @return Transaction
+     */
+    private function createTransaction($payment,$cart,$paymentType, $orderId){
+        $amount = round($cart->getOrderTotal(), 2);
+        $currency = new Currency($cart->id_currency);
+        $additionalInformation = new AdditionalInformation();
+
+        $redirectUrls = new Redirect(
+            $this->module->createRedirectUrl($cart->id, $paymentType, 'success'),
+            $this->module->createRedirectUrl($cart->id, $paymentType, 'cancel'),
+            $this->module->createRedirectUrl($cart->id, $paymentType, 'failure')
+        );
+
+        /** @var Transaction $transaction */
+        $transaction = $payment->createTransaction($this->module, $cart, Tools::getAllValues(), $orderId);
+        $transaction->setNotificationUrl($this->module->createNotificationUrl($cart->id, $paymentType));
+        $transaction->setRedirect($redirectUrls);
+        $transaction->setAmount(new Amount($amount, $currency->iso_code));
+
+        $customFields = new CustomFieldCollection();
+        $customFields->add(new CustomField('orderId', $orderId));
+        $transaction->setCustomFields($customFields);
+
+        if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
+            $transaction->setTokenId(Tools::getValue('tokenId'));
+            $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType,'success'));
+        }
+
+        if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
+            $transaction->setBasket($additionalInformation->createBasket($cart, $transaction,
+                $currency->iso_code));
+        }
+
+        if ($this->module->getConfigValue($paymentType, 'descriptor')) {
+            $transaction->setDescriptor($additionalInformation->createDescriptor($orderId));
+        }
+
+        if ($this->module->getConfigValue($paymentType, 'send_additional')) {
+            $firstName = null;
+            $lastName = null;
+
+            if (\Tools::getValue('last_name')) {
+                $lastName = \Tools::getValue('last_name');
+
+                if (\Tools::getValue('first_name')) {
+                    $firstName = \Tools::getValue('first_name');
+                }
+            }
+
+            $transaction = $additionalInformation->createAdditionalInformation(
+                $cart,
+                $orderId,
+                $transaction,
+                $currency->iso_code,
+                $firstName,
+                $lastName
+            );
+        }
+        return $transaction;
+    }
+
+    /**
+     * Check if cart values are set
+     *
+     * @param Cart $cart
+     */
+    private function checkCart($cart){
+        if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
+            !$this->module->active
+        ) {
+            $this->errors = 'An error occured during the checkout process. Please try again.';
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
     }
 
@@ -206,7 +222,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     }
 
     /**
-     * redirect to ui for credit card
+     * Redirect to ui for credit card
+     *
+     * @param array $data
+     * @throws SmartyException
      */
     private function goToCreditCardUi($data) {
         $this->setMedia();
@@ -215,16 +234,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             'requestData' => $data['requestData'],
             'orderId' => $data['orderId']
         ]);
-        $this->context->controller->addJS(
-            $data['paymentPageLoader']
-        );
-
+        $this->context->controller->addJS($data['paymentPageLoader']);
         $viewsPath = _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR;
-
         $this->context->controller->addJS(
             $viewsPath . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
-
         $this->context->controller->addCSS(
             $viewsPath . 'css' . DIRECTORY_SEPARATOR . 'app.css'
         );
@@ -241,7 +255,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $data = array_merge($data, $templateVars);
         $this->context->smarty->assign($data);
         $this->context->smarty->escape_html = false;
-        return $this->context->smarty->fetch('module:wirecardpaymentgateway/views/templates/front/creditcard_ui.tpl');
+        die($this->context->smarty->fetch('module:wirecardpaymentgateway/views/templates/front/creditcard_ui.tpl'));
     }
 
     /**
@@ -286,42 +300,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
                 $this->context->link->getPageLink('order', true, $order->id_lang, $params)
             );
         }
-    }
-
-    /**
-     * Get supported language code for hpp seamless form renderer
-     *
-     * @param string   $baseUrl
-     * @param \Context $context
-     * @return mixed|string
-     * @since 1.3.3
-     */
-    private function getSupportedHppLangCode($baseUrl, $context) {
-        $isoCode = $context->language->iso_code;
-        $languageCode = $context->language->language_code;
-        $language = 'en';
-        //special case for chinese languages
-        switch ($languageCode) {
-            case 'zh-tw':
-                $isoCode = 'zh_TW';
-                break;
-            case 'zh-cn':
-                $isoCode = 'zh_CN';
-                break;
-            default:
-                break;
-        }
-        try {
-            $supportedLang = json_decode(\Tools::file_get_contents(
-                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
-            ));
-            if (key_exists($isoCode, $supportedLang)) {
-                $language = $isoCode;
-            }
-        } catch (\Exception $exception) {
-            return 'en';
-        }
-        return $language;
     }
 
 }

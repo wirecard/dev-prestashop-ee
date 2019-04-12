@@ -80,7 +80,8 @@
                                             <td class="wd-card-delete">
                                                 <button type="button" class='btn btn-danger remove-card'
                                                         id="remove-card-{$value.cc_id}"
-                                                        onclick="removeCard({$value.cc_id})"> {lFallback s='delete' mod='wirecardpaymentgateway'}</button></button>
+                                                        onclick="removeCard({$value.cc_id})"> {lFallback s='delete' mod='wirecardpaymentgateway'}</button>
+                                                </button>
                                             </td>
                                         </tr>
                                     {/foreach}
@@ -106,20 +107,22 @@
                         </div>
 
                         <!-- Card body -->
-                        <div id="collapse-new-card" class="collapse" role="tabpanel" aria-labelledby="heading-new-card" data-parent="#accordion-card">
+                        <div id="collapse-new-card" class="collapse" role="tabpanel" aria-labelledby="heading-new-card"
+                             data-parent="#accordion-card">
                             <div class="card-body">
                                 <div id="payment-processing-gateway-credit-card-form">
                                 </div>
                                 <img id="loader" style="display: none"
                                      src="{$smarty.const._PS_ADMIN_IMG_}ajax-loader.gif">
-                                {if 'true' == $ccvaultenabled}
-                                    <div class="save-card-container">
-                                        <div class="row">
-                                            <div class="col-xs-1"><input id="saveCard" name="saveCard" type="checkbox"></div>
-                                            <div class="col-xs-11"><label for="saveCard">{lFallback s='vault_save_text' mod='wirecardpaymentgateway'}</label></div>
+                                <div class="save-card-container">
+                                    <div class="row">
+                                        <div class="col-xs-1"><input id="saveCard" name="saveCard" type="checkbox">
+                                        </div>
+                                        <div class="col-xs-11"><label for="saveCard">
+                                                {lFallback s='vault_save_text' mod='wirecardpaymentgateway'}</label>
                                         </div>
                                     </div>
-                                {/if}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -130,6 +133,16 @@
                 <div id="payment-processing-gateway-credit-card-form">
                 </div>
                 <img id="loader" style="display: none" src="{$smarty.const._PS_ADMIN_IMG_}ajax-loader.gif">
+                {if 'true' == $ccvaultenabled}
+                    <div class="save-card-container">
+                        <div class="row">
+                            <div class="col-xs-1"><input id="saveCard" name="saveCard" type="checkbox"></div>
+                            <div class="col-xs-11"><label
+                                        for="saveCard">{lFallback s='vault_save_text' mod='wirecardpaymentgateway'}</label>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
             {/if}
             <button type="button" class="btn btn-secondary" onclick="cancel()">
                 {lFallback s='cancel' mod='wirecardpaymentgateway'}</button>
