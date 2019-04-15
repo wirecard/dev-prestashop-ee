@@ -34,11 +34,9 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Transaction\UpiTransaction;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
  * Class PaymentUnionPayInternational
@@ -95,14 +93,14 @@ class PaymentUnionPayInternational extends Payment
                     'required' => true,
                 ),
                 array(
-                    'name' => 'merchant_account_id',
+                    'name' => 'three_d_merchant_account_id',
                     'label'   => $this->l('config_merchant_account_id'),
                     'type'    => 'text',
                     'default' => 'c6e9331c-5c1f-4fc6-8a08-ef65ce09ddb0',
                     'required' => true,
                 ),
                 array(
-                    'name' => 'secret',
+                    'name' => 'three_d_secret',
                     'label'   => $this->l('config_merchant_secret'),
                     'type'    => 'text',
                     'default' => '16d85b73-79e2-4c33-932a-7da99fb04a9c',
@@ -133,11 +131,11 @@ class PaymentUnionPayInternational extends Payment
                 array(
                     'name' => 'payment_action',
                     'type'    => 'select',
-                    'default' => 'pay',
+                    'default' => 'purchase',
                     'label'   => $this->l('config_payment_action'),
                     'options' => array(
-                        array('key' => 'reserve', 'value' => $this->l('text_payment_action_reserve')),
-                        array('key' => 'pay', 'value' => $this->l('text_payment_action_pay')),
+                        array('key' => 'authorization', 'value' => $this->l('text_payment_action_reserve')),
+                        array('key' => 'purchase', 'value' => $this->l('text_payment_action_pay')),
                     ),
                 ),
                 array(
@@ -182,38 +180,20 @@ class PaymentUnionPayInternational extends Payment
         $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
         $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
 
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
+        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id');
+        $secret = $paymentModule->getConfigValue($this->type, 'three_d_secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(
-            UpiTransaction::NAME,
+        $paymentConfig = new CreditCardConfig(
             $merchantAccountId,
-            $secret
+            $secret,
+            UpiTransaction::NAME
         );
         $config->add($paymentConfig);
 
         return $config;
     }
 
-    /**
-     * Create request data for UnionPayInternational UI
-     *
-     * @param \WirecardPaymentGateway $module
-     * @param \Context $context
-     * @return mixed
-     * @since 1.0.0
-     */
-    public function getRequestData($module, $context)
-    {
-        $baseUrl = $module->getConfigValue($this->type, 'base_url');
-        $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
-        $currencyCode = $context->currency->iso_code;
-        $config = $this->createPaymentConfig($module);
-        $transactionService = new TransactionService($config);
-
-        return $transactionService->getDataForUpiUi($languageCode, new Amount(0, $currencyCode));
-    }
 
     /**
      * Create UnionPayInternational transaction
@@ -228,10 +208,6 @@ class PaymentUnionPayInternational extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new UpiTransaction();
-
-        $transaction->setTokenId($values['tokenId']);
-        $transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success'));
-
         return $transaction;
     }
 
@@ -267,40 +243,4 @@ class PaymentUnionPayInternational extends Payment
         return $transaction;
     }
 
-    /**
-     * Get supported language code for hpp seamless form renderer
-     *
-     * @param string $baseUrl
-     * @param \Context $context
-     * @return mixed|string
-     * @since 1.3.3
-     */
-    private function getSupportedHppLangCode($baseUrl, $context)
-    {
-        $isoCode = $context->language->iso_code;
-        $languageCode = $context->language->language_code;
-        $language = 'en';
-        //special case for chinese languages
-        switch ($languageCode) {
-            case 'zh-tw':
-                $isoCode = 'zh_TW';
-                break;
-            case 'zh-cn':
-                $isoCode = 'zh_CN';
-                break;
-            default:
-                break;
-        }
-        try {
-            $supportedLang = json_decode(\Tools::file_get_contents(
-                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
-            ));
-            if (key_exists($isoCode, $supportedLang)) {
-                $language = $isoCode;
-            }
-        } catch (\Exception $exception) {
-            return 'en';
-        }
-        return $language;
-    }
 }

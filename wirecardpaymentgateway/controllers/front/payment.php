@@ -39,7 +39,6 @@ use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
-use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
@@ -79,10 +78,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $config = $payment->createPaymentConfig($this->module);
             $operation = $this->module->getConfigValue($paymentType, 'payment_action');
             $transaction = $this->createTransaction($payment, $cart, $paymentType, $orderId);
-            if ('creditcard' === $paymentType) {
+            if ('creditcard' === $paymentType || 'unionpayinternational' === $paymentType) {
                 $this->processCreditCard($config, $transaction, $orderId, $paymentType);
             }
-            return $this->executeTransaction($transaction, $config, $operation, $orderId);
+            $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
     }
 
@@ -98,14 +97,14 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     private function processCreditCard($config, $transaction, $orderId, $paymentType) {
         global $cookie;
         $transactionService = new TransactionService($config, new WirecardLogger());
-        $creditCardConfig = $config->get(CreditCardTransaction::NAME);
-        $transaction->setConfig($creditCardConfig);
+        $paymentConfig = $config->get($paymentType);
+        $transaction->setConfig($paymentConfig);
+        $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType, 'success'));
         $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
         $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
         $language = SupportedHppLangCode::getSupportedHppLangCode($baseUrl, $this->context);
         $data['orderId'] = $orderId;
-        $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
-            $paymentAction, $language);
+        $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction, $paymentAction, $language);
         $data['paymentPageLoader'] = $baseUrl . '/engine/hpp/paymentPageLoader.js';
         $link = $this->context->link->getModuleLink('wirecardpaymentgateway', 'creditcard',
             [], true);
@@ -147,11 +146,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $customFields = new CustomFieldCollection();
         $customFields->add(new CustomField('orderId', $orderId));
         $transaction->setCustomFields($customFields);
-
-        if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
-            $transaction->setTokenId(Tools::getValue('tokenId'));
-            $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType, 'success'));
-        }
 
         if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
             $transaction->setBasket($additionalInformation->createBasket($cart, $transaction,

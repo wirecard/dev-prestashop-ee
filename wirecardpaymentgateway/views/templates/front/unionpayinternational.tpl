@@ -27,6 +27,3 @@
 * By installing the plugin into the shop system the customer agrees to these terms of use.
 * Please do not use the plugin if you do not agree to these terms of use!
 *}
-
-<div id="payment-processing-gateway-upi-form">
-</div>

@@ -267,18 +267,6 @@ class PaymentCreditCard extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new CreditCardTransaction();
-
-        if (isset($values['expiration_year']) && isset($values['expiration_month'])) {
-            $card = new Card();
-
-            $expirationYear = (int) $values['expiration_year'];
-            $expirationMonth = (int) $values['expiration_month'];
-
-            $card->setExpirationYear($expirationYear);
-            $card->setExpirationMonth($expirationMonth);
-            $transaction->setCard($card);
-        }
-
         return $transaction;
     }
 
@@ -346,40 +334,4 @@ class PaymentCreditCard extends Payment
         return array('ccvaultenabled' => (bool) $test);
     }
 
-    /**
-     * Get supported language code for hpp seamless form renderer
-     *
-     * @param string $baseUrl
-     * @param \Context $context
-     * @return mixed|string
-     * @since 1.3.3
-     */
-    private function getSupportedHppLangCode($baseUrl, $context)
-    {
-        $isoCode = $context->language->iso_code;
-        $languageCode = $context->language->language_code;
-        $language = 'en';
-        //special case for chinese languages
-        switch ($languageCode) {
-            case 'zh-tw':
-                $isoCode = 'zh_TW';
-                break;
-            case 'zh-cn':
-                $isoCode = 'zh_CN';
-                break;
-            default:
-                break;
-        }
-        try {
-            $supportedLang = json_decode(\Tools::file_get_contents(
-                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
-            ));
-            if (key_exists($isoCode, $supportedLang)) {
-                $language = $isoCode;
-            }
-        } catch (\Exception $exception) {
-            return 'en';
-        }
-        return $language;
-    }
 }
