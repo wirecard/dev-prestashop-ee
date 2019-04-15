@@ -42,11 +42,13 @@ use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
+use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use WirecardEE\Prestashop\Helper\SupportedHppLangCode;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Models\CreditCardVault;
+use WirecardEE\Prestashop\Models\Payment;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -78,32 +80,45 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $operation = $this->module->getConfigValue($paymentType, 'payment_action');
             $transaction = $this->createTransaction($payment, $cart, $paymentType, $orderId);
             if ('creditcard' === $paymentType) {
-                $transactionService = new TransactionService($config, new WirecardLogger());
-                $creditCardConfig = $config->get(CreditCardTransaction::NAME);
-                $transaction->setConfig($creditCardConfig);
-                $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
-                $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
-                $language = SupportedHppLangCode::getSupportedHppLangCode($baseUrl, $this->context);
-                $data['orderId'] = $orderId;
-                $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
-                    $paymentAction, $language);
-                $data['paymentPageLoader'] = $baseUrl . '/engine/hpp/paymentPageLoader.js';
-                $link = $this->context->link->getModuleLink('wirecardpaymentgateway', 'creditcard',
-                    [], true);
-                $data['actionUrl'] = $link;
-
-                if ($this->module->getConfigValue($paymentType, 'ccvault_enabled')) {
-                    $vault = new CreditCardVault($this->context->customer->id);
-                    $data['userCards'] = $vault->getUserCards();
-                    $data['ccvaultenabled'] = true;
-                } else {
-                    $data['userCards'] = [];
-                    $data['ccvaultenabled'] = false;
-                }
-                $this->goToCreditCardUi($data);
+                $this->processCreditCard($config, $transaction, $orderId, $paymentType);
             }
             return $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
+    }
+
+    /**
+     * Process credit card transaction
+     *
+     * @param CreditCardConfig|Payment $config
+     * @param Transaction              $transaction
+     * @param string                   $orderId
+     * @param string                   $paymentType
+     * @throws SmartyException
+     */
+    private function processCreditCard($config, $transaction, $orderId, $paymentType) {
+        global $cookie;
+        $transactionService = new TransactionService($config, new WirecardLogger());
+        $creditCardConfig = $config->get(CreditCardTransaction::NAME);
+        $transaction->setConfig($creditCardConfig);
+        $paymentAction = $this->module->getConfigValue($paymentType, 'payment_action');
+        $baseUrl = $this->module->getConfigValue($paymentType, 'base_url');
+        $language = SupportedHppLangCode::getSupportedHppLangCode($baseUrl, $this->context);
+        $data['orderId'] = $orderId;
+        $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction,
+            $paymentAction, $language);
+        $data['paymentPageLoader'] = $baseUrl . '/engine/hpp/paymentPageLoader.js';
+        $link = $this->context->link->getModuleLink('wirecardpaymentgateway', 'creditcard',
+            [], true);
+        $data['actionUrl'] = $link;
+        if ($this->module->getConfigValue($paymentType, 'ccvault_enabled') && $cookie->isLogged()) {
+            $vault = new CreditCardVault($this->context->customer->id);
+            $data['userCards'] = $vault->getUserCards();
+            $data['ccvaultenabled'] = true;
+        } else {
+            $data['userCards'] = [];
+            $data['ccvaultenabled'] = false;
+        }
+        $this->goToCreditCardUi($data);
     }
 
     /**
@@ -112,7 +127,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $paymentType
      * @return Transaction
      */
-    private function createTransaction($payment,$cart,$paymentType, $orderId){
+    private function createTransaction($payment, $cart, $paymentType, $orderId) {
         $amount = round($cart->getOrderTotal(), 2);
         $currency = new Currency($cart->id_currency);
         $additionalInformation = new AdditionalInformation();
@@ -135,7 +150,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         if ($transaction instanceof \Wirecard\PaymentSdk\Transaction\CreditCardTransaction) {
             $transaction->setTokenId(Tools::getValue('tokenId'));
-            $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType,'success'));
+            $transaction->setTermUrl($this->module->createRedirectUrl($orderId, $paymentType, 'success'));
         }
 
         if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
@@ -176,7 +191,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      *
      * @param Cart $cart
      */
-    private function checkCart($cart){
+    private function checkCart($cart) {
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
         ) {
@@ -234,7 +249,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             'requestData' => $data['requestData'],
             'orderId' => $data['orderId']
         ]);
-        $this->context->controller->addJS($data['paymentPageLoader']);
+
+        $this->context->controller->registerJavascript(
+            'remote-bootstrap',
+            $data['paymentPageLoader'],
+            ['server' => 'remote', 'position' => 'head', 'priority' => 20]
+        );
+
         $viewsPath = _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR;
         $this->context->controller->addJS(

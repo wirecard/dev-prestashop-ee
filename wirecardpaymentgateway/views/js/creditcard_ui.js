@@ -168,15 +168,9 @@ function cancel() {
 }
 
 /**
- * Set listeners.
+ * Handle if vault is enabled and user has saved cards
  */
-$(document).ready(function () {
-    // This function will render the credit card UI in the specified div.
-    saveCard = $('#saveCard');
-    submitForm = $('#submit-credit-card-form');
-    form = $('#payment-credit-card-form');
-    // ### Submit handler for the form
-    seamlessRenderForm();
+function handleVault() {
     if ($('#accordion-card').length) {
         tokenId = $('input[name=card-selection]:checked').val();
         $('input[name=card-selection]').change(function () {
@@ -194,5 +188,18 @@ $(document).ready(function () {
     } else {
         tokenId = 'new';
     }
+}
+
+/**
+ * Set listeners.
+ */
+$(document).ready(function () {
+    // This function will render the credit card UI in the specified div.
+    saveCard = $('#saveCard');
+    submitForm = $('#submit-credit-card-form');
+    form = $('#payment-credit-card-form');
+    // ### Submit handler for the form
+    seamlessRenderForm();
+    handleVault();
     form.on('submit', placeOrder);
 });

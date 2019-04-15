@@ -226,11 +226,11 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_c5932c4717881c8965cea94
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_fb8974a2d9268f875990859be9dcb769'] = 'You have canceled the payment process.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>return_c5932c4717881c8965cea94ead28e157'] = 'An error occurred during the payment process. Please try again.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_0b77ff82a817351cd708250ad5de8f93'] = 'Credit card selection';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_4eb57eb6288bc1ae4efd419ff4a3b4ca'] = 'Use saved credit card';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_4400d338d951ef295f9ce6f8e78015fb'] = 'Card number';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_6b52d5fb312fd2f7af4c670d2f98bd54'] = 'Delete credit card';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_099af53f601532dbd31e0ea99ffdeb64'] = 'Delete';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_5809325b75110f574df44ec5eec4032b'] = 'Use new credit card';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_5a8a180808e7b94259768ce42bab4c4e'] = 'Save for later use.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_10aec35353f9c4096a71c38654c3d402'] = 'Cancel';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_b02a45a596bfb86fe2578bde75ff5444'] = 'Pay';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_accordion_4eb57eb6288bc1ae4efd419ff4a3b4ca'] = 'Use saved credit card';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_accordion_4400d338d951ef295f9ce6f8e78015fb'] = 'Card number';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_accordion_6b52d5fb312fd2f7af4c670d2f98bd54'] = 'Delete credit card';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_accordion_099af53f601532dbd31e0ea99ffdeb64'] = 'Delete';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_accordion_5809325b75110f574df44ec5eec4032b'] = 'Use new credit card';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_accordion_5a8a180808e7b94259768ce42bab4c4e'] = 'Save for later use.';
