@@ -34,6 +34,7 @@
 
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\UpiTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
@@ -164,7 +165,11 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     private function pay($payload, $tokenId, $url, $transactionService) {
         $amount = new Amount($payload['requested_amount'], $payload['requested_amount_currency']);
-        $transaction = new CreditCardTransaction();
+        if( UpiTransaction::NAME === $payload['payment_method']){
+            $transaction = new UpiTransaction();
+        }else {
+            $transaction = new CreditCardTransaction();
+        }
         $transaction->setAmount($amount);
         $transaction->setTokenId($tokenId);
         $transaction->setTermUrl($url);

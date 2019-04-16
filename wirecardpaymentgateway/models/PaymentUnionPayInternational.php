@@ -35,6 +35,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Transaction\UpiTransaction;
 use Wirecard\PaymentSdk\Entity\Amount;
 
@@ -93,14 +94,14 @@ class PaymentUnionPayInternational extends Payment
                     'required' => true,
                 ),
                 array(
-                    'name' => 'three_d_merchant_account_id',
+                    'name' => 'merchant_account_id',
                     'label'   => $this->l('config_merchant_account_id'),
                     'type'    => 'text',
                     'default' => 'c6e9331c-5c1f-4fc6-8a08-ef65ce09ddb0',
                     'required' => true,
                 ),
                 array(
-                    'name' => 'three_d_secret',
+                    'name' => 'secret',
                     'label'   => $this->l('config_merchant_secret'),
                     'type'    => 'text',
                     'default' => '16d85b73-79e2-4c33-932a-7da99fb04a9c',
@@ -180,14 +181,14 @@ class PaymentUnionPayInternational extends Payment
         $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
         $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
 
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'three_d_secret');
+        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
+        $secret = $paymentModule->getConfigValue($this->type, 'secret');
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new CreditCardConfig(
+        $paymentConfig = new PaymentMethodConfig(
+            UpiTransaction::NAME,
             $merchantAccountId,
-            $secret,
-            UpiTransaction::NAME
+            $secret
         );
         $config->add($paymentConfig);
 
