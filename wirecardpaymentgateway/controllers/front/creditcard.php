@@ -32,12 +32,16 @@
  * @license   GPLv3
  */
 
+use Wirecard\PaymentSdk\Entity\CustomField;
+use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
+use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\UpiTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Models\CreditCardVault;
@@ -167,11 +171,15 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @param string             $url
      * @param TransactionService $transactionService
      * @return mixed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     private function pay($payload, $tokenId, $url, $transactionService)
     {
         $amount = new Amount($payload['requested_amount'], $payload['requested_amount_currency']);
-        if (UpiTransaction::NAME === $payload['payment_method']) {
+        $paymentType = $payload['payment_method'];
+
+        if (UpiTransaction::NAME === $paymentType) {
             $transaction = new UpiTransaction();
         } else {
             $transaction = new CreditCardTransaction();
@@ -179,6 +187,55 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $transaction->setAmount($amount);
         $transaction->setTokenId($tokenId);
         $transaction->setTermUrl($url);
+        $additionalInformation = new AdditionalInformation();
+        $orderId = $payload['order_number'];
+        $order = new Order($orderId);
+        $cart = new Cart($order->id_cart);
+        $currency = new Currency($cart->id_currency);
+        $redirectUrls = new Redirect(
+            $this->module->createRedirectUrl($cart->id, CreditCardTransaction::NAME, 'success'),
+            $this->module->createRedirectUrl($cart->id, CreditCardTransaction::NAME, 'cancel'),
+            $this->module->createRedirectUrl($cart->id, CreditCardTransaction::NAME, 'failure')
+        );
+        $transaction->setNotificationUrl($this->module->createNotificationUrl($cart->id, $paymentType));
+        $transaction->setRedirect($redirectUrls);
+        $customFields = new CustomFieldCollection();
+        $customFields->add(new CustomField('orderId', $orderId));
+        $transaction->setCustomFields($customFields);
+
+        if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
+            $transaction->setBasket($additionalInformation->createBasket(
+                $cart,
+                $transaction,
+                $currency->iso_code
+            ));
+        }
+
+        if ($this->module->getConfigValue($paymentType, 'descriptor')) {
+            $transaction->setDescriptor($additionalInformation->createDescriptor($orderId));
+        }
+
+        if ($this->module->getConfigValue($paymentType, 'send_additional')) {
+            $firstName = null;
+            $lastName = null;
+
+            if (Tools::getValue('last_name')) {
+                $lastName = Tools::getValue('last_name');
+
+                if (Tools::getValue('first_name')) {
+                    $firstName = Tools::getValue('first_name');
+                }
+            }
+
+            $transaction = $additionalInformation->createAdditionalInformation(
+                $cart,
+                $orderId,
+                $transaction,
+                $currency->iso_code,
+                $firstName,
+                $lastName
+            );
+        }
         $response = $transactionService->pay($transaction);
         $ccVaultEnable = $this->module->getConfigValue($payload['payment_method'], 'ccvault_enabled');
         if ($ccVaultEnable) {

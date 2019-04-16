@@ -143,6 +143,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Payment $payment
      * @param Cart $cart
      * @param string $paymentType
+     * @param string $orderId
      * @return Transaction
      */
     public function createTransaction($payment, $cart, $paymentType, $orderId)
