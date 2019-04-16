@@ -1010,54 +1010,6 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Hook for registering new functions to smarty
-     *
-     * @since 1.3.4
-     */
-    public function hookActionDispatcher()
-    {
-        $this->context->smarty->registerPlugin('function', 'lFallback', ['WirecardPaymentGateway', 'lFallback']);
-    }
-
-    /**
-     * Translation function for tpl files (called by smarty)
-     *
-     * @param array $params parameter of the smarty function
-     * @param class $smarty smarty object
-     *
-     * @return string translation
-     * @since 1.3.4
-     */
-    public static function lFallback($params, $smarty)
-    {
-        if (!isset($params['mod'])) {
-            $params['mod'] = false;
-        }
-        if (!isset($params['sprintf'])) {
-            $params['sprintf'] = [];
-        }
-
-        $key = $params['s'];
-        $basename = basename($smarty->source->name, '.tpl');
-
-        $translation = Translate::postProcessTranslation(
-            Translate::getModuleTranslation(
-                $params['mod'],
-                $key,
-                $basename,
-                $params['sprintf']
-            ),
-            $params
-        );
-
-        if ($translation === $key) {
-            $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $basename);
-        }
-
-        return $translation;
-    }
-
-    /**
      * Overwritten translation function, uses the modules translation function with fallback language functionality
      *
      * @param string      $key translation key

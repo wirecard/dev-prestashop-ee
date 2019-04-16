@@ -1,6 +1,6 @@
 {extends file='page.tpl'}
 
-{extends file='module:wirecardpaymentgateway/views/templates/front/creditcard_header.tpl'}
+{include file='module:wirecardpaymentgateway/views/templates/front/creditcard_header.tpl'}
 
 {block name='page_content'}
     <div class="container">

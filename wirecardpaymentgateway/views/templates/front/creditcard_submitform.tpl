@@ -37,7 +37,7 @@
             wait.innerHTML += ".";
     }, 200);
 </script>
-<div style="display: flex; justify-content: center; font-size: 20px;">{lFallback s='redirect_text' mod='wirecardpaymentgateway'}
+<div style="display: flex; justify-content: center; font-size: 20px;">{l s='redirect_text' mod='wirecardpaymentgateway'}
     <span id="wait" style="font-size: 20px; width: 50px;">.</span></div>
 
 <form id="credit_card_form" method="{$method|escape:'htmlall':'UTF-8'}" action="{$url}">

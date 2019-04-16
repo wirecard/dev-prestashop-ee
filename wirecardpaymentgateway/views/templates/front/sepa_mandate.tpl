@@ -38,14 +38,14 @@
                             <table border="0" width="100%">
                                 <tr>
                                     <td class="text11justify">
-                                        <i>{lFallback s='creditor' mod='wirecardpaymentgateway'}</i><br />
+                                        <i>{l s='creditor' mod='wirecardpaymentgateway'}</i><br />
                                         {$creditorName|escape:'htmlall':'UTF-8'}
                                         {if strlen($creditorName)}
                                             ,
                                         {/if}
                                         {$creditorStoreCity|escape:'htmlall':'UTF-8'}
                                         {if strlen($creditorName) || strlen($creditorStoreCity)}<br />{/if}
-                                        {lFallback s='creditor_id_input' mod='wirecardpaymentgateway'}: {$creditorId|escape:'htmlall':'UTF-8'}<br />
+                                        {l s='creditor_id_input' mod='wirecardpaymentgateway'}: {$creditorId|escape:'htmlall':'UTF-8'}<br />
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
@@ -57,11 +57,11 @@
                             <table border="0" width="100%">
                                 <tr>
                                     <td class="text11">
-                                        <i>{lFallback s='debtor' mod='wirecardpaymentgateway'}</i><br />
-                                        {lFallback s='debtor_acc_owner' mod='wirecardpaymentgateway'}: <span class="first_last_name"></span><br />
-                                        {lFallback s='iban' mod='wirecardpaymentgateway'}: <span class="bank_iban"></span><br />
+                                        <i>{l s='debtor' mod='wirecardpaymentgateway'}</i><br />
+                                        {l s='debtor_acc_owner' mod='wirecardpaymentgateway'}: <span class="first_last_name"></span><br />
+                                        {l s='iban' mod='wirecardpaymentgateway'}: <span class="bank_iban"></span><br />
                                         {if $enableBic == true }
-                                            {lFallback s='bic' mod='wirecardpaymentgateway'}: <span class="bank_bic"></span><br />
+                                            {l s='bic' mod='wirecardpaymentgateway'}: <span class="bank_bic"></span><br />
                                         {/if}
                                     </td>
                                     <td width="10%">&nbsp;</td>
@@ -74,25 +74,25 @@
                             <table border="0" width="100%">
                                 <tr>
                                     <td class="text11justify">
-                                        {lFallback s='sepa_text_1' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_1' mod='wirecardpaymentgateway'}
                                         {$creditorName|escape:'htmlall':'UTF-8'}
-                                        {lFallback s='sepa_text_2' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_2' mod='wirecardpaymentgateway'}
                                         {$creditorName|escape:'htmlall':'UTF-8'} {$additionalText|escape:'htmlall':'UTF-8'}
-                                        {lFallback s='sepa_text_2b' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_2b' mod='wirecardpaymentgateway'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td class="text11justify">
-                                        {lFallback s='sepa_text_3' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_3' mod='wirecardpaymentgateway'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td class="text11justify">
-                                        {lFallback s='sepa_text_4' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_4' mod='wirecardpaymentgateway'}
                                         {$creditorName|escape:'htmlall':'UTF-8'}
-                                        {lFallback s='sepa_text_5' mod='wirecardpaymentgateway'}
+                                        {l s='sepa_text_5' mod='wirecardpaymentgateway'}
                                     </td>
                                     <td width="10%">&nbsp;</td>
                                 </tr>
@@ -118,10 +118,10 @@
             </div>
             <div class="modal-footer">
                 <div class="w-100" style="text-align: left;">
-                    <input type="checkbox" id="sepaCheck">&nbsp;<label for="sepaCheck">{lFallback s='sepa_text_6' mod='wirecardpaymentgateway'}</label>
+                    <input type="checkbox" id="sepaCheck">&nbsp;<label for="sepaCheck">{l s='sepa_text_6' mod='wirecardpaymentgateway'}</label>
                 </div>
-                <button class="btn btn-primary" id="sepaCancelButton">{lFallback s='cancel' mod='wirecardpaymentgateway'}</button>
-                <button class="btn btn-primary disabled" id="sepaConfirmButton">{lFallback s='text_confirm' mod='wirecardpaymentgateway'}</button>
+                <button class="btn btn-primary" id="sepaCancelButton">{l s='cancel' mod='wirecardpaymentgateway'}</button>
+                <button class="btn btn-primary disabled" id="sepaConfirmButton">{l s='text_confirm' mod='wirecardpaymentgateway'}</button>
             </div>
         </div>
     </div>

@@ -97,7 +97,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     protected function processVault($paymentType)
     {
         $data = [];
-        if ($this->module->getConfigValue($paymentType, 'ccvault_enabled') && Customer::isLogged()) {
+        if ($this->module->getConfigValue($paymentType, 'ccvault_enabled') && !$this->context->customer->isGuest()) {
             $vault = new CreditCardVault($this->context->customer->id);
             $data['userCards'] = $vault->getUserCards();
             $data['ccvaultenabled'] = true;
