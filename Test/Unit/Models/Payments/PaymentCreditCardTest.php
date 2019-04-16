@@ -34,6 +34,7 @@
  */
 
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use Wirecard\PaymentSdk\Config\Config;
 
 class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 {
@@ -47,7 +48,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->config = array(
+        $this->config = [
             'base_url',
             'base_url',
             'http_user',
@@ -63,7 +64,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             150,
             150,
             150
-        );
+        ];
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -114,10 +115,10 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createTransaction(
             new PaymentModule(),
             new Cart(),
-            array(
-              'expiration_month'=>'01',
-              'expiration_year'=>'2018'
-            ),
+            [
+                'expiration_month' => '01',
+                'expiration_year' => '2018'
+            ],
             'ADB123'
         );
 
@@ -125,26 +126,82 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-    public function testGetRequestData()
+    public function testProcessCreditCard()
     {
-        $context = new Context();
+        $products = [
+            [
+                'cart_quantity' => 20,
+                'name' => 'Test1',
+                'total_wt' => 200.00,
+                'total' => 200.00,
+                'description_short' => 'Testproduct',
+                'reference' => '003'
+            ]
+        ];
 
-        $expected = array(
-            'transaction_type' => 'tokenize',
-            'merchant_account_id' => 'merchant_account_id',
-            'requested_amount' => 0,
-            'requested_amount_currency' => 'EUR',
-            'locale' => 'en',
-            'payment_method' => 'creditcard',
-            'attempt_three_d' => false
+        Configuration::setBasketConfig(true);
+        Configuration::setAdditionalConfig(true);
+
+        $payment = new \WirecardPaymentGatewayPaymentModuleFrontController();
+        $cart = new Cart();
+        $cart->setId('2');
+        $cart->setOrderTotal('200');
+        $cart->id_currency = '1';
+        $cart->setProducts($products);
+        $paymentType = 'creditcard';
+        $orderId = '123456';
+
+        $config = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
+        $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
+        $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
+        $expectedPaymentConfig->addThreeDMinLimit(new \Wirecard\PaymentSdk\Entity\Amount(150, 'EUR'));
+        $config->add($expectedPaymentConfig);
+
+        $transaction = $payment->createTransaction($this->payment, $cart, $paymentType, $orderId);
+
+        $actual = $payment->processCreditCard($config, $transaction, $orderId, $paymentType);
+        $expected = [
+            'orderId' => '123456',
+            'requestData' => [
+                'transaction_type' => 'reserve',
+                'merchant_account_id' => 'three_d_merchant_account_id',
+                'requested_amount' => 200,
+                'requested_amount_currency' => 'EUR',
+                'locale' => 'en',
+                'payment_method' => 'creditcard',
+                'attempt_three_d' => true,
+                'street1' => null,
+                'city' => null,
+                'country' => null,
+                'shipping_street1' => null,
+                'shipping_city' => null,
+                'shipping_country' => null,
+                'orderItems1.name' => 'Test1',
+                'orderItems1.quantity' => 20,
+                'orderItems1.amount.value' => 10,
+                'orderItems1.amount.currency' => 'EUR',
+                'orderItems1.articleNumber' => '003',
+                'orderItems1.taxRate' => '0.00',
+                'field_name_1' => 'paysdk_orderId',
+                'field_value_1' => '123456',
+                'notification_transaction_url' => 'http://test.com',
+                'notifications_format' => 'application/xml',
+                'descriptor' => 'PSSHOPNAM123456',
+                'order_number' => '123456',
+                'ip_address' => '127.0.0.1'
+            ],
+            'paymentPageLoader' => 'https://api-test.wirecard.com/engine/hpp/paymentPageLoader.js',
+            'actionUrl' => 'http://test.com'
+        ];
+
+        $actual['requestData'] = json_decode($actual['requestData'], true);
+        //unset the generated request id,timestamp and signature as it is different every time
+        unset(
+            $actual['requestData']['request_id'],
+            $actual['requestData']['request_signature'],
+            $actual['requestData']['request_time_stamp']
         );
-
-        for ($i = 0; $i <= 14; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
-        }
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context));
-        //unset the generated request id as it is different every time
-        unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
 
         $this->assertEquals($expected, $actual);
     }

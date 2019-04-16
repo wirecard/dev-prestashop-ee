@@ -12,7 +12,8 @@ class SupportedHppLangCode
      * @param \Context $context
      * @return mixed|string
      */
-    public static function getSupportedHppLangCode($baseUrl, $context) {
+    public static function getSupportedHppLangCode($baseUrl, $context)
+    {
         $isoCode = $context->language->iso_code;
         $languageCode = $context->language->language_code;
         $language = 'en';
@@ -39,5 +40,4 @@ class SupportedHppLangCode
         }
         return $language;
     }
-
 }

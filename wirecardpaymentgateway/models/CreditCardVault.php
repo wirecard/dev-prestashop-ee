@@ -122,7 +122,8 @@ class CreditCardVault
      * @param $tokenId
      * @return int
      */
-    public function updateLastUsed($tokenId){
+    public function updateLastUsed($tokenId)
+    {
         $db = \Db::getInstance();
         try {
             $where = 'token = "' . pSQL($tokenId) . '"';

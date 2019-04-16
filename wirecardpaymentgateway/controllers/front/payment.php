@@ -65,11 +65,12 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      *
      * @since 1.0.0
      */
-    public function postProcess() {
+    public function postProcess()
+    {
         $cart = $this->context->cart;
         $this->checkCart($cart);
 
-        $paymentType = \Tools::getValue('paymentType');
+        $paymentType = Tools::getValue('paymentType');
         $orderId = $this->createOrder($cart, $paymentType);
 
         /** @var Payment $payment */
@@ -79,10 +80,32 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $operation = $this->module->getConfigValue($paymentType, 'payment_action');
             $transaction = $this->createTransaction($payment, $cart, $paymentType, $orderId);
             if ('creditcard' === $paymentType || 'unionpayinternational' === $paymentType) {
-                $this->processCreditCard($config, $transaction, $orderId, $paymentType);
+                $data = $this->processCreditCard($config, $transaction, $orderId, $paymentType);
+                $vaultData = $this->processVault($paymentType);
+                $data = array_merge($data, $vaultData);
+                $this->goToCreditCardUi($data);
             }
             $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
+    }
+
+    /**
+     * Get data for vault.
+     * @param string $paymentType
+     * @return array
+     */
+    protected function processVault($paymentType)
+    {
+        $data = [];
+        if ($this->module->getConfigValue($paymentType, 'ccvault_enabled') && Customer::isLogged()) {
+            $vault = new CreditCardVault($this->context->customer->id);
+            $data['userCards'] = $vault->getUserCards();
+            $data['ccvaultenabled'] = true;
+        } else {
+            $data['userCards'] = [];
+            $data['ccvaultenabled'] = false;
+        }
+        return $data;
     }
 
     /**
@@ -92,10 +115,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param Transaction              $transaction
      * @param string                   $orderId
      * @param string                   $paymentType
+     * @return array
      * @throws SmartyException
      */
-    private function processCreditCard($config, $transaction, $orderId, $paymentType) {
-        global $cookie;
+    public function processCreditCard($config, $transaction, $orderId, $paymentType)
+    {
         $transactionService = new TransactionService($config, new WirecardLogger());
         $paymentConfig = $config->get($paymentType);
         $transaction->setConfig($paymentConfig);
@@ -106,27 +130,23 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $data['orderId'] = $orderId;
         $data['requestData'] = $transactionService->getCreditCardUiWithData($transaction, $paymentAction, $language);
         $data['paymentPageLoader'] = $baseUrl . '/engine/hpp/paymentPageLoader.js';
-        $link = $this->context->link->getModuleLink('wirecardpaymentgateway', 'creditcard',
-            [], true);
+        $link = $this->context->link->getModuleLink(
+            'wirecardpaymentgateway',
+            'creditcard',
+            []
+        );
         $data['actionUrl'] = $link;
-        if ($this->module->getConfigValue($paymentType, 'ccvault_enabled') && $cookie->isLogged()) {
-            $vault = new CreditCardVault($this->context->customer->id);
-            $data['userCards'] = $vault->getUserCards();
-            $data['ccvaultenabled'] = true;
-        } else {
-            $data['userCards'] = [];
-            $data['ccvaultenabled'] = false;
-        }
-        $this->goToCreditCardUi($data);
+        return $data;
     }
 
     /**
-     * @param $payment
-     * @param $cart
-     * @param $paymentType
+     * @param Payment $payment
+     * @param Cart $cart
+     * @param string $paymentType
      * @return Transaction
      */
-    private function createTransaction($payment, $cart, $paymentType, $orderId) {
+    public function createTransaction($payment, $cart, $paymentType, $orderId)
+    {
         $amount = round($cart->getOrderTotal(), 2);
         $currency = new Currency($cart->id_currency);
         $additionalInformation = new AdditionalInformation();
@@ -148,8 +168,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $transaction->setCustomFields($customFields);
 
         if ($this->module->getConfigValue($paymentType, 'shopping_basket')) {
-            $transaction->setBasket($additionalInformation->createBasket($cart, $transaction,
-                $currency->iso_code));
+            $transaction->setBasket($additionalInformation->createBasket(
+                $cart,
+                $transaction,
+                $currency->iso_code
+            ));
         }
 
         if ($this->module->getConfigValue($paymentType, 'descriptor')) {
@@ -160,11 +183,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $firstName = null;
             $lastName = null;
 
-            if (\Tools::getValue('last_name')) {
-                $lastName = \Tools::getValue('last_name');
+            if (Tools::getValue('last_name')) {
+                $lastName = Tools::getValue('last_name');
 
-                if (\Tools::getValue('first_name')) {
-                    $firstName = \Tools::getValue('first_name');
+                if (Tools::getValue('first_name')) {
+                    $firstName = Tools::getValue('first_name');
                 }
             }
 
@@ -185,7 +208,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      *
      * @param Cart $cart
      */
-    private function checkCart($cart) {
+    private function checkCart($cart)
+    {
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
         ) {
@@ -205,7 +229,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @throws PrestaShopException
      * @since 1.0.0
      */
-    public function executeTransaction($transaction, $config, $operation, $orderId) {
+    public function executeTransaction($transaction, $config, $operation, $orderId)
+    {
         $transactionService = new TransactionService($config, new WirecardLogger());
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
@@ -236,7 +261,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param array $data
      * @throws SmartyException
      */
-    private function goToCreditCardUi($data) {
+    private function goToCreditCardUi($data)
+    {
         $this->setMedia();
         $this->assignGeneralPurposeVariables();
         Media::addJsDef([
@@ -253,7 +279,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $viewsPath = _PS_MODULE_DIR_ . $this->module->name . DIRECTORY_SEPARATOR . 'views'
             . DIRECTORY_SEPARATOR;
         $this->context->controller->addJS(
-            $viewsPath . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js');
+            $viewsPath . 'js' . DIRECTORY_SEPARATOR . 'creditcard_ui.js'
+        );
         $this->context->controller->addCSS(
             $viewsPath . 'css' . DIRECTORY_SEPARATOR . 'app.css'
         );
@@ -283,7 +310,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @throws PrestaShopException
      * @since 1.0.0
      */
-    private function createOrder($cart, $paymentMethod) {
+    private function createOrder($cart, $paymentMethod)
+    {
         $orderManager = new OrderManager($this->module);
 
         $order = new Order($orderManager->createOrder(
@@ -303,7 +331,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @throws PrestaShopException
      * @since 1.0.0
      */
-    private function processFailure($orderId) {
+    private function processFailure($orderId)
+    {
         $order = new Order($orderId);
         if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
             $order->setCurrentState(_PS_OS_ERROR_);
@@ -316,5 +345,4 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             );
         }
     }
-
 }

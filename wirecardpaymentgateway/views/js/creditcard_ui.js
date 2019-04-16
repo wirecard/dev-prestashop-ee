@@ -40,7 +40,8 @@ var saveCard = null;
  * @param params
  * @returns {*}
  */
-function processAjaxUrl(url, params) {
+function processAjaxUrl(url, params)
+{
     var querySign = '?';
     if (url.includes("?")) {
         querySign = '&';
@@ -71,7 +72,8 @@ $.fn.addHidden = function (name, value) {
  * Place order function.
  * @param e
  */
-function placeOrder(e) {
+function placeOrder(e)
+{
     e.preventDefault();
     if (tokenId === undefined) {
         return;
@@ -93,7 +95,8 @@ function placeOrder(e) {
  * Submit to prestashop function
  * @param response
  */
-function formSubmitSuccessHandler(response) {
+function formSubmitSuccessHandler(response)
+{
     submitForm.addHidden('saveCard', saveCard.prop("checked"));
     submitForm.addHidden('tokenId', tokenId);
     submitForm.addHidden('orderId', orderId);
@@ -105,14 +108,16 @@ function formSubmitSuccessHandler(response) {
  * Show Error in console
  * @param response
  */
-function logCallback(response) {
+function logCallback(response)
+{
     console.log('Error:', response);
 }
 
 /**
  * Resize Iframe
  */
-function resizeIframe() {
+function resizeIframe()
+{
     let iframe = $("#" + wrapDivPayment + " > iframe");
     if ($(window).width() > 600) {
         iframe.height(300);
@@ -125,7 +130,8 @@ function resizeIframe() {
 /**
  * Render  WirecardPaymentPage seamlessRenderForm
  */
-function seamlessRenderForm() {
+function seamlessRenderForm()
+{
     $('#loader').show();
     WirecardPaymentPage.seamlessRenderForm({
         requestData: JSON.parse(requestData),
@@ -135,7 +141,8 @@ function seamlessRenderForm() {
     });
 }
 
-function removeCard(cardId) {
+function removeCard(cardId)
+{
     console.log('Remove card:', cardId);
     let params = [{
         index: 'action',
@@ -161,7 +168,8 @@ function removeCard(cardId) {
 /**
  * Cancel payment
  */
-function cancel() {
+function cancel()
+{
     submitForm.addHidden('orderId', orderId);
     submitForm.addHidden('cancel', true);
     submitForm.submit();
@@ -170,7 +178,8 @@ function cancel() {
 /**
  * Handle if vault is enabled and user has saved cards
  */
-function handleVault() {
+function handleVault()
+{
     if ($('#accordion-card').length) {
         tokenId = $('input[name=card-selection]:checked').val();
         $('input[name=card-selection]').change(function () {

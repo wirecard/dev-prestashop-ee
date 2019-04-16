@@ -33,7 +33,6 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentPaypal;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 
 require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/front/payment.php';
@@ -72,28 +71,16 @@ class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
         $paymentController->setProducts($products);
         $paymentController->setCartAddress('invoice');
         $paymentController->setCartAddress('delivery');
-        $actual = $paymentController->postProcess();
+        $paymentController->postProcess();
 
         $this->assertTrue(is_string($paymentController->errors));
     }
 
     public function testSepaDirectDebitTransaction()
     {
-        $paymentController = new \WirecardPaymentGatewayPaymentModuleFrontController();
+        $paymentController = new WirecardPaymentGatewayPaymentModuleFrontController();
         $tools = new Tools();
         $tools::$paymentType = 'sepa';
-        $paymentController->setAmount(2.00);
-        $paymentController->setCartId('123');
-        $actual = $paymentController->postProcess();
-
-        $this->assertTrue(!is_string($actual));
-    }
-
-    public function testCreditCardTransaction()
-    {
-        $paymentController = new \WirecardPaymentGatewayPaymentModuleFrontController();
-        $tools = new Tools();
-        $tools::$paymentType = 'creditcard';
         $paymentController->setAmount(2.00);
         $paymentController->setCartId('123');
         $actual = $paymentController->postProcess();

@@ -333,5 +333,4 @@ class PaymentCreditCard extends Payment
 
         return array('ccvaultenabled' => (bool) $test);
     }
-
 }

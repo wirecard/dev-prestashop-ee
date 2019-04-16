@@ -57,7 +57,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     /**
      * Implementation of initContent.
      */
-    public function initContent() {
+    public function initContent()
+    {
         $this->ajax = true;
         parent::initContent();
     }
@@ -69,7 +70,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function postProcess() {
+    public function postProcess()
+    {
         $this->vaultModel = new CreditCardVault($this->context->customer->id);
         // If its ajax call don't do anything
         if (\Tools::getValue('ajax')) {
@@ -111,7 +113,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @param string $paymentMethod
      * @return TransactionService
      */
-    private function getTransactionService($paymentMethod) {
+    private function getTransactionService($paymentMethod)
+    {
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentMethod);
         $config = $payment->createPaymentConfig($this->module);
@@ -124,7 +127,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @param $order
      * @return string url of order confirmation page
      */
-    private function createOrderConfirmationUrl($order) {
+    private function createOrderConfirmationUrl($order)
+    {
         $cartId = $order->id_cart;
         $cart = new Cart((int)($cartId));
         $customer = new Customer($cart->id_customer);
@@ -144,10 +148,11 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @param                                           $order
      * @param                                           $url
      */
-    private function processResponse($response, $order, $url) {
+    private function processResponse($response, $order, $url)
+    {
         if ($response instanceof SuccessResponse) {
             $this->saveOrder($order, $response, $url);
-        } else if ($response instanceof FormInteractionResponse) {
+        } elseif ($response instanceof FormInteractionResponse) {
             $this->createPostForm($response);
         } else {
             $this->cancelOrder($order);
@@ -163,11 +168,12 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @param TransactionService $transactionService
      * @return mixed
      */
-    private function pay($payload, $tokenId, $url, $transactionService) {
+    private function pay($payload, $tokenId, $url, $transactionService)
+    {
         $amount = new Amount($payload['requested_amount'], $payload['requested_amount_currency']);
-        if( UpiTransaction::NAME === $payload['payment_method']){
+        if (UpiTransaction::NAME === $payload['payment_method']) {
             $transaction = new UpiTransaction();
-        }else {
+        } else {
             $transaction = new CreditCardTransaction();
         }
         $transaction->setAmount($amount);
@@ -188,7 +194,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @param SuccessResponse $response
      * @param string          $url
      */
-    private function saveOrder($order, $response, $url) {
+    private function saveOrder($order, $response, $url)
+    {
         if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
             $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
         }
@@ -205,7 +212,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      *
      * @param Order $order
      */
-    private function cancelOrder($order) {
+    private function cancelOrder($order)
+    {
         if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
             $order->setCurrentState(_PS_OS_ERROR_);
             $this->errors = $this->module->l('canceled_payment_process');
@@ -224,7 +232,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      *
      * @since 1.1.0
      */
-    public function displayAjaxDeleteCard() {
+    public function displayAjaxDeleteCard()
+    {
         $ccid = Tools::getValue('ccid');
         $success = $this->vaultModel->deleteCard($ccid);
         header('Content-Type: application/json; charset=utf8');
@@ -236,7 +245,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      *
      * @param array $payload
      */
-    private function addCard($payload) {
+    private function addCard($payload)
+    {
         $token = $payload['token_id'];
         $maskedPan = $payload['masked_account_number'];
         $this->vaultModel->addCard($maskedPan, $token);
@@ -249,7 +259,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @return string
      * @since 1.0.0
      */
-    private function createPostForm($response) {
+    private function createPostForm($response)
+    {
         $data = null;
         $data['url'] = $response->getUrl();
         $data['method'] = $response->getMethod();
@@ -267,5 +278,4 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         }
         return '';
     }
-
 }

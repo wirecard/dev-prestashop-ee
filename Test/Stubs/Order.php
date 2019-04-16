@@ -37,10 +37,13 @@ class Order
 {
     public $id;
 
+    public $id_lang;
+
     public $current_state;
 
     public function __construct($order)
     {
         $this->id = 1;
+        $this->id_lang = 1;
     }
 }

@@ -243,5 +243,4 @@ class PaymentUnionPayInternational extends Payment
 
         return $transaction;
     }
-
 }

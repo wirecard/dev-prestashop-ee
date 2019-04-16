@@ -140,26 +140,85 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
     }
 
-    public function testGetRequestData()
+
+    public function testProcessCreditCard()
     {
-        $context = new Context();
+        $products = [
+            [
+                'cart_quantity' => 20,
+                'name' => 'Test1',
+                'total_wt' => 200.00,
+                'total' => 200.00,
+                'description_short' => 'Testproduct',
+                'reference' => '003'
+            ]
+        ];
 
-        $expected = array(
-            'transaction_type' => 'tokenize',
-            'merchant_account_id' => 'merchant_account_id',
-            'requested_amount' => 0,
-            'requested_amount_currency' => 'EUR',
-            'locale' => 'en',
-            'payment_method' => 'creditcard',
-            'attempt_three_d' => false
+        Configuration::setBasketConfig(true);
+        Configuration::setAdditionalConfig(true);
+
+        $payment = new \WirecardPaymentGatewayPaymentModuleFrontController();
+        $cart = new Cart();
+        $cart->setId('2');
+        $cart->setOrderTotal('200');
+        $cart->id_currency = '1';
+        $cart->setProducts($products);
+        $paymentType = 'unionpayinternational';
+        $orderId = '55555';
+
+        $config = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
+        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
+            'unionpayinternational',
+            'merchant_account_id',
+            'secret'
         );
+        $config->add($expectedPaymentConfig);
 
-        for ($i = 0; $i <= 5; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
-        }
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context));
-        //unset the generated request id as it is different every time
-        unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
+        $transaction = $payment->createTransaction($this->payment, $cart, $paymentType, $orderId);
+
+        $actual = $payment->processCreditCard($config, $transaction, $orderId, $paymentType);
+        $expected = [
+            'orderId' => '55555',
+            'requestData' => [
+                'transaction_type' => 'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_PAYMENT_ACTION',
+                'merchant_account_id' => 'merchant_account_id',
+                'requested_amount' => 200,
+                'requested_amount_currency' => 'EUR',
+                'locale' => 'en',
+                'payment_method' => 'creditcard',
+                'attempt_three_d' => false,
+                'street1' => null,
+                'city' => null,
+                'country' => null,
+                'shipping_street1' => null,
+                'shipping_city' => null,
+                'shipping_country' => null,
+                'orderItems1.name' => 'Test1',
+                'orderItems1.quantity' => 20,
+                'orderItems1.amount.value' => 10,
+                'orderItems1.amount.currency' => 'EUR',
+                'orderItems1.articleNumber' => '003',
+                'orderItems1.taxRate' => '0.00',
+                'field_name_1' => 'paysdk_orderId',
+                'field_value_1' => '55555',
+                'notification_transaction_url' => 'http://test.com',
+                'notifications_format' => 'application/xml',
+                'descriptor' => 'PSSHOPNAM 55555',
+                'order_number' => '55555',
+                'ip_address' => '127.0.0.1'
+            ],
+            'paymentPageLoader' =>
+                'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_BASE_URL/engine/hpp/paymentPageLoader.js',
+            'actionUrl' => 'http://test.com'
+        ];
+
+        $actual['requestData'] = json_decode($actual['requestData'], true);
+        //unset the generated request id,timestamp and signature as it is different every time
+        unset(
+            $actual['requestData']['request_id'],
+            $actual['requestData']['request_signature'],
+            $actual['requestData']['request_time_stamp']
+        );
 
         $this->assertEquals($expected, $actual);
     }
