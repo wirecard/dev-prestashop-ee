@@ -46,6 +46,8 @@
                                             id="remove-card-{$value.cc_id}"
                                             onclick="removeCard({$value.cc_id})"> {l s='delete' mod='wirecardpaymentgateway'}</button>
                                     </button>
+                                    <img id="delete-loader-{$value.cc_id}" style="display: none"
+                                         src="{$smarty.const._PS_ADMIN_IMG_}ajax-loader.gif">
                                 </td>
                             </tr>
                         {/foreach}

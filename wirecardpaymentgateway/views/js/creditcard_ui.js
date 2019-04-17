@@ -145,6 +145,7 @@ function seamlessRenderForm()
 function removeCard(cardId)
 {
     console.log('Remove card:', cardId);
+    $('#delete-loader-' + cardId).show();
     let params = [{
         index: 'action',
         data: 'deletecard'
@@ -158,7 +159,7 @@ function removeCard(cardId)
         type: "GET",
         dataType: "json",
         success: function (response) {
-            tokenId = undefined;
+            tokenId = $('input[name=card-selection]:checked').val();
             $('#remove-card-row-' + cardId).remove();
         }
     });
