@@ -196,27 +196,18 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         }
 
         if ($this->module->getConfigValue($paymentType, 'send_additional')) {
-            $firstName = null;
-            $lastName = null;
-
-            if (Tools::getValue('last_name')) {
-                $lastName = Tools::getValue('last_name');
-
-                if (Tools::getValue('first_name')) {
-                    $firstName = Tools::getValue('first_name');
-                }
-            }
-
             $transaction = $additionalInformation->createAdditionalInformation(
                 $cart,
                 $orderId,
                 $transaction,
-                $currency->iso_code,
-                $firstName,
-                $lastName
+                $currency->iso_code
             );
         }
-        $response = $transactionService->pay($transaction);
+        if ('purchase' === $payload['transaction_type']) {
+            $response = $transactionService->pay($transaction);
+        } else {
+            $response = $transactionService->reserve($transaction);
+        }
         $ccVaultEnable = $this->module->getConfigValue($payload['payment_method'], 'ccvault_enabled');
         if ($ccVaultEnable) {
             $this->vaultModel->updateLastUsed($tokenId);
