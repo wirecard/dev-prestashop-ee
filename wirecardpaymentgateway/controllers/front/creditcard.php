@@ -100,7 +100,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         }
 
         $transactionService = $this->getTransactionService($paymentType);
-        $url = $this->createOrderConfirmationUrl($order);
+        $url = $this->module->createRedirectUrl($orderId, $paymentType, 'success');
 
         if ('new' !== $tokenId) {
             $response = $this->pay($payload, $tokenId, $url, $transactionService);
@@ -123,26 +123,6 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $payment = $this->module->getPaymentFromType($paymentMethod);
         $config = $payment->createPaymentConfig($this->module);
         return new TransactionService($config, new WirecardLogger());
-    }
-
-    /**
-     * Create order confirmation url
-     *
-     * @param $order
-     * @return string url of order confirmation page
-     */
-    private function createOrderConfirmationUrl($order)
-    {
-        $cartId = $order->id_cart;
-        $cart = new Cart((int)($cartId));
-        $customer = new Customer($cart->id_customer);
-        $params = [
-            'id_cart' => $cart->id,
-            'id_module' => $this->module->id,
-            'id_order' => $order->id,
-            'key' => $customer->secure_key
-        ];
-        return $this->context->link->getPageLink('order-confirmation', true, $order->id_lang, $params);
     }
 
     /**
