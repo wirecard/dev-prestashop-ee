@@ -41,7 +41,6 @@ use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use WirecardEE\Prestashop\Helper\SupportedHppLangCode;
 use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
@@ -73,18 +72,19 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $paymentType = Tools::getValue('paymentType');
         $orderId = $this->createOrder($cart, $paymentType);
 
+        if ('creditcard' === $paymentType || 'unionpayinternational' === $paymentType) {
+            $data = $this->processCreditCard($orderId, $paymentType, $cart);
+            $vaultData = $this->processVault($paymentType);
+            $data = array_merge($data, $vaultData);
+            $this->goToCreditCardUi($data);
+        }
+
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
             $config = $payment->createPaymentConfig($this->module);
             $operation = $this->module->getConfigValue($paymentType, 'payment_action');
             $transaction = $this->createTransaction($payment, $cart, $paymentType, $orderId);
-            if ('creditcard' === $paymentType || 'unionpayinternational' === $paymentType) {
-                $data = $this->processCreditCard($config, $transaction, $orderId, $paymentType);
-                $vaultData = $this->processVault($paymentType);
-                $data = array_merge($data, $vaultData);
-                $this->goToCreditCardUi($data);
-            }
             $this->executeTransaction($transaction, $config, $operation, $orderId);
         }
     }
@@ -111,15 +111,18 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Process credit card transaction
      *
-     * @param CreditCardConfig|Payment $config
-     * @param Transaction              $transaction
      * @param string                   $orderId
      * @param string                   $paymentType
+     * @param Cart $cart
      * @return array
      * @throws SmartyException
      */
-    public function processCreditCard($config, $transaction, $orderId, $paymentType)
+    public function processCreditCard($orderId, $paymentType, $cart)
     {
+        /** @var Payment $payment */
+        $payment = $this->module->getPaymentFromType($paymentType);
+        $config = $payment->createPaymentConfig($this->module);
+        $transaction = $this->createTransaction($payment, $cart, $paymentType, $orderId);
         $transactionService = new TransactionService($config, new WirecardLogger());
         $paymentConfig = $config->get($paymentType);
         $transaction->setConfig($paymentConfig);

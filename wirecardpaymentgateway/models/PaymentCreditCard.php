@@ -128,6 +128,7 @@ class PaymentCreditCard extends Payment
                     'type'        => 'text',
                     'default'     => '300.0',
                     'required' => true,
+                    'doc' => \Currency::getDefaultCurrency()->iso_code
                 ),
                 array(
                     'name' => 'three_d_min_limit',
@@ -135,6 +136,7 @@ class PaymentCreditCard extends Payment
                     'type'        => 'text',
                     'default'     => '100.0',
                     'required' => true,
+                    'doc' => \Currency::getDefaultCurrency()->iso_code
                 ),
                 array(
                     'name' => 'base_url',
@@ -229,24 +231,34 @@ class PaymentCreditCard extends Payment
             );
         }
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
-            $paymentConfig->addSslMaxLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    'EUR'
-                )
-            );
-        }
+        $defaultCurrency = \Currency::getDefaultCurrency();
+        $currencies = \Currency::getCurrencies();
+        $sslMaxLimit = $paymentModule->getConfigValue($this->type, 'ssl_max_limit');
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
-            $paymentConfig->addThreeDMinLimit(
-                new Amount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    'EUR'
-                )
-            );
+        if (is_numeric($sslMaxLimit) && $sslMaxLimit >= 0) {
+            foreach ($currencies as $currency) {
+                $convertedAmount = \Tools::convertPriceFull($sslMaxLimit, $defaultCurrency, new \Currency($currency['id_currency']));
+                $paymentConfig->addSslMaxLimit(
+                    new Amount(
+                        $convertedAmount,
+                        $currency['iso_code']
+                    )
+                );
+            }
+
+
+        }
+        $threeDMinLimit = $paymentModule->getConfigValue($this->type, 'three_d_min_limit');
+        if (is_numeric($threeDMinLimit) && $threeDMinLimit >= 0) {
+            foreach ($currencies as $currency) {
+                $convertedAmount = \Tools::convertPriceFull($threeDMinLimit, $defaultCurrency, new \Currency($currency['id_currency']));
+                $paymentConfig->addThreeDMinLimit(
+                    new Amount(
+                        $convertedAmount,
+                        $currency['iso_code']
+                    )
+                );
+            }
         }
 
         $config->add($paymentConfig);
