@@ -110,6 +110,7 @@ function formSubmitSuccessHandler(response)
  */
 function logCallback(response)
 {
+    alert(response.status_description_1);
     console.log('Error:', response);
 }
 

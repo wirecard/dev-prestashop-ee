@@ -107,8 +107,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         } else {
             $response = $transactionService->processJsResponse($payload, $url);
         }
-
-        $this->processResponse($response, $order, $url);
+        $this->processResponse($response, $order);
     }
 
     /**
@@ -132,10 +131,10 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      * @param                                           $order
      * @param                                           $url
      */
-    private function processResponse($response, $order, $url)
+    private function processResponse($response, $order)
     {
         if ($response instanceof SuccessResponse) {
-            $this->saveOrder($order, $response, $url);
+            $this->saveOrder($order, $response);
         } elseif ($response instanceof FormInteractionResponse) {
             $this->createPostForm($response);
         } else {
@@ -220,9 +219,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      *
      * @param Order           $order
      * @param SuccessResponse $response
-     * @param string          $url
      */
-    private function saveOrder($order, $response, $url)
+    private function saveOrder($order, $response)
     {
         if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
             $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
@@ -232,6 +230,16 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
             $orderPayments[count($orderPayments) - 1]->save();
         }
+        $cartId = $order->id_cart;
+        $cart = new Cart((int)($cartId));
+        $customer = new Customer($cart->id_customer);
+        $params = [
+            'id_cart' => $cart->id,
+            'id_module' => $this->module->id,
+            'id_order' => $order->id,
+            'key' => $customer->secure_key
+        ];
+        $url = $this->context->link->getPageLink('order-confirmation', true, $order->id_lang, $params);
         Tools::redirect($url);
     }
 

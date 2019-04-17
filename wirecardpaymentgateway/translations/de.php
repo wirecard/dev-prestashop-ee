@@ -263,9 +263,9 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>ideal_cc58efdf2d5748696717291d583d
 $_MODULE['<{wirecardpaymentgateway}prestashop>invoice_c78f9b2a75c840335bea59dcad2e4925'] = 'Hiermit bestätige ich, dass ich die <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/">Datenschutzhinweise</a> und <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/">zusätzlichen Geschäftsbedingungen</a> für Wirecard-Zahlarten zur Kenntnis genommen habe und mit deren Geltung einverstanden bin.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>invoice_3471b47ae35836a5c315c049f13b211e'] = 'Sie müssen den Datenschutzhinweisen und zusätzlichen Geschäftsbedingungen für Wirecard-Zahlarten zustimmen.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>payment_infos_cf277798cf7aac4f868b64b537a9e821'] = 'If additional information implement here...';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_0b77ff82a817351cd708250ad5de8f93'] = 'Karteninformation eingeben';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_10aec35353f9c4096a71c38654c3d402'] = 'Abbrechen';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_ui_b02a45a596bfb86fe2578bde75ff5444'] = 'Bezahlen';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_form_0b77ff82a817351cd708250ad5de8f93'] = 'Karteninformation eingeben';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_form_10aec35353f9c4096a71c38654c3d402'] = 'Abbrechen';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_form_b02a45a596bfb86fe2578bde75ff5444'] = 'Bezahlen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_f8b13c2ea0fa8968dc0503b4ef5a3110'] = 'Verwenden Sie für die Überweisung die folgenden Daten:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_e9f40e1f1d1658681dad2dac4ae0971e'] = 'Betrag';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_45eaff517a0479ed43fd7dd8de339ec3'] = 'Provider Transaction Reference ID';
