@@ -173,15 +173,12 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
             'secret'
         );
         $config->add($expectedPaymentConfig);
-
-        $transaction = $payment->createTransaction($this->payment, $cart, $paymentType, $orderId);
-
-        $actual = $payment->processCreditCard($config, $transaction, $orderId, $paymentType);
+        $actual = $payment->processCreditCard($orderId, $paymentType, $cart);
         $expected = [
             'orderId' => '55555',
             'requestData' => [
-                'transaction_type' => 'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_PAYMENT_ACTION',
-                'merchant_account_id' => 'merchant_account_id',
+                'transaction_type' => 'reserve',
+                'merchant_account_id' => 'c6e9331c-5c1f-4fc6-8a08-ef65ce09ddb0',
                 'requested_amount' => 200,
                 'requested_amount_currency' => 'EUR',
                 'locale' => 'en',
@@ -208,7 +205,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
                 'ip_address' => '127.0.0.1'
             ],
             'paymentPageLoader' =>
-                'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_BASE_URL/engine/hpp/paymentPageLoader.js',
+                'https://api-test.wirecard.com/engine/hpp/paymentPageLoader.js',
             'actionUrl' => 'http://test.com'
         ];
 

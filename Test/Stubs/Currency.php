@@ -42,6 +42,7 @@ class Currency
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
         $this->id = 1;
+        $this->id_currency = 1;
         $this->name = 'Euro';
         $this->iso_code = 'EUR';
     }
@@ -49,8 +50,17 @@ class Currency
     public static function getCurrencies()
     {
         return array(
-            array('iso_code' => 'EUR', 'name' => 'Euro')
+            array('iso_code' => 'EUR', 'name' => 'Euro','id_currency' => 1)
         );
+    }
+
+    public static function getDefaultCurrency(){
+
+        $defaultCurrency = new stdClass();
+        $defaultCurrency->iso_code = 'EUR';
+        $defaultCurrency->name = 'Euro';
+        $defaultCurrency->id_currency = 1;
+        return $defaultCurrency;
     }
 
     public static function getTestCurrency()

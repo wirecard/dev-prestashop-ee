@@ -50,20 +50,15 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
     {
         $this->config = [
             'base_url',
-            'base_url',
             'http_user',
             'http_pass',
             'merchant_account_id',
             'secret',
-            'three_d_merchant_account_id',
+            '3secret',
             'three_d_merchant_account_id',
             'three_d_secret',
             50,
-            50,
-            50,
             150,
-            150,
-            150
         ];
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
@@ -94,8 +89,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     public function testCreatePaymentConfig()
     {
-        for ($i = 0; $i <= 13; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i + 1]);
+        for ($i = 0; $i <= 9; $i++) {
+            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
         }
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
@@ -151,21 +146,12 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $paymentType = 'creditcard';
         $orderId = '123456';
 
-        $config = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
-        $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
-        $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
-        $expectedPaymentConfig->addThreeDMinLimit(new \Wirecard\PaymentSdk\Entity\Amount(150, 'EUR'));
-        $config->add($expectedPaymentConfig);
-
-        $transaction = $payment->createTransaction($this->payment, $cart, $paymentType, $orderId);
-
-        $actual = $payment->processCreditCard($config, $transaction, $orderId, $paymentType);
+        $actual = $payment->processCreditCard($orderId, $paymentType, $cart);
         $expected = [
             'orderId' => '123456',
             'requestData' => [
                 'transaction_type' => 'reserve',
-                'merchant_account_id' => 'three_d_merchant_account_id',
+                'merchant_account_id' => '508b8896-b37d-4614-845c-26bf8bf2c948',
                 'requested_amount' => 200,
                 'requested_amount_currency' => 'EUR',
                 'locale' => 'en',

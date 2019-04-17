@@ -56,12 +56,13 @@ class Configuration
     public static function get($param)
     {
         switch ($param) {
+            case 'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_PAYMENT_ACTION':
             case 'WIRECARD_PAYMENT_GATEWAY_SEPA_PAYMENT_ACTION':
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_PAYMENT_ACTION':
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_PAYMENT_ACTION':
                 return 'reserve';
                 break;
-
+            case 'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_BASE_URL':
             case 'WIRECARD_PAYMENT_GATEWAY_SEPA_BASE_URL':
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL':
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_BASE_URL':
@@ -86,6 +87,11 @@ class Configuration
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_MERCHANT_ACCOUNT_ID':
                 return '53f2895a-e4de-4e82-a813-0d87a10e55e6';
                 break;
+            case 'WIRECARD_PAYMENT_GATEWAY_UNIONPAYINTERNATIONAL_MERCHANT_ACCOUNT_ID':
+                return 'c6e9331c-5c1f-4fc6-8a08-ef65ce09ddb0';
+            case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_THREE_D_MERCHANT_ACCOUNT_ID':
+                return '508b8896-b37d-4614-845c-26bf8bf2c948';
+            case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_THREE_D_SECRET':
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_SECRET':
             case 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_SECRET':
                 return 'dbc5a498-9a66-43b9-bf1d-a618dd399684';
@@ -118,6 +124,10 @@ class Configuration
                 break;
             case 'WIRECARD_OS_AUTHORIZATION':
                 return 0;
+            case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_SSL_MAX_LIMIT':
+                return 50;
+            case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_THREE_D_MIN_LIMIT':
+                return 150;
             default:
                 return $param;
         }

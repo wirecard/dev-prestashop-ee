@@ -237,7 +237,11 @@ class PaymentCreditCard extends Payment
 
         if (is_numeric($sslMaxLimit) && $sslMaxLimit >= 0) {
             foreach ($currencies as $currency) {
-                $convertedAmount = \Tools::convertPriceFull($sslMaxLimit, $defaultCurrency, new \Currency($currency['id_currency']));
+                $convertedAmount = \Tools::convertPriceFull(
+                    $sslMaxLimit,
+                    $defaultCurrency,
+                    new \Currency($currency['id_currency'])
+                );
                 $paymentConfig->addSslMaxLimit(
                     new Amount(
                         $convertedAmount,
@@ -245,13 +249,15 @@ class PaymentCreditCard extends Payment
                     )
                 );
             }
-
-
         }
         $threeDMinLimit = $paymentModule->getConfigValue($this->type, 'three_d_min_limit');
         if (is_numeric($threeDMinLimit) && $threeDMinLimit >= 0) {
             foreach ($currencies as $currency) {
-                $convertedAmount = \Tools::convertPriceFull($threeDMinLimit, $defaultCurrency, new \Currency($currency['id_currency']));
+                $convertedAmount = \Tools::convertPriceFull(
+                    $threeDMinLimit,
+                    $defaultCurrency,
+                    new \Currency($currency['id_currency'])
+                );
                 $paymentConfig->addThreeDMinLimit(
                     new Amount(
                         $convertedAmount,

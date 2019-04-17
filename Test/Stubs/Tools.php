@@ -109,4 +109,10 @@ class Tools
     {
         return file_get_contents($var);
     }
+
+    public static function convertPriceFull($amount, $currency_from = null, $currency_to = null)
+    {
+        return $amount;
+    }
+
 }
