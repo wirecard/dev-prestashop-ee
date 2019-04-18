@@ -20,7 +20,7 @@ matrix:
     if: env(PHRASEAPP_PULL) != '1' AND type != cron
 
   - stage: validator-test
-    if: type != cron
+    if: env(VALIDATOR_TEST) = '1'
     php: 7.1
     before_script:
       - pip install --user bs4
