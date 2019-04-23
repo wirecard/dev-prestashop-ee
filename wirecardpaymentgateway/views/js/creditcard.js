@@ -139,76 +139,47 @@ $(document).ready(
             console.error(response);
         }
 
+        function successHandler(response, form)
+        {
+            for (var field in response) {
+                if (!response.hasOwnProperty(field)) {
+                    return
+                }
+
+                var value = response[field];
+
+                jQuery("<input>")
+                    .attr({
+                        type: 'hidden',
+                        value: value,
+                        name: field
+                    })
+                    .appendTo(form)
+            }
+
+            jQuery("<input>")
+                .attr({
+                    type: 'hidden',
+                    value: true,
+                    name: 'jsresponse'
+                })
+                .appendTo(form)
+
+            if ($("#wirecard-ccvault-modal").is(':visible')) {
+                $("#payment-processing-gateway-credit-card-form").empty();
+                $("#wirecard-store-card").parent().hide();
+                $("#wirecard-ccvault-modal").modal('hide');
+                $("#stored-card").addClass('invisible');
+                $("#new-card-text").removeClass('invisible');
+                $("#new-card").removeClass('invisible');
+            }
+
+            form.submit();
+        }
+
         function formSubmitSuccessHandler(response)
         {
             token = response.token_id;
-            if (response.hasOwnProperty('card_token') && response.card_token.hasOwnProperty('token')) {
-                token = response.card_token.token;
-
-                var fields = [ 'expiration_month', 'expiration_year' ];
-                for (var el in  fields) {
-                    el = fields[el];
-                    var element = $("#" + el);
-                    if (element.length > 0) {
-                        element.remove();
-                    } else {
-                        jQuery('<input>').attr(
-                            {
-                                type: 'hidden',
-                                name: el,
-                                id: '#' + el,
-                                value: response.card[el]
-                            }
-                        ).appendTo(form);
-                    }
-                }
-            }
-
-            var fields = [];
-            if (response.hasOwnProperty('last_name')) {
-                fields.push("last_name");
-
-                if (response.hasOwnProperty('first_name')) {
-                    fields.push("first_name");
-                }
-            }
-            for (var el in  fields) {
-                el = fields[el];
-                var element = $("#" + el);
-                if (element.length > 0) {
-                    element.remove();
-                } else {
-                    jQuery('<input>').attr(
-                        {
-                            type: 'hidden',
-                            name: el,
-                            id: '#' + el,
-                            value: response[el]
-                        }
-                    ).appendTo(form);
-                }
-            }
-
-            var successHandler = function (token, form) {
-                $('<input>').attr(
-                    {
-                        type: 'hidden',
-                        name: 'tokenId',
-                        id: 'tokenId',
-                        value: token
-                    }
-                ).appendTo(form);
-                if ($("#wirecard-ccvault-modal").is(':visible')) {
-                    $("#payment-processing-gateway-credit-card-form").empty();
-                    $("#wirecard-store-card").parent().hide();
-                    $("#wirecard-ccvault-modal").modal('hide');
-                    $("#stored-card").addClass('invisible');
-                    $("#new-card-text").removeClass('invisible');
-                    $("#new-card").removeClass('invisible');
-                } else {
-                    form.submit();
-                }
-            };
 
             if (response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
                 var params = [{
@@ -224,10 +195,10 @@ $(document).ready(
                 $.ajax({
                     url: processAjaxUrl(ccVaultURL, params),
                     type: "GET",
-                    success: successHandler(token, form)
+                    success: successHandler(response, form)
                 });
             } else {
-                successHandler(token, form);
+                successHandler(response, form);
             }
         }
 

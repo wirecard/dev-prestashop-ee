@@ -39,6 +39,7 @@ use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
+use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
  * Class PaymentCreditCard
@@ -233,7 +234,7 @@ class PaymentCreditCard extends Payment
             $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
             $paymentConfig->addSslMaxLimit(
                 new Amount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
+                    (float)$paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
                     'EUR'
                 )
             );
@@ -243,7 +244,7 @@ class PaymentCreditCard extends Payment
             $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
             $paymentConfig->addThreeDMinLimit(
                 new Amount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
+                    (float)$paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
                     'EUR'
                 )
             );
@@ -265,12 +266,17 @@ class PaymentCreditCard extends Payment
     public function getRequestData($module, $context)
     {
         $baseUrl = $module->getConfigValue($this->type, 'base_url');
+        $paymentAction = $module->getConfigValue($this->type, 'payment_action');
+        $operation = $this->getOperationForPaymentAction($paymentAction);
         $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
-        $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
 
-        return $transactionService->getDataForCreditCardUi($languageCode, new Amount(0, $currencyCode));
+        $transactionBuilder = new TransactionBuilder($module, $context, $context->cart, $this->type);
+        $transactionBuilder->createOrder();
+        $transaction = $transactionBuilder->buildTransaction();
+
+        return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
     }
 
     /**
@@ -285,18 +291,10 @@ class PaymentCreditCard extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
+        $config = $this->createPaymentConfig($module);
+
         $transaction = new CreditCardTransaction();
-
-        if (isset($values['expiration_year']) && isset($values['expiration_month'])) {
-            $card = new Card();
-
-            $expirationYear = (int) $values['expiration_year'];
-            $expirationMonth = (int) $values['expiration_month'];
-
-            $card->setExpirationYear($expirationYear);
-            $card->setExpirationMonth($expirationMonth);
-            $transaction->setCard($card);
-        }
+        $transaction->setConfig($config->get(CreditCardTransaction::NAME));
 
         return $transaction;
     }
