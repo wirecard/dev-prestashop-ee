@@ -38,9 +38,9 @@
 </script>
 <div style="display: flex; justify-content: center; font-size: 20px;">{lFallback s='redirect_text' mod='wirecardpaymentgateway'}<span id="wait" style="font-size: 20px; width: 50px;">.</span></div>
 
-<form id="credit_card_form" method="{$method|escape:'htmlall':'UTF-8'}" action="{$url}">
+<form id="credit_card_form" method="{$method}" action="{$url|unescape:"htmlall"}">
     {foreach from=$form_fields key=key item=value}
-        <input type="hidden" name="{$key|escape:'htmlall':'UTF-8'}" value="{$value|escape:'htmlall':'UTF-8'}">
+        <input type="hidden" name="{$key|unescape:"htmlall"}" value="{$value|unescape:"htmlall"}">
     {/foreach}
 </form>
 <script>document.getElementsByTagName("form")[0].submit();</script>

@@ -66,6 +66,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     public function postProcess()
     {
         $cart = $this->context->cart;
+
         if ($cart->id_customer == 0
             || $cart->id_address_delivery == 0
             || $cart->id_address_invoice == 0
@@ -81,15 +82,16 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $config = $payment->createPaymentConfig($this->module);
 
         $transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart, $paymentType);
-        $existingOrderId = Order::getIdByCartId((int)($cart->id));
+        $existingOrderId = \Tools::getValue('order_number');
 
         $isSeamlessTransaction = \Tools::getValue('jsresponse');
         if ($isSeamlessTransaction) {
+            $cart = \Cart::getCartByOrderId($existingOrderId);
             return $this->executeSeamlessTransaction($_POST, $config, $cart, $existingOrderId);
         }
 
         $orderId = $transactionBuilder->createOrder();
-        $transaction = $transactionBuilder->buildTransaction($orderId);
+        $transaction = $transactionBuilder->buildTransaction();
         return $this->executeTransaction($transaction, $config, $operation, $orderId);
     }
 
@@ -120,16 +122,33 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $paymentType = \Tools::getValue('paymentType');
         $redirectUrl =  $this->module->createRedirectUrl($cart->id, $paymentType, 'success');
         $transactionService = new TransactionService($config, new WirecardLogger());
-        $response = $transactionService->processJsResponse($data, $redirectUrl);
+
+        try {
+            $response = $transactionService->processJsResponse($data, $redirectUrl);
+        } catch (Exception $exception) {
+            $this->errors = $exception->getMessage();
+            $this->processFailure($orderId);
+        }
 
         $this->handleTransactionResponse($response, $orderId);
     }
 
     private function handleTransactionResponse($response, $orderId) {
         if ($response instanceof SuccessResponse) {
-            echo "TESTING";
-            print_r($response);
-            die();
+            $order = new Order($orderId);
+            $cart = Cart::getCartByOrderId($orderId);
+
+            if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
+                $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+            }
+
+            $customer = new Customer($cart->id_customer);
+
+            Tools::redirect('index.php?controller=order-confirmation&id_cart='
+                .$cart->id.'&id_module='
+                .$this->module->id.'&id_order='
+                .$order->id.'&key='
+                .$customer->secure_key);
         } elseif ($response instanceof InteractionResponse) {
             $redirect = $response->getRedirectUrl();
             Tools::redirect($redirect);
@@ -177,7 +196,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     }
 
     /**
-     * Handle successful order
+     * Recover failed order
      *
      * @param $orderId
      * @since 1.0.0
@@ -185,27 +204,25 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     private function processFailure($orderId)
     {
         $order = new Order($orderId);
-        if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-            $order->setCurrentState();
-            $params = array(
-                'submitReorder' => true,
-                'id_order' => (int)$orderId
-            );
-            $this->redirectWithNotifications(
-                $this->context->link->getPageLink('order', true, $order->id_lang, $params)
-            );
+
+        if ($order->getCurrentState() == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $order->setCurrentState(_PS_OS_ERROR_);
         }
+
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
     }
 
     /**
-     * Recover failed order
+     * Handle successful order
      *
      * @param $orderId
      * @since 1.0.0
      */
     private function processSuccess($orderId)
     {
+        $params = array();
         $order = new Order($orderId);
+
         $this->redirectWithNotifications(
             $this->context->link->getPageLink('order', true, $order->id_lang, $params)
         );

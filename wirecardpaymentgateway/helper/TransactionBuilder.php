@@ -46,12 +46,13 @@ class TransactionBuilder {
 
         $payment = $this->module->getPaymentFromType($this->paymentType);
         $cartId = $this->cart->id;
+
         $amount = round($this->cart->getOrderTotal(), 2);
         $currency = new \Currency($this->cart->id_currency);
         $redirectUrls = new Redirect(
-            $this->module->createRedirectUrl($cartId, $this->paymentType, 'success'),
-            $this->module->createRedirectUrl($cartId, $this->paymentType, 'cancel'),
-            $this->module->createRedirectUrl($cartId, $this->paymentType, 'failure')
+            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'success'),
+            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'cancel'),
+            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'failure')
         );
 
         /** @var Transaction $transaction */
@@ -63,7 +64,6 @@ class TransactionBuilder {
         $customFields = new CustomFieldCollection();
         $customFields->add(new CustomField('orderId', $this->orderId));
         $transaction->setCustomFields($customFields);
-
 
         if ($this->module->getConfigValue($this->paymentType, 'shopping_basket')) {
             $transaction->setBasket($this->additionalInformation->createBasket($this->cart, $transaction, $currency->iso_code));
@@ -117,9 +117,5 @@ class TransactionBuilder {
         $this->orderId = $order->id;
 
         return $order->id;
-    }
-
-    public function setOrder($orderId) {
-        $this->orderId = $orderId;
     }
 }

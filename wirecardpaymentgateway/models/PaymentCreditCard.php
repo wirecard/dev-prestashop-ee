@@ -273,7 +273,7 @@ class PaymentCreditCard extends Payment
         $transactionService = new TransactionService($config);
 
         $transactionBuilder = new TransactionBuilder($module, $context, $context->cart, $this->type);
-        $transactionBuilder->createOrder();
+        $orderId = $transactionBuilder->createOrder();
         $transaction = $transactionBuilder->buildTransaction();
 
         return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
@@ -311,7 +311,7 @@ class PaymentCreditCard extends Payment
         $transaction = new CreditCardTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
         $transaction->setParentTransactionType($transactionData->transaction_type);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
@@ -339,7 +339,7 @@ class PaymentCreditCard extends Payment
     {
         $transaction = new CreditCardTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }

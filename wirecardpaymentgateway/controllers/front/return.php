@@ -60,7 +60,9 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $response = $_REQUEST;
         $paymentType = Tools::getValue('payment_type');
         $paymentState = Tools::getValue('payment_state');
-        $cartId = Tools::getValue('id_cart');
+        $orderId = Tools::getValue('id_order');
+        $cartId = Cart::getCartIdByOrderId($orderId);
+
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
         if ($paymentState == 'success') {
@@ -68,7 +70,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                 $transactionService = new TransactionService($config, new WirecardLogger());
                 $result = $transactionService->handleResponse($response);
                 if ($result instanceof SuccessResponse) {
-                    $this->processSuccess($result, $cartId);
+                    $this->processSuccess($result, $cartId, $orderId);
                 } elseif ($result instanceof FailureResponse) {
                     $errors = "";
                     foreach ($result->getStatusCollection()->getIterator() as $item) {
@@ -88,7 +90,6 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                 $this->redirectWithNotifications($this->context->link->getPageLink('order'));
             }
         } else {
-            $orderId = Order::getIdByCartId((int)$cartId);
             $order = new Order($orderId);
             if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $order->setCurrentState(_PS_OS_ERROR_);
@@ -115,14 +116,13 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
      * @param string $cartId
      * @since 1.0.0
      */
-    public function processSuccess($response, $cartId)
+    public function processSuccess($response, $cartId, $orderId)
     {
         sleep(1);
-        $orderId = Order::getOrderByCartId((int)($cartId));
-        $order = new Order($orderId);
-        $cartId = $order->id_cart;
+
         $cart = new Cart((int)($cartId));
         $customer = new Customer($cart->id_customer);
+        $order = new Order($orderId);
 
         if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
             $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
@@ -149,7 +149,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         Tools::redirect('index.php?controller=order-confirmation&id_cart='
             .$cart->id.'&id_module='
             .$this->module->id.'&id_order='
-            .$this->module->currentOrder.'&key='
+            .$order->id.'&key='
             .$customer->secure_key);
     }
 

@@ -30,6 +30,7 @@
 
 var token = null;
 var form = null;
+var orderNumber = null;
 
 function processAjaxUrl(url, params)
 {
@@ -106,6 +107,7 @@ $(document).ready(
                 index: 'action',
                 data: 'getcreditcardconfig'
             }];
+
             $.ajax({
                 url: processAjaxUrl(configProviderURL, params),
                 type: "GET",
@@ -121,6 +123,9 @@ $(document).ready(
 
         function renderForm(config)
         {
+            // This is always the order id
+            orderNumber = config.field_value_1;
+
             WirecardPaymentPage.seamlessRenderForm({
                 requestData: config,
                 wrappingDivId: "payment-processing-gateway-credit-card-form",
@@ -137,9 +142,11 @@ $(document).ready(
         function logCallback(response)
         {
             console.error(response);
+            jQuery(document).off("submit", "#payment-form");
+            formHandler(response, form);
         }
 
-        function successHandler(response, form)
+        function formHandler(response, form)
         {
             for (var field in response) {
                 if (!response.hasOwnProperty(field)) {
@@ -162,6 +169,14 @@ $(document).ready(
                     type: 'hidden',
                     value: true,
                     name: 'jsresponse'
+                })
+                .appendTo(form)
+
+            jQuery("<input>")
+                .attr({
+                    type: 'hidden',
+                    value: orderNumber,
+                    name: 'order_number'
                 })
                 .appendTo(form)
 
@@ -195,10 +210,10 @@ $(document).ready(
                 $.ajax({
                     url: processAjaxUrl(ccVaultURL, params),
                     type: "GET",
-                    success: successHandler(response, form)
+                    success: formHandler(response, form)
                 });
             } else {
-                successHandler(response, form);
+                formHandler(response, form);
             }
         }
 
