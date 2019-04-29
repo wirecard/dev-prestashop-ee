@@ -65,7 +65,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function postProcess()
     {
-        $cart = $this->context->cart;
+        $existingOrderId = \Tools::getValue('order_number');
+        $cart = $existingOrderId
+            ? \Cart::getCartByOrderId($existingOrderId)
+            : $this->context->cart;
 
         if ($cart->id_customer == 0
             || $cart->id_address_delivery == 0
@@ -81,8 +84,16 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $operation = $this->module->getConfigValue($paymentType, 'payment_action');
         $config = $payment->createPaymentConfig($this->module);
 
-        $transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart, $paymentType);
-        $existingOrderId = \Tools::getValue('order_number');
+        $transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
+
+        if ($existingOrderId) {
+            $orderId = $existingOrderId;
+            $transactionBuilder->setOrderId($orderId);
+        } else {
+            $orderId = $transactionBuilder->createOrder();
+        }
+
+        $transaction = $transactionBuilder->buildTransaction();
 
         $isSeamlessTransaction = \Tools::getValue('jsresponse');
         if ($isSeamlessTransaction) {
@@ -90,8 +101,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             return $this->executeSeamlessTransaction($_POST, $config, $cart, $existingOrderId);
         }
 
-        $orderId = $transactionBuilder->createOrder();
-        $transaction = $transactionBuilder->buildTransaction();
+        $transactionBuilder->setOrderId($orderId);
         return $this->executeTransaction($transaction, $config, $operation, $orderId);
     }
 
@@ -166,6 +176,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $this->errors = $errors;
             $this->processFailure($orderId);
         }
+
+        var_dump("GOT TO HERE, BUT WHY");
+        die();
 
         $this->errors = 'An error occured during the checkout process. Please try again.';
         $this->processFailure($orderId);

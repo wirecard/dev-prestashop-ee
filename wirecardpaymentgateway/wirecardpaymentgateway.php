@@ -368,8 +368,11 @@ class WirecardPaymentGateway extends PaymentModule
                 $this->createRatepayScript($paymentMethod);
             }
             $payment = new PaymentOption();
-            $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
+            $payment
+                ->setModuleName('wd-' . $paymentMethod->getType())
+                ->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
+
             if ($paymentMethod->getTemplateData()) {
                 $this->context->smarty->assign($paymentMethod->getTemplateData());
             }
@@ -490,7 +493,6 @@ class WirecardPaymentGateway extends PaymentModule
             'return',
             array(
                 'id_order' => $orderId,
-                // 'id_cart' => $cartId,
                 'payment_type' => $paymentType,
                 'payment_state' => $paymentState,
             )
@@ -940,7 +942,8 @@ class WirecardPaymentGateway extends PaymentModule
                     array(
                         'configProviderURL' => $ajaxLink,
                         'ccVaultURL' => $ccVaultLink,
-                        'ajaxsepaurl' => $ajaxSepaUrl
+                        'ajaxsepaurl' => $ajaxSepaUrl,
+                        'cartId' => $this->context->cart->id,
                     )
                 );
                 $this->context->controller->addJS(

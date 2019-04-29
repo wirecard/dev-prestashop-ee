@@ -260,10 +260,12 @@ class PaymentCreditCard extends Payment
      *
      * @param \WirecardPaymentGateway $module
      * @param \Context $context
+     * @param int $cartId
      * @return mixed
+     * @throws \Exception
      * @since 1.0.0
      */
-    public function getRequestData($module, $context)
+    public function getRequestData($module, $context, $cartId)
     {
         $baseUrl = $module->getConfigValue($this->type, 'base_url');
         $paymentAction = $module->getConfigValue($this->type, 'payment_action');
@@ -272,8 +274,13 @@ class PaymentCreditCard extends Payment
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
 
-        $transactionBuilder = new TransactionBuilder($module, $context, $context->cart, $this->type);
-        $orderId = $transactionBuilder->createOrder();
+        $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
+
+        $orderId = \Order::getIdByCartId($cartId)
+            ? \Order::getIdByCartId($cartId)
+            : $transactionBuilder->createOrder();
+
+        $transactionBuilder->setOrderId($orderId);
         $transaction = $transactionBuilder->buildTransaction();
 
         return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);

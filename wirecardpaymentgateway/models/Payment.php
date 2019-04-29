@@ -379,7 +379,11 @@ class Payment
     }
 
     public function getOperationForPaymentAction($action) {
-        return self::OPERATION_MAP[$action];
+        if (key_exists($action, self::OPERATION_MAP)) {
+            return self::OPERATION_MAP[$action];
+        }
+
+        return $action;
     }
 
     /**

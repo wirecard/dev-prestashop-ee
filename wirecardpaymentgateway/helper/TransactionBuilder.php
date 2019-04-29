@@ -6,6 +6,7 @@ use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 
 class TransactionBuilder {
     /** @var \WirecardPaymentGateway */
@@ -26,10 +27,17 @@ class TransactionBuilder {
     /** @var AdditionalInformation */
     private $additionalInformation;
 
-    public function __construct($module, $context, $cart, $paymentType) {
+    /**
+     * TransactionBuilder constructor.
+     * @param $module
+     * @param $context
+     * @param $cartId
+     * @param $paymentType
+     */
+    public function __construct($module, $context, $cartId, $paymentType) {
         $this->module = $module;
         $this->context = $context;
-        $this->cart = $cart;
+        $this->cart = new \Cart((int) $cartId);
         $this->paymentType = $paymentType;
 
         $this->additionalInformation = new AdditionalInformation();
@@ -49,6 +57,7 @@ class TransactionBuilder {
 
         $amount = round($this->cart->getOrderTotal(), 2);
         $currency = new \Currency($this->cart->id_currency);
+
         $redirectUrls = new Redirect(
             $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'success'),
             $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'cancel'),
@@ -64,6 +73,11 @@ class TransactionBuilder {
         $customFields = new CustomFieldCollection();
         $customFields->add(new CustomField('orderId', $this->orderId));
         $transaction->setCustomFields($customFields);
+
+
+        if (\Tools::getValue('token_id')) {
+            $transaction->setTokenId(\Tools::getValue('token_id'));
+        }
 
         if ($this->module->getConfigValue($this->paymentType, 'shopping_basket')) {
             $transaction->setBasket($this->additionalInformation->createBasket($this->cart, $transaction, $currency->iso_code));
@@ -96,6 +110,13 @@ class TransactionBuilder {
         }
 
         return $transaction;
+    }
+
+    /**
+     * @param $orderId
+     */
+    public function setOrderId($orderId) {
+        $this->orderId = $orderId;
     }
 
     /**

@@ -38,7 +38,7 @@ use Wirecard\PaymentSdk\Transaction\UpiTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
  * Class PaymentUnionPayInternational
@@ -62,7 +62,6 @@ class PaymentUnionPayInternational extends Payment
         $this->name = 'Wirecard UnionPay International';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type);
-        $this->setLoadJs(true);
 
         $this->cancel  = array('authorization');
         $this->capture = array('authorization');
@@ -201,18 +200,29 @@ class PaymentUnionPayInternational extends Payment
      *
      * @param \WirecardPaymentGateway $module
      * @param \Context $context
+     * @param int $cartId
      * @return mixed
+     * @throws \Exception
      * @since 1.0.0
      */
-    public function getRequestData($module, $context)
+    public function getRequestData($module, $context, $cartId)
     {
         $baseUrl = $module->getConfigValue($this->type, 'base_url');
+        $paymentAction = $module->getConfigValue($this->type, 'payment_action');
+        $operation = $this->getOperationForPaymentAction($paymentAction);
         $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
-        $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
 
-        return $transactionService->getDataForUpiUi($languageCode, new Amount(0, $currencyCode));
+        $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
+        $orderId = \Order::getIdByCartId($cartId)
+            ? \Order::getIdByCartId($cartId)
+            : $transactionBuilder->createOrder();
+
+        $transactionBuilder->setOrderId($orderId);
+        $transaction = $transactionBuilder->buildTransaction();
+
+        return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
     }
 
     /**
@@ -228,8 +238,6 @@ class PaymentUnionPayInternational extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new UpiTransaction();
-
-        $transaction->setTokenId($values['tokenId']);
         $transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success'));
 
         return $transaction;
