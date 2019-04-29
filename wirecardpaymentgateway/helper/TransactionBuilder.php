@@ -8,7 +8,8 @@ use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 
-class TransactionBuilder {
+class TransactionBuilder
+{
     /** @var \WirecardPaymentGateway */
     private $module;
 
@@ -33,8 +34,10 @@ class TransactionBuilder {
      * @param $context
      * @param $cartId
      * @param $paymentType
+     * @since 1.4.0
      */
-    public function __construct($module, $context, $cartId, $paymentType) {
+    public function __construct($module, $context, $cartId, $paymentType)
+    {
         $this->module = $module;
         $this->context = $context;
         $this->cart = new \Cart((int) $cartId);
@@ -44,10 +47,14 @@ class TransactionBuilder {
     }
 
     /**
+     * Constructs the requested transaction for the payment type
+     *
      * @return \Wirecard\PaymentSdk\Transaction\Transaction
      * @throws \Exception
+     * @since 1.4.0
      */
-    public function buildTransaction() {
+    public function buildTransaction()
+    {
         if (!isset($this->orderId)) {
             throw new \Exception("An order needs to be created before building a transaction");
         }
@@ -80,7 +87,13 @@ class TransactionBuilder {
         }
 
         if ($this->module->getConfigValue($this->paymentType, 'shopping_basket')) {
-            $transaction->setBasket($this->additionalInformation->createBasket($this->cart, $transaction, $currency->iso_code));
+            $transaction->setBasket(
+                $this->additionalInformation->createBasket(
+                    $this->cart,
+                    $transaction,
+                    $currency->iso_code
+                )
+            );
         }
 
         if ($this->module->getConfigValue($this->paymentType, 'descriptor')) {
@@ -113,14 +126,18 @@ class TransactionBuilder {
     }
 
     /**
+     * Allows setting the order ID in case a pre-existing order is available.
+     *
      * @param $orderId
+     * @since 1.4.0
      */
-    public function setOrderId($orderId) {
+    public function setOrderId($orderId)
+    {
         $this->orderId = $orderId;
     }
 
     /**
-     * Create order
+     * Create order and set internal order ID.
      *
      * @return int
      * @since 1.4.0

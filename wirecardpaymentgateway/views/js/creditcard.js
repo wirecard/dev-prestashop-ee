@@ -53,7 +53,7 @@ function processAjaxUrl(url, params)
 
 $(document).ready(
     function () {
-        $(document).on('click', 'input[name="payment-option"]', function() {
+        $(document).on('click', 'input[name="payment-option"]', function () {
             paymentMethod = $(this).data('module-name').replace('wd-', '');
             wrappingDiv = 'payment-processing-gateway-' + paymentNameMap[paymentMethod] + '-form';
 
@@ -116,11 +116,11 @@ $(document).ready(
                 {
                     index: 'action',
                     data: 'get' + paymentMethod + 'config'
-                },
+            },
                 {
                     index: 'id_cart',
                     data: cartId
-                }
+            }
             ];
 
             $.ajax({

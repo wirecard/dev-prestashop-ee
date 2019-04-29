@@ -152,7 +152,7 @@ class AdditionalInformation
         }
 
         $transaction->setShipping($this->createAccountHolder($cart, 'shipping'));
-        $transaction->setOrderNumber("RBR-PRST-2019-04-29-" . $id);
+        $transaction->setOrderNumber($id);
         $transaction->setBasket($this->createBasket($cart, $transaction, $currency));
         $transaction->setIpAddress($this->getConsumerIpAddress());
         $transaction->setConsumerId($cart->id_customer);
@@ -163,7 +163,7 @@ class AdditionalInformation
     /**
      * Create accountholder for shipping or billing
      *
-     * @param Cart $cart
+     * @param \Cart $cart
      * @param string $type
      * @return AccountHolder
      * @since 1.0.0
@@ -196,7 +196,7 @@ class AdditionalInformation
     /**
      * Create accountholder for creditcard transaction
      *
-     * @param Cart $cart
+     * @param \Cart $cart
      * @param string $firstName
      * @param string $lastName
      * @return AccountHolder
@@ -226,7 +226,7 @@ class AdditionalInformation
     /**
      * Create addressdata for shipping or billing
      *
-     * @param PrestaShop\Address $source
+     * @param \Address $source
      * @param string $type
      * @return Address
      * @since 1.0.0
@@ -280,7 +280,7 @@ class AdditionalInformation
     /**
      * Sanitizes the state before conversion.
      *
-     * @param Prestashop\Country $country
+     * @param \Country $country
      * @param string $state
      * @return string
      * @since 1.2.0

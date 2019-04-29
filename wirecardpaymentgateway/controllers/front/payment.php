@@ -128,7 +128,17 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->handleTransactionResponse($response, $orderId);
     }
 
-    public function executeSeamlessTransaction($data, $config, $cart, $orderId) {
+    /**
+     * Execute a seamless form transaction
+     *
+     * @param $data
+     * @param $config
+     * @param $cart
+     * @param $orderId
+     * @since 1.0.0
+     */
+    public function executeSeamlessTransaction($data, $config, $cart, $orderId)
+    {
         $paymentType = \Tools::getValue('paymentType');
         $redirectUrl =  $this->module->createRedirectUrl($cart->id, $paymentType, 'success');
         $transactionService = new TransactionService($config, new WirecardLogger());
@@ -143,7 +153,15 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->handleTransactionResponse($response, $orderId);
     }
 
-    private function handleTransactionResponse($response, $orderId) {
+    /**
+     * Handle the response of the transaction appropriately.
+     *
+     * @param $response
+     * @param $orderId
+     * @since 1.4.0
+     */
+    private function handleTransactionResponse($response, $orderId)
+    {
         if ($response instanceof SuccessResponse) {
             $order = new Order($orderId);
             $cart = Cart::getCartByOrderId($orderId);
@@ -176,9 +194,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $this->errors = $errors;
             $this->processFailure($orderId);
         }
-
-        var_dump("GOT TO HERE, BUT WHY");
-        die();
 
         $this->errors = 'An error occured during the checkout process. Please try again.';
         $this->processFailure($orderId);
@@ -223,21 +238,5 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         }
 
         $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-    }
-
-    /**
-     * Handle successful order
-     *
-     * @param $orderId
-     * @since 1.0.0
-     */
-    private function processSuccess($orderId)
-    {
-        $params = array();
-        $order = new Order($orderId);
-
-        $this->redirectWithNotifications(
-            $this->context->link->getPageLink('order', true, $order->id_lang, $params)
-        );
     }
 }
