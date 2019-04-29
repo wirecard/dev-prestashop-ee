@@ -52,6 +52,11 @@ class Cart
         }
     }
 
+
+    public static function getCartByOrderId($id) {
+        return new self(12345);
+    }
+
     public function getProducts()
     {
         return $this->products;

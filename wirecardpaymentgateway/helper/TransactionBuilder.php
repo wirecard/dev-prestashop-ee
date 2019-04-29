@@ -6,6 +6,7 @@ use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 
 class TransactionBuilder
@@ -82,7 +83,7 @@ class TransactionBuilder
         $transaction->setCustomFields($customFields);
 
 
-        if (\Tools::getValue('token_id')) {
+        if (\Tools::getValue('token_id') && $transaction instanceof CreditCardTransaction) {
             $transaction->setTokenId(\Tools::getValue('token_id'));
         }
 

@@ -91,4 +91,8 @@ class PaymentModule extends Module
     {
         return new Translator();
     }
+
+    public function getConfigValue($name, $field) {
+        return $field;
+    }
 }
