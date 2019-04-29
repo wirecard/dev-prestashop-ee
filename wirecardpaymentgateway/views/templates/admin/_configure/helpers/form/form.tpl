@@ -50,7 +50,8 @@
                         'alipay-xborder':'{lFallback s='alipay_crossborder' mod='wirecardpaymentgateway'}',
                         p24:'{lFallback s='ptwentyfour' mod='wirecardpaymentgateway'}',
                         masterpass:'{lFallback s='masterpass' mod='wirecardpaymentgateway'}',
-                        unionpayinternational:'{lFallback s='upi' mod='wirecardpaymentgateway'}'
+                        unionpayinternational:'{lFallback s='upi' mod='wirecardpaymentgateway'}',
+                        wechat:'{lFallback s='wechat' mod='wirecardpaymentgateway'}'
                     };
                     $("a[data-toggle=tab]").each(function() {
                         $(this).html(translate[$(this).html().toLowerCase()]);

@@ -46,6 +46,7 @@ use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
+use WirecardEE\Prestashop\Models\PaymentWeChat;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 define('IS_CORE', false);
@@ -473,6 +474,9 @@ class WirecardPaymentGateway extends PaymentModule
         if ('sofortbanking' == $name) {
             $name = 'Sofort';
         }
+        if ('wechat-qrpay' == $name) {
+            $name = 'WeChat';
+        }
         return Configuration::get($this->buildParamName($name, $field));
     }
 
@@ -606,7 +610,8 @@ class WirecardPaymentGateway extends PaymentModule
             'poipia' => new PaymentPoiPia($this),
             'masterpass' => new PaymentMasterpass($this),
             'unionpayinternational' => new PaymentUnionPayInternational($this),
-            'alipay-xborder' => new PaymentAlipayCrossborder($this)
+            'alipay-xborder' => new PaymentAlipayCrossborder($this),
+            'wechat-qrpay' => new PaymentWeChat($this)
         );
 
         return $payments;
@@ -620,13 +625,35 @@ class WirecardPaymentGateway extends PaymentModule
     private function postProcess()
     {
         if (Tools::isSubmit('btnSubmit')) {
-            foreach ($this->getAllConfigurationParameters() as $parameter) {
-                $val = Tools::getValue($parameter['param_name']);
+            $configuration = [];
+            $requiredFieldMissing = false;
 
-                if (is_array($val)) {
-                    $val = Tools::jsonEncode($val);
+            // iterate over parameters, get values, detect if any required fields were left empty
+            foreach ($this->getAllConfigurationParameters() as $parameter) {
+                $value = Tools::getValue($parameter['param_name']);
+
+                if (isset($parameter['required']) && $parameter['required'] === true && empty($value)) {
+                    $this->html .= $this->displayError(
+                        sprintf($this->l('settings_error_required_field_missing'), $parameter['label'])
+                    );
+                    $requiredFieldMissing = true;
                 }
-                Configuration::updateValue($parameter['param_name'], $val);
+
+                if (is_array($value)) {
+                    $value = Tools::jsonEncode($value);
+                }
+
+                $configuration += [$parameter['param_name'] => $value];
+            }
+
+            // bail without saving on missing required fields
+            if ($requiredFieldMissing) {
+                return;
+            }
+
+            // save configuration
+            foreach ($configuration as $parameter => $value) {
+                Configuration::updateValue($parameter, $value);
             }
         }
         $this->html .= $this->displayConfirmation($this->l('settings_updated'));

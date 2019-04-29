@@ -70,7 +70,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 ||
             !$this->module->active
         ) {
-            $this->errors = 'An error occured during the checkout process. Please try again.';
+            $this->errors = 'An error occurred during the checkout process. Please try again.';
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
