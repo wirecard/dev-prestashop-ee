@@ -64,6 +64,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
+        $this->transactionData->transaction_type = 'authorization';
         $this->transactionData->amount = 20;
         $this->transactionData->currency = 'EUR';
         $this->transactionData->cart_id = new stdClass();
@@ -129,6 +130,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         $actual = new \Wirecard\PaymentSdk\Transaction\UpiTransaction();
         $actual->setParentTransactionId('my_secret_id');
         $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
+        $actual->setParentTransactionType('authorization');
 
         $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
     }

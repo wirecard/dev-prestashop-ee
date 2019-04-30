@@ -84,7 +84,12 @@ class TransactionBuilder
         $payment = $this->module->getPaymentFromType($this->paymentType);
 
         /** @var Transaction $transaction */
-        $this->transaction = $payment->createTransaction($this->module, $this->cart, \Tools::getAllValues(), $this->orderId);
+        $this->transaction = $payment->createTransaction(
+            $this->module,
+            $this->cart,
+            \Tools::getAllValues(),
+            $this->orderId
+        );
 
         $this->addAmount();
         $this->addRedirects();
@@ -102,7 +107,8 @@ class TransactionBuilder
      *
      * @since 1.4.0
      */
-    private function addAmount() {
+    private function addAmount()
+    {
         $amount = round($this->cart->getOrderTotal(), 2);
         $this->transaction->setAmount(new Amount((float)$amount, $this->currency->iso_code));
     }
@@ -112,7 +118,8 @@ class TransactionBuilder
      *
      * @since 1.4.0
      */
-    private function addRedirects() {
+    private function addRedirects()
+    {
         $cartId = $this->cart->id;
 
         $redirectUrls = new Redirect(
@@ -132,7 +139,8 @@ class TransactionBuilder
      * @param $value
      * @since 1.4.0
      */
-    private function addCustomField($key, $value) {
+    private function addCustomField($key, $value)
+    {
         $this->customFields->add(new CustomField($key, $value));
         $this->transaction->setCustomFields($this->customFields);
     }
@@ -142,8 +150,9 @@ class TransactionBuilder
      *
      * @since 1.4.0
      */
-    private function addTokenId() {
-        if ( $this->transaction instanceof CreditCardTransaction && \Tools::getValue('token_id')) {
+    private function addTokenId()
+    {
+        if ($this->transaction instanceof CreditCardTransaction && \Tools::getValue('token_id')) {
             $this->transaction->setTokenId(\Tools::getValue('token_id'));
         }
     }
@@ -153,7 +162,8 @@ class TransactionBuilder
      *
      * @since 1.4.0
      */
-    private function addBasket() {
+    private function addBasket()
+    {
         if ($this->module->getConfigValue($this->paymentType, 'shopping_basket')) {
             $this->transaction->setBasket(
                 $this->additionalInformationBuilder->createBasket(
@@ -170,7 +180,8 @@ class TransactionBuilder
      *
      * @since 1.4.0
      */
-    private function addDescriptor() {
+    private function addDescriptor()
+    {
         if ($this->module->getConfigValue($this->paymentType, 'descriptor')) {
             $this->transaction->setDescriptor($this->additionalInformationBuilder->createDescriptor($this->orderId));
         }
@@ -181,7 +192,8 @@ class TransactionBuilder
      *
      * @since 1.4.0
      */
-    private function addAdditionalInformation() {
+    private function addAdditionalInformation()
+    {
         if ($this->module->getConfigValue($this->paymentType, 'send_additional')) {
             $firstName = null;
             $lastName = null;

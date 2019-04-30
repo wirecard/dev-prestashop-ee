@@ -91,7 +91,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @return int
      * @since 1.4.0
      */
-    private function determineFinalOrderId() {
+    private function determineFinalOrderId()
+    {
         $potentialOrderId = \Tools::getValue('order_number');
 
         if ($potentialOrderId) {
@@ -112,7 +113,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $orderId
      * @since 1.4.0
      */
-    private function executeTransaction($transaction, $operation, $config, $cart, $orderId) {
+    private function executeTransaction($transaction, $operation, $config, $cart, $orderId)
+    {
         $isSeamlessTransaction = \Tools::getValue('jsresponse');
         if ($isSeamlessTransaction) {
             return $this->executeSeamlessTransaction($_POST, $config, $cart, $orderId);
@@ -222,7 +224,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @return \Cart
      * @since 1.4.0
      */
-    private function getCart($existingOrderId = null) {
+    private function getCart($existingOrderId = null)
+    {
         $cart = $existingOrderId
             ? \Cart::getCartByOrderId($existingOrderId)
             : $this->context->cart;

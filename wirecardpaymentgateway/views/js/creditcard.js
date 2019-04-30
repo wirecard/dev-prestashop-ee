@@ -116,15 +116,15 @@ $(document).ready(
                 {
                     index: 'action',
                     data: 'getseamlessconfig'
-                },
+            },
                 {
                     index: 'id_cart',
                     data: cartId
-                },
+            },
                 {
                     index: 'payment_type',
                     data: paymentMethod
-                }
+            }
             ];
 
             $.ajax({
