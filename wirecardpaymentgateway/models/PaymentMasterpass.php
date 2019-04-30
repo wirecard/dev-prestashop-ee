@@ -222,7 +222,7 @@ class PaymentMasterpass extends Payment
     {
         $transaction = new MasterpassTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
@@ -238,7 +238,7 @@ class PaymentMasterpass extends Payment
     {
         $transaction = new MasterpassTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }

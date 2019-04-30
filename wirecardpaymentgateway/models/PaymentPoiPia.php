@@ -204,7 +204,7 @@ class PaymentPoiPia extends Payment
     {
         $transaction = new PoiPiaTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
