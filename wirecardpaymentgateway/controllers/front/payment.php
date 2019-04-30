@@ -120,12 +120,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         try {
             /** @var \Wirecard\PaymentSdk\Response\Response $response */
             $response = $transactionService->process($transaction, $operation);
+            $this->handleTransactionResponse($response, $orderId);
         } catch (Exception $exception) {
             $this->errors = $exception->getMessage();
             $this->processFailure($orderId);
         }
-
-        $this->handleTransactionResponse($response, $orderId);
     }
 
     /**
@@ -145,12 +144,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         try {
             $response = $transactionService->processJsResponse($data, $redirectUrl);
+            $this->handleTransactionResponse($response, $orderId);
         } catch (Exception $exception) {
             $this->errors = $exception->getMessage();
             $this->processFailure($orderId);
         }
-
-        $this->handleTransactionResponse($response, $orderId);
     }
 
     /**

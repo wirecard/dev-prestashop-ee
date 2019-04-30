@@ -50,6 +50,8 @@ class Cart
         if(!is_null($id)) {
             $this->id_customer = 1;
         }
+
+        $this->amount = 20;
     }
 
 

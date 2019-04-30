@@ -435,6 +435,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFromType($paymentType)
     {
         $payments = $this->getPayments();
+
         if ('ratepay-invoice' == $paymentType) {
             $paymentType = 'invoice';
         }
