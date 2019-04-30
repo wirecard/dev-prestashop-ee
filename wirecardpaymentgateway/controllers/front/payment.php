@@ -33,17 +33,12 @@
  * @license GPLv3
  */
 
-use Wirecard\PaymentSdk\Entity\Amount;
-use Wirecard\PaymentSdk\Entity\CustomField;
-use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
-use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
@@ -58,6 +53,9 @@ use WirecardEE\Prestashop\Helper\TransactionBuilder;
  */
 class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontController
 {
+    /** @var TransactionBuilder */
+    private $transactionBuilder;
+
     /**
      * Process payment via transaction service
      *
@@ -65,45 +63,64 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function postProcess()
     {
-        $existingOrderId = \Tools::getValue('order_number');
-        $cart = $existingOrderId
-            ? \Cart::getCartByOrderId($existingOrderId)
-            : $this->context->cart;
-
-        if ($cart->id_customer == 0
-            || $cart->id_address_delivery == 0
-            || $cart->id_address_invoice == 0
-            || !$this->module->active
-        ) {
-            $this->errors = 'An error occured during the checkout process. Please try again.';
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        }
+        $orderId = $this->determineOrderId();
+        $cart = $this->getCart($orderId);
 
         $paymentType = \Tools::getValue('paymentType');
-        $payment = $this->module->getPaymentFromType($paymentType);
         $operation = $this->module->getConfigValue($paymentType, 'payment_action');
+
+        $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
 
-        $transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
+        $this->transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
+        $this->transactionBuilder->setOrderId($orderId);
+
+        try {
+            $transaction = $this->transactionBuilder->buildTransaction();
+            $this->executeTransaction($transaction, $operation, $config, $cart, $orderId);
+        } catch (\Exception $exception) {
+            $this->errors = $exception->getMessage();
+            $this->processFailure($orderId);
+        }
+    }
+
+    /**
+     * Check if we have an existing orderId or create one if required.
+     *
+     * @param $existingOrderId
+     * @return int
+     * @since 1.4.0
+     */
+    private function determineOrderId() {
+        $existingOrderId = \Tools::getValue('order_number');
 
         if ($existingOrderId) {
-            $orderId = $existingOrderId;
-            $transactionBuilder->setOrderId($orderId);
+            return $existingOrderId;
         } else {
-            $orderId = $transactionBuilder->createOrder();
+            return $this->transactionBuilder->createOrder();
         }
+    }
 
-        $transaction = $transactionBuilder->buildTransaction();
-
+    /**
+     * Execute the transaction in the correct fashion.
+     *
+     * @param $transaction
+     * @param $operation
+     * @param $config
+     * @param $cart
+     * @param $orderId
+     * @since 1.4.0
+     */
+    private function executeTransaction($transaction, $operation, $config, $cart, $orderId) {
         $isSeamlessTransaction = \Tools::getValue('jsresponse');
         if ($isSeamlessTransaction) {
-            $cart = \Cart::getCartByOrderId($existingOrderId);
-            return $this->executeSeamlessTransaction($_POST, $config, $cart, $existingOrderId);
+            return $this->executeSeamlessTransaction($_POST, $config, $cart, $orderId);
         }
 
-        $transactionBuilder->setOrderId($orderId);
-        return $this->executeTransaction($transaction, $config, $operation, $orderId);
+        $this->transactionBuilder->setOrderId($orderId);
+        return $this->executeDefaultTransaction($transaction, $config, $operation, $orderId);
     }
+
 
     /**
      * Execute transactions with operation pay and reserve
@@ -112,9 +129,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
      * @param int $orderId
-     * @since 1.0.0
+     * @since 1.4.0
      */
-    public function executeTransaction($transaction, $config, $operation, $orderId)
+    private function executeDefaultTransaction($transaction, $config, $operation, $orderId)
     {
         $transactionService = new TransactionService($config, new WirecardLogger());
         try {
@@ -136,7 +153,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $orderId
      * @since 1.0.0
      */
-    public function executeSeamlessTransaction($data, $config, $cart, $orderId)
+    private function executeSeamlessTransaction($data, $config, $cart, $orderId)
     {
         $paymentType = \Tools::getValue('paymentType');
         $redirectUrl =  $this->module->createRedirectUrl($cart->id, $paymentType, 'success');
@@ -195,6 +212,30 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         $this->errors = 'An error occured during the checkout process. Please try again.';
         $this->processFailure($orderId);
+    }
+
+    /**
+     * Get the appropriate cart from the shop system.
+     *
+     * @param $existingOrderId
+     * @return \Cart
+     * @since 1.4.0
+     */
+    private function getCart($existingOrderId = null) {
+        $cart = $existingOrderId
+            ? \Cart::getCartByOrderId($existingOrderId)
+            : $this->context->cart;
+
+        if ($cart->id_customer == 0
+            || $cart->id_address_delivery == 0
+            || $cart->id_address_invoice == 0
+            || !$this->module->active
+        ) {
+            $this->errors = 'An error occured during the checkout process. Please try again.';
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        }
+
+        return $cart;
     }
 
     /**

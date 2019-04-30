@@ -41,6 +41,7 @@ use Wirecard\PaymentSdk\Entity\Amount;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
+ *
  * Class PaymentUnionPayInternational
  *
  * @extends Payment

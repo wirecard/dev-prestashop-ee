@@ -47,7 +47,7 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
  *
  * @since 1.0.0
  */
-class AdditionalInformation
+class AdditionalInformationBuilder
 {
     /**
      * Create basket items for transaction

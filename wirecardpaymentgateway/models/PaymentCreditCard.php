@@ -34,7 +34,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Entity\Card;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
@@ -302,6 +301,7 @@ class PaymentCreditCard extends Payment
 
         $transaction = new CreditCardTransaction();
         $transaction->setConfig($config->get(CreditCardTransaction::NAME));
+        $transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success'));
 
         return $transaction;
     }

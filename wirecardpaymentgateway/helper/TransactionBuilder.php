@@ -17,17 +17,26 @@ class TransactionBuilder
     /** @var \Context */
     private $context;
 
+    /** @var string */
+    private $paymentType;
+
     /** @var \Cart */
     private $cart;
 
-    /** @var string */
-    private $paymentType;
+    /** @var \Currency */
+    private $currency;
+
+    /** @var CustomFieldCollection */
+    private $customFields;
+
+    /** @var AdditionalInformationBuilder */
+    private $additionalInformationBuilder;
 
     /** @var string */
     private $orderId;
 
-    /** @var AdditionalInformation */
-    private $additionalInformation;
+    /** @var Transaction */
+    private $transaction;
 
     /**
      * TransactionBuilder constructor.
@@ -41,10 +50,22 @@ class TransactionBuilder
     {
         $this->module = $module;
         $this->context = $context;
-        $this->cart = new \Cart((int) $cartId);
         $this->paymentType = $paymentType;
+        $this->cart = new \Cart((int) $cartId);
+        $this->currency = new \Currency($this->cart->id_currency);
+        $this->customFields = new CustomFieldCollection();
+        $this->additionalInformationBuilder = new AdditionalInformationBuilder();
+    }
 
-        $this->additionalInformation = new AdditionalInformation();
+    /**
+     * Allows setting the order ID in case a pre-existing order is available.
+     *
+     * @param $orderId
+     * @since 1.4.0
+     */
+    public function setOrderId($orderId)
+    {
+        $this->orderId = $orderId;
     }
 
     /**
@@ -61,10 +82,38 @@ class TransactionBuilder
         }
 
         $payment = $this->module->getPaymentFromType($this->paymentType);
-        $cartId = $this->cart->id;
 
+        /** @var Transaction $transaction */
+        $this->transaction = $payment->createTransaction($this->module, $this->cart, \Tools::getAllValues(), $this->orderId);
+
+        $this->addAmount();
+        $this->addRedirects();
+        $this->addCustomField('orderId', $this->orderId);
+        $this->addTokenId();
+        $this->addBasket();
+        $this->addDescriptor();
+        $this->addAdditionalInformation();
+
+        return $this->transaction;
+    }
+
+    /**
+     * Add the payment amount to the transaction
+     *
+     * @since 1.4.0
+     */
+    private function addAmount() {
         $amount = round($this->cart->getOrderTotal(), 2);
-        $currency = new \Currency($this->cart->id_currency);
+        $this->transaction->setAmount(new Amount((float)$amount, $this->currency->iso_code));
+    }
+
+    /**
+     * Add the necessary redirects to the transaction
+     *
+     * @since 1.4.0
+     */
+    private function addRedirects() {
+        $cartId = $this->cart->id;
 
         $redirectUrls = new Redirect(
             $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'success'),
@@ -72,35 +121,67 @@ class TransactionBuilder
             $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'failure')
         );
 
-        /** @var Transaction $transaction */
-        $transaction = $payment->createTransaction($this->module, $this->cart, \Tools::getAllValues(), $this->orderId);
-        $transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $this->paymentType));
-        $transaction->setRedirect($redirectUrls);
-        $transaction->setAmount(new Amount((float)$amount, $currency->iso_code));
+        $this->transaction->setNotificationUrl($this->module->createNotificationUrl($cartId, $this->paymentType));
+        $this->transaction->setRedirect($redirectUrls);
+    }
 
-        $customFields = new CustomFieldCollection();
-        $customFields->add(new CustomField('orderId', $this->orderId));
-        $transaction->setCustomFields($customFields);
+    /**
+     * Add custom field to transaction
+     *
+     * @param $key
+     * @param $value
+     * @since 1.4.0
+     */
+    private function addCustomField($key, $value) {
+        $this->customFields->add(new CustomField($key, $value));
+        $this->transaction->setCustomFields($this->customFields);
+    }
 
-
-        if (\Tools::getValue('token_id') && $transaction instanceof CreditCardTransaction) {
-            $transaction->setTokenId(\Tools::getValue('token_id'));
+    /**
+     * Set the token ID if required
+     *
+     * @since 1.4.0
+     */
+    private function addTokenId() {
+        if ( $this->transaction instanceof CreditCardTransaction && \Tools::getValue('token_id')) {
+            $this->transaction->setTokenId(\Tools::getValue('token_id'));
         }
+    }
 
+    /**
+     * Add the basket if required
+     *
+     * @since 1.4.0
+     */
+    private function addBasket() {
         if ($this->module->getConfigValue($this->paymentType, 'shopping_basket')) {
-            $transaction->setBasket(
-                $this->additionalInformation->createBasket(
+            $this->transaction->setBasket(
+                $this->additionalInformationBuilder->createBasket(
                     $this->cart,
-                    $transaction,
-                    $currency->iso_code
+                    $this->transaction,
+                    $this->currency->iso_code
                 )
             );
         }
+    }
 
+    /**
+     * Add the descriptor if required
+     *
+     * @since 1.4.0
+     */
+    private function addDescriptor() {
         if ($this->module->getConfigValue($this->paymentType, 'descriptor')) {
-            $transaction->setDescriptor($this->additionalInformation->createDescriptor($this->orderId));
+            $this->transaction->setDescriptor($this->additionalInformationBuilder->createDescriptor($this->orderId));
         }
+    }
 
+    /**
+     * Add additional information if required
+     *
+     * @since 1.4.0
+     */
+    private function addAdditionalInformation() {
         if ($this->module->getConfigValue($this->paymentType, 'send_additional')) {
             $firstName = null;
             $lastName = null;
@@ -113,28 +194,15 @@ class TransactionBuilder
                 }
             }
 
-            $transaction = $this->additionalInformation->createAdditionalInformation(
+            $this->transaction = $this->additionalInformationBuilder->createAdditionalInformation(
                 $this->cart,
                 $this->orderId,
-                $transaction,
-                $currency->iso_code,
+                $this->transaction,
+                $this->currency->iso_code,
                 $firstName,
                 $lastName
             );
         }
-
-        return $transaction;
-    }
-
-    /**
-     * Allows setting the order ID in case a pre-existing order is available.
-     *
-     * @param $orderId
-     * @since 1.4.0
-     */
-    public function setOrderId($orderId)
-    {
-        $this->orderId = $orderId;
     }
 
     /**

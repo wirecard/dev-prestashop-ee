@@ -36,7 +36,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PtwentyfourTransaction;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
 
@@ -197,7 +197,7 @@ class PaymentPtwentyfour extends Payment
     {
         $transaction = new PtwentyfourTransaction();
 
-        $additionalInformation = new AdditionalInformation();
+        $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
 
         return $transaction;

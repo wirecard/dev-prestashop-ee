@@ -38,7 +38,7 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\AlipayCrossborderTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 
 /**
  * Class PaymentAlipayCrossborder
@@ -198,7 +198,7 @@ class PaymentAlipayCrossborder extends Payment
     {
         $transaction = new AlipayCrossborderTransaction();
 
-        $additionalInformation = new AdditionalInformation();
+        $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
 
         return $transaction;
