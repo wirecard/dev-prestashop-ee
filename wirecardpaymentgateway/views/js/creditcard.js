@@ -161,6 +161,7 @@ $(document).ready(
 
         function resizeIframe()
         {
+            $("#stored-card").removeAttr("disabled");
             $("#" + wrappingDiv + " > iframe").height(550);
         }
 
