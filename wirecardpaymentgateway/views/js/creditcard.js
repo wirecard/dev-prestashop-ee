@@ -115,12 +115,16 @@ $(document).ready(
             var params = [
                 {
                     index: 'action',
-                    data: 'get' + paymentMethod + 'config'
-            },
+                    data: 'getseamlessconfig'
+                },
                 {
                     index: 'id_cart',
                     data: cartId
-            }
+                },
+                {
+                    index: 'payment_type',
+                    data: paymentMethod
+                }
             ];
 
             $.ajax({
