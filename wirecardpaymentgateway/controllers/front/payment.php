@@ -87,7 +87,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Check if we have an existing orderId or create one if required.
      *
-     * @param $existingOrderId
      * @return int
      * @since 1.4.0
      */
@@ -124,7 +123,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         return $this->executeDefaultTransaction($transaction, $config, $operation, $orderId);
     }
 
-
     /**
      * Execute transactions with operation pay and reserve
      *
@@ -154,7 +152,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $config
      * @param $cart
      * @param $orderId
-     * @since 1.0.0
+     * @since 1.4.0
      */
     private function executeSeamlessTransaction($data, $config, $cart, $orderId)
     {
