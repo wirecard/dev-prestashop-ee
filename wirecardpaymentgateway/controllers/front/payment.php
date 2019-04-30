@@ -63,17 +63,17 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function postProcess()
     {
-        $orderId = $this->determineOrderId();
-        $cart = $this->getCart($orderId);
+        $potentialOrderId = \Tools::getValue('order_number');
+        $cart = $this->getCart($potentialOrderId);
 
         $paymentType = \Tools::getValue('paymentType');
         $operation = $this->module->getConfigValue($paymentType, 'payment_action');
-
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
 
         $this->transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
-        $this->transactionBuilder->setOrderId($orderId);
+        $orderId = $this->determineFinalOrderId();
+
 
         try {
             $transaction = $this->transactionBuilder->buildTransaction();
@@ -91,11 +91,12 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @return int
      * @since 1.4.0
      */
-    private function determineOrderId() {
-        $existingOrderId = \Tools::getValue('order_number');
+    private function determineFinalOrderId() {
+        $potentialOrderId = \Tools::getValue('order_number');
 
-        if ($existingOrderId) {
-            return $existingOrderId;
+        if ($potentialOrderId) {
+            $this->transactionBuilder->setOrderId($potentialOrderId);
+            return $potentialOrderId;
         } else {
             return $this->transactionBuilder->createOrder();
         }
