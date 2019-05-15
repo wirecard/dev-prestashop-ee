@@ -33,36 +33,22 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\CreditCardVault;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-const USER_ID = 1;
-
-class CreditCardVaultTestTest extends PHPUnit_Framework_TestCase
+/**
+ * @param WirecardPaymentGateway $module
+ *
+ * @return bool
+ * @throws PrestaShopDatabaseException
+ */
+function upgrade_module_1_3_5($module)
 {
+    $module->addMissingColumns('cc');
 
-    private $vault;
+    $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_cc`';
+    Db::getInstance()->ExecuteS("ALTER TABLE $table ADD INDEX user_address (user_id, address_id)");
 
-    public function setUp()
-    {
-        $this->vault = new CreditCardVault(USER_ID);
-    }
-
-    public function testGetUserCards()
-    {
-        $this->assertEquals(new \DbQuery(), $this->vault->getUserCards(13));
-    }
-
-    public function testAddCard()
-    {
-        function pSQL($string)
-        {
-            return $string;
-        };
-        $this->assertEquals(null, $this->vault->addCard('123', '333', 13));
-    }
-
-    public function testDeleteCard()
-    {
-        $this->assertEquals(true, $this->vault->deleteCard('333'));
-    }
+    return true;
 }

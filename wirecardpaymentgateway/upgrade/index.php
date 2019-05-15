@@ -32,37 +32,13 @@
  * @copyright Wirecard AG
  * @license GPLv3
  */
-
-use WirecardEE\Prestashop\Models\CreditCardVault;
-
-const USER_ID = 1;
-
-class CreditCardVaultTestTest extends PHPUnit_Framework_TestCase
-{
-
-    private $vault;
-
-    public function setUp()
-    {
-        $this->vault = new CreditCardVault(USER_ID);
-    }
-
-    public function testGetUserCards()
-    {
-        $this->assertEquals(new \DbQuery(), $this->vault->getUserCards(13));
-    }
-
-    public function testAddCard()
-    {
-        function pSQL($string)
-        {
-            return $string;
-        };
-        $this->assertEquals(null, $this->vault->addCard('123', '333', 13));
-    }
-
-    public function testDeleteCard()
-    {
-        $this->assertEquals(true, $this->vault->deleteCard('333'));
-    }
-}
+                        
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+                        
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+                        
+header("Location: ../");
+exit;
