@@ -50,7 +50,7 @@ class Db
         return self::$instance;
     }
 
-    public static function execute()
+    public static function execute($query, $use_cache = true)
     {
         return true;
     }
