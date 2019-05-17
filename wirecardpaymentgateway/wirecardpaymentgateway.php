@@ -934,7 +934,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function addMissingColumns($name)
     {
         $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_' . $name . '`';
-        $columns_db = Db::getInstance()->ExecuteS("SHOW COLUMNS FROM $table");
+        $columns_db = Db::getInstance()->executeS("SHOW COLUMNS FROM $table");
         $columns    = [];
 
         $column_definitions = $this->getColumnDefsTable($name);
@@ -960,7 +960,7 @@ class WirecardPaymentGateway extends PaymentModule
             $sql = rtrim($sql, ",") . ";";
         }
 
-        return $sql == null ? true : Db::getInstance()->execute($sql);
+        return $sql == null ? true : $this->executeSql($sql);
     }
 
     /**
@@ -1128,5 +1128,25 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $translation;
+    }
+
+    /**
+     * execute sql statement, return true on success, throws exception on error
+     * optionally ingore an error code
+     *
+     * @param $sql
+     * @param null|int $ignore
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     */
+    public function executeSql($sql, $ignore = null)
+    {
+        $result = Db::getInstance()->execute($sql);
+        if ($result === false && Db::getInstance()->getNumberError() !== $ignore) {
+            throw new PrestaShopDatabaseException(Db::getInstance()->getMsgError());
+        }
+
+        return true;
     }
 }
