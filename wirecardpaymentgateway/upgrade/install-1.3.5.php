@@ -48,7 +48,7 @@ function upgrade_module_1_3_5($module)
     $module->addMissingColumns('cc');
 
     $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_cc`';
-    Db::getInstance()->ExecuteS("ALTER TABLE $table ADD INDEX user_address (user_id, address_id)");
+    Db::getInstance()->execute("ALTER TABLE $table ADD INDEX user_address (user_id, address_id)");
 
     return true;
 }
