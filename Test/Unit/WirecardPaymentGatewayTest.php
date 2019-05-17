@@ -146,4 +146,9 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(true, $this->gateway->hookActionFrontControllerSetMedia());
     }
+
+    public function testExecuteSql()
+    {
+        $this->assertEquals(true, $this->gateway->executeSql("UPDATE foo SET foo='bar'"));
+    }
 }
