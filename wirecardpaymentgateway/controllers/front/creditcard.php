@@ -62,7 +62,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     public function displayAjaxListStoredCards()
     {
         header('Content-Type: application/json; charset=utf8');
-        die(json_encode($this->vaultModel->getUserCards()));
+        die(json_encode($this->vaultModel->getUserCards($this->context->cart->id_address_invoice)));
     }
 
     /**
@@ -79,7 +79,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             $this->displayAjaxListStoredCards();
         }
 
-        $this->vaultModel->addCard($maskedpan, $tokenId);
+        $this->vaultModel->addCard($maskedpan, $tokenId, $this->context->cart->id_address_invoice);
 
         $this->displayAjaxListStoredCards();
     }
