@@ -42,6 +42,7 @@ if (!defined('_PS_VERSION_')) {
  *
  * @return bool
  * @throws PrestaShopDatabaseException
+ * @since 1.3.5
  */
 function upgrade_module_1_3_5($module)
 {

@@ -1139,6 +1139,7 @@ class WirecardPaymentGateway extends PaymentModule
      *
      * @return bool
      * @throws PrestaShopDatabaseException
+     * @since 1.3.5
      */
     public function executeSql($sql, $ignore = null)
     {
