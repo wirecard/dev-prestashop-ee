@@ -4,8 +4,8 @@ language: php
 
 env:
   global:
-    - COMPOSER_ARGS="--no-interaction"
-    - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/.bin/shop-releases.txt
+  - COMPOSER_ARGS="--no-interaction"
+  - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/.bin/shop-releases.txt
 
 matrix:
   allow_failures:
@@ -52,17 +52,17 @@ matrix:
     after_script: skip
 
   - stage: get-prestashop-versions
-      if: type = cron
-      php: 7.1
-      install: skip
-      before_script: skip
-      script: bash .bin/get-prestashop-versions.sh
-      after_script: skip
-      after_failure: skip
+    if: type != cron
+    php: 7.1
+    install: skip
+    before_script: skip
+    script: bash .bin/get-prestashop-versions.sh
+    after_script: skip
+    after_failure: skip
 
   - &acceptance-test
     stage: acceptance-test
-    if: type = cron
+    if: type != cron
     php: 7.1
     env:
     - GATEWAY=API-TEST
@@ -72,9 +72,9 @@ matrix:
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
-      - bash .bin/upload-logs-and-notify.sh
+    - bash .bin/upload-logs-and-notify.sh
     after_failure:
-      - bash .bin/upload-logs-and-notify.sh fail
+    - bash .bin/upload-logs-and-notify.sh fail
 
   - <<: *acceptance-test
     env:
