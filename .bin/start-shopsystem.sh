@@ -1,17 +1,17 @@
 #!/bin/bash
 #set -e # Exit with nonzero exit code if anything fails
 
-export PRESTASHOP_CONTAINER_NAME=prestashop-web
+export PRESTASHOP_CONTAINER_NAME=prestashop.web
 export PRESTASHOP_CONTAINER_DOMAIN=localhost:8080
 export PRESTASHOP_CONTAINER_SHOP_URL=localhost:8080
-export PRESTASHOP_VERSION=${PRESTASHOP_VERSION}
+export PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_CONTAINER_NAME}
 export PRESTASHOP_DB_PASSWORD=supersecret
 export PRESTASHOP_DB_SERVER=prestashop-database
 export PRESTASHOP_DB_NAME=prestashop
 
 # used to change the compatibility version to match the prestashop version
 # has to be done before generate-release-package.sh is executed
-replace="s/^\s*\$this->ps_versions_compliancy = array.*$/\$this->ps_versions_compliancy = array('min' => '${PRESTASHOP_VERSION}', 'max' => '${PRESTASHOP_VERSION}');/"
+replace="s/^\s*\$this->ps_versions_compliancy = array.*$/\$this->ps_versions_compliancy = array('min' => '${PRESTASHOP_CONTAINER_VERSION}', 'max' => '${PRESTASHOP_CONTAINER_VERSION}');/"
 sed -i -e "$replace" "./wirecardpaymentgateway/wirecardpaymentgateway.php"
 
 # generate release package
@@ -20,7 +20,7 @@ sed -i -e "$replace" "./wirecardpaymentgateway/wirecardpaymentgateway.php"
 docker-compose build --no-cache --build-arg PRESTASHOP_CONTAINER_NAME=${PRESTASHOP_CONTAINER_NAME} \
                                 --build-arg PRESTASHOP_CONTAINER_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN} \
                                 --build-arg PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL} \
-                                --build-arg PRESTASHOP_VERSION=${PRESTASHOP_VERSION} \
+                                --build-arg PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_CONTAINER_VERSION} \
                                 prestashop.web
 docker-compose up --force-recreate -d
 
