@@ -1,4 +1,4 @@
-FROM prestashop/prestashop:7.2-apache
+FROM prestashop/prestashop:1.7.6.0-beta.1-7.2-apache
 
 RUN docker-php-ext-install mysqli
 ARG PRESTASHOP_CONTAINER_NAME=0
