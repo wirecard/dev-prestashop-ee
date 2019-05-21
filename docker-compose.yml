@@ -31,6 +31,7 @@ services:
       - PS_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN}
       - PS_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL}
       - PS_FOLDER_INSTALL=removedinstall
+      - PS_VERSION=${PRESTASHOP_VERSION}
     networks:
       - prestashop-net
     ports:
