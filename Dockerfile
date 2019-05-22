@@ -8,7 +8,8 @@ ADD "https://www.prestashop.com/download/old/prestashop_$PRESTASHOP_VERSION.zip"
 RUN mkdir -p /tmp/data-ps \
 	&& unzip -q /tmp/prestashop.zip -d /tmp/data-ps/ \
 	&& bash /tmp/ps-extractor.sh /tmp/data-ps \
-	&& rm /tmp/prestashop.zip
+	&& rm /tmp/prestashop.zip \
+	&& echo $PRESTASHOP_VERSION
 
 RUN docker-php-ext-install mysqli
 ARG PRESTASHOP_CONTAINER_NAME=0
