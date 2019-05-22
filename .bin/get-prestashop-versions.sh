@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/prestashop/prestashop/releases | jq -r '.[] | .tag_name' | head -3 > ${PRESTASHOP_RELEASES_FILE}
+curl -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/prestashop/prestashop/releases | jq -r '.[] | .tag_name' | head -3 | egrep -v [a-zA-Z] > ${PRESTASHOP_RELEASES_FILE}
 git config --global user.name "Travis CI"
 git config --global user.email "wirecard@travis-ci.org"
 
