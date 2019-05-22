@@ -1,6 +1,7 @@
 FROM prestashop/base:7.2-apache
 
-ARG PRESTASHOP_CONTAINER_VERSION=0
+# Set default value in case there is not any available version in release file, if there is, this value will be overwritten
+ARG PRESTASHOP_CONTAINER_VERSION=1.7.5.2
 ENV PRESTASHOP_CONTAINER_VERSION=$PRESTASHOP_CONTAINER_VERSION
 
 ADD "https://www.prestashop.com/download/old/prestashop_$PRESTASHOP_CONTAINER_VERSION.zip" /tmp/prestashop.zip

@@ -13,7 +13,7 @@ Feature: checkCreditCard3DSFunctionalityHappyPath
   Scenario: try purchaseCheck
     Given I fill fields with "Valid Credit Card Data"
     When I check "I agree to the terms of service"
-#    When I click "Order with an obligation to pay"
+    When I click "Order with an obligation to pay"
     And I am redirected to "Verified" page
     And I enter "wirecard" in field "Password"
     And I click "Continue"
