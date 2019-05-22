@@ -1,9 +1,9 @@
 FROM prestashop/base:7.2-apache
 
-#ARG PRESTASHOP_VERSION=${PRESTASHOP_VERSION}
-#ENV PRESTASHOP_VERSION=${PRESTASHOP_VERSION}
+ARG PRESTASHOP_VERSION=1.7.5.2
+ENV PRESTASHOP_VERSION=$PRESTASHOP_VERSION
 
-ADD "https://www.prestashop.com/download/old/prestashop_1.7.5.2.zip" /tmp/prestashop.zip
+ADD "https://www.prestashop.com/download/old/prestashop_$PRESTASHOP_VERSION.zip" /tmp/prestashop.zip
 
 RUN mkdir -p /tmp/data-ps \
 	&& unzip -q /tmp/prestashop.zip -d /tmp/data-ps/ \
