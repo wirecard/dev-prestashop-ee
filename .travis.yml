@@ -66,9 +66,17 @@ matrix:
     php: 7.1
     env:
     - GATEWAY=API-TEST
-    - PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=1
     before_install: skip
-    install: skip
+    install:
+    - |
+      if [[ "$PRESTASHOP_RELEASE_VERSION" == "1" ]]; then
+        export PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+      elif [[ "$PRESTASHOP_RELEASE_VERSION" == "2" ]]; then
+        export PRESTASHOP_VERSION=$(awk 'NR==2 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+      elif [[ "$PRESTASHOP_RELEASE_VERSION" == "3" ]]; then
+        export PRESTASHOP_VERSION=$(awk 'NR==3 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+      fi
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
@@ -79,35 +87,35 @@ matrix:
   - <<: *acceptance-test
     env:
     - GATEWAY=API-TEST
-    - PRESTASHOP_VERSION=$(awk 'NR==2 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=2
   - <<: *acceptance-test
     env:
     - GATEWAY=API-TEST
-    - PRESTASHOP_VERSION=$(awk 'NR==3 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=3
   - <<: *acceptance-test
     env:
     - GATEWAY=API-WDCEE-TEST
-    - PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=1
   - <<: *acceptance-test
     env:
     - GATEWAY=API-WDCEE-TEST
-    - PRESTASHOP_VERSION=$(awk 'NR==2 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=2
   - <<: *acceptance-test
     env:
     - GATEWAY=API-WDCEE-TEST
-    - PRESTASHOP_VERSION=$(awk 'NR==3 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=3
   - <<: *acceptance-test
     env:
     - GATEWAY=NOVA
-    - PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=1
   - <<: *acceptance-test
     env:
     - GATEWAY=NOVA
-    - PRESTASHOP_VERSION=$(awk 'NR==2 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=2
   - <<: *acceptance-test
     env:
     - GATEWAY=NOVA
-    - PRESTASHOP_VERSION=$(awk 'NR==3 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - PRESTASHOP_RELEASE_VERSION=3
 
 install:
   - travis_retry composer require --dev $COMPOSER_ARGS
