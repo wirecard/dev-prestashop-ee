@@ -72,7 +72,7 @@ matrix:
     install:
     - |
       if [[ "$GROUP" == "1" ]]; then
-        PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+        export PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
       else
         echo $(awk 'NR==2 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
       fi
