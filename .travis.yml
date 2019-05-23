@@ -66,9 +66,16 @@ matrix:
     php: 7.1
     env:
     - GATEWAY=API-TEST
-    - PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+    - GROUP=1
+#    - PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
     before_install: skip
-    install: skip
+    install:
+    - |
+      if [[ "$GROUP" == "1" ]]; then
+        echo $(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+      else
+        echo $(awk 'NR==2 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+      fi
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
