@@ -52,7 +52,7 @@ matrix:
     after_script: skip
 
   - stage: get-prestashop-versions
-    if: type = cron
+    if: type != cron
     php: 7.1
     install: skip
     before_script: skip
@@ -62,7 +62,7 @@ matrix:
 
   - &acceptance-test
     stage: acceptance-test
-    if: type = cron
+    if: type != cron
     php: 7.1
     env:
     - GATEWAY=API-TEST
@@ -70,13 +70,9 @@ matrix:
     before_install: skip
     install:
     - |
-      if [[ "$PRESTASHOP_RELEASE_VERSION" == "1" ]]; then
-        export PRESTASHOP_VERSION=$(awk 'NR==1 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
-      elif [[ "$PRESTASHOP_RELEASE_VERSION" == "2" ]]; then
-        export PRESTASHOP_VERSION=$(awk 'NR==2 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
-      elif [[ "$PRESTASHOP_RELEASE_VERSION" == "3" ]]; then
-        export PRESTASHOP_VERSION=$(awk 'NR==3 {print; exit}' ${PRESTASHOP_RELEASES_FILE})
-      fi
+      if [[ "$PRESTASHOP_RELEASE_VERSION" ]]; then
+        export PRESTASHOP_VERSION=$(awk 'NR==$PRESTASHOP_RELEASE_VERSION {print; exit}' ${PRESTASHOP_RELEASES_FILE})
+        echo $PRESTASHOP_VERSION
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
