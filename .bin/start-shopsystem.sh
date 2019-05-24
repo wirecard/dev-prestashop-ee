@@ -17,7 +17,7 @@ sed -i -e "$replace" "./wirecardpaymentgateway/wirecardpaymentgateway.php"
 # generate release package
 .bin/generate-release-package.sh
 
-echo  "The current version is: " ${PRESTASHOP_CONTAINER_VERSION}
+echo  "The current prestashop version is: " ${PRESTASHOP_CONTAINER_VERSION}
 docker-compose build --no-cache --build-arg PRESTASHOP_CONTAINER_NAME=${PRESTASHOP_CONTAINER_NAME} \
                                 --build-arg PRESTASHOP_CONTAINER_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN} \
                                 --build-arg PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL} \
