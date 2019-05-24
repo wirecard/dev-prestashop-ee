@@ -49,5 +49,5 @@ export SCREENSHOT_COMMIT_HASH=$(git rev-parse --verify HEAD)
 if [[ $1 == 'fail' ]]; then
     cd ..
     #send slack notification
-#    bash .bin/send-notify.sh
+    bash .bin/send-notify.sh
 fi
