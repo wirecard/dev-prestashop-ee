@@ -70,9 +70,7 @@ matrix:
     before_install: skip
     install:
     - |
-      if [[ "$PRESTASHOP_RELEASE_VERSION" ]]; then
-        export PRESTASHOP_VERSION=$(awk 'NR==$PRESTASHOP_RELEASE_VERSION {print; exit}' ${PRESTASHOP_RELEASES_FILE})
-        echo $PRESTASHOP_VERSION
+      export PRESTASHOP_VERSION=$(awk 'NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}' ${PRESTASHOP_RELEASES_FILE})
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
