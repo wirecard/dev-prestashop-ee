@@ -18,12 +18,13 @@ echo $(pwd)
 #create folder with current date
 export TODAY=$(date +%Y-%m-%d)
 
-export PROJECT_FOLDER="prestashop-ee"
+export PRESTASHOP_CURRENT_VERSION=${PRESTASHOP_VERSION}
+export PROJECT_FOLDER="prestashop-ee-${PRESTASHOP_CURRENT_VERSION}"
 GATEWAY_FOLDER=${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}
 DATE_FOLDER=${GATEWAY_FOLDER}/${TODAY}
 
 if [ ! -d "${GATEWAY_FOLDER}" ]; then
-mkdir ${GATEWAY_FOLDER}
+mkdir -p ${GATEWAY_FOLDER}
 fi
 
 if [ ! -d "${DATE_FOLDER}" ]; then
