@@ -4,7 +4,7 @@
 export PRESTASHOP_CONTAINER_NAME=prestashop-web
 export PRESTASHOP_CONTAINER_DOMAIN=localhost:8080
 export PRESTASHOP_CONTAINER_SHOP_URL=localhost:8080
-export PRESTASHOP_CONTAINER_VERSION=1.7
+export PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_VERSION}
 export PRESTASHOP_DB_PASSWORD=supersecret
 export PRESTASHOP_DB_SERVER=prestashop-database
 export PRESTASHOP_DB_NAME=prestashop
@@ -17,6 +17,7 @@ sed -i -e "$replace" "./wirecardpaymentgateway/wirecardpaymentgateway.php"
 # generate release package
 .bin/generate-release-package.sh
 
+echo  "The current version is: " ${PRESTASHOP_CONTAINER_VERSION}
 docker-compose build --no-cache --build-arg PRESTASHOP_CONTAINER_NAME=${PRESTASHOP_CONTAINER_NAME} \
                                 --build-arg PRESTASHOP_CONTAINER_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN} \
                                 --build-arg PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL} \
