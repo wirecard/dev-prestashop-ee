@@ -23,7 +23,7 @@ services:
     build:
       context: .
     environment:
-      - PRESTASHOP_VERSION=${PRESTASHOP_VERSION}
+#      - PRESTASHOP_VERSION=${PRESTASHOP_VERSION}
       - DB_SERVER=${PRESTASHOP_DB_SERVER}
       - DB_PASSWD=${PRESTASHOP_DB_PASSWORD}
       - DB_NAME=${PRESTASHOP_DB_NAME}
