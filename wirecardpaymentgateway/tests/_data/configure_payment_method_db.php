@@ -44,15 +44,16 @@ if (!$gateway) {
 // the default config defines valid keys for each payment method and is prefilled with API-TEST setup by default
 $defaultConfig = [
     'creditcard' => [
-        'base_url' => 'https://api-test.wirecard.com',
-        'http_user' => '70000-APITEST-AP',
-        'http_pass' => 'qD2wzQ_hrc!8',
-        'three_d_merchant_account_id' => '508b8896-b37d-4614-845c-26bf8bf2c948',
-        'three_d_secret' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-        'merchant_account_id' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
-        'secret' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
-        'ssl_max_limit' => 100,
-        'three_d_min_limit' => 50,
+        'base_url' => 'https://api-wdcee-test.wirecard.com',
+        'wpp_url' => 'https://wpp-wdcee-test.wirecard.com',
+        'http_user' => 'pink-test',
+        'http_pass' => '8f5y2h0s',
+        'three_d_merchant_account_id' => 'e416a933-7ef0-42a3-b522-5293d3c394d3',
+        'three_d_secret' => 'bce59e98-92da-4b7b-84e1-99de729ca327',
+        'merchant_account_id' => '789a54af-d6dc-4956-adec-af71784c9848',
+        'secret' => '3f4f0f7a-c022-4ac0-a137-48d5aae2abda',
+        'ssl_max_limit' => 300,
+        'three_d_min_limit' => 100,
 
         'enabled' => '1',
         'title' => 'Wirecard Credit Card',
