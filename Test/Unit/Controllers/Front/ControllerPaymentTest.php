@@ -80,8 +80,9 @@ class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
     public function testSepaDirectDebitTransaction()
     {
         $paymentController = new \WirecardPaymentGatewayPaymentModuleFrontController();
+
         $tools = new Tools();
-        $tools::$paymentType = 'sepa';
+        $tools::$paymentType = 'sepadirectdebit';
         $paymentController->setAmount(2.00);
         $paymentController->setCartId('123');
         $actual = $paymentController->postProcess();

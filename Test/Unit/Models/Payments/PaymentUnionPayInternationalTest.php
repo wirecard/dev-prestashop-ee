@@ -57,11 +57,14 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         );
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
+            ->setMethods(['getConfigValue', 'createRedirectUrl', 'createNotificationUrl'])
             ->getMock();
+
         $this->payment = new PaymentUnionPayInternational($this->paymentModule);
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
+        $this->transactionData->transaction_type = 'authorization';
         $this->transactionData->amount = 20;
         $this->transactionData->currency = 'EUR';
         $this->transactionData->cart_id = new stdClass();
@@ -127,6 +130,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         $actual = new \Wirecard\PaymentSdk\Transaction\UpiTransaction();
         $actual->setParentTransactionId('my_secret_id');
         $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
+        $actual->setParentTransactionType('authorization');
 
         $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
     }
@@ -145,19 +149,26 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         $context = new Context();
 
         $expected = array(
-            'transaction_type' => 'tokenize',
+            'transaction_type' => 'authorization',
             'merchant_account_id' => 'merchant_account_id',
-            'requested_amount' => 0,
+            'requested_amount' => 20,
             'requested_amount_currency' => 'EUR',
             'locale' => 'en',
             'payment_method' => 'creditcard',
-            'attempt_three_d' => false
+            'attempt_three_d' => false,
+            'field_name_1' => 'paysdk_orderId',
+            'field_value_1' => 102
         );
 
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn('base_url');
+        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn('authorization');
+
         for ($i = 0; $i <= 5; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
+            $this->paymentModule->expects($this->at($i + 1))->method('getConfigValue')->willReturn($this->config[$i]);
         }
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context));
+
+        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));
+
         //unset the generated request id as it is different every time
         unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
 
