@@ -43,12 +43,4 @@ class Order
     {
         $this->id = 1;
     }
-
-    public static function getIdByCartId($cartId) {
-        return 102;
-    }
-
-    public function getCurrentState() {
-        return "starting";
-    }
 }
