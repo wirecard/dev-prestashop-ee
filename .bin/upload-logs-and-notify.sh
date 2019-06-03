@@ -48,6 +48,7 @@ git push -q https://${GITHUB_TOKEN}@github.com/wirecard/${REPO_NAME}.git master
 export SCREENSHOT_COMMIT_HASH=$(git rev-parse --verify HEAD)
 if [[ $1 == 'fail' ]]; then
     cd ..
+    #don't forget to uncomment
     #send slack notification
     #bash .bin/send-notify.sh
 fi
