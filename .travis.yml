@@ -24,7 +24,7 @@ matrix:
     before_script:
       - pip install --user bs4
       - bash .bin/generate-release-package.sh
-      - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception
+      - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception:^3.0
     script:
       - bash .bin/run-validator-test.sh
     after_script: skip
