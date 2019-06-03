@@ -84,7 +84,7 @@ $(document).ready(
         {
             if (token === null) {
                 e.preventDefault();
-                WirecardPaymentPage.seamlessSubmitForm(
+                WPP.seamlessSubmit(
                     {
                         onSuccess: formSubmitSuccessHandler,
                         onError: logCallback,
@@ -155,7 +155,7 @@ $(document).ready(
                     })
             );
 
-            WirecardPaymentPage.seamlessRenderForm({
+            WPP.seamlessRender({
                 requestData: config,
                 wrappingDivId: wrappingDiv,
                 onSuccess: resizeIframe,
