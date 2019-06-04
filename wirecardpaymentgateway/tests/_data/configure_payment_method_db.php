@@ -52,8 +52,8 @@ $defaultConfig = [
         'three_d_secret' => 'bce59e98-92da-4b7b-84e1-99de729ca327',
         'merchant_account_id' => '789a54af-d6dc-4956-adec-af71784c9848',
         'secret' => '3f4f0f7a-c022-4ac0-a137-48d5aae2abda',
-        'ssl_max_limit' => 300,
-        'three_d_min_limit' => 100,
+        'ssl_max_limit' => 100,
+        'three_d_min_limit' => 50,
 
         'enabled' => '1',
         'title' => 'Wirecard Credit Card',
