@@ -47,6 +47,7 @@ class Checkout extends Base
      */
     public $URL = 'index.php?controller=order';
 
+    public $wirecard_frame = 'wirecard-integrated-payment-page-frame';
     /**
      * @var array
      * @since 1.3.4
@@ -122,6 +123,7 @@ class Checkout extends Base
 
         $this->switchFrame();
         $I->waitForElementVisible($this->getElement('Credit Card Last Name'));
+        $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->first_name);
         $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->last_name);
         $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->card_number);
         $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->cvv);
@@ -140,8 +142,8 @@ class Checkout extends Base
         //wait for Javascript to load iframe and it's contents
         $I->wait(2);
         //get wirecard seemless frame name
-        $wirecard_frame_name = $I->executeJS('return document.querySelector(".wirecard-seamless-frame").getAttribute("name")');
-        $I->switchToIFrame("$wirecard_frame_name");
+        $I->executeJS('jQuery("#' . $this->wirecard_frame . '").attr("name", "' . $this->wirecard_frame . '")');
+        $I->switchToIFrame("$this->wirecard_frame");
     }
 
     /**
