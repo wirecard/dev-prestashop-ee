@@ -38,7 +38,7 @@ define('GATEWAY_CONFIG_PATH', 'gateway_configs');
 
 $gateway = getenv('GATEWAY');
 if (!$gateway) {
-    $gateway = 'API-TEST';
+    $gateway = 'API-WDCEE-TEST';
 }
 
 // the default config defines valid keys for each payment method and is prefilled with API-TEST setup by default
@@ -48,10 +48,10 @@ $defaultConfig = [
         'wpp_url' => 'https://wpp-wdcee-test.wirecard.com',
         'http_user' => 'pink-test',
         'http_pass' => '8f5y2h0s',
-        'three_d_merchant_account_id' => 'e416a933-7ef0-42a3-b522-5293d3c394d3',
-        'three_d_secret' => 'bce59e98-92da-4b7b-84e1-99de729ca327',
-        'merchant_account_id' => '789a54af-d6dc-4956-adec-af71784c9848',
-        'secret' => '3f4f0f7a-c022-4ac0-a137-48d5aae2abda',
+        'three_d_merchant_account_id' => '49ee1355-cdd3-4205-920f-85391bb3865d',
+        'three_d_secret' => '518c3be1-4aa2-4294-a081-eb7edf20f9d7',
+        'merchant_account_id' => '589651ab-bffe-4f45-9a41-c5466aa8cbc8',
+        'secret' => 'cf8be86b-a671-4da4-b870-80af5c3eedb1',
         'ssl_max_limit' => 100,
         'three_d_min_limit' => 50,
 
