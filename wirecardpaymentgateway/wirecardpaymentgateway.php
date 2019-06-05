@@ -85,7 +85,6 @@ class WirecardPaymentGateway extends PaymentModule
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
         $this->version = '1.3.5';
-        $this->version = '1.4.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -375,11 +374,8 @@ class WirecardPaymentGateway extends PaymentModule
                 $this->createRatepayScript($paymentMethod);
             }
             $payment = new PaymentOption();
-            $payment
-                ->setModuleName('wd-' . $paymentMethod->getType())
-                ->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
+            $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
-
             if ($paymentMethod->getTemplateData()) {
                 $this->context->smarty->assign($paymentMethod->getTemplateData());
             }
@@ -442,7 +438,6 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFromType($paymentType)
     {
         $payments = $this->getPayments();
-
         if ('ratepay-invoice' == $paymentType) {
             $paymentType = 'invoice';
         }
@@ -494,13 +489,13 @@ class WirecardPaymentGateway extends PaymentModule
      * @return null
      * @since 1.0.0
      */
-    public function createRedirectUrl($orderId, $paymentType, $paymentState)
+    public function createRedirectUrl($cartId, $paymentType, $paymentState)
     {
         $returnUrl = $this->context->link->getModuleLink(
             $this->name,
             'return',
             array(
-                'id_order' => $orderId,
+                'id_cart' => $cartId,
                 'payment_type' => $paymentType,
                 'payment_state' => $paymentState,
             )
@@ -977,10 +972,10 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $wpp_url = $this->getConfigValue('creditcard', 'wpp_url');
+        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
-            $wpp_url  . '/loader/paymentPage.js',
+            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
             array('server' => 'remote', 'position' => 'head', 'priority' => 20)
         );
 
@@ -993,8 +988,7 @@ class WirecardPaymentGateway extends PaymentModule
                     array(
                         'configProviderURL' => $ajaxLink,
                         'ccVaultURL' => $ccVaultLink,
-                        'ajaxsepaurl' => $ajaxSepaUrl,
-                        'cartId' => $this->context->cart->id,
+                        'ajaxsepaurl' => $ajaxSepaUrl
                     )
                 );
                 $this->context->controller->addJS(

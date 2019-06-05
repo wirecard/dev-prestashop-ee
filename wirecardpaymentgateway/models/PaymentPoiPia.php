@@ -38,7 +38,7 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\PoiPiaTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
  * Class PaymentPoiPia
@@ -204,7 +204,7 @@ class PaymentPoiPia extends Payment
     {
         $transaction = new PoiPiaTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
@@ -223,7 +223,7 @@ class PaymentPoiPia extends Payment
     {
         $transaction = new PoiPiaTransaction();
 
-        $additionalInformation = new AdditionalInformationBuilder();
+        $additionalInformation = new AdditionalInformation();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
 
         return $transaction;

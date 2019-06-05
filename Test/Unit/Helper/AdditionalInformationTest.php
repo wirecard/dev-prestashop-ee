@@ -37,7 +37,7 @@ use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
-use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 class AdditionalInformationTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,7 +47,7 @@ class AdditionalInformationTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->cart = $this->getMockBuilder(\Cart::class)->disableOriginalConstructor()->getMock();
-        $this->additional = new AdditionalInformationBuilder();
+        $this->additional = new AdditionalInformation();
     }
 
     public function createCart()
