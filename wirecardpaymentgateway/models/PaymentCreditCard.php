@@ -34,6 +34,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Configuration;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
@@ -207,6 +208,7 @@ class PaymentCreditCard extends Payment
                     'method' => 'creditcard',
                     'send' => array(
                         'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_WPP_URL',
                         'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_USER',
                         'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_PASS'
                     )
@@ -214,7 +216,6 @@ class PaymentCreditCard extends Payment
             )
         );
     }
-
 
     /**
      * Create config for credit card transactions
@@ -369,7 +370,7 @@ class PaymentCreditCard extends Payment
      */
     protected function setTemplateData()
     {
-        $test = \Configuration::get(
+        $test = Configuration::get(
             sprintf(
                 'WIRECARD_PAYMENT_GATEWAY_%s_%s',
                 \Tools::strtoupper($this->type),
