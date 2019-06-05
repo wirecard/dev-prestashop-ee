@@ -34,11 +34,11 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Entity\Card;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
+use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
  * Class PaymentCreditCard
@@ -49,6 +49,9 @@ use Wirecard\PaymentSdk\Entity\Amount;
  */
 class PaymentCreditCard extends Payment
 {
+    /** @var CreditCardTransaction */
+    protected $transaction;
+
     /**
      * PaymentCreditCard constructor.
      *
@@ -58,6 +61,7 @@ class PaymentCreditCard extends Payment
     {
         parent::__construct($module);
 
+        $this->transaction = new CreditCardTransaction();
         $this->type = 'creditcard';
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
@@ -241,7 +245,7 @@ class PaymentCreditCard extends Payment
             $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
             $paymentConfig->addSslMaxLimit(
                 new Amount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
+                    (float)$paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
                     'EUR'
                 )
             );
@@ -251,7 +255,7 @@ class PaymentCreditCard extends Payment
             $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
             $paymentConfig->addThreeDMinLimit(
                 new Amount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
+                    (float)$paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
                     'EUR'
                 )
             );
@@ -267,18 +271,30 @@ class PaymentCreditCard extends Payment
      *
      * @param \WirecardPaymentGateway $module
      * @param \Context $context
+     * @param int $cartId
      * @return mixed
+     * @throws \Exception
      * @since 1.0.0
      */
-    public function getRequestData($module, $context)
+    public function getRequestData($module, $context, $cartId)
     {
         $baseUrl = $module->getConfigValue($this->type, 'base_url');
+        $paymentAction = $module->getConfigValue($this->type, 'payment_action');
+        $operation = $this->getOperationForPaymentAction($paymentAction);
         $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
-        $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
-        $transactionService = new TransactionService($config);
 
-        return $transactionService->getDataForCreditCardUi($languageCode, new Amount(0, $currencyCode));
+        $transactionService = new TransactionService($config);
+        $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
+
+        // If an order already exists, use that orderId. Otherwise create a new one.
+        // This case may happen if one previously selected UnionPay International as payment method.
+        $orderId = \Order::getIdByCartId($cartId) ?: $transactionBuilder->createOrder();
+
+        $transactionBuilder->setOrderId($orderId);
+        $transaction = $transactionBuilder->buildTransaction();
+
+        return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
     }
 
     /**
@@ -293,20 +309,12 @@ class PaymentCreditCard extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new CreditCardTransaction();
+        $config = $this->createPaymentConfig($module);
 
-        if (isset($values['expiration_year']) && isset($values['expiration_month'])) {
-            $card = new Card();
+        $this->transaction->setConfig($config->get(CreditCardTransaction::NAME));
+        $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success'));
 
-            $expirationYear = (int) $values['expiration_year'];
-            $expirationMonth = (int) $values['expiration_month'];
-
-            $card->setExpirationYear($expirationYear);
-            $card->setExpirationMonth($expirationMonth);
-            $transaction->setCard($card);
-        }
-
-        return $transaction;
+        return $this->transaction;
     }
 
     /**
@@ -318,12 +326,11 @@ class PaymentCreditCard extends Payment
      */
     public function createCancelTransaction($transactionData)
     {
-        $transaction = new CreditCardTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setParentTransactionType($transactionData->transaction_type);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $this->transaction->setParentTransactionId($transactionData->transaction_id);
+        $this->transaction->setParentTransactionType($transactionData->transaction_type);
+        $this->transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
-        return $transaction;
+        return $this->transaction;
     }
 
     /**
@@ -347,11 +354,10 @@ class PaymentCreditCard extends Payment
      */
     public function createPayTransaction($transactionData)
     {
-        $transaction = new CreditCardTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $this->transaction->setParentTransactionId($transactionData->transaction_id);
+        $this->transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
-        return $transaction;
+        return $this->transaction;
     }
 
     /**
@@ -360,7 +366,7 @@ class PaymentCreditCard extends Payment
      * @return array
      * @since 1.0.0
      */
-    private function setTemplateData()
+    protected function setTemplateData()
     {
         $test = \Configuration::get(
             sprintf(
@@ -381,7 +387,7 @@ class PaymentCreditCard extends Payment
      * @return mixed|string
      * @since 1.3.3
      */
-    private function getSupportedHppLangCode($baseUrl, $context)
+    protected function getSupportedHppLangCode($baseUrl, $context)
     {
         $isoCode = $context->language->iso_code;
         $languageCode = $context->language->language_code;

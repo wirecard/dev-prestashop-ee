@@ -56,4 +56,8 @@ class PaymentOption
     {
         return;
     }
+
+    public function setModuleName($string) {
+        return $this;
+    }
 }

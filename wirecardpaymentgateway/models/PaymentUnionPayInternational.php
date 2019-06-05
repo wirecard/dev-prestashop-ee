@@ -35,19 +35,17 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\UpiTransaction;
-use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
 
 /**
+ *
  * Class PaymentUnionPayInternational
  *
  * @extends Payment
  *
  * @since 1.0.0
  */
-class PaymentUnionPayInternational extends Payment
+class PaymentUnionPayInternational extends PaymentCreditCard
 {
     /**
      * PaymentUnionPayInternational constructor.
@@ -58,11 +56,12 @@ class PaymentUnionPayInternational extends Payment
     {
         parent::__construct($module);
 
+        $this->transaction = new UpiTransaction();
+
         $this->type = 'unionpayinternational';
         $this->name = 'Wirecard UnionPay International';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type);
-        $this->setLoadJs(true);
 
         $this->cancel  = array('authorization');
         $this->capture = array('authorization');
@@ -197,26 +196,9 @@ class PaymentUnionPayInternational extends Payment
     }
 
     /**
-     * Create request data for UnionPayInternational UI
-     *
-     * @param \WirecardPaymentGateway $module
-     * @param \Context $context
-     * @return mixed
-     * @since 1.0.0
-     */
-    public function getRequestData($module, $context)
-    {
-        $baseUrl = $module->getConfigValue($this->type, 'base_url');
-        $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
-        $currencyCode = $context->currency->iso_code;
-        $config = $this->createPaymentConfig($module);
-        $transactionService = new TransactionService($config);
-
-        return $transactionService->getDataForUpiUi($languageCode, new Amount(0, $currencyCode));
-    }
-
-    /**
      * Create UnionPayInternational transaction
+     *
+     * This has to be overriden so that the credit card config is not applied here.
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
@@ -227,80 +209,8 @@ class PaymentUnionPayInternational extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new UpiTransaction();
+        $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success'));
 
-        $transaction->setTokenId($values['tokenId']);
-        $transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success'));
-
-        return $transaction;
-    }
-
-    /**
-     * Create cancel transaction
-     *
-     * @param $transactionData
-     * @return UpiTransaction
-     * @since 1.0.0
-     */
-    public function createCancelTransaction($transactionData)
-    {
-        $transaction = new UpiTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
-
-        return $transaction;
-    }
-
-    /**
-     * Create pay transaction
-     *
-     * @param Transaction $transactionData
-     * @return UpiTransaction
-     * @since 1.0.0
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $transaction = new UpiTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
-
-        return $transaction;
-    }
-
-    /**
-     * Get supported language code for hpp seamless form renderer
-     *
-     * @param string $baseUrl
-     * @param \Context $context
-     * @return mixed|string
-     * @since 1.3.3
-     */
-    private function getSupportedHppLangCode($baseUrl, $context)
-    {
-        $isoCode = $context->language->iso_code;
-        $languageCode = $context->language->language_code;
-        $language = 'en';
-        //special case for chinese languages
-        switch ($languageCode) {
-            case 'zh-tw':
-                $isoCode = 'zh_TW';
-                break;
-            case 'zh-cn':
-                $isoCode = 'zh_CN';
-                break;
-            default:
-                break;
-        }
-        try {
-            $supportedLang = json_decode(\Tools::file_get_contents(
-                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
-            ));
-            if (key_exists($isoCode, $supportedLang)) {
-                $language = $isoCode;
-            }
-        } catch (\Exception $exception) {
-            return 'en';
-        }
-        return $language;
+        return $this->transaction;
     }
 }

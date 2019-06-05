@@ -47,6 +47,15 @@ use Wirecard\PaymentSdk\Config\Config;
 class Payment
 {
     /**
+     * @var array
+     * @since 1.4.0
+     */
+    const OPERATION_MAP = [
+        'pay' => 'purchase',
+        'reserve' => 'authorization',
+    ];
+
+    /**
      * @var string
      * @since 1.0.0
      */
@@ -371,6 +380,22 @@ class Payment
     public function isAvailable($module, $cart)
     {
         return true;
+    }
+
+    /**
+     * Maps from TransactionService values to proper operations.
+     *
+     * @param $action
+     * @return mixed
+     * @since 1.4.0
+     */
+    public function getOperationForPaymentAction($action)
+    {
+        if (key_exists($action, self::OPERATION_MAP)) {
+            return self::OPERATION_MAP[$action];
+        }
+
+        return $action;
     }
 
     /**
