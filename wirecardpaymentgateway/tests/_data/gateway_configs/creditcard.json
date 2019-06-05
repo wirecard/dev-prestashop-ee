@@ -1,6 +1,7 @@
 {
   "NOVA": {
     "base_url": "https://payments-test.wirecard.com",
+    "wpp_url" : "https://wpp-test.wirecard.com",
     "http_user": "NovaTeam",
     "http_pass": "kCopTTMkpw",
     "merchant_account_id": "fd83dbfa-8790-4492-8391-3f3938908b28",
@@ -12,6 +13,7 @@
   },
   "API-WDCEE-TEST": {
     "base_url": "https://api-wdcee-test.wirecard.com",
+    "wpp_url" : "https://wpp-wdcee-test.wirecard.com",
     "http_user": "pink-test",
     "http_pass": "8f5y2h0s",
     "three_d_merchant_account_id" : "49ee1355-cdd3-4205-920f-85391bb3865d",
@@ -23,6 +25,7 @@
   },
   "API-TEST": {
     "base_url": "https://api-test.wirecard.com",
+    "wpp_url" : "https://wpp-test.wirecard.com",
     "http_user": "70000-APITEST-AP",
     "http_pass": "qD2wzQ_hrc!8",
     "merchant_account_id": "53f2895a-e4de-4e82-a813-0d87a10e55e6",
@@ -34,6 +37,7 @@
   },
   "SECURE-TEST-SG": {
     "base_url": "https://secure-test.wirecard.com.sg",
+    "wpp_url" : "https://wpp-test.wirecard.com",
     "http_user": "uatwd_ecom",
     "http_pass": "Tomcat123",
     "merchant_account_id": "d7855010-64c1-4e66-9ab3-d98b309a3d8c",
@@ -45,6 +49,7 @@
   },
   "TEST-SG": {
     "base_url": "https://test.wirecard.com.sg",
+    "wpp_url" : "https://wpp-test.wirecard.com",
     "http_user": "wirecarduser3d",
     "http_pass": "Tomcat123",
     "merchant_account_id": "961c567b-d9da-41f6-9801-ba21cb228a00",

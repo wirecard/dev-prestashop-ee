@@ -84,7 +84,7 @@ $(document).ready(
         {
             if (token === null) {
                 e.preventDefault();
-                WirecardPaymentPage.seamlessSubmitForm(
+                WPP.seamlessSubmit(
                     {
                         onSuccess: formSubmitSuccessHandler,
                         onError: logCallback,
@@ -116,15 +116,15 @@ $(document).ready(
                 {
                     index: 'action',
                     data: 'getseamlessconfig'
-            },
+                },
                 {
                     index: 'id_cart',
                     data: cartId
-            },
+                },
                 {
                     index: 'payment_type',
                     data: paymentMethod
-            }
+                }
             ];
 
             $.ajax({
@@ -155,7 +155,7 @@ $(document).ready(
                     })
             );
 
-            WirecardPaymentPage.seamlessRenderForm({
+            WPP.seamlessRender({
                 requestData: config,
                 wrappingDivId: wrappingDiv,
                 onSuccess: resizeIframe,

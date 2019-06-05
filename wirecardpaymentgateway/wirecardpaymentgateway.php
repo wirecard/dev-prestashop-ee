@@ -977,10 +977,10 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
+        $wpp_url = $this->getConfigValue('creditcard', 'wpp_url');
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
-            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
+            $wpp_url  . '/loader/paymentPage.js',
             array('server' => 'remote', 'position' => 'head', 'priority' => 20)
         );
 

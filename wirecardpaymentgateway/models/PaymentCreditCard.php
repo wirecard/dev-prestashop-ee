@@ -215,6 +215,7 @@ class PaymentCreditCard extends Payment
         );
     }
 
+
     /**
      * Create config for credit card transactions
      *
