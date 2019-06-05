@@ -15,4 +15,4 @@ sleep 5
 composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
 
 #run tests
-cd wirecardpaymentgateway && vendor/bin/codecept run acceptance --env ui_test -g ui_test --steps -vvv
+cd wirecardpaymentgateway && vendor/bin/codecept run acceptance --env ui_test -g ui_test --html --xml
