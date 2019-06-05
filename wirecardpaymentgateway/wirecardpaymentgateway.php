@@ -84,8 +84,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.3.5';
-        $this->version = '1.4.0';
+        $this->version = '2.0.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -977,10 +976,10 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $wpp_url = $this->getConfigValue('creditcard', 'wpp_url');
+        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
-            $wpp_url  . '/loader/paymentPage.js',
+            $wppUrl  . '/loader/paymentPage.js',
             array('server' => 'remote', 'position' => 'head', 'priority' => 20)
         );
 
