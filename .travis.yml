@@ -24,7 +24,7 @@ matrix:
     before_script:
       - pip install --user bs4
       - bash .bin/generate-release-package.sh
-      - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception:^3.0
+      - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception
     script:
       - bash .bin/run-validator-test.sh
     after_script: skip
@@ -52,7 +52,7 @@ matrix:
     after_script: skip
 
   - stage: get-prestashop-versions
-    if: type != cron
+    if: type = cron
     php: 7.1
     install: skip
     before_script: skip
@@ -62,7 +62,7 @@ matrix:
 
   - &acceptance-test
     stage: acceptance-test
-    if: type != cron
+    if: type = cron
     php: 7.1
     env:
     - GATEWAY=API-TEST

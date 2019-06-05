@@ -157,7 +157,7 @@ function updatePrestashopEeDbConfig($db_config, $payment_method)
         $stmtDelete->bind_param('s', $fullName);
         $stmtDelete->execute();
 
-        //insert the new config
+        // insert the new config
         $stmtInsert = $mysqli->prepare("INSERT INTO $tableName (name, value, date_add, date_upd) VALUES (?, ?, now(), now())");
         $stmtInsert->bind_param('ss', $fullName, $value);
         $stmtInsert->execute();
