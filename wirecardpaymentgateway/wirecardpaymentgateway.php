@@ -34,6 +34,7 @@
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use WirecardEE\Prestashop\Helper\UrlMismatch;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
@@ -271,6 +272,10 @@ class WirecardPaymentGateway extends PaymentModule
     {
         if (Tools::isSubmit('btnSubmit')) {
             $this->postProcess();
+        }
+
+        if ($this->checkUrlMismatch()) {
+            $this->html .= $this->displayWarning($this->l('warning_credit_card_url_mismatch'));
         }
 
         $this->context->smarty->assign(
@@ -633,12 +638,24 @@ class WirecardPaymentGateway extends PaymentModule
                 $val = Tools::getValue($parameter['param_name']);
 
                 if (is_array($val)) {
-                    $val = Tools::jsonEncode($val);
+                    $val = json_encode($val);
                 }
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
         $this->html .= $this->displayConfirmation($this->l('settings_updated'));
+    }
+
+    /**
+     * Check Credit Card Url Mismatch
+     * @return bool
+     * @since 2.0.0
+     */
+    protected function checkUrlMismatch()
+    {
+        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
+        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
+        return UrlMismatch::check($baseUrl, $wppUrl);
     }
 
     /**
@@ -1093,7 +1110,7 @@ class WirecardPaymentGateway extends PaymentModule
         $key = $params['s'];
         $basename = basename($smarty->source->name, '.tpl');
 
-        $translation = Translate::smartyPostProcessTranslation(
+        $translation = Translate::postProcessTranslation(
             Translate::getModuleTranslation(
                 $params['mod'],
                 $key,
