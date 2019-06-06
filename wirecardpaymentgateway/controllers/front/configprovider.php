@@ -33,7 +33,6 @@
  */
 
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
 
 /**
  * @property WirecardPaymentGateway module
@@ -55,10 +54,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
     public function displayAjaxGetSeamlessConfig()
     {
         $cartId = Tools::getValue('id_cart');
-        $paymentType = Tools::getValue('payment_type');
-        $payment = $paymentType === "creditcard"
-            ? new PaymentCreditCard($this->module)
-            : new PaymentUnionPayInternational($this->module);
+        $payment =  new PaymentCreditCard($this->module);
 
         try {
             $requestData = $payment->getRequestData($this->module, $this->context, $cartId);

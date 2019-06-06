@@ -615,7 +615,6 @@ class WirecardPaymentGateway extends PaymentModule
             'p24' => new PaymentPtwentyfour($this),
             'poipia' => new PaymentPoiPia($this),
             'masterpass' => new PaymentMasterpass($this),
-            'unionpayinternational' => new PaymentUnionPayInternational($this),
             'alipay-xborder' => new PaymentAlipayCrossborder($this)
         );
 
