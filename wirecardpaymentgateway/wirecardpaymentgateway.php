@@ -275,7 +275,7 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         if ($this->checkUrlMismatch()) {
-            $this->html .= $this->displayWarning($this->l('warning_credit_card_url_mismatch'));
+            $this->html .= $this->displayError($this->l('warning_credit_card_url_mismatch'));
         }
 
         $this->context->smarty->assign(
