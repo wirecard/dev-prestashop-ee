@@ -289,7 +289,6 @@ class PaymentCreditCard extends Payment
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
 
         // If an order already exists, use that orderId. Otherwise create a new one.
-        // This case may happen if one previously selected UnionPay International as payment method.
         $orderId = \Order::getIdByCartId($cartId) ?: $transactionBuilder->createOrder();
 
         $transactionBuilder->setOrderId($orderId);

@@ -295,8 +295,8 @@ class WirecardTransactionsController extends ModuleAdminController
                     'paypal',
                     'alipay-xborder',
                     'p24',
-                    'masterpasss',
-                    'unionpayinternational'))
+                    'masterpasss'
+                    ))
             && $operation == 'refund') {
             return Operation::CANCEL;
         }
@@ -308,8 +308,6 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $order = new Order($orderId);
         switch ($order->payment) {
-            case $this->module->getConfigValue('unionpayinternational', 'title'):
-                return 'unionpayinternational';
             case $this->module->getConfigValue('masterpass', 'title'):
                 return 'masterpass';
             default:

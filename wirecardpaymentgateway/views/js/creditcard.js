@@ -34,8 +34,7 @@ var orderNumber = null;
 var paymentMethod = null;
 var wrappingDiv = null;
 var paymentNameMap = {
-    'creditcard': 'credit-card',
-    'unionpayinternational': 'upi'
+    'creditcard': 'credit-card'
 };
 
 function processAjaxUrl(url, params)
