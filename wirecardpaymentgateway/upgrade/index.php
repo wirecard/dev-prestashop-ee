@@ -32,41 +32,13 @@
  * @copyright Wirecard AG
  * @license GPLv3
  */
-
-class Db
-{
-    protected static $instance;
-
-    public function __construct()
-    {
-    }
-
-    public static function getInstance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new Db();
-        }
-
-        return self::$instance;
-    }
-
-    public static function execute($query, $use_cache = true)
-    {
-        return true;
-    }
-
-    public static function executeS($query)
-    {
-        return $query;
-    }
-
-    public static function getRow()
-    {
-        return true;
-    }
-
-    public static function delete()
-    {
-        return true;
-    }
-}
+                        
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+                        
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+                        
+header("Location: ../");
+exit;

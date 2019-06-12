@@ -67,10 +67,11 @@ class CreditCardVault
      *
      * @since 1.1.0
      */
-    public function getUserCards()
+    public function getUserCards($addressId)
     {
         $query = new \DbQuery();
-        $query->from($this->table)->where('user_id = ' . (int)$this->userId);
+        $query->from($this->table)->where('user_id = ' . (int)$this->userId)
+            ->where('(address_id IS NULL OR address_id = ' . (int)$addressId . ')');
         $query->orderBy('cc_id');
 
         try {
@@ -85,11 +86,13 @@ class CreditCardVault
      *
      * @param $maskedPan
      * @param $token
+     * @param $addressId
+     *
      * @return int|string
      *
      * @since 1.1.0
      */
-    public function addCard($maskedPan, $token)
+    public function addCard($maskedPan, $token, $addressId)
     {
         $db = \Db::getInstance();
 
@@ -103,7 +106,8 @@ class CreditCardVault
             $db->insert($this->table, array(
                 'masked_pan' => pSQL($maskedPan),
                 'token' => pSQL($token),
-                'user_id' => (int)$this->userId
+                'user_id' => (int)$this->userId,
+                'address_id' => (int)$addressId
             ));
         } catch (\PrestaShopDatabaseException $e) {
             $this->logger->error(__METHOD__ . $e->getMessage());
