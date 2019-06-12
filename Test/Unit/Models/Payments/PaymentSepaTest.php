@@ -58,6 +58,8 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->paymentModule->version = '9.9.9';
+
         $this->payment = new PaymentSepaDirectDebit($this->paymentModule);
     }
 
@@ -84,6 +86,9 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
+        $expected->setShopInfo('PrestaShop', _PS_VERSION_);
+        $expected->setPluginInfo('Wirecard_ElasticEngine', $this->paymentModule->version);
+
         $expectedPaymentConfig = new SepaConfig(SepaDirectDebitTransaction::NAME, 'merchant_account_id', 'secret');
         $expectedPaymentConfig->setCreditorId('creditor_id');
         $expected->add($expectedPaymentConfig);

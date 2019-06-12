@@ -59,6 +59,7 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getConfigValue', 'createRedirectUrl', 'createNotificationUrl'])
             ->getMock();
+        $this->paymentModule->version = '9.9.9';
 
         $this->payment = new PaymentUnionPayInternational($this->paymentModule);
 
@@ -102,6 +103,9 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
             'http_user',
             'http_pass'
         );
+        $expected->setShopInfo('PrestaShop', _PS_VERSION_);
+        $expected->setPluginInfo('Wirecard_ElasticEngine', $this->paymentModule->version);
+
         $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
             'unionpayinternational',
             'merchant_account_id',

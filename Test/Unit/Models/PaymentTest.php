@@ -50,9 +50,13 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->paymentModule->version = '9.9.9';
+
         $this->payment = new Payment($this->paymentModule);
         $this->payment->context = new \Context();
         $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
+        $this->config->setShopInfo('PrestaShop', _PS_VERSION_);
+        $this->config->setPluginInfo('Wirecard_ElasticEngine', $this->paymentModule->version);
         $this->paypalPayment = new PaymentPaypal($this->paymentModule);
     }
 
