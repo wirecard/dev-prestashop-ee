@@ -180,6 +180,10 @@ class Payment
     public function createConfig($baseUrl, $httpUser, $httpPass)
     {
         $this->config = new Config($baseUrl, $httpUser, $httpPass);
+
+        $this->config->setShopInfo('PrestaShop', _PS_VERSION_);
+        $this->config->setPluginInfo('Wirecard_ElasticEngine', $this->module->version);
+
         return $this->config;
     }
 
