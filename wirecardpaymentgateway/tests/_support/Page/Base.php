@@ -33,40 +33,90 @@
  * @license GPLv3
  */
 
-class Db
+namespace Page;
+
+class Base
 {
-    protected static $instance;
 
-    public function __construct()
+    /**
+     * @var string
+     * @since 1.3.4
+     */
+    protected $URL = '';
+
+    /**
+     * @var array
+     * @since 1.3.4
+     */
+    protected $elements = array();
+
+    /**
+     * @var string
+     * @since 1.3.4
+     */
+    protected $tester;
+
+    /**
+     * @var AcceptanceTester
+     * @since 1.3.4
+     */
+    public function __construct(\AcceptanceTester $I)
     {
+        $this->tester = $I;
     }
 
-    public static function getInstance()
+    /**
+     * Method getElement
+     *
+     * @param string $name
+     * @return string
+     *
+     * @since 1.3.4
+     */
+    public function getElement($name)
     {
-        if (!isset(self::$instance)) {
-            self::$instance = new Db();
-        }
-
-        return self::$instance;
+        return $this->elements[$name];
     }
 
-    public static function execute($query, $use_cache = true)
+    /**
+     * Method getURL
+     *
+     * @return string
+     *
+     * @since 1.3.4
+     */
+    public function getURL()
     {
-        return true;
+        return $this->URL;
     }
 
-    public static function executeS($query)
+    /**
+     * Method fillBillingDetails
+     *
+     * @since 1.3.4
+     */
+    public function fillBillingDetails()
     {
-        return $query;
+        ;
     }
 
-    public static function getRow()
+    /**
+     * Method fillCreditCardDetails
+     *
+     * @since 1.3.4
+     */
+    public function fillCreditCardDetails()
     {
-        return true;
+        ;
     }
 
-    public static function delete()
+    /**
+     * Method checkBox
+     * @param string $box
+     * @since 1.3.4
+     */
+    public function checkBox($box)
     {
-        return true;
+        $this->tester->checkOption($this->getElement($box));
     }
 }

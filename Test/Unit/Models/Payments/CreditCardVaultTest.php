@@ -49,7 +49,7 @@ class CreditCardVaultTestTest extends PHPUnit_Framework_TestCase
 
     public function testGetUserCards()
     {
-        $this->assertEquals(new \DbQuery(), $this->vault->getUserCards());
+        $this->assertEquals(new \DbQuery(), $this->vault->getUserCards(13));
     }
 
     public function testAddCard()
@@ -58,7 +58,7 @@ class CreditCardVaultTestTest extends PHPUnit_Framework_TestCase
         {
             return $string;
         };
-        $this->assertEquals(null, $this->vault->addCard('123', '333'));
+        $this->assertEquals(null, $this->vault->addCard('123', '333', 13));
     }
 
     public function testDeleteCard()

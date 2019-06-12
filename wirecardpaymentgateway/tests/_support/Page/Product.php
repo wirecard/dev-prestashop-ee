@@ -33,40 +33,25 @@
  * @license GPLv3
  */
 
-class Db
+namespace Page;
+
+class Product extends Base
 {
-    protected static $instance;
 
-    public function __construct()
-    {
-    }
+    /**
+     * @var string
+     * @since 1.3.4
+     */
+    // include url of current page
+    public $URL = 'id_product';
 
-    public static function getInstance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new Db();
-        }
-
-        return self::$instance;
-    }
-
-    public static function execute($query, $use_cache = true)
-    {
-        return true;
-    }
-
-    public static function executeS($query)
-    {
-        return $query;
-    }
-
-    public static function getRow()
-    {
-        return true;
-    }
-
-    public static function delete()
-    {
-        return true;
-    }
+    /**
+     * @var array
+     * @since 1.3.4
+     */
+    public $elements = array(
+        'Quantity' => '//*[@id="quantity_wanted"]',
+        'Add to cart' => "//*[@class='btn btn-primary add-to-cart']",
+        'Cart'        => "//*[@class='material-icons shopping-cart']",
+    );
 }

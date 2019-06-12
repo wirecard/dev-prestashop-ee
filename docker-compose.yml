@@ -1,0 +1,44 @@
+version: '3'
+services:
+# Reference: https://hub.docker.com/_/mysql
+  prestashop.database:
+    container_name: prestashop-database
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PRESTASHOP_DB_PASSWORD}
+      - MYSQL_DATABASE=${PRESTASHOP_DB_NAME}
+    networks:
+      - prestashop-net
+    command:
+      - "--character-set-server=utf8"
+      - "--collation-server=utf8_unicode_ci"
+      - "--default-authentication-plugin=mysql_native_password"
+
+# Default admin credentials:
+# demo@prestashop.com ; prestashop_demo
+# Reference: https://hub.docker.com/r/prestashop/prestashop
+  prestashop.web:
+    container_name: "${PRESTASHOP_CONTAINER_NAME}"
+    build:
+      context: .
+    environment:
+      - PRESTASHOP_VERSION=${PRESTASHOP_VERSION}
+      - DB_SERVER=${PRESTASHOP_DB_SERVER}
+      - DB_PASSWD=${PRESTASHOP_DB_PASSWORD}
+      - DB_NAME=${PRESTASHOP_DB_NAME}
+      - PS_INSTALL_AUTO=1
+      - PS_FOLDER_ADMIN=backend
+      - PS_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN}
+      - PS_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL}
+      - PS_FOLDER_INSTALL=removedinstall
+    networks:
+      - prestashop-net
+    ports:
+      - "8080:80"
+    depends_on:
+      - prestashop.database
+
+# Setup container network, this allows for mysql to be unavailable for the www
+networks:
+  prestashop-net:

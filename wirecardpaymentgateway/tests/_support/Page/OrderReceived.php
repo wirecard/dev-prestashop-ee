@@ -33,40 +33,15 @@
  * @license GPLv3
  */
 
-class Db
+namespace Page;
+
+class OrderReceived extends Base
 {
-    protected static $instance;
 
-    public function __construct()
-    {
-    }
-
-    public static function getInstance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new Db();
-        }
-
-        return self::$instance;
-    }
-
-    public static function execute($query, $use_cache = true)
-    {
-        return true;
-    }
-
-    public static function executeS($query)
-    {
-        return $query;
-    }
-
-    public static function getRow()
-    {
-        return true;
-    }
-
-    public static function delete()
-    {
-        return true;
-    }
+    // include url of current page
+    /**
+     * @var string
+     * @since 1.3.4
+     */
+    public $URL = 'order-confirmation';
 }

@@ -55,6 +55,7 @@ class TestValidatorCest
      * This test will be executed only in 'phpBrowser' environments
      *
      * @env validator
+     * @group validator
      */
 
     public function tryToTest(AcceptanceTester $I)

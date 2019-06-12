@@ -1,5 +1,16 @@
 [
   {
+    "release": "1.3.5",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.5.2",
+    "compatibility": "1.7.5.2",
+    "changelog": [
+      "Update one-click checkout",
+      "Compatibility update"
+    ]
+  },
+
+  {
     "release": "1.3.4",
     "shopsystem": "PrestaShop",
     "tested": "1.7.4.3",
@@ -10,7 +21,7 @@
       "Update SEPA mandate view",
       "Add Guaranteed Invoice consent agreement check",
       "Improve Credit Card user data processing",
-      "Improve notification handling for Payment on Invoice / Payment in Advance"
+      "Improve notification handling for Payment on Invoice / Payment in Advance",
       "Add french language package"
     ]
   },
