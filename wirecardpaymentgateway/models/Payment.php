@@ -47,6 +47,18 @@ use Wirecard\PaymentSdk\Config\Config;
 class Payment
 {
     /**
+     * @var string
+     * @since 1.4.0
+     */
+    const SHOP_NAME = 'PrestaShop';
+
+    /**
+     * @var string
+     * @since 1.4.0
+     */
+    const PLUGIN_NAME = 'Wirecard_ElasticEngine';
+
+    /**
      * @var array
      * @since 1.4.0
      */
@@ -181,8 +193,8 @@ class Payment
     {
         $this->config = new Config($baseUrl, $httpUser, $httpPass);
 
-        $this->config->setShopInfo('PrestaShop', _PS_VERSION_);
-        $this->config->setPluginInfo('Wirecard_ElasticEngine', $this->module->version);
+        $this->config->setShopInfo(self::SHOP_NAME, _PS_VERSION_);
+        $this->config->setPluginInfo(self::PLUGIN_NAME, $this->module->version);
 
         return $this->config;
     }

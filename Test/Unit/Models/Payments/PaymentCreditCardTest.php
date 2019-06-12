@@ -69,7 +69,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getConfigValue', 'createRedirectUrl', 'createNotificationUrl'])
             ->getMock();
-        $this->paymentModule->version = '9.9.9';
+        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
 
         $this->payment = new PaymentCreditCard($this->paymentModule);
 
@@ -103,8 +103,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->setShopInfo('PrestaShop', _PS_VERSION_);
-        $expected->setPluginInfo('Wirecard_ElasticEngine', $this->paymentModule->version);
+        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
+        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
 
         $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
         $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');

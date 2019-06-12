@@ -57,7 +57,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->paymentModule->version = '9.9.9';
+        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
 
         $this->payment = new PaymentGuaranteedInvoiceRatepay($this->paymentModule);
 
@@ -95,8 +95,8 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->setShopInfo('PrestaShop', _PS_VERSION_);
-        $expected->setPluginInfo('Wirecard_ElasticEngine', $this->paymentModule->version);
+        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
+        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
 
         $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
             'ratepayinvoice',
