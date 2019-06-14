@@ -67,6 +67,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->paymentModule->version = '9.9.9';
+      
         $this->payment = new PaymentCreditCard($this->paymentModule);
 
         $this->transactionData = new stdClass();
@@ -99,6 +101,9 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
+        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
+        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
+
         $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
         $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
         $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
@@ -136,7 +141,12 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'requested_amount_currency' => 'EUR',
             'locale' => 'en',
             'payment_method' => 'creditcard',
-            'attempt_three_d' => false
+            'attempt_three_d' => false,
+            'ip_address' => '127.0.0.1',
+            'shop_system_name' => EXPECTED_SHOP_NAME,
+            'shop_system_version' => _PS_VERSION_,
+            'plugin_name' => EXPECTED_PLUGIN_NAME,
+            'plugin_version' => EXPECTED_PLUGIN_VERSION,
         );
 
         for ($i = 0; $i <= 14; $i++) {

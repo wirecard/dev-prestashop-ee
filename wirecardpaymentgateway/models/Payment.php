@@ -48,6 +48,27 @@ class Payment
 {
     /**
      * @var string
+     * @since 1.4.0
+     */
+    const SHOP_NAME = 'Prestashop';
+
+    /**
+     * @var string
+     * @since 1.4.0
+     */
+    const EXTENSION_HEADER_PLUGIN_NAME = 'prestashop-ee+Wirecard';
+
+    /**
+     * @var array
+     * @since 1.4.0
+     */
+    const OPERATION_MAP = [
+        'pay' => 'purchase',
+        'reserve' => 'authorization',
+    ];
+
+    /**
+     * @var string
      * @since 1.0.0
      */
     protected $name;
@@ -171,6 +192,10 @@ class Payment
     public function createConfig($baseUrl, $httpUser, $httpPass)
     {
         $this->config = new Config($baseUrl, $httpUser, $httpPass);
+
+        $this->config->setShopInfo(self::SHOP_NAME, _PS_VERSION_);
+        $this->config->setPluginInfo(self::EXTENSION_HEADER_PLUGIN_NAME, $this->module->version);
+
         return $this->config;
     }
 
@@ -371,6 +396,22 @@ class Payment
     public function isAvailable($module, $cart)
     {
         return true;
+    }
+
+    /**
+     * Maps from TransactionService values to proper operations.
+     *
+     * @param $action
+     * @return mixed
+     * @since 1.4.0
+     */
+    public function getOperationForPaymentAction($action)
+    {
+        if (key_exists($action, self::OPERATION_MAP)) {
+            return self::OPERATION_MAP[$action];
+        }
+
+        return $action;
     }
 
     /**
