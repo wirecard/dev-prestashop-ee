@@ -45,6 +45,7 @@
                 <file>wirecardpaymentgateway/mails/en/index.php</file>
                 <file>wirecardpaymentgateway/translations/index.php</file>
                 <file>wirecardpaymentgateway/codeception.yml</file>
+                <file>wirecardpaymentgateway/upgrade/index.php</file>
             </exclude>
         </whitelist>
     </filter>

@@ -84,10 +84,10 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.4.0';
+        $this->version = '1.3.5';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.4.4');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
@@ -116,6 +116,7 @@ class WirecardPaymentGateway extends PaymentModule
      * Basic install routine
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
      * @since 1.0.0
      */
     public function install()
@@ -131,6 +132,11 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->createTable('tx')
             || !$this->createTable('cc')
             || !$this->setDefaults()) {
+            return false;
+        }
+
+        // in the case of re-installing the module with a newer version
+        if (!$this->addMissingColumns('cc')) {
             return false;
         }
 
@@ -368,11 +374,8 @@ class WirecardPaymentGateway extends PaymentModule
                 $this->createRatepayScript($paymentMethod);
             }
             $payment = new PaymentOption();
-            $payment
-                ->setModuleName('wd-' . $paymentMethod->getType())
-                ->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
+            $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
-
             if ($paymentMethod->getTemplateData()) {
                 $this->context->smarty->assign($paymentMethod->getTemplateData());
             }
@@ -435,7 +438,6 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFromType($paymentType)
     {
         $payments = $this->getPayments();
-
         if ('ratepay-invoice' == $paymentType) {
             $paymentType = 'invoice';
         }
@@ -487,13 +489,13 @@ class WirecardPaymentGateway extends PaymentModule
      * @return null
      * @since 1.0.0
      */
-    public function createRedirectUrl($orderId, $paymentType, $paymentState)
+    public function createRedirectUrl($cartId, $paymentType, $paymentState)
     {
         $returnUrl = $this->context->link->getModuleLink(
             $this->name,
             'return',
             array(
-                'id_order' => $orderId,
+                'id_cart' => $cartId,
                 'payment_type' => $paymentType,
                 'payment_state' => $paymentState,
             )
@@ -886,6 +888,7 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      * Get table columns
      *
+     * @param $name
      * @return array
      * @since 1.0.0
      */
@@ -912,10 +915,52 @@ class WirecardPaymentGateway extends PaymentModule
                 "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
                 "user_id" => array( "INT(10)", "NOT NULL" ),
                 "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
+                "address_id" => array( "INT(10)", "NULL" ),
                 "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
             ) );
 
         return $defs[$name];
+    }
+
+    /**
+     * Add missing columns
+     *
+     * @param $name
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @since 1.3.5
+     */
+    public function addMissingColumns($name)
+    {
+        $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_' . $name . '`';
+        $columns_db = Db::getInstance()->executeS("SHOW COLUMNS FROM $table");
+        $columns    = [];
+
+        $column_definitions = $this->getColumnDefsTable($name);
+
+        $sql = null;
+        if (is_array($columns_db)) {
+            $sql = "ALTER TABLE $table";
+            foreach ($columns_db as $column) {
+                $columns[] = $column['Field'];
+            }
+
+            foreach ($column_definitions as $column => $definitions) {
+                if (!in_array($column, $columns)) {
+                    $sql .= "\n" . 'ADD COLUMN `' . $column . '` ';
+                    foreach ($definitions as $definition) {
+                        $sql .= $definition . ' ';
+                    }
+                    $sql = rtrim($sql, " ");
+                    $sql .= ',';
+                }
+            }
+
+            $sql = rtrim($sql, ",") . ";";
+        }
+
+        return $sql == null ? true : $this->executeSql($sql);
     }
 
     /**
@@ -943,8 +988,7 @@ class WirecardPaymentGateway extends PaymentModule
                     array(
                         'configProviderURL' => $ajaxLink,
                         'ccVaultURL' => $ccVaultLink,
-                        'ajaxsepaurl' => $ajaxSepaUrl,
-                        'cartId' => $this->context->cart->id,
+                        'ajaxsepaurl' => $ajaxSepaUrl
                     )
                 );
                 $this->context->controller->addJS(
@@ -1084,5 +1128,26 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $translation;
+    }
+
+    /**
+     * execute sql statement, return true on success, throws exception on error
+     * optionally ingore an error code
+     *
+     * @param $sql
+     * @param null|int $ignore
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @since 1.3.5
+     */
+    public function executeSql($sql, $ignore = null)
+    {
+        $result = Db::getInstance()->execute($sql);
+        if ($result === false && Db::getInstance()->getNumberError() !== $ignore) {
+            throw new PrestaShopDatabaseException(Db::getInstance()->getMsgError());
+        }
+
+        return true;
     }
 }

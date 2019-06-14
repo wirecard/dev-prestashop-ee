@@ -50,13 +50,13 @@ class Payment
      * @var string
      * @since 1.4.0
      */
-    const SHOP_NAME = 'PrestaShop';
+    const SHOP_NAME = 'Prestashop';
 
     /**
      * @var string
      * @since 1.4.0
      */
-    const PLUGIN_NAME = 'Wirecard_ElasticEngine';
+    const PLUGIN_NAME = 'prestashop-ee+Wirecard';
 
     /**
      * @var array

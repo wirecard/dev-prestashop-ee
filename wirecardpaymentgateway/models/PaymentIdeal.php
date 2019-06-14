@@ -40,7 +40,7 @@ use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\IdealBic;
 use Wirecard\PaymentSdk\Transaction\SepaTransaction;
-use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
+use WirecardEE\Prestashop\Helper\AdditionalInformation;
 use Wirecard\PaymentSdk\Transaction\Operation;
 
 /**

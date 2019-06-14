@@ -47,7 +47,7 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
  *
  * @since 1.0.0
  */
-class AdditionalInformationBuilder
+class AdditionalInformation
 {
     /**
      * Create basket items for transaction
@@ -79,7 +79,7 @@ class AdditionalInformationBuilder
                 $netAmount = $product['total'] / $quantity;
                 $taxAmount = $grossAmount - $netAmount;
                 $taxRate = number_format($taxAmount / $grossAmount * 100, 2);
-                $amount = new Amount((float)number_format($grossAmount, 2, '.', ''), $currency);
+                $amount = new Amount(number_format($grossAmount, 2, '.', ''), $currency);
 
                 $item = new Item($name, $amount, $quantity);
                 $item->setDescription(\Tools::substr(strip_tags($product['description_short']), 0, 127));
@@ -126,7 +126,7 @@ class AdditionalInformationBuilder
     /**
      * Create additional information for fps
      *
-     * @param \Cart $cart
+     * @param Cart $cart
      * @param string $id
      * @param Transaction $transaction
      * @param string $currency
@@ -163,7 +163,7 @@ class AdditionalInformationBuilder
     /**
      * Create accountholder for shipping or billing
      *
-     * @param \Cart $cart
+     * @param Cart $cart
      * @param string $type
      * @return AccountHolder
      * @since 1.0.0
@@ -196,7 +196,7 @@ class AdditionalInformationBuilder
     /**
      * Create accountholder for creditcard transaction
      *
-     * @param \Cart $cart
+     * @param Cart $cart
      * @param string $firstName
      * @param string $lastName
      * @return AccountHolder
@@ -226,7 +226,7 @@ class AdditionalInformationBuilder
     /**
      * Create addressdata for shipping or billing
      *
-     * @param \Address $source
+     * @param PrestaShop\Address $source
      * @param string $type
      * @return Address
      * @since 1.0.0
@@ -280,7 +280,7 @@ class AdditionalInformationBuilder
     /**
      * Sanitizes the state before conversion.
      *
-     * @param \Country $country
+     * @param Prestashop\Country $country
      * @param string $state
      * @return string
      * @since 1.2.0

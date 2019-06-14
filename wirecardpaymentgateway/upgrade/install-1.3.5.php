@@ -33,40 +33,23 @@
  * @license GPLv3
  */
 
-class Db
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+/**
+ * @param WirecardPaymentGateway $module
+ *
+ * @return bool
+ * @throws PrestaShopDatabaseException
+ * @since 1.3.5
+ */
+function upgrade_module_1_3_5($module)
 {
-    protected static $instance;
+    $module->addMissingColumns('cc');
 
-    public function __construct()
-    {
-    }
+    $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_cc`';
+    $module->executeSql("ALTER TABLE $table ADD INDEX user_address (user_id, address_id)", 1061);
 
-    public static function getInstance()
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new Db();
-        }
-
-        return self::$instance;
-    }
-
-    public static function execute($query, $use_cache = true)
-    {
-        return true;
-    }
-
-    public static function executeS($query)
-    {
-        return $query;
-    }
-
-    public static function getRow()
-    {
-        return true;
-    }
-
-    public static function delete()
-    {
-        return true;
-    }
+    return true;
 }
