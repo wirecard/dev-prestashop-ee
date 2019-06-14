@@ -56,7 +56,7 @@ class Payment
      * @var string
      * @since 1.4.0
      */
-    const PLUGIN_NAME = 'prestashop-ee+Wirecard';
+    const EXTENSION_HEADER_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 
     /**
      * @var array
@@ -194,7 +194,7 @@ class Payment
         $this->config = new Config($baseUrl, $httpUser, $httpPass);
 
         $this->config->setShopInfo(self::SHOP_NAME, _PS_VERSION_);
-        $this->config->setPluginInfo(self::PLUGIN_NAME, $this->module->version);
+        $this->config->setPluginInfo(self::EXTENSION_HEADER_PLUGIN_NAME, $this->module->version);
 
         return $this->config;
     }
