@@ -7,13 +7,13 @@ GEM
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     git (1.5.0)
-    highline (2.0.0)
-    jaro_winkler (1.5.1)
+    highline (2.0.1)
+    jaro_winkler (1.5.2)
     multipart-post (2.0.0)
     octokit (4.13.0)
       sawyer (~> 0.8.0, >= 0.5.3)
-    parallel (1.12.1)
-    parser (2.5.3.0)
+    parallel (1.14.0)
+    parser (2.6.0.0)
       ast (~> 2.4.0)
     phraseapp-ruby (2.1.0)
     powerpack (0.1.2)
@@ -38,13 +38,12 @@ GEM
       addressable (>= 2.3.5, < 2.6)
       faraday (~> 0.8, < 1.0)
     simple_po_parser (1.1.5)
-    unicode-display_width (1.4.0)
+    unicode-display_width (1.5.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.17)
   git (~> 1.5)
   highline (~> 2.0)
   octokit (~> 4.13)
@@ -55,4 +54,4 @@ DEPENDENCIES
   simple_po_parser (~> 1.1)
 
 BUNDLED WITH
-   1.17.1
+   2.0.1
