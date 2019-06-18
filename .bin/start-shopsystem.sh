@@ -2,8 +2,8 @@
 #set -e # Exit with nonzero exit code if anything fails
 
 export PRESTASHOP_CONTAINER_NAME=prestashop-web
-export PRESTASHOP_CONTAINER_DOMAIN=localhost:8080
-export PRESTASHOP_CONTAINER_SHOP_URL=localhost:8080
+export PRESTASHOP_CONTAINER_DOMAIN=${NGROK_URL}
+export PRESTASHOP_CONTAINER_SHOP_URL=${NGROK_URL}
 export PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_VERSION}
 export PRESTASHOP_DB_PASSWORD=supersecret
 export PRESTASHOP_DB_SERVER=prestashop-database
