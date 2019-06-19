@@ -91,7 +91,7 @@ class AcceptanceTester extends \Codeception\Actor
                 $page = new ShopPage($this);
                 break;
             case 'Verified':
-                $this->wait(5);
+                $this->wait(15);
                 $page = new VerifiedPage($this);
                 break;
             case 'Order Received':
@@ -186,10 +186,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function iPrepareCheckout()
     {
-        $this->iAmOnPage('Shop');
-        //chose a product and open product page
-        $this->click($this->currentPage->getElement('First Product in the Product List'));
-        $this->iAmRedirectedToPage('Product');
+        $this->iAmOnPage('Product');
         //enter 5 in field quantity
         $this->fillField($this->currentPage->getElement('Quantity'), '5');
         $this->click($this->currentPage->getElement('Add to cart'));

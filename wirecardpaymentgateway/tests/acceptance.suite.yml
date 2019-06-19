@@ -20,12 +20,11 @@ env:
         WebDriver:
           host: 'hub-cloud.browserstack.com'
           port: 80
-          url: 'http://localhost:8080'
+          url: '%NGROK_URL%'
           browser: chrome # 'chrome' or 'firefox'
           capabilities:
             'build': '%VERSION%'
             'project': 'prestashop-ee-%GATEWAY%'
-            'browserstack.local': 'true'
             'browserstack.user': '%BROWSERSTACK_USER%'
             'browserstack.key': '%BROWSERSTACK_ACCESS_KEY%'
 

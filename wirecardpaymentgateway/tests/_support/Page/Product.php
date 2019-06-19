@@ -43,7 +43,7 @@ class Product extends Base
      * @since 1.3.4
      */
     // include url of current page
-    public $URL = 'id_product';
+    public $URL = 'index.php?id_product=1&id_product_attribute=1&rewrite=hummingbird-printed-t-shirt&controller=product#/1-size-s/8-color-white';
 
     /**
      * @var array
