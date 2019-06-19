@@ -12,11 +12,10 @@ curl -sO http://stedolan.github.io/jq/download/linux64/jq
 chmod +x $PWD/jq
 
 
-
 # Open ngrok tunnel
 $PWD/ngrok authtoken $NGROK_TOKEN
 TIMESTAMP=$(date +%s)
-$PWD/ngrok http 80 -subdomain=-subdomain="${TIMESTAMP}${GATEWAY}-${PRESTASHOP_RELEASE_VERSION}" > /dev/null &
+$PWD/ngrok http 80 -subdomain="${TIMESTAMP}${GATEWAY}-${PRESTASHOP_RELEASE_VERSION}" > /dev/null &
 NGROK_URL=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
 
 # allow ngrok to initialize
