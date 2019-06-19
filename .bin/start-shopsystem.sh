@@ -24,6 +24,11 @@ docker-compose build --no-cache --build-arg PRESTASHOP_CONTAINER_NAME=${PRESTASH
                                 prestashop.web
 docker-compose up --force-recreate -d
 
+echo "PRESTASHOP_CONTAINER_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN}"
+echo "PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL}"
+echo "PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_CONTAINER_VERSION}"
+echo "http://${PRESTASHOP_CONTAINER_SHOP_URL}/backend/index.php"
+
 # wait for the host to startup
 while ! $(curl --output /dev/null --silent --head --fail "http://${PRESTASHOP_CONTAINER_SHOP_URL}/backend/index.php"); do
     echo "Waiting for docker container to initialize"

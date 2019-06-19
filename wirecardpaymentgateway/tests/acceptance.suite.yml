@@ -25,7 +25,6 @@ env:
           capabilities:
             'build': '%VERSION%'
             'project': 'prestashop-ee-%GATEWAY%'
-            'browserstack.local': 'true'
             'browserstack.user': '%BROWSERSTACK_USER%'
             'browserstack.key': '%BROWSERSTACK_ACCESS_KEY%'
 
