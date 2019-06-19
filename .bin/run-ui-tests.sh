@@ -3,10 +3,6 @@ set -e # Exit with nonzero exit code if anything fails
 #get version
 export VERSION=`jq .[0].release SHOPVERSIONS`
 
-#start shopsystem and demoshop
-bash .bin/start-shopsystem.sh
-
-
 # download and install ngrok
 curl -s https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip > ngrok.zip
 unzip ngrok.zip
@@ -29,6 +25,10 @@ while [ ! ${NGROK_URL} ] || [ ${NGROK_URL} = 'null' ];  do
     export NGROK_URL=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
     sleep 1
 done
+
+
+#start shopsystem and demoshop
+bash .bin/start-shopsystem.sh
 
 ## download and install BrowserStackLocal
 #wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip
