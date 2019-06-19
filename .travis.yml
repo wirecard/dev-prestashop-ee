@@ -12,11 +12,11 @@ matrix:
     - stage: acceptance-test
   include:
   - php: 5.6
-    if: env(PHRASEAPP_PULL) != '1' AND type = cron
+    if: env(PHRASEAPP_PULL) != '1' AND type != cron
   - php: 7.0
-    if: env(PHRASEAPP_PULL) != '1' AND type = cron
+    if: env(PHRASEAPP_PULL) != '1' AND type != cron
   - php: 7.1
-    if: env(PHRASEAPP_PULL) != '1' AND type = cron
+    if: env(PHRASEAPP_PULL) != '1' AND type != cron
 
   - stage: validator-test
     if: env(VALIDATOR_TEST) = '1'
@@ -64,10 +64,10 @@ matrix:
 
   - &acceptance-test
     stage: acceptance-test
-    if: type != cron
+    if: type = cron
     php: 7.1
     env:
-    - GATEWAY=NOVA
+    - GATEWAY=API-TEST
     - PRESTASHOP_RELEASE_VERSION=1
     before_install: skip
     install:
@@ -75,43 +75,43 @@ matrix:
       export PRESTASHOP_VERSION=$(awk "NR==$PRESTASHOP_RELEASE_VERSION {print; exit}" ${PRESTASHOP_RELEASES_FILE})
     script: bash .bin/run-ui-tests.sh
     after_script: skip
-    after_success: skip
-#    - bash .bin/upload-logs-and-notify.sh
-    after_failure: skip
-#    - bash .bin/upload-logs-and-notify.sh fail
+    after_success:
+    - bash .bin/upload-logs-and-notify.sh
+    after_failure:
+    - bash .bin/upload-logs-and-notify.sh fail
 
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=API-TEST
-#    - PRESTASHOP_RELEASE_VERSION=2
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=API-TEST
-#    - PRESTASHOP_RELEASE_VERSION=3
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=API-WDCEE-TEST
-#    - PRESTASHOP_RELEASE_VERSION=1
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=API-WDCEE-TEST
-#    - PRESTASHOP_RELEASE_VERSION=2
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=API-WDCEE-TEST
-#    - PRESTASHOP_RELEASE_VERSION=3
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=NOVA
-#    - PRESTASHOP_RELEASE_VERSION=1
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=NOVA
-#    - PRESTASHOP_RELEASE_VERSION=2
-#  - <<: *acceptance-test
-#    env:
-#    - GATEWAY=NOVA
-#    - PRESTASHOP_RELEASE_VERSION=3
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=API-TEST
+    - PRESTASHOP_RELEASE_VERSION=2
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=API-TEST
+    - PRESTASHOP_RELEASE_VERSION=3
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=API-WDCEE-TEST
+    - PRESTASHOP_RELEASE_VERSION=1
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=API-WDCEE-TEST
+    - PRESTASHOP_RELEASE_VERSION=2
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=API-WDCEE-TEST
+    - PRESTASHOP_RELEASE_VERSION=3
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=NOVA
+    - PRESTASHOP_RELEASE_VERSION=1
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=NOVA
+    - PRESTASHOP_RELEASE_VERSION=2
+  - <<: *acceptance-test
+    env:
+    - GATEWAY=NOVA
+    - PRESTASHOP_RELEASE_VERSION=3
 
   - stage: deploy
     if: tag IS present AND type = push

@@ -11,7 +11,6 @@ chmod +x $PWD/ngrok
 curl -sO http://stedolan.github.io/jq/download/linux64/jq
 chmod +x $PWD/jq
 
-
 # Open ngrok tunnel
 $PWD/ngrok authtoken $NGROK_TOKEN
 TIMESTAMP=$(date +%s)
@@ -25,15 +24,8 @@ while [ ! ${NGROK_URL} ] || [ ${NGROK_URL} = 'null' ];  do
     sleep 1
 done
 
-
 #start shopsystem and demoshop
 bash .bin/start-shopsystem.sh
-
-## download and install BrowserStackLocal
-#wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip
-#unzip BrowserStackLocal-linux-x64.zip
-#./BrowserStackLocal --key ${BROWSERSTACK_ACCESS_KEY} > /dev/null &
-#sleep 5
 
 composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
 
