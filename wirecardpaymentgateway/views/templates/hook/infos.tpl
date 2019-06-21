@@ -28,19 +28,19 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  *}
 
-<img src="../modules/wirecardpaymentgateway/logo.png">
-<br>
-<p><strong>{lFallback s='pay_with_gateway' mod='wirecardpaymentgateway'}</strong></p>
+<img src="https://www.wirecard.com/assets/media/Logos/wirecard_dark.svg" width="200">
+<br><br>
+
 <div class="btn-group">
     <a class="btn btn-default" id="wirecardTransactions" href="{$link->getAdminLink('WirecardTransactions')|escape:'html':'UTF-8'}">
         <i class="icon-money"></i>
-        {lFallback s='text_list' mod='wirecardpaymentgateway'}
+        {l s='text_list' mod='wirecardpaymentgateway'}
     </a>
     <a class="btn btn-default" id="WirecardSupport" href="{$link->getAdminLink('WirecardSupport')|escape:'html':'UTF-8'}">
-        {lFallback s='text_support' mod='wirecardpaymentgateway'}
+        {l s='text_support' mod='wirecardpaymentgateway'}
     </a>
     <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/prestashop-ee/wiki/Terms-of-Use">
-        {lFallback s='terms_of_use' mod='wirecardpaymentgateway'}
+        {l s='terms_of_use' mod='wirecardpaymentgateway'}
     </a>
 </div>
 <!-- livezilla.net PLACE SOMEWHERE IN BODY -->
