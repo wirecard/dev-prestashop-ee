@@ -39,7 +39,7 @@ use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 
 /**
  * Class PaymentGuaranteedInvoiceRatepay
@@ -260,7 +260,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
         $transaction = new RatepayInvoiceTransaction();
 
-        $additionalInformation = new AdditionalInformation();
+        $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setOrderNumber($cart->id);
         $device = new Device();
@@ -280,7 +280,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     {
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
@@ -299,9 +299,9 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
-        $additionalHelper = new AdditionalInformation();
+        $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
 
         return $transaction;
@@ -321,9 +321,9 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
-        $additionalHelper = new AdditionalInformation();
+        $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
 
         return $transaction;
