@@ -38,7 +38,7 @@ require dirname(__FILE__) . '/../../vendor/autoload.php';
 use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
-use WirecardEE\Prestashop\Helper\UrlMismatch;
+use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 
 /**
  * Class WirecardAjaxController
@@ -60,6 +60,7 @@ class WirecardAjaxController extends ModuleAdminController
                 if ($method === 'sofortbanking') {
                     $method = 'sofort';
                 }
+
                 $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
                 $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
                 $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
@@ -67,6 +68,7 @@ class WirecardAjaxController extends ModuleAdminController
                 
                 $config = new Config($baseUrl, $httpUser, $httpPass);
                 $transactionService = new TransactionService($config, new Logger());
+                $configurationChecker = new UrlConfigurationChecker();
 
                 $status = 'error';
                 $message = $this->l('error_credentials');
@@ -75,12 +77,12 @@ class WirecardAjaxController extends ModuleAdminController
                     $message = $this->l('success_credentials');
                 }
 
-                if (UrlMismatch::check($baseUrl, $wppUrl) && ('creditcard' === $method)) {
+                if (!$configurationChecker->isUrlConfigurationValid($baseUrl, $wppUrl) && ('creditcard' === $method)) {
                     $status = 'error';
                     $message = $this->l('warning_credit_card_url_mismatch');
                 }
 
-                die(json_encode(
+                die(\Tools::jsonEncode(
                     [
                         'status' => htmlspecialchars($status),
                         'message' => htmlspecialchars($message)

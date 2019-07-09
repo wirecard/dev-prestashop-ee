@@ -150,12 +150,12 @@ class PaymentCreditCard extends Payment
                     'required' => true,
                 ),
                 array(
-                    'name' => 'wpp_url',
+                    'name'        => 'wpp_url',
                     'label'       => $this->l('config_wpp_url'),
                     'type'        => 'text',
-                    'doc' => $this->l('config_wpp_url_desc'),
+                    'doc'         => $this->l('config_wpp_url_desc'),
                     'default'     => 'https://wpp-test.wirecard.com',
-                    'required' => true,
+                    'required'    => true,
                 ),
                 array(
                     'name' => 'http_user',

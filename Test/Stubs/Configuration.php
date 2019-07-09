@@ -125,7 +125,7 @@ class Configuration
 
     public static function updateGlobalValue($key, $values, $html = false)
     {
-
+        return true;
     }
 
     public static function deleteByName($string)

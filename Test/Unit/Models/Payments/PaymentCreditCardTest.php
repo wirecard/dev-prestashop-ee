@@ -146,7 +146,9 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'attempt_three_d' => false,
             'field_name_1' => 'paysdk_orderId',
             'field_value_1' => 102,
-            'ip_address' => '127.0.0.1'
+            'ip_address' => '127.0.0.1',
+            'shop_system_name' => 'paymentSDK-php',
+            'shop_system_version' => '',
         );
 
         $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn('base_url');

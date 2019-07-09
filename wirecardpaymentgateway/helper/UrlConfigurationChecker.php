@@ -37,24 +37,45 @@
 namespace WirecardEE\Prestashop\Helper;
 
 /**
- * Class UrlMismatch
+ * Class UrlConfigurationChecker
  * @package WirecardEE\Prestashop\Helper
  * @since 2.0.0
  */
-class UrlMismatch
+class UrlConfigurationChecker
 {
 
     /**
-     * Checks if $baseUrl or $wppUrl have test in url and if another doesn't.
+     * Checks that both URLs use the same environment (testing/productive)
+     *
      * @param string $baseUrl
      * @param string $wppUrl
-     * @return boolean true if one url has test in string and another doesn't
+     *
+     * @return bool
+     *
      * @since 2.0.0
      */
-    public static function check($baseUrl, $wppUrl)
+    public function isUrlConfigurationValid($baseUrl, $wppUrl)
     {
-        $baseUrlHasTest = strpos($baseUrl, 'test') !== false;
-        $wppUrlHasTest = strpos($wppUrl, 'test') !== false;
-        return ((!$baseUrlHasTest && $wppUrlHasTest) || ($baseUrlHasTest && !$wppUrlHasTest));
+        $needle = 'test';
+        $baseUrlContainsTest = $this->checkIfStringContainsSubstring($baseUrl, $needle);
+        $wppUrlContainsTest = $this->checkIfStringContainsSubstring($wppUrl, $needle);
+
+        return $baseUrlContainsTest === $wppUrlContainsTest;
+    }
+
+    /**
+     * @param $string
+     * @param $needle
+     *
+     * @return bool
+     *
+     * @since 2.0.0
+     */
+    protected function checkIfStringContainsSubstring($string, $needle) {
+        if (stripos($string, $needle) === false) {
+            return false;
+        }
+
+        return true;
     }
 }

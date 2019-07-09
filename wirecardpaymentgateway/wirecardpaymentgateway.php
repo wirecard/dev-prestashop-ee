@@ -34,7 +34,7 @@
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use WirecardEE\Prestashop\Helper\UrlMismatch;
+use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
@@ -274,7 +274,7 @@ class WirecardPaymentGateway extends PaymentModule
             $this->postProcess();
         }
 
-        if ($this->checkUrlMismatch()) {
+        if (!$this->isUrlConfigurationValid()) {
             $this->html .= $this->displayError($this->l('warning_credit_card_url_mismatch'));
         }
 
@@ -638,7 +638,7 @@ class WirecardPaymentGateway extends PaymentModule
                 $val = Tools::getValue($parameter['param_name']);
 
                 if (is_array($val)) {
-                    $val = json_encode($val);
+                    $val = \Tools::jsonEncode($val);
                 }
                 Configuration::updateValue($parameter['param_name'], $val);
             }
@@ -647,15 +647,18 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * Check Credit Card Url Mismatch
+     * Check if the defined URLs for credit card payments are valid
+     *
      * @return bool
      * @since 2.0.0
      */
-    protected function checkUrlMismatch()
+    protected function isUrlConfigurationValid()
     {
+        $configurationChecker = new UrlConfigurationChecker();
         $baseUrl = $this->getConfigValue('creditcard', 'base_url');
         $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
-        return UrlMismatch::check($baseUrl, $wppUrl);
+
+        return $configurationChecker->isUrlConfigurationValid($baseUrl, $wppUrl);
     }
 
     /**
