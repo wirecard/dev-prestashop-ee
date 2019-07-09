@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -32,68 +33,25 @@
  * @copyright Wirecard AG
  * @license GPLv3
  */
-require_once __DIR__.'/Translator.php';
 
-class PaymentModule extends Module
+use Wirecard\BaseUrlMatcher\BaseUrlMatcherService;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+/**
+ * @param WirecardPaymentGateway $module
+ *
+ * @return bool
+ * @throws PrestaShopDatabaseException
+ * @since 2.0.0
+ */
+function upgrade_module_2_0_0($module)
 {
-    public function install()
-    {
-        if (!strlen($this->name)) {
-            return false;
-        }
-        return true;
-    }
-
-    public function uninstall()
-    {
-        if (!strlen($this->name)) {
-            return false;
-        }
-        return true;
-    }
-
-    public function l($string)
-    {
-        return $string;
-    }
-
-    public function setName($string)
-    {
-        $this->name = $string;
-    }
-
-    public function displayConfirmation($string)
-    {
-        return $string;
-    }
-
-    public function displayWarning($string)
-    {
-        return $string;
-    }
-
-    public function display($file, $path)
-    {
-        return $file . $path;
-    }
-
-    public function registerHook($string)
-    {
-        return true;
-    }
-
-    public function displayError($string)
-    {
-        return $string;
-    }
-
-    public function fetch($string)
-    {
-        return $string;
-    }
-
-    public function getTranslator()
-    {
-        return new Translator();
-    }
+    $wirecardPaymentGateway= new WirecardPaymentGateway();
+    $baseUrl = $wirecardPaymentGateway->getConfigValue('creditcard', 'base_url');
+    $wppUrl = BaseUrlMatcherService::getWppUrl($baseUrl);
+    Configuration::updateGlobalValue($wirecardPaymentGateway->buildParamName('creditcard', 'wpp_url'), $wppUrl);
+    return true;
 }
