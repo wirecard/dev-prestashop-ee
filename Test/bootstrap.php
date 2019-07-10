@@ -37,6 +37,10 @@ const _PS_MODULE_DIR_ = './';
 const _DB_PREFIX_ = 'Prefix_';
 const _MYSQL_ENGINE_ = 'mysql';
 
+const EXPECTED_PLUGIN_VERSION = '9.9.9';
+const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
+const EXPECTED_SHOP_NAME = 'Prestashop';
+
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
 
 //stub objects

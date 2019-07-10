@@ -55,6 +55,8 @@ class PaymentPoiPiaTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
+
         $this->payment = new PaymentPoiPia($this->paymentModule);
 
         $this->transactionData = new stdClass();
@@ -86,6 +88,9 @@ class PaymentPoiPiaTest extends PHPUnit_Framework_TestCase
         $actual = $this->payment->createPaymentConfig($this->paymentModule);
 
         $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
+        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
+        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
+
         $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
             'wiretransfer',
             'merchant_account_id',

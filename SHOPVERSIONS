@@ -1,9 +1,19 @@
 [
   {
+    "release": "1.3.6",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.5.2",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Add identifying header information"
+    ]
+  },
+
+  {
     "release": "1.3.5",
     "shopsystem": "PrestaShop",
     "tested": "1.7.5.2",
-    "compatibility": "1.7.5.2",
+    "compatibility": "1.7.2.4",
     "changelog": [
       "Update one-click checkout",
       "Compatibility update"
