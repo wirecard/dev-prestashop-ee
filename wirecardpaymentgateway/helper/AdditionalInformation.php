@@ -79,7 +79,7 @@ class AdditionalInformation
                 $netAmount = $product['total'] / $quantity;
                 $taxAmount = $grossAmount - $netAmount;
                 $taxRate = number_format($taxAmount / $grossAmount * 100, 2);
-                $amount = new Amount(number_format($grossAmount, 2, '.', ''), $currency);
+                $amount = new Amount((float) number_format($grossAmount, 2, '.', ''), $currency);
 
                 $item = new Item($name, $amount, $quantity);
                 $item->setDescription(\Tools::substr(strip_tags($product['description_short']), 0, 127));

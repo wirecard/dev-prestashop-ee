@@ -58,6 +58,8 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
+
         $this->payment = new PaymentUnionPayInternational($this->paymentModule);
 
         $this->transactionData = new stdClass();
@@ -99,6 +101,9 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
             'http_user',
             'http_pass'
         );
+        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
+        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
+
         $expected->add(new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
             'unionpayinternational',
             'merchant_account_id',
@@ -151,7 +156,12 @@ class PaymentUnionPayInternationalTest extends PHPUnit_Framework_TestCase
             'requested_amount_currency' => 'EUR',
             'locale' => 'en',
             'payment_method' => 'creditcard',
-            'attempt_three_d' => false
+            'attempt_three_d' => false,
+            'ip_address' => '127.0.0.1',
+            'shop_system_name' => EXPECTED_SHOP_NAME,
+            'shop_system_version' => _PS_VERSION_,
+            'plugin_name' => EXPECTED_PLUGIN_NAME,
+            'plugin_version' => EXPECTED_PLUGIN_VERSION,
         );
 
         for ($i = 0; $i <= 5; $i++) {
