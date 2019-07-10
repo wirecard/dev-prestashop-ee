@@ -149,6 +149,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'payment_method' => 'creditcard',
             'attempt_three_d' => false,
             'ip_address' => '127.0.0.1',
+            'field_name_1' => 'paysdk_orderId',
+            'field_value_1' => 102,
             'shop_system_name' => EXPECTED_SHOP_NAME,
             'shop_system_version' => _PS_VERSION_,
             'plugin_name' => EXPECTED_PLUGIN_NAME,

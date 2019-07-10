@@ -71,7 +71,8 @@ class UrlConfigurationChecker
      *
      * @since 2.0.0
      */
-    protected function checkIfStringContainsSubstring($string, $needle) {
+    protected function checkIfStringContainsSubstring($string, $needle)
+    {
         if (stripos($string, $needle) === false) {
             return false;
         }
