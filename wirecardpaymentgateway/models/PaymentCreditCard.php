@@ -39,6 +39,7 @@ use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
@@ -286,7 +287,8 @@ class PaymentCreditCard extends Payment
         $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
         $config = $this->createPaymentConfig($module);
 
-        $transactionService = new TransactionService($config);
+        $logger = new WirecardLogger();
+        $transactionService = new TransactionService($config, $logger);
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
 
         // If an order already exists, use that orderId. Otherwise create a new one.
@@ -328,7 +330,6 @@ class PaymentCreditCard extends Payment
     public function createCancelTransaction($transactionData)
     {
         $this->transaction->setParentTransactionId($transactionData->transaction_id);
-        $this->transaction->setParentTransactionType($transactionData->transaction_type);
         $this->transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $this->transaction;

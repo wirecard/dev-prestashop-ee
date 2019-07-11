@@ -8,6 +8,7 @@ use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Models\Payment;
 
 class TransactionBuilder
 {
@@ -44,7 +45,7 @@ class TransactionBuilder
      * @param $context
      * @param $cartId
      * @param $paymentType
-     * @since 1.4.0
+     * @since 2.0.0
      */
     public function __construct($module, $context, $cartId, $paymentType)
     {
@@ -61,7 +62,7 @@ class TransactionBuilder
      * Allows setting the order ID in case a pre-existing order is available.
      *
      * @param $orderId
-     * @since 1.4.0
+     * @since 2.0.0
      */
     public function setOrderId($orderId)
     {
@@ -73,7 +74,7 @@ class TransactionBuilder
      *
      * @return \Wirecard\PaymentSdk\Transaction\Transaction
      * @throws \Exception
-     * @since 1.4.0
+     * @since 2.0.0
      */
     public function buildTransaction()
     {
@@ -81,6 +82,7 @@ class TransactionBuilder
             throw new \Exception("An order needs to be created before building a transaction");
         }
 
+        /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($this->paymentType);
 
         /** @var Transaction $transaction */
@@ -105,18 +107,18 @@ class TransactionBuilder
     /**
      * Add the payment amount to the transaction
      *
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function addAmount()
     {
-        $amount = round($this->cart->getOrderTotal(), 2);
+        $amount = number_format($this->cart->getOrderTotal(), 2, '.', '');
         $this->transaction->setAmount(new Amount((float)$amount, $this->currency->iso_code));
     }
 
     /**
      * Add the necessary redirects to the transaction
      *
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function addRedirects()
     {
@@ -137,7 +139,7 @@ class TransactionBuilder
      *
      * @param $key
      * @param $value
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function addCustomField($key, $value)
     {
@@ -148,7 +150,7 @@ class TransactionBuilder
     /**
      * Set the token ID if required
      *
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function addTokenId()
     {
@@ -160,7 +162,7 @@ class TransactionBuilder
     /**
      * Add the basket if required
      *
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function addBasket()
     {
@@ -178,7 +180,7 @@ class TransactionBuilder
     /**
      * Add the descriptor if required
      *
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function addDescriptor()
     {
@@ -190,7 +192,7 @@ class TransactionBuilder
     /**
      * Add additional information if required
      *
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function addAdditionalInformation()
     {
@@ -221,7 +223,7 @@ class TransactionBuilder
      * Create order and set internal order ID.
      *
      * @return int
-     * @since 1.4.0
+     * @since 2.0.0
      */
     public function createOrder()
     {

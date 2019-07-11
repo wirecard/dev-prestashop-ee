@@ -88,7 +88,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * Check if we have an existing orderId or create one if required.
      *
      * @return int
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function determineFinalOrderId()
     {
@@ -110,7 +110,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $config
      * @param $cart
      * @param $orderId
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function executeTransaction($transaction, $operation, $config, $cart, $orderId)
     {
@@ -130,7 +130,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
      * @param int $orderId
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function executeDefaultTransaction($transaction, $config, $operation, $orderId)
     {
@@ -152,7 +152,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $config
      * @param $cart
      * @param $orderId
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function executeSeamlessTransaction($data, $config, $cart, $orderId)
     {
@@ -174,7 +174,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      *
      * @param $response
      * @param $orderId
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function handleTransactionResponse($response, $orderId)
     {
@@ -220,7 +220,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      *
      * @param $existingOrderId
      * @return \Cart
-     * @since 1.4.0
+     * @since 2.0.0
      */
     private function getCart($existingOrderId = null)
     {

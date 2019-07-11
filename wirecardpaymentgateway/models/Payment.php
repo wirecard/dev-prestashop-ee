@@ -48,7 +48,7 @@ class Payment
 {
     /**
      * @var array
-     * @since 1.4.0
+     * @since 2.0.0
      */
     const OPERATION_MAP = [
         'pay' => 'purchase',
@@ -57,13 +57,13 @@ class Payment
 
     /**
      * @var string
-     * @since 1.4.0
+     * @since 2.0.0
      */
     const SHOP_NAME = 'Prestashop';
 
     /**
      * @var string
-     * @since 1.4.0
+     * @since 2.0.0
      */
     const EXTENSION_HEADER_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 
@@ -403,7 +403,7 @@ class Payment
      *
      * @param $action
      * @return mixed
-     * @since 1.4.0
+     * @since 2.0.0
      */
     public function getOperationForPaymentAction($action)
     {

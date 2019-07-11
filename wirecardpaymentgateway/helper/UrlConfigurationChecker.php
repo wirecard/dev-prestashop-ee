@@ -54,11 +54,11 @@ class UrlConfigurationChecker
      *
      * @since 2.0.0
      */
-    public function isUrlConfigurationValid($baseUrl, $wppUrl)
+    public static function isUrlConfigurationValid($baseUrl, $wppUrl)
     {
         $needle = 'test';
-        $baseUrlContainsTest = $this->checkIfStringContainsSubstring($baseUrl, $needle);
-        $wppUrlContainsTest = $this->checkIfStringContainsSubstring($wppUrl, $needle);
+        $baseUrlContainsTest = self::checkIfStringContainsSubstring($baseUrl, $needle);
+        $wppUrlContainsTest = self::checkIfStringContainsSubstring($wppUrl, $needle);
 
         return $baseUrlContainsTest === $wppUrlContainsTest;
     }
@@ -71,7 +71,7 @@ class UrlConfigurationChecker
      *
      * @since 2.0.0
      */
-    protected function checkIfStringContainsSubstring($string, $needle)
+    protected static function checkIfStringContainsSubstring($string, $needle)
     {
         if (stripos($string, $needle) === false) {
             return false;

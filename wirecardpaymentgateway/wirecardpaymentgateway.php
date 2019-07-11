@@ -654,11 +654,10 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected function isUrlConfigurationValid()
     {
-        $configurationChecker = new UrlConfigurationChecker();
         $baseUrl = $this->getConfigValue('creditcard', 'base_url');
         $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
 
-        return $configurationChecker->isUrlConfigurationValid($baseUrl, $wppUrl);
+        return UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl);
     }
 
     /**

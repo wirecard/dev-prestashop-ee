@@ -35,13 +35,10 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Entity\Mandate;
 use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\IdealBic;
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
-use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
-use Wirecard\PaymentSdk\Transaction\Operation;
+use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 
 /**
  * Class PaymentiDEAL
@@ -212,8 +209,8 @@ class PaymentIdeal extends Payment
      * Create refund iDEALTransaction
      *
      * @param $transactionData
-     * @param module
-     * @return SepaTransaction
+     * @param $module
+     * @return SepaCreditTransferTransaction
      * @since 1.0.0
      */
     public function createRefundTransaction($transactionData, $module)

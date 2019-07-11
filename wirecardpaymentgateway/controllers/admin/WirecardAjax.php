@@ -68,18 +68,17 @@ class WirecardAjaxController extends ModuleAdminController
                 
                 $config = new Config($baseUrl, $httpUser, $httpPass);
                 $transactionService = new TransactionService($config, new Logger());
-                $configurationChecker = new UrlConfigurationChecker();
 
                 $status = 'error';
                 $message = $this->l('error_credentials');
+
+                if (('creditcard' === $method) && UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl)) {
+                    $message = $this->l('warning_credit_card_url_mismatch');
+                }
+
                 if ($transactionService->checkCredentials()) {
                     $status = 'ok';
                     $message = $this->l('success_credentials');
-                }
-
-                if (!$configurationChecker->isUrlConfigurationValid($baseUrl, $wppUrl) && ('creditcard' === $method)) {
-                    $status = 'error';
-                    $message = $this->l('warning_credit_card_url_mismatch');
                 }
 
                 die(\Tools::jsonEncode(

@@ -114,6 +114,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
      *
      * @param SuccessResponse $response
      * @param string $cartId
+     * @param int $orderId
      * @since 1.0.0
      */
     public function processSuccess($response, $cartId, $orderId)
