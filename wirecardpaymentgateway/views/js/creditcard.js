@@ -108,11 +108,11 @@ $(document).ready(
                 {
                     index: 'action',
                     data: 'getseamlessconfig'
-                },
+            },
                 {
                     index: 'id_cart',
                     data: cartId
-                }
+            }
             ];
 
             $.ajax({
