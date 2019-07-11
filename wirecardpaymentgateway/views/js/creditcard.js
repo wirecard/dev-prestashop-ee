@@ -31,11 +31,7 @@
 var token = null;
 var form = null;
 var orderNumber = null;
-var paymentMethod = null;
-var wrappingDiv = null;
-var paymentNameMap = {
-    'creditcard': 'credit-card'
-};
+var wrappingDiv = 'payment-processing-gateway-credit-card-form';
 
 function processAjaxUrl(url, params)
 {
@@ -53,9 +49,6 @@ function processAjaxUrl(url, params)
 $(document).ready(
     function () {
         $(document).on('click', 'input[name="payment-option"]', function () {
-            paymentMethod = $(this).data('module-name').replace('wd-', '');
-            wrappingDiv = 'payment-processing-gateway-' + paymentNameMap[paymentMethod] + '-form';
-
             if ($('#' + wrappingDiv).children().length > 0) {
                 return;
             }
@@ -115,15 +108,11 @@ $(document).ready(
                 {
                     index: 'action',
                     data: 'getseamlessconfig'
-            },
+                },
                 {
                     index: 'id_cart',
                     data: cartId
-            },
-                {
-                    index: 'payment_type',
-                    data: paymentMethod
-            }
+                }
             ];
 
             $.ajax({
