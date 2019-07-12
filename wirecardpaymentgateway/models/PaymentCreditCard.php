@@ -35,11 +35,13 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Configuration;
+use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
@@ -54,15 +56,21 @@ class PaymentCreditCard extends Payment
     /** @var CreditCardTransaction */
     protected $transaction;
 
+    /** @var Logger $logger */
+    protected $logger;
+
     /**
      * PaymentCreditCard constructor.
+     * @param \Module $module
      *
+     * @since 2.0.0 Add logger
      * @since 1.0.0
      */
     public function __construct($module)
     {
         parent::__construct($module);
 
+        $this->logger = new Logger();
         $this->transaction = new CreditCardTransaction();
         $this->type = 'creditcard';
         $this->name = 'Wirecard Credit Card';
@@ -384,37 +392,49 @@ class PaymentCreditCard extends Payment
     /**
      * Get supported language code for hpp seamless form renderer
      *
-     * @param string $baseUrl
      * @param \Context $context
-     * @return mixed|string
+     * @return string
+     * @since 2.0.0 Exchange hpp with wpp languages
+     *              Use lib
+     *              Remove $baseUrl param
      * @since 1.3.3
      */
-    protected function getSupportedHppLangCode($baseUrl, $context)
+    protected function getSupportedHppLangCode($context)
     {
-        $isoCode = $context->language->iso_code;
-        $languageCode = $context->language->language_code;
-        $language = 'en';
-        //special case for chinese languages
-        switch ($languageCode) {
-            case 'zh-tw':
-                $isoCode = 'zh_TW';
-                break;
-            case 'zh-cn':
-                $isoCode = 'zh_CN';
-                break;
-            default:
-                break;
-        }
+        $converter = new WppVTwoConverter();
+        $isoCode = $this->stringSuffixToUpperCase(
+            $context->language->language_code
+        );
+
         try {
-            $supportedLang = json_decode(\Tools::file_get_contents(
-                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
-            ));
-            if (key_exists($isoCode, $supportedLang)) {
-                $language = $isoCode;
-            }
+            $converter->init();
+            $language = $converter->convert($isoCode);
         } catch (\Exception $exception) {
-            return 'en';
+            $language = 'en';
+            $this->logger->error(__METHOD__ . $exception);
         }
+
         return $language;
+    }
+
+    /**
+     * Explode a string using the needle
+     * Convert last element to uppercase
+     * Implode string using the needle
+     *
+     * @param $string
+     * @param string $needle
+     * @return string
+     *
+     * @since 2.0.0
+     */
+    protected function stringSuffixToUpperCase($string, $needle = '-')
+    {
+        $explodedString       = explode($needle, $string);
+        $lastElement          = end($explodedString);
+        $key                  = key($explodedString);
+        $explodedString[$key] = mb_strtoupper($lastElement);
+
+        return implode($needle, $explodedString);
     }
 }
