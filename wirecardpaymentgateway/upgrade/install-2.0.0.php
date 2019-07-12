@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -34,6 +33,10 @@
  * @license GPLv3
  */
 
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
+    DIRECTORY_SEPARATOR.'wirecard'.DIRECTORY_SEPARATOR.'base-url-matcher'.
+    DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'BaseUrlMatcherService.php');
+
 use Wirecard\BaseUrlMatcher\BaseUrlMatcherService;
 
 if (!defined('_PS_VERSION_')) {
@@ -44,14 +47,14 @@ if (!defined('_PS_VERSION_')) {
  * @param WirecardPaymentGateway $module
  *
  * @return bool
- * @throws PrestaShopDatabaseException
  * @since 2.0.0
  */
 function upgrade_module_2_0_0($module)
 {
-    $wirecardPaymentGateway= new WirecardPaymentGateway();
-    $baseUrl = $wirecardPaymentGateway->getConfigValue('creditcard', 'base_url');
+    $baseUrl = $module->getConfigValue('creditcard', 'base_url');
     $wppUrl = BaseUrlMatcherService::getWppUrl($baseUrl);
-    Configuration::updateGlobalValue($wirecardPaymentGateway->buildParamName('creditcard', 'wpp_url'), $wppUrl);
+    $wppUrlDbKey = $module->buildParamName('creditcard', 'wpp_url');
+    Configuration::updateGlobalValue($wppUrlDbKey, $wppUrl);
+
     return true;
 }
