@@ -330,7 +330,6 @@ class PaymentCreditCard extends Payment
     public function createCancelTransaction($transactionData)
     {
         $this->transaction->setParentTransactionId($transactionData->transaction_id);
-        $this->transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $this->transaction;
     }

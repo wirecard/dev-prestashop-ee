@@ -40,9 +40,14 @@ use Wirecard\PaymentSdk\Exception\MalformedResponseException;
 use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use Wirecard\PaymentSdk\BackendService;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {
+
+    /** @var \Wirecard\PaymentSdk\BackendService */
+    protected $backendService;
+
     /**
      * Process redirects and responses
      *
@@ -57,8 +62,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $notification = Tools::file_get_contents('php://input');
         $logger = new WirecardLogger();
         try {
-            $transactionService = new TransactionService($config, $logger);
-            $result = $transactionService->handleNotification($notification);
+            $this->backendService = new TransactionService($config, $logger);
+            $result = $this->backendService->handleNotification($notification);
             if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
                 $this->processSuccess($result, $cartId);
             } elseif ($result instanceof FailureResponse) {
@@ -101,11 +106,13 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION == $response->getTransactionType())) {
             return;
         }
+
         $order = new Order($orderId);
         $cartId = $order->id_cart;
         $cart = new Cart((int)($cartId));
-        $orderState = $this->getTransactionOrderState($response);
-        $order->setCurrentState($orderState);
+        $orderState = $this->backendService->getOrderState($response->getTransactionType());
+
+        $order->setCurrentState($this->getPrestaOrderStateId($orderState));
         $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
         $currency = new Currency($cart->id_currency);
 
@@ -153,31 +160,22 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
     }
 
     /**
-     * Get order state for specific transactiontype
+     * Get prestashop specific order state
      *
-     * @param \Wirecard\PaymentSdk\Response\Response $response
+     * @param string $orderState
      * @return integer
      * @since 1.0.0
      */
-    private function getTransactionOrderState($response)
+    private function getPrestaOrderStateId($orderState)
     {
-        switch ($response->getTransactionType()) {
-            case 'authorization':
+        switch ($orderState) {
+            case BackendService::TYPE_AUTHORIZED:
                 return Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
-            case 'void-authorization':
+            case BackendService::TYPE_CANCELLED:
                 return _PS_OS_CANCELED_;
-            case 'void-capture':
-            case 'void-purchase':
-            case 'refund-capture':
-            case 'refund-debit':
-            case 'credit':
-            case 'refund-request':
+            case BackendService::TYPE_REFUNDED:
                 return _PS_OS_REFUND_;
-            case 'debit':
-            case 'capture':
-            case 'purchase':
-            case 'deposit':
-            default:
+            case BackendService::TYPE_PROCESSING:
                 return _PS_OS_PAYMENT_;
         }
     }
