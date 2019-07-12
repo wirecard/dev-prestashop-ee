@@ -41,7 +41,6 @@ use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
@@ -70,7 +69,7 @@ class PaymentCreditCard extends Payment
     {
         parent::__construct($module);
 
-        $this->logger = new Logger();
+        $this->logger = new WirecardLogger();
         $this->transaction = new CreditCardTransaction();
         $this->type = 'creditcard';
         $this->name = 'Wirecard Credit Card';
@@ -289,14 +288,12 @@ class PaymentCreditCard extends Payment
      */
     public function getRequestData($module, $context, $cartId)
     {
-        $baseUrl = $module->getConfigValue($this->type, 'base_url');
         $paymentAction = $module->getConfigValue($this->type, 'payment_action');
         $operation = $this->getOperationForPaymentAction($paymentAction);
         $languageCode = $this->getSupportedLangCode($context);
         $config = $this->createPaymentConfig($module);
 
-        $logger = new WirecardLogger();
-        $transactionService = new TransactionService($config, $logger);
+        $transactionService = new TransactionService($config, $this->logger);
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
 
         // If an order already exists, use that orderId. Otherwise create a new one.
