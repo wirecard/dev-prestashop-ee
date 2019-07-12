@@ -108,23 +108,13 @@ class Transaction extends \ObjectModel
      * @return mixed
      * @since 1.0.0
      */
-    public static function create($idOrder, $idCart, $amount, $currency, $response, $orderNumber = null)
+    public static function create($idOrder, $idCart, $amount, $currency, $response, $transactionState, $orderNumber = null)
     {
         $db = \Db::getInstance();
         $parentTransactionId = '';
-        $transactionState = 'open';
-        $closedTransactions = array(
-            'void-authorization',
-            'void-capture',
-            'refund-capture',
-            'refund-request',
-            'refund-debit'
-        );
+
         if ((new Transaction)->get($response->getParentTransactionId())) {
             $parentTransactionId = $response->getParentTransactionId();
-            if (in_array($response->getTransactionType(), $closedTransactions)) {
-                $transactionState = 'closed';
-            }
         }
 
         $db->insert('wirecard_payment_gateway_tx', array(

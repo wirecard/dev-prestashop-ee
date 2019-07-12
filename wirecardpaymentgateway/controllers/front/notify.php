@@ -116,12 +116,19 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
         $currency = new Currency($cart->id_currency);
 
+        //@TODO translate the open close
+        $transactionState = 'open';
+        if ($this->backendService->isFinal($response->getTransactionType())) {
+            $transactionState = 'closed';
+        }
+
         $transaction = Transaction::create(
             $orderId,
             $cartId,
             $cart->getOrderTotal(true),
             $currency->iso_code,
             $response,
+            $transactionState,
             $order->reference
         );
 
