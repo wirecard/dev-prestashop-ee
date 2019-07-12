@@ -292,7 +292,7 @@ class PaymentCreditCard extends Payment
         $baseUrl = $module->getConfigValue($this->type, 'base_url');
         $paymentAction = $module->getConfigValue($this->type, 'payment_action');
         $operation = $this->getOperationForPaymentAction($paymentAction);
-        $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
+        $languageCode = $this->getSupportedLangCode($context);
         $config = $this->createPaymentConfig($module);
 
         $logger = new WirecardLogger();
@@ -390,7 +390,7 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Get supported language code for hpp seamless form renderer
+     * Get supported language code for seamless form renderer
      *
      * @param \Context $context
      * @return string
@@ -399,7 +399,7 @@ class PaymentCreditCard extends Payment
      *              Remove $baseUrl param
      * @since 1.3.3
      */
-    protected function getSupportedHppLangCode($context)
+    protected function getSupportedLangCode($context)
     {
         $converter = new WppVTwoConverter();
         $isoCode = $this->stringSuffixToUpperCase(
