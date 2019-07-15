@@ -38,6 +38,11 @@
  */
 class WirecardSupportController extends ModuleAdminController
 {
+    use WirecardEE\Prestashop\Helper\TranslationHelper;
+
+    /** @var string  */
+    const TRANSLATION_FILE = "wirecardsupport";
+
     /** @var string */
     protected $display = 'add';
 
@@ -176,26 +181,5 @@ class WirecardSupportController extends ModuleAdminController
         } else {
             $this->confirmations[] = $this->l('success_email');
         }
-    }
-
-    /**
-     * Overwritten translation function, uses the modules translation function with fallback language functionality
-     *
-     * @param string $key translation key
-     * @param string|bool $specific filename of the translation key
-     * @param string|null $class not used!
-     * @param bool $addslashes not used!
-     * @param bool $htmlentities not used!
-     *
-     * @return string translation
-     * @since 1.3.4
-     */
-    protected function l($key, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
-    {
-        if (!$specific) {
-            $specific = 'wirecardsupport';
-        }
-        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
-        return $this->module->l($key, $specific);
     }
 }
