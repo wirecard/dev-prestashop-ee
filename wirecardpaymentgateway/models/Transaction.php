@@ -104,12 +104,21 @@ class Transaction extends \ObjectModel
      * @param int $idCart
      * @param float $amount
      * @param string $currency
+     * @param string $transactionState
+     * @param string $orderNumber
      * @param Response $response
      * @return mixed
      * @since 1.0.0
      */
-    public static function create($idOrder, $idCart, $amount, $currency, $response, $transactionState, $orderNumber = null)
-    {
+    public static function create(
+        $idOrder,
+        $idCart,
+        $amount,
+        $currency,
+        $response,
+        $transactionState,
+        $orderNumber = null
+    ){
         $db = \Db::getInstance();
         $parentTransactionId = '';
 
