@@ -111,23 +111,12 @@ $(document).ready(
 
         function getRequestData()
         {
-            var params = [
-                {
-                    index: 'action',
-                    data: 'getseamlessconfig'
-            },
-                {
-                    index: 'id_cart',
-                    data: cartId
-            },
-                {
-                    index: 'payment_type',
-                    data: paymentMethod
-            }
-            ];
-
             $.ajax({
-                url: processAjaxUrl(configProviderURL, params),
+                url: configProviderURL,
+                data: {
+                    action: 'getSeamlessConfig',
+                    'cartId': cartId
+                },
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {
