@@ -49,6 +49,9 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
  */
 class AdditionalInformationBuilder
 {
+    /** @var int */
+    const TAX_RATE_PRECISION = 2;
+
     /**
      * Create basket items for transaction
      *
@@ -78,8 +81,16 @@ class AdditionalInformationBuilder
 
                 $netAmount = $product['total'] / $quantity;
                 $taxAmount = $grossAmount - $netAmount;
-                $taxRate = number_format($taxAmount / $grossAmount * 100, 2);
-                $amount = new Amount((float)number_format($grossAmount, 2, '.', ''), $currency);
+                $taxRate = number_format($taxAmount / $grossAmount * 100, self::TAX_RATE_PRECISION);
+                $amount = new Amount(
+                    (float)number_format(
+                        $grossAmount,
+                        _PS_PRICE_COMPUTE_PRECISION_,
+                        '.',
+                        ''
+                    ),
+                    $currency
+                );
 
                 $item = new Item($name, $amount, $quantity);
                 $item->setDescription(\Tools::substr(strip_tags($product['description_short']), 0, 127));

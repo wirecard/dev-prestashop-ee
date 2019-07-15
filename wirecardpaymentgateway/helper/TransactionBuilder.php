@@ -111,7 +111,7 @@ class TransactionBuilder
      */
     private function addAmount()
     {
-        $amount = number_format($this->cart->getOrderTotal(), 2, '.', '');
+        $amount = number_format($this->cart->getOrderTotal(), _PS_PRICE_COMPUTE_PRECISION_, '.', '');
         $this->transaction->setAmount(new Amount((float)$amount, $this->currency->iso_code));
     }
 

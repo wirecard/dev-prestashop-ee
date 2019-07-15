@@ -227,6 +227,10 @@ class PaymentCreditCard extends Payment
      */
     public function createPaymentConfig($paymentModule)
     {
+        $defaultCurrency = new \Currency(
+            (int)\Configuration::get('PS_CURRENCY_DEFAULT')
+        );
+
         $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
         $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
         $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
@@ -244,12 +248,13 @@ class PaymentCreditCard extends Payment
             );
         }
 
+
         if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
             $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
             $paymentConfig->addSslMaxLimit(
                 new Amount(
                     (float)$paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    'EUR'
+                    $defaultCurrency->iso_code
                 )
             );
         }
@@ -259,7 +264,7 @@ class PaymentCreditCard extends Payment
             $paymentConfig->addThreeDMinLimit(
                 new Amount(
                     (float)$paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    'EUR'
+                    $defaultCurrency->iso_code
                 )
             );
         }
