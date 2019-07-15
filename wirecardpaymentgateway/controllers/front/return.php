@@ -34,7 +34,6 @@
  */
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
@@ -54,6 +53,9 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     /** @var string  */
     const TRANSLATION_FILE = "return";
 
+    /** @var Order */
+    private $order;
+
     /**
      * Process redirects and responses
      *
@@ -65,81 +67,78 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $paymentType = Tools::getValue('payment_type');
         $paymentState = Tools::getValue('payment_state');
         $orderId = Tools::getValue('id_order');
-        $cartId = Cart::getCartIdByOrderId($orderId);
 
-        $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createPaymentConfig($this->module);
-        if ($paymentState == 'success') {
-            try {
-                $transactionService = new TransactionService($config, new WirecardLogger());
-                $result = $transactionService->handleResponse($response);
-                if ($result instanceof SuccessResponse) {
-                    $this->processSuccess($result, $cartId, $orderId);
-                } elseif ($result instanceof FailureResponse) {
-                    $errors = "";
-                    foreach ($result->getStatusCollection()->getIterator() as $item) {
-                        $errors .= $item->getDescription() . "<br>";
-                    }
-                    $this->errors = $errors;
-                    $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-                }
-            } catch (\InvalidArgumentException $exception) {
-                $this->errors = 'Invalid Argument: ' . $exception->getMessage();
-                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-            } catch (\MalformedResponseException $exception) {
-                $this->errors = 'Malformed Response: ' . $exception->getMessage();
-                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-            } catch (Exception $exception) {
-                $this->errors = $exception->getMessage();
-                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-            }
-        } else {
-            $order = new Order($orderId);
-            if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $order->setCurrentState(_PS_OS_ERROR_);
-                $params = array(
-                    'submitReorder' => true,
-                    'id_order' => (int)$orderId
-                );
-                if ($paymentState == 'cancel') {
-                    $this->errors = $this->l('canceled_payment_process');
-                }
-            } else {
-                $this->errors = $this->l('order_error');
-            }
-            $this->redirectWithNotifications(
-                $this->context->link->getPageLink('order', true, $order->id_lang, $params)
-            );
+        $this->order = new Order($orderId);
+
+        switch ($paymentState) {
+            case "success":
+                $this->processSuccess($response, $paymentType);
+                break;
+            case "cancel":
+                $this->processCancel($orderId);
+                break;
+            case "failure":
+                $this->processFailure($orderId);
+                break;
         }
     }
 
     /**
-     * Create order and redirect for success response
+     * The redirect was successful we need to process the response
      *
-     * @param SuccessResponse $response
-     * @param string $cartId
-     * @param int $orderId
-     * @since 1.0.0
+     * @param array $response
+     * @param string $paymentType
+     * @since 2.0.0
      */
-    public function processSuccess($response, $cartId, $orderId)
+    public function processSuccess($response, $paymentType)
     {
-        sleep(1);
+        $response = $this->processResponseWithTransactionService($response, $paymentType);
 
-        $cart = new Cart((int)($cartId));
-        $customer = new Customer($cart->id_customer);
-        $order = new Order($orderId);
-
-        if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
-            $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+        if ($response instanceof SuccessResponse) {
+            $this->updateOrder($response->getTransactionId());
+            $this->setCookieForSuccessPage($response);
+            $this->redirectToSuccessPage();
         }
 
-        $orderPayments = OrderPayment::getByOrderReference($order->reference);
+        //$this->processFailure($this->order->id);
+        //@TODO error processing and failed transaction
+        $errors = "";
+        foreach ($response->getStatusCollection()->getIterator() as $item) {
+            $errors .= $item->getDescription() . "<br>";
+        }
+        $this->errors = $errors;
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+    }
+
+    /**
+     * Update the order after success
+     *
+     * @param string $transactionId
+     * @since 2.0.0
+     */
+    private function updateOrder($transactionId)
+    {
+        if ($this->order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+        }
+
+        $orderPayments = OrderPayment::getByOrderReference($this->order->reference);
         if (!empty($orderPayments)) {
-            $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
+            $orderPayments[count($orderPayments) - 1]->transaction_id = $transactionId;
             $orderPayments[count($orderPayments) - 1]->save();
         }
+    }
 
-        //set data for PIA to show on thank you page
+    /**
+     * Set the cookie for the frontend to display pia data
+     *
+     * @param $response
+     * @since 2.0.0
+     */
+    private function setCookieForSuccessPage($response)
+    {
+        $this->context->cookie->__set('pia-enabled', false);
+
         if ($response->getPaymentMethod() == 'wiretransfer' &&
             $this->module->getConfigValue('poipia', 'payment_type') == 'pia') {
             $data = $response->getData();
@@ -147,14 +146,101 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             $this->context->cookie->__set('pia-iban', $data['merchant-bank-account.0.iban']);
             $this->context->cookie->__set('pia-bic', $data['merchant-bank-account.0.bic']);
             $this->context->cookie->__set('pia-reference-id', $data['provider-transaction-reference-id']);
+        }
+    }
+
+    /**
+     * Redirect to the thank you page
+     *
+     * @since 2.0.0
+     */
+    private function redirectToSuccessPage()
+    {
+        $customer = new Customer($this->cart->id_customer);
+        Tools::redirect('index.php?controller=order-confirmation&id_cart='
+            .$this->cart->id.'&id_module='
+            .$this->module->id.'&id_order='
+            .$this->order->id.'&key='
+            .$customer->secure_key);
+    }
+
+    /**
+     * Process the failed order redirect
+     *
+     * @param string $orderId
+     * @since 2.0.0
+     */
+    public function processFailure($orderId)
+    {
+        if ($this->order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(_PS_OS_ERROR_);
+            $params = array(
+                'submitReorder' => true,
+                'id_order' => (int)$orderId
+            );
         } else {
-            $this->context->cookie->__set('pia-enabled', false);
+            $this->errors = $this->l('order_error');
+        }
+        $this->redirectWithNotifications(
+            $this->context->link->getPageLink('order', true, $this->order->id_lang, $params)
+        );
+    }
+
+    /**
+     * Process the cancel order redirect
+     *
+     * @param $orderId
+     * @since 2.0.0
+     */
+    public function processCancel($orderId)
+    {
+        $params = array(
+            'submitReorder' => true,
+            'id_order' => (int)$orderId
+        );
+
+        $this->errors = $this->l('canceled_payment_process');
+        $this->redirectWithNotifications(
+            $this->context->link->getPageLink('order', true, $this->order->id_lang, $params)
+        );
+    }
+
+    /**
+     * Process the response with the paymentSDK
+     *
+     * @param array $response
+     * @param string $paymentType
+     * @return \Wirecard\PaymentSdk\Response\FailureResponse|\Wirecard\PaymentSdk\Response\InteractionResponse|\Wirecard\PaymentSdk\Response\Response|SuccessResponse
+     * @since 2.0.0
+     */
+    private function processResponseWithTransactionService($response, $paymentType)
+    {
+        $config = $this->getConfigFromPaymentType($paymentType);
+
+        try {
+            $transactionService = new TransactionService($config, new WirecardLogger());
+            return $transactionService->handleResponse($response);
+        } catch (\InvalidArgumentException $exception) {
+            $this->errors = 'Invalid Argument: ' . $exception->getMessage();
+        } catch (\MalformedResponseException $exception) {
+            $this->errors = 'Malformed Response: ' . $exception->getMessage();
+        } catch (Exception $exception) {
+            $this->errors = $exception->getMessage();
         }
 
-        Tools::redirect('index.php?controller=order-confirmation&id_cart='
-            .$cart->id.'&id_module='
-            .$this->module->id.'&id_order='
-            .$order->id.'&key='
-            .$customer->secure_key);
+        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+    }
+
+    /**
+     * With the payment code load the configuration
+     *
+     * @param string $paymentType
+     * @return \Wirecard\PaymentSdk\Config\Config
+     * @since 2.0.0
+     */
+    private function getConfigFromPaymentType($paymentType)
+    {
+        $payment = $this->module->getPaymentFromType($paymentType);
+        return $payment->createPaymentConfig($this->module);
     }
 }
