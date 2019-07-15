@@ -118,7 +118,7 @@ class Transaction extends \ObjectModel
         $response,
         $transactionState,
         $orderNumber = null
-    ){
+    ) {
         $db = \Db::getInstance();
         $parentTransactionId = '';
 
