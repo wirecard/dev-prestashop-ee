@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -33,31 +34,49 @@
  * @license GPLv3
  */
 
-namespace PrestaShop\PrestaShop\Core\Payment;
+namespace WirecardEE\Prestashop\Helper;
 
-class PaymentOption
+/**
+ * Class UrlConfigurationChecker
+ * @package WirecardEE\Prestashop\Helper
+ * @since 2.0.0
+ */
+class UrlConfigurationChecker
 {
-    public function setCallToActionText($string)
+
+    /**
+     * Checks that both URLs use the same environment (testing/productive)
+     *
+     * @param string $baseUrl
+     * @param string $wppUrl
+     *
+     * @return bool
+     *
+     * @since 2.0.0
+     */
+    public static function isUrlConfigurationValid($baseUrl, $wppUrl)
     {
-        return $this;
+        $needle = 'test';
+        $baseUrlContainsTest = self::checkIfStringContainsSubstring($baseUrl, $needle);
+        $wppUrlContainsTest = self::checkIfStringContainsSubstring($wppUrl, $needle);
+
+        return $baseUrlContainsTest === $wppUrlContainsTest;
     }
 
-    public function setAction($string)
+    /**
+     * @param $string
+     * @param $needle
+     *
+     * @return bool
+     *
+     * @since 2.0.0
+     */
+    protected static function checkIfStringContainsSubstring($string, $needle)
     {
-        return;
-    }
+        if (stripos($string, $needle) === false) {
+            return false;
+        }
 
-    public function setLogo($string)
-    {
-        return;
-    }
-
-    public function setAdditionalInformation($string)
-    {
-        return;
-    }
-
-    public function setModuleName($string) {
-        return $this;
+        return true;
     }
 }

@@ -33,31 +33,28 @@
  * @license GPLv3
  */
 
-namespace PrestaShop\PrestaShop\Core\Payment;
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
+    DIRECTORY_SEPARATOR.'wirecard'.DIRECTORY_SEPARATOR.'base-url-matcher'.
+    DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'BaseUrlMatcherService.php');
 
-class PaymentOption
+use Wirecard\BaseUrlMatcher\BaseUrlMatcherService;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+/**
+ * @param WirecardPaymentGateway $module
+ *
+ * @return bool
+ * @since 2.0.0
+ */
+function upgrade_module_2_0_0($module)
 {
-    public function setCallToActionText($string)
-    {
-        return $this;
-    }
+    $baseUrl = $module->getConfigValue('creditcard', 'base_url');
+    $wppUrl = BaseUrlMatcherService::getWppUrl($baseUrl);
+    $wppUrlDbKey = $module->buildParamName('creditcard', 'wpp_url');
+    Configuration::updateGlobalValue($wppUrlDbKey, $wppUrl);
 
-    public function setAction($string)
-    {
-        return;
-    }
-
-    public function setLogo($string)
-    {
-        return;
-    }
-
-    public function setAdditionalInformation($string)
-    {
-        return;
-    }
-
-    public function setModuleName($string) {
-        return $this;
-    }
+    return true;
 }

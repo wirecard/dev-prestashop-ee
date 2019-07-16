@@ -38,6 +38,7 @@ require dirname(__FILE__) . '/../../vendor/autoload.php';
 use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 
 /**
  * Class WirecardAjaxController
@@ -59,7 +60,9 @@ class WirecardAjaxController extends ModuleAdminController
                 if ($method === 'sofortbanking') {
                     $method = 'sofort';
                 }
+
                 $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
+                $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
                 $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
                 $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
                 
@@ -68,16 +71,21 @@ class WirecardAjaxController extends ModuleAdminController
 
                 $status = 'error';
                 $message = $this->l('error_credentials');
+
+                if (('creditcard' === $method) && UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl)) {
+                    $message = $this->l('warning_credit_card_url_mismatch');
+                }
+
                 if ($transactionService->checkCredentials()) {
                     $status = 'ok';
                     $message = $this->l('success_credentials');
                 }
 
-                die(Tools::jsonEncode(
-                    array(
+                die(\Tools::jsonEncode(
+                    [
                         'status' => htmlspecialchars($status),
                         'message' => htmlspecialchars($message)
-                    )
+                    ]
                 ));
         }
     }

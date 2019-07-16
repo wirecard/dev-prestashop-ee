@@ -67,6 +67,11 @@ class PaymentModule extends Module
         return $string;
     }
 
+    public function displayWarning($string)
+    {
+        return $string;
+    }
+
     public function display($file, $path)
     {
         return $file . $path;

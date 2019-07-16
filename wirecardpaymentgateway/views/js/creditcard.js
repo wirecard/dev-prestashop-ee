@@ -30,6 +30,12 @@
 
 var token = null;
 var form = null;
+var orderNumber = null;
+var paymentMethod = null;
+var wrappingDiv = null;
+var paymentNameMap = {
+    'creditcard': 'credit-card'
+};
 
 function processAjaxUrl(url, params)
 {
@@ -46,14 +52,20 @@ function processAjaxUrl(url, params)
 
 $(document).ready(
     function () {
-        if ($('#payment-processing-gateway-credit-card-form').length > 0) {
+        $(document).on('click', 'input[name="payment-option"]', function () {
+            paymentMethod = $(this).data('module-name').replace('wd-', '');
+            wrappingDiv = 'payment-processing-gateway-' + paymentNameMap[paymentMethod] + '-form';
+
+            if ($('#' + wrappingDiv).children().length > 0) {
+                return;
+            }
+
             getRequestData();
-        }
+        });
+
         $(document).on('submit', '#payment-form', function (e) {
             form = $(this);
-            if (form.attr('action').search('creditcard') >= 0) {
-                placeOrder(e);
-            }
+            placeOrder(e);
         });
 
         $("#new-card").on('click', function () {
@@ -64,21 +76,18 @@ $(document).ready(
         });
 
         $("#wirecard-ccvault-modal").on('show.bs.modal', function () {
-            form = $("#payment-form", $(this).closest(".additional-information").next(".js-payment-option-form"));
             getStoredCards();
         });
 
         function placeOrder(e)
         {
-            if (token !== null) {
-                return;
-            } else {
+            if (token === null) {
                 e.preventDefault();
-                WirecardPaymentPage.seamlessSubmitForm(
+                WPP.seamlessSubmit(
                     {
                         onSuccess: formSubmitSuccessHandler,
                         onError: logCallback,
-                        wrappingDivId: "payment-processing-gateway-credit-card-form"
+                        wrappingDivId: wrappingDiv
                     }
                 );
             }
@@ -102,10 +111,21 @@ $(document).ready(
 
         function getRequestData()
         {
-            var params = [{
-                index: 'action',
-                data: 'getcreditcardconfig'
-            }];
+            var params = [
+                {
+                    index: 'action',
+                    data: 'getseamlessconfig'
+            },
+                {
+                    index: 'id_cart',
+                    data: cartId
+            },
+                {
+                    index: 'payment_type',
+                    data: paymentMethod
+            }
+            ];
+
             $.ajax({
                 url: processAjaxUrl(configProviderURL, params),
                 type: "GET",
@@ -121,9 +141,22 @@ $(document).ready(
 
         function renderForm(config)
         {
-            WirecardPaymentPage.seamlessRenderForm({
+            // This is always the order id
+            orderNumber = config.field_value_1;
+
+            // Since we already generated an order, add the new order id to every payment method.
+            $('.js-payment-option-form form').append(
+                jQuery("<input>")
+                    .attr({
+                        type: 'hidden',
+                        value: orderNumber,
+                        name: 'order_number'
+                    })
+            );
+
+            WPP.seamlessRender({
                 requestData: config,
-                wrappingDivId: "payment-processing-gateway-credit-card-form",
+                wrappingDivId: wrappingDiv,
                 onSuccess: resizeIframe,
                 onError: logCallback
             });
@@ -131,84 +164,52 @@ $(document).ready(
 
         function resizeIframe()
         {
-            $("#payment-processing-gateway-credit-card-form > iframe").height(550);
+            $("#stored-card").removeAttr("disabled");
+            $("#" + wrappingDiv + " > iframe").height(550);
         }
 
         function logCallback(response)
         {
             console.error(response);
+            jQuery(document).off("submit", "#payment-form");
+
+            formHandler(response, form);
+        }
+
+        function formHandler(response, form)
+        {
+            for (var field in response) {
+                if (!response.hasOwnProperty(field)) {
+                    return
+                }
+
+                var value = response[field];
+
+                jQuery("<input>")
+                    .attr({
+                        type: 'hidden',
+                        value: value,
+                        name: field
+                    })
+                    .appendTo(form);
+            }
+
+            if (response.masked_account_number !== undefined) {
+                jQuery("<input>")
+                    .attr({
+                        type: 'hidden',
+                        value: true,
+                        name: 'jsresponse'
+                    })
+                    .appendTo(form);
+            }
+
+            form.submit();
         }
 
         function formSubmitSuccessHandler(response)
         {
             token = response.token_id;
-            if (response.hasOwnProperty('card_token') && response.card_token.hasOwnProperty('token')) {
-                token = response.card_token.token;
-
-                var fields = [ 'expiration_month', 'expiration_year' ];
-                for (var el in  fields) {
-                    el = fields[el];
-                    var element = $("#" + el);
-                    if (element.length > 0) {
-                        element.remove();
-                    } else {
-                        jQuery('<input>').attr(
-                            {
-                                type: 'hidden',
-                                name: el,
-                                id: '#' + el,
-                                value: response.card[el]
-                            }
-                        ).appendTo(form);
-                    }
-                }
-            }
-
-            var fields = [];
-            if (response.hasOwnProperty('last_name')) {
-                fields.push("last_name");
-
-                if (response.hasOwnProperty('first_name')) {
-                    fields.push("first_name");
-                }
-            }
-            for (var el in  fields) {
-                el = fields[el];
-                var element = $("#" + el);
-                if (element.length > 0) {
-                    element.remove();
-                } else {
-                    jQuery('<input>').attr(
-                        {
-                            type: 'hidden',
-                            name: el,
-                            id: '#' + el,
-                            value: response[el]
-                        }
-                    ).appendTo(form);
-                }
-            }
-
-            var successHandler = function (token, form) {
-                $('<input>').attr(
-                    {
-                        type: 'hidden',
-                        name: 'tokenId',
-                        id: 'tokenId',
-                        value: token
-                    }
-                ).appendTo(form);
-                if ($("#wirecard-ccvault-modal").is(':visible')) {
-                    $("#payment-processing-gateway-credit-card-form").empty();
-                    $("#wirecard-store-card").parent().hide();
-                    $("#wirecard-ccvault-modal").modal('hide');
-                    $("#stored-card").addClass('invisible');
-                    $("#new-card-text").removeClass('invisible');
-                    $("#new-card").removeClass('invisible');
-                } else {
-                    form.submit();
-                }
-            };
 
             if (response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
                 var params = [{
@@ -224,10 +225,10 @@ $(document).ready(
                 $.ajax({
                     url: processAjaxUrl(ccVaultURL, params),
                     type: "GET",
-                    success: successHandler(token, form)
+                    success: formHandler(response, form)
                 });
             } else {
-                successHandler(token, form);
+                formHandler(response, form);
             }
         }
 
@@ -256,6 +257,7 @@ $(document).ready(
                     index: 'ccid',
                     data: $(this).data('cardid')
                 }];
+
                 $.ajax({
                     url: processAjaxUrl(ccVaultURL, params),
                     type: "GET",
@@ -267,7 +269,23 @@ $(document).ready(
             });
 
             table.find(".btn-success").bind('click', function () {
-                formSubmitSuccessHandler({token_id:$(this).data('tokenid')});
+                token = $(this).data('tokenid');
+
+                $('.js-payment-option-form form').append(
+                    jQuery("<input>")
+                        .attr({
+                            type: 'hidden',
+                            value: token,
+                            name: 'token_id'
+                        })
+                );
+
+                $("#payment-processing-gateway-credit-card-form").empty();
+                $("#wirecard-store-card").parent().hide();
+                $("#wirecard-ccvault-modal").modal('hide');
+                $("#stored-card").addClass('invisible');
+                $("#new-card-text").removeClass('invisible');
+                $("#new-card").removeClass('invisible');
             });
         }
     }

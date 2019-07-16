@@ -34,6 +34,7 @@
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
@@ -84,7 +85,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '1.3.5';
+        $this->version = '2.0.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -273,6 +274,10 @@ class WirecardPaymentGateway extends PaymentModule
             $this->postProcess();
         }
 
+        if (!$this->isUrlConfigurationValid()) {
+            $this->html .= $this->displayError($this->l('warning_credit_card_url_mismatch'));
+        }
+
         $this->context->smarty->assign(
             array(
                 'module_dir' => $this->_path,
@@ -374,8 +379,11 @@ class WirecardPaymentGateway extends PaymentModule
                 $this->createRatepayScript($paymentMethod);
             }
             $payment = new PaymentOption();
-            $payment->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
+            $payment
+                ->setModuleName('wd-' . $paymentMethod->getType())
+                ->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
+
             if ($paymentMethod->getTemplateData()) {
                 $this->context->smarty->assign($paymentMethod->getTemplateData());
             }
@@ -438,6 +446,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFromType($paymentType)
     {
         $payments = $this->getPayments();
+
         if ('ratepay-invoice' == $paymentType) {
             $paymentType = 'invoice';
         }
@@ -489,13 +498,13 @@ class WirecardPaymentGateway extends PaymentModule
      * @return null
      * @since 1.0.0
      */
-    public function createRedirectUrl($cartId, $paymentType, $paymentState)
+    public function createRedirectUrl($orderId, $paymentType, $paymentState)
     {
         $returnUrl = $this->context->link->getModuleLink(
             $this->name,
             'return',
             array(
-                'id_cart' => $cartId,
+                'id_order' => $orderId,
                 'payment_type' => $paymentType,
                 'payment_state' => $paymentState,
             )
@@ -611,7 +620,6 @@ class WirecardPaymentGateway extends PaymentModule
             'p24' => new PaymentPtwentyfour($this),
             'poipia' => new PaymentPoiPia($this),
             'masterpass' => new PaymentMasterpass($this),
-            'unionpayinternational' => new PaymentUnionPayInternational($this),
             'alipay-xborder' => new PaymentAlipayCrossborder($this)
         );
 
@@ -630,12 +638,26 @@ class WirecardPaymentGateway extends PaymentModule
                 $val = Tools::getValue($parameter['param_name']);
 
                 if (is_array($val)) {
-                    $val = Tools::jsonEncode($val);
+                    $val = \Tools::jsonEncode($val);
                 }
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
         $this->html .= $this->displayConfirmation($this->l('settings_updated'));
+    }
+
+    /**
+     * Check if the defined URLs for credit card payments are valid
+     *
+     * @return bool
+     * @since 2.0.0
+     */
+    protected function isUrlConfigurationValid()
+    {
+        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
+        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
+
+        return UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl);
     }
 
     /**
@@ -972,10 +994,10 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
+        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
         $this->context->controller->registerJavascript(
             'remote-bootstrap',
-            $baseUrl  .'/engine/hpp/paymentPageLoader.js',
+            $wppUrl  . '/loader/paymentPage.js',
             array('server' => 'remote', 'position' => 'head', 'priority' => 20)
         );
 
@@ -988,7 +1010,8 @@ class WirecardPaymentGateway extends PaymentModule
                     array(
                         'configProviderURL' => $ajaxLink,
                         'ccVaultURL' => $ccVaultLink,
-                        'ajaxsepaurl' => $ajaxSepaUrl
+                        'ajaxsepaurl' => $ajaxSepaUrl,
+                        'cartId' => $this->context->cart->id,
                     )
                 );
                 $this->context->controller->addJS(
@@ -1089,7 +1112,7 @@ class WirecardPaymentGateway extends PaymentModule
         $key = $params['s'];
         $basename = basename($smarty->source->name, '.tpl');
 
-        $translation = Translate::smartyPostProcessTranslation(
+        $translation = Translate::postProcessTranslation(
             Translate::getModuleTranslation(
                 $params['mod'],
                 $key,
