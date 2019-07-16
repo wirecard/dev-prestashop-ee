@@ -63,8 +63,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function postProcess()
     {
-        $potentialOrderId = \Tools::getValue('order_number');
-        $cart = $this->getCart($potentialOrderId);
+        $cartId = \Tools::getValue('order_number');
+        $cart = new Cart($cartId);
 
         $paymentType = \Tools::getValue('paymentType');
         $operation = $this->module->getConfigValue($paymentType, 'payment_action');
@@ -72,8 +72,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $config = $payment->createPaymentConfig($this->module);
 
         $this->transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
+        // Create order and get orderId
         $orderId = $this->determineFinalOrderId();
-
 
         try {
             $transaction = $this->transactionBuilder->buildTransaction();
@@ -92,11 +92,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     private function determineFinalOrderId()
     {
-        $potentialOrderId = \Tools::getValue('order_number');
+        // $cartId used for order_number within intial request
+        $cartId = \Tools::getValue('order_number');
+        $orderId = Order::getIdByCartId($cartId);
 
-        if ($potentialOrderId) {
-            $this->transactionBuilder->setOrderId($potentialOrderId);
-            return $potentialOrderId;
+        if ($orderId) {
+            $this->transactionBuilder->setOrderId($orderId);
+            return $orderId;
         } else {
             return $this->transactionBuilder->createOrder();
         }
@@ -118,8 +120,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         if ($isSeamlessTransaction) {
             return $this->executeSeamlessTransaction($_POST, $config, $cart, $orderId);
         }
-
-        $this->transactionBuilder->setOrderId($orderId);
         return $this->executeDefaultTransaction($transaction, $config, $operation, $orderId);
     }
 
@@ -213,31 +213,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
 
         $this->errors = 'An error occured during the checkout process. Please try again.';
         $this->processFailure($orderId);
-    }
-
-    /**
-     * Get the appropriate cart from the shop system.
-     *
-     * @param $existingOrderId
-     * @return \Cart
-     * @since 2.0.0
-     */
-    private function getCart($existingOrderId = null)
-    {
-        $cart = $existingOrderId
-            ? \Cart::getCartByOrderId($existingOrderId)
-            : $this->context->cart;
-
-        if ($cart->id_customer == 0
-            || $cart->id_address_delivery == 0
-            || $cart->id_address_invoice == 0
-            || !$this->module->active
-        ) {
-            $this->errors = 'An error occured during the checkout process. Please try again.';
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        }
-
-        return $cart;
     }
 
     /**

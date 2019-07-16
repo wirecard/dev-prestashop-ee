@@ -78,10 +78,6 @@ class TransactionBuilder
      */
     public function buildTransaction()
     {
-        if (!isset($this->orderId)) {
-            throw new \Exception("An order needs to be created before building a transaction");
-        }
-
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($this->paymentType);
 
@@ -90,12 +86,12 @@ class TransactionBuilder
             $this->module,
             $this->cart,
             \Tools::getAllValues(),
-            $this->orderId
+            $this->cart->id
         );
 
         $this->addAmount();
         $this->addRedirects();
-        $this->addCustomField('orderId', $this->orderId);
+        $this->addCustomField('cartId', $this->cart->id);
         $this->addTokenId();
         $this->addBasket();
         $this->addDescriptor();
@@ -122,8 +118,6 @@ class TransactionBuilder
      */
     private function addRedirects()
     {
-        $cartId = $this->cart->id;
-
         $redirectUrls = new Redirect(
             $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'success'),
             $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'cancel'),
