@@ -40,8 +40,8 @@ namespace WirecardEE\Prestashop\Helper;
  *
  * @since 2.0.0
  */
-class CurrencyConverter {
-
+class CurrencyConverter
+{
     /** @var \Currency[] */
     protected $currencies = [];
 
