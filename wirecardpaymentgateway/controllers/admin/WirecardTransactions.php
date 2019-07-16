@@ -107,7 +107,7 @@ class WirecardTransactionsController extends ModuleAdminController
                 'class' => 'fixed-width-lg',
             ),
             'cart_id' => array(
-                'title' => $this->l('Cart Number'),
+                'title' => $this->l('panel_cart_number'),
                 'class' => 'fixed-width-lg',
             ),
             'paymentmethod' => array(
