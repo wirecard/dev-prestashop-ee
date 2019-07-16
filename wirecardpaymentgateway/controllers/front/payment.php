@@ -100,7 +100,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $this->transactionBuilder->setOrderId($orderId);
             return $orderId;
         } else {
-            return $this->transactionBuilder->createOrder();
+            $orderId = $this->transactionBuilder->createOrder();
+            return $orderId;
         }
     }
 
@@ -157,7 +158,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     private function executeSeamlessTransaction($data, $config, $cart, $orderId)
     {
         $paymentType = \Tools::getValue('paymentType');
-        $redirectUrl =  $this->module->createRedirectUrl($cart->id, $paymentType, 'success');
+        $redirectUrl =  $this->module->createRedirectUrl($orderId, $paymentType, 'success', $cart->id);
         $transactionService = new TransactionService($config, new WirecardLogger());
 
         try {

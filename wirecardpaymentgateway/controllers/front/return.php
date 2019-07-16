@@ -61,8 +61,8 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $paymentType = Tools::getValue('payment_type');
         $paymentState = Tools::getValue('payment_state');
         $orderId = Tools::getValue('id_order');
-        $cartId = $orderId;
-        if ($paymentType !== 'creditcard') {
+        $cartId = Tools::getValue('id_cart');
+        if ($paymentType !== 'creditcard' && empty($cartId)) {
             $cartId = Cart::getCartIdByOrderId($orderId);
         }
 

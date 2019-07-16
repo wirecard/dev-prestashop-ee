@@ -296,9 +296,7 @@ class PaymentCreditCard extends Payment
         $transactionService = new TransactionService($config, $this->logger);
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
         // Set unique cartId as orderId to avoid order creation before payment
-        $orderId = $cartId;
-
-        $transactionBuilder->setOrderId($orderId);
+        $transactionBuilder->setOrderId($cartId);
         $transaction = $transactionBuilder->buildTransaction();
 
         return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
@@ -319,7 +317,7 @@ class PaymentCreditCard extends Payment
         $config = $this->createPaymentConfig($module);
 
         $this->transaction->setConfig($config->get(CreditCardTransaction::NAME));
-        $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success'));
+        $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
 
         return $this->transaction;
     }

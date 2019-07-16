@@ -50,12 +50,12 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     public function postProcess()
     {
+        $logger = new WirecardLogger();
         $paymentType = Tools::getValue('payment_type');
         $cartId = Tools::getValue('id_cart');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
         $notification = Tools::file_get_contents('php://input');
-        $logger = new WirecardLogger();
         try {
             $transactionService = new TransactionService($config, $logger);
             $result = $transactionService->handleNotification($notification);
@@ -102,7 +102,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             return;
         }
         $order = new Order($orderId);
-        $cartId = $order->id_cart;
         $cart = new Cart((int)($cartId));
         $orderState = $this->getTransactionOrderState($response);
         $order->setCurrentState($orderState);

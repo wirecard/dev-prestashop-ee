@@ -86,7 +86,7 @@ class TransactionBuilder
             $this->module,
             $this->cart,
             \Tools::getAllValues(),
-            $this->cart->id
+            $this->orderId
         );
 
         $this->addAmount();
@@ -119,12 +119,12 @@ class TransactionBuilder
     private function addRedirects()
     {
         $redirectUrls = new Redirect(
-            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'success'),
-            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'cancel'),
-            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'failure')
+            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'success', $this->cart->id),
+            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'cancel', $this->cart->id),
+            $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'failure', $this->cart->id)
         );
 
-        $this->transaction->setNotificationUrl($this->module->createNotificationUrl($this->orderId, $this->paymentType));
+        $this->transaction->setNotificationUrl($this->module->createNotificationUrl($this->orderId, $this->paymentType, $this->cart->id));
         $this->transaction->setRedirect($redirectUrls);
     }
 
