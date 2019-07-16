@@ -380,7 +380,11 @@ class PaymentCreditCard extends Payment
             )
         );
 
-        return array('ccvaultenabled' => (bool) $test);
+        $wppUrl = $this->module->getConfigValue('creditcard', 'wpp_url');
+        return array(
+            'ccvaultenabled' => (bool) $test,
+            'paymentPageScript' => $wppUrl . '/loader/paymentPage.js'
+        );
     }
 
     /**

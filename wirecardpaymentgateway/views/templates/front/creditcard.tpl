@@ -28,6 +28,7 @@
 * Please do not use the plugin if you do not agree to these terms of use!
 *}
 
+<script type="text/javascript" src="{$paymentPageScript|escape:'htmlall':'UTF-8'}"></script>
 {if $ccvaultenabled == 'true'}
 <div class="modal fade" id="wirecard-ccvault-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -54,6 +55,7 @@
 <div id="new-card-text" class="invisible">{lFallback s='selected_creditcard_info' mod='wirecardpaymentgateway'}</div>
 <button id="new-card" class="invisible btn btn-primary">{lFallback s='vault_use_new_text' mod='wirecardpaymentgateway'}</button>
 {/if}
+<div>{$paymentPageScript}</div>
 <div id="payment-processing-gateway-credit-card-form">
 </div>
 {if $ccvaultenabled == 'true'}

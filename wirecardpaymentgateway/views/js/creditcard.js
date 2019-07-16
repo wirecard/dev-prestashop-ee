@@ -193,7 +193,9 @@ $(document).ready(
                     .appendTo(form);
             }
 
-            form.submit();
+            if (form !== null) {
+                form.submit();
+            }
         }
 
         function formSubmitSuccessHandler(response)
