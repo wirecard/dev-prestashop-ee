@@ -59,13 +59,13 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->explicitSelect = true;
         $this->allow_export = true;
         $this->deleted = false;
+
         $this->context = Context::getContext();
         $this->identifier = 'tx_id';
 
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
 
-        $this->_orderBy = 'tx_id';
-        $this->_orderWay = 'DESC';
+        $this->setOrderByAndOrderWay();
         $this->_use_found_rows = true;
 
         $statuses = OrderState::getOrderStates((int)$this->context->language->id);
@@ -94,8 +94,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'amount' => array(
                 'title' => $this->l('panel_amount'),
                 'align' => 'text-right',
-                'class' => 'fixed-width-xs',
-                'type' => 'price',
+                'class' => 'fixed-width-xs'
             ),
             'currency' => array(
                 'title' => $this->l('panel_currency'),
@@ -312,6 +311,23 @@ class WirecardTransactionsController extends ModuleAdminController
                 return 'masterpass';
             default:
                 return 'creditcard';
+        }
+    }
+
+    /**
+     * Order columns by
+     * @since 2.0.0
+     */
+    private function setOrderByAndOrderWay()
+    {
+        $this->_orderBy = 'tx_id';
+        $this->_orderWay = 'DESC';
+        if (Tools::getValue($this->table . 'Orderby')) {
+            $this->_orderBy = Tools::getValue($this->table . 'Orderby');
+        }
+
+        if (Tools::getValue($this->table . 'Orderway')) {
+            $this->_orderWay = Tools::getValue($this->table . 'Orderway');
         }
     }
 
