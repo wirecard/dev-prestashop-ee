@@ -40,6 +40,7 @@ use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
+use WirecardEE\Prestashop\Helper\CurrencyConverter;
 
 /**
  * Class PaymentGuaranteedInvoiceRatepay
@@ -402,8 +403,18 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function isInLimit($module, $total)
     {
-        $minimum = $module->getConfigValue($this->type, 'amount_min');
-        $maximum = $module->getConfigValue($this->type, 'amount_max');
+        $currencyConverter = new CurrencyConverter();
+        $currency = \Context::getContext()->currency;
+
+        $minimum = $currencyConverter->convertToCurrency(
+            $module->getConfigValue($this->type, 'amount_min'),
+            $currency->iso_code
+        );
+
+        $maximum = $currencyConverter->convertToCurrency(
+            $module->getConfigValue($this->type, 'amount_max'),
+            $currency->iso_code
+        );
 
         if ($minimum > $total || $total > $maximum) {
             return false;

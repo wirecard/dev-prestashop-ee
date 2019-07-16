@@ -113,6 +113,7 @@ class AdditionalInformationBuilder
 
             $basket->add($item);
         }
+
         return $basket;
     }
 
