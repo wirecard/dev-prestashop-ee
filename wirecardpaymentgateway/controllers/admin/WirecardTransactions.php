@@ -102,9 +102,12 @@ class WirecardTransactionsController extends ModuleAdminController
                 'class' => 'fixed-width-xs',
                 'align' => 'text-right',
             ),
-
             'ordernumber' => array(
                 'title' => $this->l('panel_order_number'),
+                'class' => 'fixed-width-lg',
+            ),
+            'cart_id' => array(
+                'title' => $this->l('Cart Number'),
                 'class' => 'fixed-width-lg',
             ),
             'paymentmethod' => array(
@@ -201,6 +204,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @param $transactionData
      * @param string $operation
      * @since 1.0.0
+     * @return mixed
      */
     public function handleTransaction($transactionData, $operation)
     {
