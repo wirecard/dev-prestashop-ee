@@ -1,16 +1,16 @@
 <?php
 
-use WirecardEE\Prestashop\Helper\CurrencyConverter;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 class CurrencyConverterTest extends \PHPUnit_Framework_TestCase
 {
 
-    /** @var CurrencyConverter */
+    /** @var CurrencyHelper */
     private $converter;
 
     public function setUp()
     {
-        $this->converter = new CurrencyConverter();
+        $this->converter = new CurrencyHelper();
     }
 
     public function testItConvertsTheCurrencyCorrectly()

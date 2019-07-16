@@ -40,7 +40,7 @@ use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
-use WirecardEE\Prestashop\Helper\CurrencyConverter;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 /**
  * Class PaymentGuaranteedInvoiceRatepay
@@ -403,7 +403,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function isInLimit($module, $total)
     {
-        $currencyConverter = new CurrencyConverter();
+        $currencyConverter = new CurrencyHelper();
         $currency = \Context::getContext()->currency;
 
         $minimum = $currencyConverter->convertToCurrency(

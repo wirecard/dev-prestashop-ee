@@ -39,7 +39,7 @@ use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\CurrencyConverter;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
@@ -239,7 +239,7 @@ class PaymentCreditCard extends Payment
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
         $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
-        $currencyConverter = new CurrencyConverter();
+        $currencyConverter = new CurrencyHelper();
 
         if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
             $paymentConfig->setThreeDCredentials(
