@@ -290,9 +290,8 @@ class PaymentCreditCard extends Payment
         $logger = new WirecardLogger();
         $transactionService = new TransactionService($config, $logger);
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
-
-        // If an order already exists, use that orderId. Otherwise create a new one.
-        $orderId = \Order::getIdByCartId($cartId) ?: $transactionBuilder->createOrder();
+        // Set unique cartId as orderId to avoid order creation before payment
+        $orderId = $cartId;
 
         $transactionBuilder->setOrderId($orderId);
         $transaction = $transactionBuilder->buildTransaction();
