@@ -38,7 +38,6 @@ use Configuration;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
@@ -250,14 +249,9 @@ class PaymentCreditCard extends Payment
 
         if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit'))
             && $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
-            $convertedAmount = $currencyConverter->convertToCurrency(
-                $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                $currency->iso_code
-            );
-
             $paymentConfig->addSslMaxLimit(
-                new Amount(
-                    $convertedAmount,
+                $currencyConverter->getConvertedAmount(
+                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
                     $currency->iso_code
                 )
             );
@@ -265,14 +259,9 @@ class PaymentCreditCard extends Payment
 
         if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit'))
             && $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
-            $convertedAmount = $currencyConverter->convertToCurrency(
-                $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                $currency->iso_code
-            );
-
             $paymentConfig->addThreeDMinLimit(
-                new Amount(
-                    $convertedAmount,
+                $currencyConverter->getConvertedAmount(
+                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
                     $currency->iso_code
                 )
             );
