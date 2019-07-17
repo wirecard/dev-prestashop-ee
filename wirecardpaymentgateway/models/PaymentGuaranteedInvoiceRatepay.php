@@ -53,6 +53,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 {
     const MIN_AGE = 18;
 
+    private $currencyHelper;
     /**
      * PaymentGuaranteedInvoiceRatepay constructor.
      *
@@ -70,6 +71,8 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $this->cancel  = array( 'authorization' );
         $this->capture = array( 'authorization' );
         $this->refund  = array( 'capture-authorization' );
+
+        $this->currencyHelper = new CurrencyHelper();
     }
 
     /**
@@ -279,8 +282,17 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     public function createCancelTransaction($transactionData)
     {
+        $cart = new \Cart($transactionData->cart_id);
+        $currency = $transactionData->currency;
+
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
+        $transaction->setAmount(
+            $this->currencyHelper->getAmount(
+                $cart->getOrderTotal(),
+                $currency
+            )
+        );
 
         return $transaction;
     }
@@ -302,6 +314,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
+        $transaction->setAmount(
+            $this->currencyHelper->getAmount(
+                $cart->getOrderTotal(),
+                $currency
+            )
+        );
 
         return $transaction;
     }
@@ -323,6 +341,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
+        $transaction->setAmount(
+            $this->currencyHelper->getAmount(
+                $cart->getOrderTotal(),
+                $currency
+            )
+        );
 
         return $transaction;
     }
