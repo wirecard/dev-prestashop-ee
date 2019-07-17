@@ -498,7 +498,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @return null
      * @since 1.0.0
      */
-    public function createRedirectUrl($orderId, $paymentType, $paymentState)
+    public function createRedirectUrl($orderId, $paymentType, $paymentState, $cartId)
     {
         $returnUrl = $this->context->link->getModuleLink(
             $this->name,
@@ -507,6 +507,7 @@ class WirecardPaymentGateway extends PaymentModule
                 'id_order' => $orderId,
                 'payment_type' => $paymentType,
                 'payment_state' => $paymentState,
+                'id_cart'   => $cartId
             )
         );
 
@@ -519,14 +520,15 @@ class WirecardPaymentGateway extends PaymentModule
      * @return null
      * @since 1.0.0
      */
-    public function createNotificationUrl($cartId, $paymentType)
+    public function createNotificationUrl($orderId, $paymentType, $cartId)
     {
         $returnUrl = $this->context->link->getModuleLink(
             $this->name,
             'notify',
             array(
-                'id_cart' => $cartId,
+                'id_order' => $orderId,
                 'payment_type' => $paymentType,
+                'id_cart' => $cartId
             )
         );
 

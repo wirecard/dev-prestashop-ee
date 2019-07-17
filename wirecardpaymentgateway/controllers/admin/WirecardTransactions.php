@@ -64,8 +64,8 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
 
-        $this->_orderBy = 'tx_id';
-        $this->_orderWay = 'DESC';
+        $this->_defaultOrderBy = 'tx_id';
+        $this->_defaultOrderWay = 'DESC';
         $this->_use_found_rows = true;
 
         $statuses = OrderState::getOrderStates((int)$this->context->language->id);
@@ -193,6 +193,8 @@ class WirecardTransactionsController extends ModuleAdminController
 
             $this->handleTransaction($transaction, \Tools::getValue('action'));
         }
+
+        parent::postProcess();
     }
 
     /**
@@ -201,6 +203,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @param $transactionData
      * @param string $operation
      * @since 1.0.0
+     * @return mixed
      */
     public function handleTransaction($transactionData, $operation)
     {

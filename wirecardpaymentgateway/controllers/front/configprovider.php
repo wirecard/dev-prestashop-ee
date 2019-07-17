@@ -43,8 +43,8 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
 {
     public function initContent()
     {
-        $this->ajax = true;
         parent::initContent();
+        $this->ajax = true;
     }
 
     /**
@@ -53,7 +53,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
      */
     public function displayAjaxGetSeamlessConfig()
     {
-        $cartId = Tools::getValue('id_cart');
+        $cartId = Tools::getValue('cartId');
         $payment =  new PaymentCreditCard($this->module);
 
         try {
