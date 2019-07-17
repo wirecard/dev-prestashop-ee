@@ -156,6 +156,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'plugin_name' => EXPECTED_PLUGIN_NAME,
             'plugin_version' => EXPECTED_PLUGIN_VERSION,
         );
+        
+        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn('authorization');
 
         $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn('base_url');
         $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn('authorization');
@@ -174,7 +176,6 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
     }
