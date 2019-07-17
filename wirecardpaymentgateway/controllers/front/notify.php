@@ -35,14 +35,18 @@
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
 use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use Wirecard\PaymentSdk\BackendService;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {
+
+    /** @var \Wirecard\PaymentSdk\BackendService */
+    protected $backendService;
+
     /**
      * Process redirects and responses
      *
@@ -57,8 +61,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $config = $payment->createPaymentConfig($this->module);
         $notification = Tools::file_get_contents('php://input');
         try {
-            $transactionService = new TransactionService($config, $logger);
-            $result = $transactionService->handleNotification($notification);
+            $this->backendService = new BackendService($config, $logger);
+            $result = $this->backendService->handleNotification($notification);
             if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
                 $this->processSuccess($result, $cartId);
             } elseif ($result instanceof FailureResponse) {
@@ -95,18 +99,28 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     private function processSuccess($response, $cartId)
     {
+        //@TODO temporary fix till refactoring of the return and notify
+        sleep(3);
         $orderId = Order::getOrderByCartId((int)($cartId));
         if ('masterpass' == $response->getPaymentMethod() && (
             \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_DEBIT == $response->getTransactionType() ||
             \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION == $response->getTransactionType())) {
             return;
         }
+
         $order = new Order($orderId);
         $cart = new Cart((int)($cartId));
-        $orderState = $this->getTransactionOrderState($response);
-        $order->setCurrentState($orderState);
+        $orderState = $this->backendService->getOrderState($response->getTransactionType());
+
+        $order->setCurrentState($this->getPrestaOrderStateId($orderState));
         $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
         $currency = new Currency($cart->id_currency);
+
+        //@TODO translate the open close
+        $transactionState = 'open';
+        if ($this->backendService->isFinal($response->getTransactionType())) {
+            $transactionState = 'closed';
+        }
 
         $transaction = Transaction::create(
             $orderId,
@@ -114,6 +128,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             $cart->getOrderTotal(true),
             $currency->iso_code,
             $response,
+            $transactionState,
             $order->reference
         );
 
@@ -152,31 +167,22 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
     }
 
     /**
-     * Get order state for specific transactiontype
+     * Get prestashop specific order state
      *
-     * @param \Wirecard\PaymentSdk\Response\Response $response
+     * @param string $orderState
      * @return integer
      * @since 1.0.0
      */
-    private function getTransactionOrderState($response)
+    private function getPrestaOrderStateId($orderState)
     {
-        switch ($response->getTransactionType()) {
-            case 'authorization':
+        switch ($orderState) {
+            case BackendService::TYPE_AUTHORIZED:
                 return Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
-            case 'void-authorization':
+            case BackendService::TYPE_CANCELLED:
                 return _PS_OS_CANCELED_;
-            case 'void-capture':
-            case 'void-purchase':
-            case 'refund-capture':
-            case 'refund-debit':
-            case 'credit':
-            case 'refund-request':
+            case BackendService::TYPE_REFUNDED:
                 return _PS_OS_REFUND_;
-            case 'debit':
-            case 'capture':
-            case 'purchase':
-            case 'deposit':
-            default:
+            case BackendService::TYPE_PROCESSING:
                 return _PS_OS_PAYMENT_;
         }
     }
