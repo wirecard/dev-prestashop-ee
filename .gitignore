@@ -9,3 +9,4 @@ wirecardpaymentgateway.zip
 !.bin/phraseapp
 !.bin/*.*
 wirecardpaymentgateway/translations/*.json
+wirecardpaymentgateway/translations/*.new
