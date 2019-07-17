@@ -32,30 +32,35 @@ var form = null;
 
 $(document).ready(
     function () {
+        function setDataProtectionInfo()
+        {
+            let dataProtectionLabelElement = $('#invoiceDataProtectionLabel');
+            let dataProtectionInfo = dataProtectionLabelElement.text();
+            dataProtectionLabelElement.text('');
+            dataProtectionLabelElement.append(dataProtectionInfo);
+        }
+
         if ($('#payment-processing-gateway-ratepay-form').length > 0) {
             setDataProtectionInfo();
         }
-        $(document).on('submit','#payment-form', function (e) {
-            form = $(this);
 
-            if (form.attr('action').search('invoice') >= 0) {
+        $('form').submit(function(event){
+            form = $(this);
+            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
+            if (paymentMethod === 'wd-invoice') {
                 if ($('#invoiceDataProtectionCheckbox:checked').val() === '1') {
+                    // check device ident setter for transaction and cookie management
                     $('#invoiceDeviceIdent').attr('type', 'hidden').appendTo(form);
                 } else {
-                    e.preventDefault();
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
 
-                    var hint = document.getElementById('invoiceDataProtectionHint');
+                    let hint = document.getElementById('invoiceDataProtectionHint');
                     hint.style.display = "block";
                 }
             }
         });
-        function setDataProtectionInfo()
-        {
-            var dataProtectionLabelElement = $('#invoiceDataProtectionLabel');
-            var dataProtectionInfo = dataProtectionLabelElement.text();
-            dataProtectionLabelElement.text('');
-            dataProtectionLabelElement.append(dataProtectionInfo);
-        }
     }
 );
 
