@@ -9,6 +9,7 @@ use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Models\Payment;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 class TransactionBuilder
 {
@@ -39,6 +40,9 @@ class TransactionBuilder
     /** @var Transaction */
     private $transaction;
 
+    /** @var CurrencyHelper */
+    private $currencyHelper;
+
     /**
      * TransactionBuilder constructor.
      * @param $module
@@ -56,6 +60,7 @@ class TransactionBuilder
         $this->currency = new \Currency($this->cart->id_currency);
         $this->customFields = new CustomFieldCollection();
         $this->additionalInformationBuilder = new AdditionalInformationBuilder();
+        $this->currencyHelper = new CurrencyHelper();
     }
 
     /**
@@ -107,8 +112,12 @@ class TransactionBuilder
      */
     private function addAmount()
     {
-        $amount = number_format($this->cart->getOrderTotal(), 2, '.', '');
-        $this->transaction->setAmount(new Amount((float)$amount, $this->currency->iso_code));
+        $this->transaction->setAmount(
+            $this->currencyHelper->getAmount(
+                $this->cart->getOrderTotal(),
+                $this->currency->iso_code
+            )
+        );
     }
 
     /**

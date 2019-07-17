@@ -66,7 +66,7 @@ class AdditionalInformationTest extends \PHPUnit_Framework_TestCase
         $this->cart->method('getTotalShippingCost')->willReturn(0);
 
         $taxAmount = 64.78 - 53.98;
-        $taxRate = number_format($taxAmount / 64.78 * 100, 2);
+        $taxRate = number_format($taxAmount / 64.78 * 100, _PS_PRICE_COMPUTE_PRECISION_);
 
         $expected = new Basket();
         $item = new Item('Test1', new Amount(64.78/2, 'EUR'), 2);
@@ -110,7 +110,7 @@ class AdditionalInformationTest extends \PHPUnit_Framework_TestCase
         $actual = $this->additional->createBasket($this->cart, $transaction, 'EUR');
 
         $taxAmount = 64.78 - 53.98;
-        $taxRate = number_format($taxAmount / 64.78 * 100, 2);
+        $taxRate = number_format($taxAmount / 64.78 * 100, _PS_PRICE_COMPUTE_PRECISION_);
 
         $expected = new Basket();
         $expected->setVersion($transaction);

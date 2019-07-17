@@ -39,7 +39,7 @@ use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
@@ -234,6 +234,8 @@ class PaymentCreditCard extends Payment
      */
     public function createPaymentConfig($paymentModule)
     {
+        $currency = \Context::getContext()->currency;
+
         $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
         $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
         $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
@@ -243,6 +245,7 @@ class PaymentCreditCard extends Payment
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
         $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
+        $currencyConverter = new CurrencyHelper();
 
         if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
             $paymentConfig->setThreeDCredentials(
@@ -251,22 +254,22 @@ class PaymentCreditCard extends Payment
             );
         }
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
+        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit'))
+            && $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
             $paymentConfig->addSslMaxLimit(
-                new Amount(
-                    (float)$paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    'EUR'
+                $currencyConverter->getConvertedAmount(
+                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
+                    $currency->iso_code
                 )
             );
         }
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
+        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit'))
+            && $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
             $paymentConfig->addThreeDMinLimit(
-                new Amount(
-                    (float)$paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    'EUR'
+                $currencyConverter->getConvertedAmount(
+                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
+                    $currency->iso_code
                 )
             );
         }
@@ -332,7 +335,6 @@ class PaymentCreditCard extends Payment
     public function createCancelTransaction($transactionData)
     {
         $this->transaction->setParentTransactionId($transactionData->transaction_id);
-        $this->transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $this->transaction;
     }
@@ -359,7 +361,6 @@ class PaymentCreditCard extends Payment
     public function createPayTransaction($transactionData)
     {
         $this->transaction->setParentTransactionId($transactionData->transaction_id);
-        $this->transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $this->transaction;
     }
