@@ -159,7 +159,6 @@ $(document).ready(
 
         function logCallback(response)
         {
-            console.error(response);
             jQuery(document).off("submit", "#payment-form");
 
             formHandler(response, form);
@@ -193,7 +192,9 @@ $(document).ready(
                     .appendTo(form);
             }
 
-            form.submit();
+            if (form !== null) {
+                form.submit();
+            }
         }
 
         function formSubmitSuccessHandler(response)

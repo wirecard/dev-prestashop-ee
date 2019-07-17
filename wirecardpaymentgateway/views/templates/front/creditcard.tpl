@@ -28,6 +28,7 @@
 * Please do not use the plugin if you do not agree to these terms of use!
 *}
 
+<script type="text/javascript" src="{$paymentPageScript|escape:'htmlall':'UTF-8'}"></script>
 {if $ccvaultenabled == 'true'}
 <div class="modal fade" id="wirecard-ccvault-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
