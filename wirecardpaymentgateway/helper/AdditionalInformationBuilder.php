@@ -41,6 +41,7 @@ use Wirecard\PaymentSdk\Entity\Address;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 /**
  * Class AdditionalInformation
@@ -51,6 +52,15 @@ class AdditionalInformationBuilder
 {
     /** @var int */
     const TAX_RATE_PRECISION = 2;
+
+    /** @var CurrencyHelper */
+    private $currencyHelper;
+
+
+    public function __construct()
+    {
+        $this->currencyHelper = new CurrencyHelper();
+    }
 
     /**
      * Create basket items for transaction
@@ -81,14 +91,10 @@ class AdditionalInformationBuilder
 
                 $netAmount = $product['total'] / $quantity;
                 $taxAmount = $grossAmount - $netAmount;
-                $taxRate = number_format($taxAmount / $grossAmount * 100, self::TAX_RATE_PRECISION);
-                $amount = new Amount(
-                    (float)number_format(
-                        $grossAmount,
-                        _PS_PRICE_COMPUTE_PRECISION_,
-                        '.',
-                        ''
-                    ),
+                $taxRate = round($taxAmount / $grossAmount * 100, self::TAX_RATE_PRECISION);
+
+                $amount = $this->currencyHelper->getAmount(
+                    $grossAmount,
                     $currency
                 );
 
