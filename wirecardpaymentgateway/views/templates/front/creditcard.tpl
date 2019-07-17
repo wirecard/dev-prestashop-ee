@@ -55,7 +55,6 @@
 <div id="new-card-text" class="invisible">{lFallback s='selected_creditcard_info' mod='wirecardpaymentgateway'}</div>
 <button id="new-card" class="invisible btn btn-primary">{lFallback s='vault_use_new_text' mod='wirecardpaymentgateway'}</button>
 {/if}
-<div>{$paymentPageScript}</div>
 <div id="payment-processing-gateway-credit-card-form">
 </div>
 {if $ccvaultenabled == 'true'}

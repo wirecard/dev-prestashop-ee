@@ -159,7 +159,6 @@ $(document).ready(
 
         function logCallback(response)
         {
-            console.error(response);
             jQuery(document).off("submit", "#payment-form");
 
             formHandler(response, form);
