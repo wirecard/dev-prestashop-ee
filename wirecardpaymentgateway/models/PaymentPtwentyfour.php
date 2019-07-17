@@ -214,7 +214,6 @@ class PaymentPtwentyfour extends Payment
     {
         $transaction = new PtwentyfourTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }

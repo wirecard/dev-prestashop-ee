@@ -281,7 +281,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     {
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
@@ -300,7 +299,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
@@ -322,7 +320,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount((float)$transactionData->amount, $transactionData->currency));
 
         $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
