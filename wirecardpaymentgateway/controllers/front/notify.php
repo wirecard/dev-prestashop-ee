@@ -35,7 +35,6 @@
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Exception\MalformedResponseException;
 use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\OrderManager;
@@ -62,7 +61,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $config = $payment->createPaymentConfig($this->module);
         $notification = Tools::file_get_contents('php://input');
         try {
-            $this->backendService = new TransactionService($config, $logger);
+            $this->backendService = new BackendService($config, $logger);
             $result = $this->backendService->handleNotification($notification);
             if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
                 $this->processSuccess($result, $cartId);
