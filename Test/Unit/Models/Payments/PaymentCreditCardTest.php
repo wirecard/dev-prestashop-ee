@@ -149,7 +149,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'payment_method' => 'creditcard',
             'attempt_three_d' => false,
             'ip_address' => '127.0.0.1',
-            'field_name_1' => 'paysdk_orderId',
+            'field_name_1' => 'paysdk_cartId',
             'field_value_1' => 102,
             'shop_system_name' => EXPECTED_SHOP_NAME,
             'shop_system_version' => _PS_VERSION_,
@@ -158,12 +158,10 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         );
         
         $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn('authorization');
-
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn('base_url');
         $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn('authorization');
 
-        for ($i = 0; $i <= 14; $i++) {
-            $this->paymentModule->expects($this->at($i + 1))->method('getConfigValue')->willReturn($this->config[$i]);
+        for ($i = 0; $i <= 13; $i++) {
+            $this->paymentModule->expects($this->at($i + 1))->method('getConfigValue')->willReturn($this->config[$i + 1]);
         }
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));
         //unset the generated request id as it is different every time
@@ -184,7 +182,6 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
     }

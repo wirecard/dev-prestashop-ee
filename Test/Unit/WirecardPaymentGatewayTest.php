@@ -123,14 +123,14 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 
     public function testRedirectUrl()
     {
-        $actual = $this->gateway->createRedirectUrl('1', 'paypal', 'success');
+        $actual = $this->gateway->createRedirectUrl('1', 'paypal', 'success', '102');
 
         $this->assertNotNull($actual);
     }
 
     public function testNotificationUrl()
     {
-        $actual = $this->gateway->createNotificationUrl('1', 'paypal');
+        $actual = $this->gateway->createNotificationUrl('1', 'paypal', '102');
 
         $this->assertNotNull($actual);
     }

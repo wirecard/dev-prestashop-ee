@@ -115,7 +115,6 @@ class PaymentPtwentyfourTest extends PHPUnit_Framework_TestCase
     {
         $expected = new \Wirecard\PaymentSdk\Transaction\PtwentyfourTransaction();
         $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($expected, $this->payment->createCancelTransaction($this->transactionData));
     }
