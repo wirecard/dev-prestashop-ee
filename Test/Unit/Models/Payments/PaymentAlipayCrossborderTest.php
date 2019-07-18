@@ -122,7 +122,6 @@ class PaymentAlipayCrossborderTest extends PHPUnit_Framework_TestCase
         $expected = new \Wirecard\PaymentSdk\Transaction\AlipayCrossborderTransaction();
 
         $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $actual = $this->payment->createCancelTransaction(
             $this->transactionData,

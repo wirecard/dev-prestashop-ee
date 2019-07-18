@@ -134,7 +134,11 @@ class TransactionBuilder
         );
 
         $this->transaction->setNotificationUrl(
-            $this->module->createNotificationUrl($this->orderId, $this->paymentType, $this->cart->id)
+            $this->module->createNotificationUrl(
+                $this->orderId,
+                $this->paymentType,
+                $this->cart->id
+            )
         );
         $this->transaction->setRedirect($redirectUrls);
     }

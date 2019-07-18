@@ -109,4 +109,9 @@ class Tools
     {
         return file_get_contents($var);
     }
+
+    public static function ps_round($value, $precision, $mode = PHP_ROUND_HALF_UP)
+    {
+        return round($value, $precision, $mode);
+    }
 }
