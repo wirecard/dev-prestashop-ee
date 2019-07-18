@@ -146,15 +146,14 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         }
 
         //set data for PIA to show on thank you page
-        if ($response->getPaymentMethod() == 'wiretransfer' &&
-            $this->module->getConfigValue('poipia', 'payment_type') == 'pia') {
+        $this->context->cookie->__set('pia-enabled', false);
+        if ($response->getPaymentMethod() === 'wiretransfer' &&
+            $this->module->getConfigValue('poipia', 'payment_type') === 'pia') {
             $data = $response->getData();
             $this->context->cookie->__set('pia-enabled', true);
             $this->context->cookie->__set('pia-iban', $data['merchant-bank-account.0.iban']);
             $this->context->cookie->__set('pia-bic', $data['merchant-bank-account.0.bic']);
             $this->context->cookie->__set('pia-reference-id', $data['provider-transaction-reference-id']);
-        } else {
-            $this->context->cookie->__set('pia-enabled', false);
         }
 
         Tools::redirect('index.php?controller=order-confirmation&id_cart='

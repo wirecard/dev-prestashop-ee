@@ -63,6 +63,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     public function postProcess()
     {
+        //remove the cookie if a credit card payment
+        $this->context->cookie->__set('pia-enabled', false);
         $cartId = \Tools::getValue('order_number');
         $cart = new Cart($cartId);
 
