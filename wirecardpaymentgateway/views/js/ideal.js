@@ -32,7 +32,7 @@ var form = null;
 
 $(document).ready(
     function () {
-        $('form').submit(function(event){
+        $('form').submit(function (event) {
             form = $(this);
             let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
             if (paymentMethod === 'wd-ideal') {
@@ -41,6 +41,7 @@ $(document).ready(
         });
     }
 );
+
 
 
 

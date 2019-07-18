@@ -43,7 +43,8 @@ $(document).ready(
             }
         });
 
-        function placeOrder(e) {
+        function placeOrder(e)
+        {
             if (sepaCheck) {
                 return;
             }
@@ -68,7 +69,8 @@ $(document).ready(
             });
         }
 
-        function displayPopup(html) {
+        function displayPopup(html)
+        {
             if (document.getElementById('sepaMandateModal')) {
                 console.log("delete");
                 document.getElementById('sepaMandateModal').remove();
@@ -91,7 +93,8 @@ $(document).ready(
             check_box.addEventListener('change', check_change, false);
         }
 
-        function process_order() {
+        function process_order()
+        {
             sepaCheck = true;
             $('#sepaFirstName').attr('type', 'hidden').appendTo(form);
             $('#sepaLastName').attr('type', 'hidden').appendTo(form);
@@ -100,15 +103,18 @@ $(document).ready(
             form.submit();
         }
 
-        function check_change() {
+        function check_change()
+        {
             $('#sepaConfirmButton').toggleClass('disabled');
         }
 
-        function close() {
+        function close()
+        {
             $("#sepaMandateModal").modal('hide');
         }
     }
 );
+
 
 
 
