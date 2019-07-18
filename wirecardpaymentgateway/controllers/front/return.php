@@ -50,6 +50,11 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
 {
+    use \WirecardEE\Prestashop\Helper\TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = "return";
+
     /**
      * Process redirects and responses
      *
@@ -60,7 +65,12 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $response = $_REQUEST;
         $paymentType = Tools::getValue('payment_type');
         $paymentState = Tools::getValue('payment_state');
+        $orderId = Tools::getValue('id_order');
         $cartId = Tools::getValue('id_cart');
+        if ($paymentType !== 'creditcard' && empty($cartId)) {
+            $cartId = Cart::getCartIdByOrderId($orderId);
+        }
+
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
         if ($paymentState == 'success') {
@@ -118,11 +128,12 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     public function processSuccess($response, $cartId)
     {
         sleep(1);
-        $orderId = Order::getOrderByCartId((int)($cartId));
-        $order = new Order($orderId);
-        $cartId = $order->id_cart;
+
         $cart = new Cart((int)($cartId));
         $customer = new Customer($cart->id_customer);
+        // Get orderid by cartid for creditcard
+        $orderId = Order::getIdByCartId($cartId);
+        $order = new Order($orderId);
 
         if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
             $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
@@ -135,42 +146,20 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         }
 
         //set data for PIA to show on thank you page
-        if ($response->getPaymentMethod() == 'wiretransfer' &&
-            $this->module->getConfigValue('poipia', 'payment_type') == 'pia') {
+        $this->context->cookie->__set('pia-enabled', false);
+        if ($response->getPaymentMethod() === 'wiretransfer' &&
+            $this->module->getConfigValue('poipia', 'payment_type') === 'pia') {
             $data = $response->getData();
             $this->context->cookie->__set('pia-enabled', true);
             $this->context->cookie->__set('pia-iban', $data['merchant-bank-account.0.iban']);
             $this->context->cookie->__set('pia-bic', $data['merchant-bank-account.0.bic']);
             $this->context->cookie->__set('pia-reference-id', $data['provider-transaction-reference-id']);
-        } else {
-            $this->context->cookie->__set('pia-enabled', false);
         }
 
         Tools::redirect('index.php?controller=order-confirmation&id_cart='
             .$cart->id.'&id_module='
             .$this->module->id.'&id_order='
-            .$this->module->currentOrder.'&key='
+            .$order->id.'&key='
             .$customer->secure_key);
-    }
-
-    /**
-     * Overwritten translation function, uses the modules translation function with fallback language functionality
-     *
-     * @param string $key translation key
-     * @param string|bool $specific filename of the translation key
-     * @param string|null $class not used!
-     * @param bool $addslashes not used!
-     * @param bool $htmlentities not used!
-     *
-     * @return string translation
-     * @since 1.3.4
-     */
-    protected function l($key, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
-    {
-        if (!$specific) {
-            $specific = 'return';
-        }
-        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
-        return $this->module->l($key, $specific);
     }
 }

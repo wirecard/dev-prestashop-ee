@@ -50,6 +50,14 @@ class Cart
         if(!is_null($id)) {
             $this->id_customer = 1;
         }
+
+        $this->amount = 20;
+        $this->id = 102;
+    }
+
+
+    public static function getCartByOrderId($id) {
+        return new self(12345);
     }
 
     public function getProducts()

@@ -113,7 +113,6 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\PayPalTransaction();
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
     }
@@ -122,7 +121,6 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\PayPalTransaction();
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
     }

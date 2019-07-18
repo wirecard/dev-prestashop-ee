@@ -47,6 +47,7 @@ class Checkout extends Base
      */
     public $URL = 'index.php?controller=order';
 
+    public $wirecard_frame = 'wirecard-integrated-payment-page-frame';
     /**
      * @var array
      * @since 1.3.4
@@ -67,12 +68,11 @@ class Checkout extends Base
         'Continue3' => "//*[@name='confirmDeliveryOption']",
         'Wirecard Credit Card' => '//*[@name="payment-option"]',
 
-        'Credit Card First Name' => "//*[@id='first_name']",
-        'Credit Card Last Name' => "//*[@id='last_name']",
-        'Credit Card Card number' => "//*[@id='account_number']",
-        'Credit Card CVV' => "//*[@id='card_security_code']",
-        'Credit Card Valid until month' => "//*[@id='expiration_month_list']",
-        'Credit Card Valid until year' => "//*[@id='expiration_year_list']",
+        'Credit Card First Name' => "//*[@id='pp-cc-first-name']",
+        'Credit Card Last Name' => "//*[@id='pp-cc-last-name']",
+        'Credit Card Card number' => "//*[@id='pp-cc-account-number']",
+        'Credit Card CVV' => "//*[@id='pp-cc-cvv']",
+        'Credit Card Valid until' => "//*[@id='pp-cc-expiration-date']",
 
         'I agree to the terms of service' => "//*[@name='conditions_to_approve[terms-and-conditions]']",
         "Order with an obligation to pay" => "//*[@class='btn btn-primary center-block']",
@@ -123,11 +123,11 @@ class Checkout extends Base
 
         $this->switchFrame();
         $I->waitForElementVisible($this->getElement('Credit Card Last Name'));
+        $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->first_name);
         $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->last_name);
         $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->card_number);
         $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->cvv);
-        $I->selectOption($this->getElement('Credit Card Valid until month'), $data_field_values->valid_until_month);
-        $I->selectOption($this->getElement('Credit Card Valid until year'), $data_field_values->valid_until_year);
+        $I->fillField($this->getElement('Credit Card Valid until'), $data_field_values->valid_until);
         $I->switchToIFrame();
     }
 
@@ -142,8 +142,8 @@ class Checkout extends Base
         //wait for Javascript to load iframe and it's contents
         $I->wait(2);
         //get wirecard seemless frame name
-        $wirecard_frame_name = $I->executeJS('return document.querySelector(".wirecard-seamless-frame").getAttribute("name")');
-        $I->switchToIFrame("$wirecard_frame_name");
+        $I->executeJS('jQuery("#' . $this->wirecard_frame . '").attr("name", "' . $this->wirecard_frame . '")');
+        $I->switchToIFrame("$this->wirecard_frame");
     }
 
     /**

@@ -38,6 +38,7 @@ require dirname(__FILE__) . '/../../vendor/autoload.php';
 use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 
 /**
  * Class WirecardAjaxController
@@ -46,6 +47,11 @@ use WirecardEE\Prestashop\Helper\Logger;
  */
 class WirecardAjaxController extends ModuleAdminController
 {
+    use \WirecardEE\Prestashop\Helper\TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = "wirecardajax";
+
     /**
      * Handle ajax actions
      *
@@ -59,7 +65,9 @@ class WirecardAjaxController extends ModuleAdminController
                 if ($method === 'sofortbanking') {
                     $method = 'sofort';
                 }
+
                 $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
+                $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
                 $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
                 $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
                 
@@ -68,38 +76,22 @@ class WirecardAjaxController extends ModuleAdminController
 
                 $status = 'error';
                 $message = $this->l('error_credentials');
+
+                if (('creditcard' === $method) && UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl)) {
+                    $message = $this->l('warning_credit_card_url_mismatch');
+                }
+
                 if ($transactionService->checkCredentials()) {
                     $status = 'ok';
                     $message = $this->l('success_credentials');
                 }
 
-                die(Tools::jsonEncode(
-                    array(
+                die(\Tools::jsonEncode(
+                    [
                         'status' => htmlspecialchars($status),
                         'message' => htmlspecialchars($message)
-                    )
+                    ]
                 ));
         }
-    }
-
-    /**
-     * Overwritten translation function, uses the modules translation function with fallback language functionality
-     *
-     * @param string $key translation key
-     * @param string|bool $specific filename of the translation key
-     * @param string|null $class not used!
-     * @param bool $addslashes not used!
-     * @param bool $htmlentities not used!
-     *
-     * @return string translation
-     * @since 1.3.4
-     */
-    protected function l($key, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
-    {
-        if (!$specific) {
-            $specific = 'wirecardajax';
-        }
-        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
-        return $this->module->l($key, $specific);
     }
 }

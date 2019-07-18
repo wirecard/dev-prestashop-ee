@@ -49,6 +49,11 @@ use Wirecard\PaymentSdk\Transaction\Operation;
  */
 class WirecardTransactionsController extends ModuleAdminController
 {
+    use \WirecardEE\Prestashop\Helper\TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = "wirecardtransactions";
+
     public function __construct()
     {
         $this->bootstrap = true;
@@ -64,8 +69,8 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
 
-        $this->_orderBy = 'tx_id';
-        $this->_orderWay = 'DESC';
+        $this->_defaultOrderBy = 'tx_id';
+        $this->_defaultOrderWay = 'DESC';
         $this->_use_found_rows = true;
 
         $statuses = OrderState::getOrderStates((int)$this->context->language->id);
@@ -102,9 +107,12 @@ class WirecardTransactionsController extends ModuleAdminController
                 'class' => 'fixed-width-xs',
                 'align' => 'text-right',
             ),
-
             'ordernumber' => array(
                 'title' => $this->l('panel_order_number'),
+                'class' => 'fixed-width-lg',
+            ),
+            'cart_id' => array(
+                'title' => $this->l('panel_cart_number'),
                 'class' => 'fixed-width-lg',
             ),
             'paymentmethod' => array(
@@ -193,6 +201,8 @@ class WirecardTransactionsController extends ModuleAdminController
 
             $this->handleTransaction($transaction, \Tools::getValue('action'));
         }
+
+        parent::postProcess();
     }
 
     /**
@@ -201,6 +211,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @param $transactionData
      * @param string $operation
      * @since 1.0.0
+     * @return mixed
      */
     public function handleTransaction($transactionData, $operation)
     {
@@ -295,8 +306,8 @@ class WirecardTransactionsController extends ModuleAdminController
                     'paypal',
                     'alipay-xborder',
                     'p24',
-                    'masterpasss',
-                    'unionpayinternational'))
+                    'masterpass'
+                    ))
             && $operation == 'refund') {
             return Operation::CANCEL;
         }
@@ -308,33 +319,10 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $order = new Order($orderId);
         switch ($order->payment) {
-            case $this->module->getConfigValue('unionpayinternational', 'title'):
-                return 'unionpayinternational';
             case $this->module->getConfigValue('masterpass', 'title'):
                 return 'masterpass';
             default:
                 return 'creditcard';
         }
-    }
-
-    /**
-     * Overwritten translation function, uses the modules translation function with fallback language functionality
-     *
-     * @param string $key translation key
-     * @param string|bool $specific filename of the translation key
-     * @param string|null $class not used!
-     * @param bool $addslashes not used!
-     * @param bool $htmlentities not used!
-     *
-     * @return string translation
-     * @since 1.3.4
-     */
-    protected function l($key, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
-    {
-        if (!$specific) {
-            $specific = 'wirecardtransactions';
-        }
-        $this->module = Module::getInstanceByName('wirecardpaymentgateway');
-        return $this->module->l($key, $specific);
     }
 }

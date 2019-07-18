@@ -41,14 +41,27 @@ use Wirecard\PaymentSdk\Entity\Address;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 /**
  * Class AdditionalInformation
  *
  * @since 1.0.0
  */
-class AdditionalInformation
+class AdditionalInformationBuilder
 {
+    /** @var int */
+    const TAX_RATE_PRECISION = 2;
+
+    /** @var CurrencyHelper */
+    private $currencyHelper;
+
+
+    public function __construct()
+    {
+        $this->currencyHelper = new CurrencyHelper();
+    }
+
     /**
      * Create basket items for transaction
      *
@@ -78,8 +91,12 @@ class AdditionalInformation
 
                 $netAmount = $product['total'] / $quantity;
                 $taxAmount = $grossAmount - $netAmount;
-                $taxRate = number_format($taxAmount / $grossAmount * 100, 2);
-                $amount = new Amount((float) number_format($grossAmount, 2, '.', ''), $currency);
+                $taxRate = round($taxAmount / $grossAmount * 100, self::TAX_RATE_PRECISION);
+
+                $amount = $this->currencyHelper->getAmount(
+                    $grossAmount,
+                    $currency
+                );
 
                 $item = new Item($name, $amount, $quantity);
                 $item->setDescription(\Tools::substr(strip_tags($product['description_short']), 0, 127));
@@ -102,6 +119,7 @@ class AdditionalInformation
 
             $basket->add($item);
         }
+
         return $basket;
     }
 
@@ -126,7 +144,7 @@ class AdditionalInformation
     /**
      * Create additional information for fps
      *
-     * @param Cart $cart
+     * @param \Cart $cart
      * @param string $id
      * @param Transaction $transaction
      * @param string $currency
@@ -163,7 +181,7 @@ class AdditionalInformation
     /**
      * Create accountholder for shipping or billing
      *
-     * @param Cart $cart
+     * @param \Cart $cart
      * @param string $type
      * @return AccountHolder
      * @since 1.0.0
@@ -196,7 +214,7 @@ class AdditionalInformation
     /**
      * Create accountholder for creditcard transaction
      *
-     * @param Cart $cart
+     * @param \Cart $cart
      * @param string $firstName
      * @param string $lastName
      * @return AccountHolder
@@ -226,7 +244,7 @@ class AdditionalInformation
     /**
      * Create addressdata for shipping or billing
      *
-     * @param PrestaShop\Address $source
+     * @param \Address $source
      * @param string $type
      * @return Address
      * @since 1.0.0
@@ -280,7 +298,7 @@ class AdditionalInformation
     /**
      * Sanitizes the state before conversion.
      *
-     * @param Prestashop\Country $country
+     * @param \Country $country
      * @param string $state
      * @return string
      * @since 1.2.0

@@ -36,7 +36,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Entity\Amount;
@@ -205,7 +205,7 @@ class PaymentMasterpass extends Payment
     {
         $transaction = new MasterpassTransaction();
 
-        $additionalInformation = new AdditionalInformation();
+        $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
 
         return $transaction;
@@ -222,7 +222,6 @@ class PaymentMasterpass extends Payment
     {
         $transaction = new MasterpassTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
@@ -238,7 +237,6 @@ class PaymentMasterpass extends Payment
     {
         $transaction = new MasterpassTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }

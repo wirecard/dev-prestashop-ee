@@ -32,14 +32,17 @@ var form = null;
 
 $(document).ready(
     function () {
-        $(document).on('submit','#payment-form', function (e) {
+        $('form').submit(function (event) {
             form = $(this);
-            if (form.attr('action').search('ideal') >= 0) {
+            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
+            if (paymentMethod === 'wd-ideal') {
                 $('#idealBankBic').attr('type', 'hidden').appendTo(form);
             }
         });
     }
 );
+
+
 
 
 

@@ -39,7 +39,8 @@ use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 /**
  * Class PaymentGuaranteedInvoiceRatepay
@@ -52,6 +53,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 {
     const MIN_AGE = 18;
 
+    private $currencyHelper;
     /**
      * PaymentGuaranteedInvoiceRatepay constructor.
      *
@@ -69,6 +71,8 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $this->cancel  = array( 'authorization' );
         $this->capture = array( 'authorization' );
         $this->refund  = array( 'capture-authorization' );
+
+        $this->currencyHelper = new CurrencyHelper();
     }
 
     /**
@@ -260,7 +264,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
         $transaction = new RatepayInvoiceTransaction();
 
-        $additionalInformation = new AdditionalInformation();
+        $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setOrderNumber($cart->id);
         $device = new Device();
@@ -278,9 +282,17 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     public function createCancelTransaction($transactionData)
     {
+        $cart = new \Cart($transactionData->cart_id);
+        $currency = $transactionData->currency;
+
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $transaction->setAmount(
+            $this->currencyHelper->getAmount(
+                $cart->getOrderTotal(),
+                $currency
+            )
+        );
 
         return $transaction;
     }
@@ -299,10 +311,15 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
-        $additionalHelper = new AdditionalInformation();
+        $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
+        $transaction->setAmount(
+            $this->currencyHelper->getAmount(
+                $cart->getOrderTotal(),
+                $currency
+            )
+        );
 
         return $transaction;
     }
@@ -321,10 +338,15 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         $transaction = new RatepayInvoiceTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
-        $additionalHelper = new AdditionalInformation();
+        $additionalHelper = new AdditionalInformationBuilder();
         $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
+        $transaction->setAmount(
+            $this->currencyHelper->getAmount(
+                $cart->getOrderTotal(),
+                $currency
+            )
+        );
 
         return $transaction;
     }
@@ -402,8 +424,18 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function isInLimit($module, $total)
     {
-        $minimum = $module->getConfigValue($this->type, 'amount_min');
-        $maximum = $module->getConfigValue($this->type, 'amount_max');
+        $currencyConverter = new CurrencyHelper();
+        $currency = \Context::getContext()->currency;
+
+        $minimum = $currencyConverter->convertToCurrency(
+            $module->getConfigValue($this->type, 'amount_min'),
+            $currency->iso_code
+        );
+
+        $maximum = $currencyConverter->convertToCurrency(
+            $module->getConfigValue($this->type, 'amount_max'),
+            $currency->iso_code
+        );
 
         if ($minimum > $total || $total > $maximum) {
             return false;

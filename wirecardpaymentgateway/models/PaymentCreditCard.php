@@ -34,11 +34,14 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Entity\Card;
+use Configuration;
+use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
+use WirecardEE\Prestashop\Helper\CurrencyHelper;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
  * Class PaymentCreditCard
@@ -49,15 +52,25 @@ use Wirecard\PaymentSdk\Entity\Amount;
  */
 class PaymentCreditCard extends Payment
 {
+    /** @var CreditCardTransaction */
+    protected $transaction;
+
+    /** @var Logger $logger */
+    protected $logger;
+
     /**
      * PaymentCreditCard constructor.
+     * @param \Module $module
      *
+     * @since 2.0.0 Add logger
      * @since 1.0.0
      */
     public function __construct($module)
     {
         parent::__construct($module);
 
+        $this->logger = new WirecardLogger();
+        $this->transaction = new CreditCardTransaction();
         $this->type = 'creditcard';
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
@@ -145,6 +158,14 @@ class PaymentCreditCard extends Payment
                     'required' => true,
                 ),
                 array(
+                    'name'        => 'wpp_url',
+                    'label'       => $this->l('config_wpp_url'),
+                    'type'        => 'text',
+                    'doc'         => $this->l('config_wpp_url_desc'),
+                    'default'     => 'https://wpp-test.wirecard.com',
+                    'required'    => true,
+                ),
+                array(
                     'name' => 'http_user',
                     'label'   => $this->l('config_http_user'),
                     'type'    => 'text',
@@ -195,6 +216,7 @@ class PaymentCreditCard extends Payment
                     'method' => 'creditcard',
                     'send' => array(
                         'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_BASE_URL',
+                        'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_WPP_URL',
                         'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_USER',
                         'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_HTTP_PASS'
                     )
@@ -212,6 +234,8 @@ class PaymentCreditCard extends Payment
      */
     public function createPaymentConfig($paymentModule)
     {
+        $currency = \Context::getContext()->currency;
+
         $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
         $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
         $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
@@ -221,6 +245,7 @@ class PaymentCreditCard extends Payment
 
         $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
         $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
+        $currencyConverter = new CurrencyHelper();
 
         if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
             $paymentConfig->setThreeDCredentials(
@@ -229,22 +254,22 @@ class PaymentCreditCard extends Payment
             );
         }
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
+        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit'))
+            && $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
             $paymentConfig->addSslMaxLimit(
-                new Amount(
+                $currencyConverter->getConvertedAmount(
                     $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    'EUR'
+                    $currency->iso_code
                 )
             );
         }
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit')) &&
-            $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
+        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit'))
+            && $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
             $paymentConfig->addThreeDMinLimit(
-                new Amount(
+                $currencyConverter->getConvertedAmount(
                     $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    'EUR'
+                    $currency->iso_code
                 )
             );
         }
@@ -259,18 +284,25 @@ class PaymentCreditCard extends Payment
      *
      * @param \WirecardPaymentGateway $module
      * @param \Context $context
+     * @param int $cartId
      * @return mixed
+     * @throws \Exception
      * @since 1.0.0
      */
-    public function getRequestData($module, $context)
+    public function getRequestData($module, $context, $cartId)
     {
-        $baseUrl = $module->getConfigValue($this->type, 'base_url');
-        $languageCode = $this->getSupportedHppLangCode($baseUrl, $context);
-        $currencyCode = $context->currency->iso_code;
+        $paymentAction = $module->getConfigValue($this->type, 'payment_action');
+        $operation = $this->getOperationForPaymentAction($paymentAction);
+        $languageCode = $this->getSupportedLangCode($context);
         $config = $this->createPaymentConfig($module);
-        $transactionService = new TransactionService($config);
 
-        return $transactionService->getDataForCreditCardUi($languageCode, new Amount(0, $currencyCode));
+        $transactionService = new TransactionService($config, $this->logger);
+        $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
+        // Set unique cartId as orderId to avoid order creation before payment
+        $transactionBuilder->setOrderId($cartId);
+        $transaction = $transactionBuilder->buildTransaction();
+
+        return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
     }
 
     /**
@@ -285,20 +317,12 @@ class PaymentCreditCard extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $transaction = new CreditCardTransaction();
+        $config = $this->createPaymentConfig($module);
 
-        if (isset($values['expiration_year']) && isset($values['expiration_month'])) {
-            $card = new Card();
+        $this->transaction->setConfig($config->get(CreditCardTransaction::NAME));
+        $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
 
-            $expirationYear = (int) $values['expiration_year'];
-            $expirationMonth = (int) $values['expiration_month'];
-
-            $card->setExpirationYear($expirationYear);
-            $card->setExpirationMonth($expirationMonth);
-            $transaction->setCard($card);
-        }
-
-        return $transaction;
+        return $this->transaction;
     }
 
     /**
@@ -310,12 +334,9 @@ class PaymentCreditCard extends Payment
      */
     public function createCancelTransaction($transactionData)
     {
-        $transaction = new CreditCardTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setParentTransactionType($transactionData->transaction_type);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $this->transaction->setParentTransactionId($transactionData->transaction_id);
 
-        return $transaction;
+        return $this->transaction;
     }
 
     /**
@@ -339,11 +360,9 @@ class PaymentCreditCard extends Payment
      */
     public function createPayTransaction($transactionData)
     {
-        $transaction = new CreditCardTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
+        $this->transaction->setParentTransactionId($transactionData->transaction_id);
 
-        return $transaction;
+        return $this->transaction;
     }
 
     /**
@@ -352,9 +371,9 @@ class PaymentCreditCard extends Payment
      * @return array
      * @since 1.0.0
      */
-    private function setTemplateData()
+    protected function setTemplateData()
     {
-        $test = \Configuration::get(
+        $test = Configuration::get(
             sprintf(
                 'WIRECARD_PAYMENT_GATEWAY_%s_%s',
                 \Tools::strtoupper($this->type),
@@ -362,43 +381,59 @@ class PaymentCreditCard extends Payment
             )
         );
 
-        return array('ccvaultenabled' => (bool) $test);
+        $wppUrl = $this->module->getConfigValue('creditcard', 'wpp_url');
+        return array(
+            'ccvaultenabled' => (bool) $test,
+            'paymentPageScript' => $wppUrl . '/loader/paymentPage.js'
+        );
     }
 
     /**
-     * Get supported language code for hpp seamless form renderer
+     * Get supported language code for seamless form renderer
      *
-     * @param string $baseUrl
      * @param \Context $context
-     * @return mixed|string
+     * @return string
+     * @since 2.0.0 Exchange hpp with wpp languages
+     *              Use lib
+     *              Remove $baseUrl param
      * @since 1.3.3
      */
-    private function getSupportedHppLangCode($baseUrl, $context)
+    protected function getSupportedLangCode($context)
     {
-        $isoCode = $context->language->iso_code;
-        $languageCode = $context->language->language_code;
-        $language = 'en';
-        //special case for chinese languages
-        switch ($languageCode) {
-            case 'zh-tw':
-                $isoCode = 'zh_TW';
-                break;
-            case 'zh-cn':
-                $isoCode = 'zh_CN';
-                break;
-            default:
-                break;
-        }
+        $converter = new WppVTwoConverter();
+        $isoCode = $this->stringSuffixToUpperCase(
+            $context->language->language_code
+        );
+
         try {
-            $supportedLang = json_decode(\Tools::file_get_contents(
-                $baseUrl . '/engine/includes/i18n/languages/hpplanguages.json'
-            ));
-            if (key_exists($isoCode, $supportedLang)) {
-                $language = $isoCode;
-            }
+            $converter->init();
+            $language = $converter->convert($isoCode);
         } catch (\Exception $exception) {
-            return 'en';
+            $language = 'en';
+            $this->logger->error(__METHOD__ . $exception);
         }
+
         return $language;
+    }
+
+    /**
+     * Explode a string using the needle
+     * Convert last element to uppercase
+     * Implode string using the needle
+     *
+     * @param $string
+     * @param string $needle
+     * @return string
+     *
+     * @since 2.0.0
+     */
+    protected function stringSuffixToUpperCase($string, $needle = '-')
+    {
+        $explodedString       = explode($needle, $string);
+        $lastElement          = end($explodedString);
+        $key                  = key($explodedString);
+        $explodedString[$key] = mb_strtoupper($lastElement);
+
+        return implode($needle, $explodedString);
     }
 }

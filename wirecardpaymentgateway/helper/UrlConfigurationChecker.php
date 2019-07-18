@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -27,42 +28,55 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
+namespace WirecardEE\Prestashop\Helper;
 
 /**
- * @property WirecardPaymentGateway module
- *
- * @since 1.0.0
+ * Class UrlConfigurationChecker
+ * @package WirecardEE\Prestashop\Helper
+ * @since 2.0.0
  */
-class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFrontController
+class UrlConfigurationChecker
 {
-    public function initContent()
+
+    /**
+     * Checks that both URLs use the same environment (testing/productive)
+     *
+     * @param string $baseUrl
+     * @param string $wppUrl
+     *
+     * @return bool
+     *
+     * @since 2.0.0
+     */
+    public static function isUrlConfigurationValid($baseUrl, $wppUrl)
     {
-        parent::initContent();
-        $this->ajax = true;
+        $needle = 'test';
+        $baseUrlContainsTest = self::checkIfStringContainsSubstring($baseUrl, $needle);
+        $wppUrlContainsTest = self::checkIfStringContainsSubstring($wppUrl, $needle);
+
+        return $baseUrlContainsTest === $wppUrlContainsTest;
     }
 
     /**
-     * Generate Credit Card config
-     * @since 1.0.0
+     * @param $string
+     * @param $needle
+     *
+     * @return bool
+     *
+     * @since 2.0.0
      */
-    public function displayAjaxGetSeamlessConfig()
+    protected static function checkIfStringContainsSubstring($string, $needle)
     {
-        $cartId = Tools::getValue('cartId');
-        $payment =  new PaymentCreditCard($this->module);
-
-        try {
-            $requestData = $payment->getRequestData($this->module, $this->context, $cartId);
-
-            header('Content-Type: application/json; charset=utf8');
-            die(Tools::jsonEncode($requestData));
-        } catch (\Exception $exception) {
-            die(Tools::jsonEncode(null));
+        if (stripos($string, $needle) === false) {
+            return false;
         }
+
+        return true;
     }
 }

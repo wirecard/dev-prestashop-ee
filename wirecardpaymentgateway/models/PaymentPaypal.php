@@ -38,7 +38,7 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 
 /**
  * Class PaymentPaypal
@@ -209,7 +209,7 @@ class PaymentPaypal extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $additionalInformation = new AdditionalInformation();
+        $additionalInformation = new AdditionalInformationBuilder();
 
         $transaction = new PayPalTransaction();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
@@ -229,7 +229,6 @@ class PaymentPaypal extends Payment
     {
         $transaction = new PayPalTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }
@@ -245,7 +244,6 @@ class PaymentPaypal extends Payment
     {
         $transaction = new PayPalTransaction();
         $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(new Amount($transactionData->amount, $transactionData->currency));
 
         return $transaction;
     }

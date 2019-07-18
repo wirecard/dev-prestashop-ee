@@ -35,37 +35,40 @@ var sepaCheck = false;
 
 $(document).ready(
     function () {
-        $(document).on('submit','#payment-form', function (e) {
+        $('form').submit(function (event) {
             form = $(this);
-            if (form.attr('action').search('sepadirectdebit') >= 0) {
-                placeOrder(e);
+            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
+            if (paymentMethod === 'wd-sepadirectdebit') {
+                placeOrder(event);
             }
         });
+
         function placeOrder(e)
         {
             if (sepaCheck) {
                 return;
-            } else {
-                e.preventDefault();
-
-                var params = [{
-                    index: 'action',
-                    data: 'sepamandate'
-                }];
-                $.ajax({
-                    url: processAjaxUrl(ajaxsepaurl, params),
-                    type: "GET",
-                    dataType: 'json',
-                    success: function (response) {
-                        displayPopup(response.html);
-                    },
-                    error: function (response) {
-                        console.log(response);
-                    }
-                });
             }
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            let params = [{
+                index: 'action',
+                data: 'sepamandate'
+            }];
+            $.ajax({
+                url: processAjaxUrl(ajaxsepaurl, params),
+                type: "GET",
+                dataType: 'json',
+                success: function (response) {
+                    displayPopup(response.html);
+                },
+                error: function (response) {
+                    console.log(response);
+                }
+            });
         }
-        
+
         function displayPopup(html)
         {
             if (document.getElementById('sepaMandateModal')) {
@@ -74,19 +77,19 @@ $(document).ready(
             }
 
             $('body').append(html);
-            var sepaModal = $('#sepaMandateModal');
+            let sepaModal = $('#sepaMandateModal');
             sepaModal.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
             sepaModal.find('.bank_iban').text($('#sepaIban').val());
             sepaModal.find('.bank_bic').text($('#sepaBic').val());
             sepaModal.modal('show');
 
-            var cancelButton = document.getElementById('sepaCancelButton');
+            let cancelButton = document.getElementById('sepaCancelButton');
             cancelButton.addEventListener('click', close, false);
 
-            var confirmButton = document.getElementById('sepaConfirmButton');
+            let confirmButton = document.getElementById('sepaConfirmButton');
             confirmButton.addEventListener('click', process_order, false);
 
-            var check_box = document.getElementById('sepaCheck');
+            let check_box = document.getElementById('sepaCheck');
             check_box.addEventListener('change', check_change, false);
         }
 
@@ -111,6 +114,8 @@ $(document).ready(
         }
     }
 );
+
+
 
 
 

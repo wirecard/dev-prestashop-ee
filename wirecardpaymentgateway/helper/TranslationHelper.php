@@ -27,42 +27,34 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
- */
-
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
-
-/**
- * @property WirecardPaymentGateway module
  *
- * @since 1.0.0
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
-class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFrontController
+
+namespace WirecardEE\Prestashop\Helper;
+
+trait TranslationHelper
 {
-    public function initContent()
-    {
-        parent::initContent();
-        $this->ajax = true;
-    }
-
     /**
-     * Generate Credit Card config
-     * @since 1.0.0
+     * Overwritten translation function, used in the module
+     *
+     * @param string $key translation key
+     * @param string|bool $specific filename of the translation key
+     * @param string|null $class not used!
+     * @param bool $addslashes not used!
+     * @param bool $htmlentities not used!
+     *
+     * @return string translation
+     * @since 2.0.0
      */
-    public function displayAjaxGetSeamlessConfig()
+    protected function l($key, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
     {
-        $cartId = Tools::getValue('cartId');
-        $payment =  new PaymentCreditCard($this->module);
-
-        try {
-            $requestData = $payment->getRequestData($this->module, $this->context, $cartId);
-
-            header('Content-Type: application/json; charset=utf8');
-            die(Tools::jsonEncode($requestData));
-        } catch (\Exception $exception) {
-            die(Tools::jsonEncode(null));
+        if (!$specific) {
+            $specific = self::TRANSLATION_FILE;
         }
+
+        return $this->module->l($key, $specific);
     }
 }
