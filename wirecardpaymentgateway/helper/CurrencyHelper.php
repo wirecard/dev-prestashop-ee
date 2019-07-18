@@ -105,7 +105,8 @@ class CurrencyHelper
         return new Amount(
             \Tools::ps_round(
                 $this->convertToCurrency($amount, $currency),
-                _PS_PRICE_COMPUTE_PRECISION_),
+                _PS_PRICE_COMPUTE_PRECISION_
+            ),
             $currency
         );
     }

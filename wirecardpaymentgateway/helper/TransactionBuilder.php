@@ -133,7 +133,9 @@ class TransactionBuilder
             $this->module->createRedirectUrl($this->orderId, $this->paymentType, 'failure', $this->cart->id)
         );
 
-        $this->transaction->setNotificationUrl($this->module->createNotificationUrl($this->orderId, $this->paymentType, $this->cart->id));
+        $this->transaction->setNotificationUrl(
+            $this->module->createNotificationUrl($this->orderId, $this->paymentType, $this->cart->id)
+        );
         $this->transaction->setRedirect($redirectUrls);
     }
 
