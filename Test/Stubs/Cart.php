@@ -52,6 +52,7 @@ class Cart
         }
 
         $this->amount = 20;
+        $this->id = 102;
     }
 
 

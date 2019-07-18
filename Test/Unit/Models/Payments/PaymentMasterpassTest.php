@@ -118,7 +118,6 @@ class PaymentMasterpassTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\MasterpassTransaction();
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
     }
@@ -127,7 +126,6 @@ class PaymentMasterpassTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\MasterpassTransaction();
         $actual->setParentTransactionId('my_secret_id');
-        $actual->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
 
         $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
     }
