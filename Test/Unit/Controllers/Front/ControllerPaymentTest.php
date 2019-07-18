@@ -33,7 +33,7 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentPaypal;
+/*use WirecardEE\Prestashop\Models\PaymentPaypal;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 
 require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/front/payment.php';
@@ -101,4 +101,4 @@ class ControllerPaymentTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue(!is_string($actual));
     }
-}
+}*/
