@@ -161,7 +161,9 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn('authorization');
 
         for ($i = 0; $i <= 13; $i++) {
-            $this->paymentModule->expects($this->at($i + 1))->method('getConfigValue')->willReturn($this->config[$i + 1]);
+            $this->paymentModule->expects($this->at($i + 1))
+                ->method('getConfigValue')
+                ->willReturn($this->config[$i + 1]);
         }
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));
         //unset the generated request id as it is different every time
