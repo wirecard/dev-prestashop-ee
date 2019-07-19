@@ -37,8 +37,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PaylibTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
-use WirecardEE\Prestashop\Helper\AdditionalInformation;
+use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 
 /**
  * Class PaymentPaylib
@@ -196,8 +195,8 @@ class PaymentPaylib extends Payment
     {
         $transaction = new PaylibTransaction();
 
-        $additionalInformation = new AdditionalInformation();
-        $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
+        $additionalInformationBuilder = new AdditionalInformationBuilder();
+        $transaction->setAccountHolder($additionalInformationBuilder->createAccountHolder($cart, 'billing'));
 
         return $transaction;
     }
