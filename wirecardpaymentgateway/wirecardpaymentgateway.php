@@ -996,6 +996,14 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
+        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
+
+        $this->context->controller->registerJavascript(
+            'wd-wpp',
+            $wppUrl . '/loader/paymentPage.js',
+            array('server' => 'remote', 'position' => 'top', 'priority' => 1)
+        );
+
         foreach ($this->getPayments() as $paymentMethod) {
             if ($paymentMethod->getLoadJs()) {
                 $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
@@ -1009,6 +1017,7 @@ class WirecardPaymentGateway extends PaymentModule
                         'cartId' => $this->context->cart->id,
                     )
                 );
+
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
