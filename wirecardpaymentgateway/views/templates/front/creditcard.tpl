@@ -50,13 +50,20 @@
         </div>
     </div>
 </div>
-
-<button disabled id="stored-card" class="btn btn-primary" data-toggle="modal" data-target="#wirecard-ccvault-modal">{lFallback s='vault_use_existing_text' mod='wirecardpaymentgateway'}</button>
-<div id="new-card-text" class="invisible">{lFallback s='selected_creditcard_info' mod='wirecardpaymentgateway'}</div>
-<button id="new-card" class="invisible btn btn-primary">{lFallback s='vault_use_new_text' mod='wirecardpaymentgateway'}</button>
+    <p>
+        <button disabled id="stored-card" class="btn btn-primary" data-toggle="modal"
+                data-target="#wirecard-ccvault-modal">{lFallback s='vault_use_existing_text' mod='wirecardpaymentgateway'}</button>
+    </p>
+    <p id="new-card-text"
+       style="display: none">{lFallback s='selected_creditcard_info' mod='wirecardpaymentgateway'}
+    </p>
+    <p>
+        <button id="new-card" style="display: none"
+                class="btn btn-primary">{lFallback s='vault_use_new_text' mod='wirecardpaymentgateway'}</button>
+    </p>
 {/if}
 <div id="payment-processing-gateway-credit-card-form">
 </div>
 {if $ccvaultenabled == 'true'}
-    <label for="wirecard-store-card"><input type="checkbox" id="wirecard-store-card" /> {lFallback s='vault_save_text' mod='wirecardpaymentgateway'}</label>
+    <div id="wirecard-vault"><p><label for="wirecard-store-card"><input type="checkbox" id="wirecard-store-card" /> {lFallback s='vault_save_text' mod='wirecardpaymentgateway'}</label></p></div>
 {/if}
