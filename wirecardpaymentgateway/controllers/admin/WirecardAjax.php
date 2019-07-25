@@ -59,39 +59,88 @@ class WirecardAjaxController extends ModuleAdminController
      */
     public function postProcess()
     {
-        switch (Tools::getValue('action')) {
-            case 'TestConfig':
-                $method = Tools::getValue('method');
-                if ($method === 'sofortbanking') {
-                    $method = 'sofort';
-                }
-
-                $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
-                $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
-                $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
-                $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
-                
-                $config = new Config($baseUrl, $httpUser, $httpPass);
-                $transactionService = new TransactionService($config, new Logger());
-
-                $status = 'error';
-                $message = $this->l('error_credentials');
-
-                if (('creditcard' === $method) && UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl)) {
-                    $message = $this->l('warning_credit_card_url_mismatch');
-                }
-
-                if ($transactionService->checkCredentials()) {
-                    $status = 'ok';
-                    $message = $this->l('success_credentials');
-                }
-
-                die(\Tools::jsonEncode(
-                    [
-                        'status' => htmlspecialchars($status),
-                        'message' => htmlspecialchars($message)
-                    ]
-                ));
+        if ('TestConfig' === Tools::getValue('action')) {
+            $this->testCredentials();
         }
+    }
+
+    /**
+     * Test filled in credentials.
+     * @since 2.1.0
+     */
+    protected function testCredentials()
+    {
+        $method = Tools::getValue('method');
+        if ($method === 'sofortbanking') {
+            $method = 'sofort';
+        }
+
+        $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
+        $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
+        $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
+        $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
+
+        $config = new Config($baseUrl, $httpUser, $httpPass);
+        $transactionService = new TransactionService($config, new Logger());
+        $this->validateBaseUrl($baseUrl);
+        $this->validateUrlConfiguration($method, $baseUrl, $wppUrl);
+        // Validate Credentials should be the last check.
+        $this->validateCredentials($transactionService);
+    }
+
+    /**
+     *
+     * Validate base Url.
+     * It shouldn't have any path on the end of Url
+     * @param $baseUrl
+     * @since 2.1.0
+     */
+    protected function validateBaseUrl($baseUrl)
+    {
+        $parsedUrl = parse_url($baseUrl);
+        if ('https' !== $parsedUrl['scheme'] || isset($parsedUrl['path'])) {
+            $message = $this->l('error_credentials');
+            $status = 'error';
+            $this->sendResponse($status, $message);
+        }
+    }
+
+    /**
+     * Check if transaction service can connect to ee and the credentials are valid
+     * @param TransactionService $transactionService
+     * @since 2.1.0
+     */
+    protected function validateCredentials($transactionService)
+    {
+        try {
+            $success = $transactionService->checkCredentials();
+        } catch (\Http\Client\Exception $exception) {
+            $success = false;
+        }
+        $status = $success ? 'ok' : 'error';
+        $message = $success ? $this->l('success_credentials') : $this->l('error_credentials');
+        $this->sendResponse($status, $message);
+    }
+
+    /**
+     * Check if base url and wpp url are on the same level (test or production)
+     * @since 2.1.0
+     */
+    protected function validateUrlConfiguration($method, $baseUrl, $wppUrl)
+    {
+        if (('creditcard' === $method) && !UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl)) {
+            $message = $this->l('warning_credit_card_url_mismatch');
+            $status = 'error';
+            $this->sendResponse($status, $message);
+        }
+    }
+
+    /**
+     * Send response
+     * @since 2.1.0
+     */
+    protected function sendResponse($status, $message)
+    {
+        die(json_encode(['status' => htmlspecialchars($status), 'message' => htmlspecialchars($message)]));
     }
 }
