@@ -194,6 +194,10 @@ class WirecardPaymentGateway extends PaymentModule
                 $translated_string : $tab->name[1];
         }
         $tab->module = $this->name;
+        $tab->icon = 'payment';
+        // Show on Sell part of menu
+        $tab->id_parent = 2;
+        $tab->parent_class_name = 'SELL';
         $tab->add();
 
         $key = $this->l('heading_title_support');
