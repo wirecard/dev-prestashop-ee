@@ -46,7 +46,6 @@ use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
-use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 define('IS_CORE', false);
@@ -1009,6 +1008,9 @@ class WirecardPaymentGateway extends PaymentModule
                         'cartId' => $this->context->cart->id,
                     )
                 );
+                $this->context->smarty->assign(array(
+                    'spinner' => Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/spinner.gif')
+                ));
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
