@@ -70,9 +70,10 @@ $(document).ready(
 
         $("#new-card").on('click', function () {
             getRequestData();
-            $("#new-card").addClass('invisible');
-            $("#new-card-text").addClass('invisible');
-            $("#stored-card").removeClass('invisible');
+            $("#new-card").hide();
+            $("#new-card-text").hide();
+            $("#stored-card").show();
+            $("#wirecard-vault").show();
         });
 
         $("#wirecard-ccvault-modal").on('show.bs.modal', function () {
@@ -158,7 +159,7 @@ $(document).ready(
         {
             $('#card-spinner').hide();
             $("#stored-card").removeAttr("disabled");
-            $("#" + wrappingDiv + " > iframe").height(550);
+            $("#" + wrappingDiv + " > iframe").height(410);
         }
 
         function logCallback(response)
@@ -275,11 +276,11 @@ $(document).ready(
                 );
 
                 $("#payment-processing-gateway-credit-card-form").empty();
-                $("#wirecard-store-card").parent().hide();
+                $("#wirecard-vault").hide();
                 $("#wirecard-ccvault-modal").modal('hide');
-                $("#stored-card").addClass('invisible');
-                $("#new-card-text").removeClass('invisible');
-                $("#new-card").removeClass('invisible');
+                $("#stored-card").hide();
+                $("#new-card-text").show();
+                $("#new-card").show();
             });
         }
     }
