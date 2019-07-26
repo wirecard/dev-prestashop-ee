@@ -51,13 +51,7 @@ class WirecardPaymentGatewaySepaDirectDebitModuleFrontController extends ModuleF
      */
     public function displayAjaxSepaMandate()
     {
-        $data = array();
-        $data['creditorName']      = $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
-        $data['creditorStoreCity'] = $this->module->getConfigValue('sepadirectdebit', 'creditor_city');
-        $data['creditorId']        = $this->module->getConfigValue('sepadirectdebit', 'creditor_id');
-        $data['enableBic']         = (bool) $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
-        $data['additionalText']    = $this->module->getConfigValue('sepadirectdebit', 'sepa_mandate_textextra');
-        $data['date']              = date('d.m.Y');
+
 
         $this->context->smarty->assign($data);
         $template = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR .

@@ -52,21 +52,7 @@ $(document).ready(
             e.stopPropagation();
             e.stopImmediatePropagation();
 
-            let params = [{
-                index: 'action',
-                data: 'sepamandate'
-            }];
-            $.ajax({
-                url: processAjaxUrl(ajaxsepaurl, params),
-                type: "GET",
-                dataType: 'json',
-                success: function (response) {
-                    displayPopup(response.html);
-                },
-                error: function (response) {
-                    console.log(response);
-                }
-            });
+            displayPopup();
         }
 
         function displayPopup(html)
@@ -75,15 +61,13 @@ $(document).ready(
                 console.log("delete");
                 document.getElementById('sepaMandateModal').remove();
             }
-
-            $('body').append(html);
             let sepaModal = $('#sepaMandateModal');
             sepaModal.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
             sepaModal.find('.bank_iban').text($('#sepaIban').val());
             sepaModal.find('.bank_bic').text($('#sepaBic').val());
             sepaModal.modal('show');
 
-            let cancelButton = document.getElementById('sepaCancelButton');
+            let cancelButton = docum1ent.getElementById('sepaCancelButton');
             cancelButton.addEventListener('click', close, false);
 
             let confirmButton = document.getElementById('sepaConfirmButton');

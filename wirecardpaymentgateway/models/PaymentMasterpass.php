@@ -50,16 +50,18 @@ use Wirecard\PaymentSdk\Entity\Amount;
  */
 class PaymentMasterpass extends Payment
 {
+    const TYPE = MasterpassTransaction::NAME;
+
     /**
      * PaymentiDEAL constructor.
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'masterpass';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard Masterpass';
         $this->formFields = $this->createFormFields();
 
@@ -166,29 +168,6 @@ class PaymentMasterpass extends Payment
                 )
             )
         );
-    }
-
-    /**
-     * Create config for Masterpass transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(MasterpassTransaction::NAME, $merchantAccountId, $secret);
-        $config->add($paymentConfig);
-
-        return $config;
     }
 
     /**

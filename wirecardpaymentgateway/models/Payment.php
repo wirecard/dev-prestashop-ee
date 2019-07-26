@@ -36,6 +36,9 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Config\Config;
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use WirecardEE\Prestashop\Helper\PaymentConfiguration;
+use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
 /**
  * Basic Payment class
@@ -44,8 +47,10 @@ use Wirecard\PaymentSdk\Config\Config;
  *
  * @since 1.0.0
  */
-class Payment
+class Payment extends PaymentOption
 {
+    const TYPE = "";
+
     /**
      * @var array
      * @since 2.0.0
@@ -77,7 +82,7 @@ class Payment
      * @var Config
      * @since 1.0.0
      */
-    protected $config;
+    protected $sdkConfiguration;
 
     /**
      * @var string
@@ -158,9 +163,9 @@ class Payment
     protected $loadJs;
 
     /**
-     * @var wirecardpaymentgateway
+     * @var PaymentConfiguration $configuration
      */
-    protected $module;
+    protected $configuration;
 
 
     /**
@@ -168,16 +173,16 @@ class Payment
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
         $this->name = 'Wirecard Payment Processing Gateway';
         $this->transactionTypes = array('authorization', 'capture');
+        $this->configuration = new PaymentConfiguration(self::TYPE);
 
         //Default back-end operation possibilities
         $this->cancel = array('authorization');
         $this->refund = array('capture-authorization');
         $this->capture = array('authorization');
-        $this->module = $module;
     }
 
     /**
@@ -189,14 +194,24 @@ class Payment
      * @return Config
      * @since 1.0.0
      */
-    public function createConfig($baseUrl, $httpUser, $httpPass)
+    public function createConfig()
     {
-        $this->config = new Config($baseUrl, $httpUser, $httpPass);
+        $this->sdkConfiguration = new Config(
+            $this->configuration->getField('base_url'),
+            $this->configuration->getField('http_user'),
+            $this->configuration->getField('http_pass')
+        );
 
-        $this->config->setShopInfo(self::SHOP_NAME, _PS_VERSION_);
-        $this->config->setPluginInfo(self::EXTENSION_HEADER_PLUGIN_NAME, $this->module->version);
+        $this->sdkConfiguration->setShopInfo(self::SHOP_NAME, _PS_VERSION_);
+        $this->sdkConfiguration->setPluginInfo(self::EXTENSION_HEADER_PLUGIN_NAME, \WirecardPaymentGateway::VERSION);
 
-        return $this->config;
+        $this->sdkConfiguration->add(new PaymentMethodConfig(
+           self::TYPE,
+           $this->configuration->getField('merchant_account_id'),
+           $this->configuration->getField('secret')
+        ));
+
+        return $this->sdkConfiguration;
     }
 
     /**
@@ -218,7 +233,7 @@ class Payment
      */
     public function getConfig()
     {
-        return $this->config;
+        return $this->sdkConfiguration;
     }
 
     /**
@@ -423,7 +438,9 @@ class Payment
      */
     protected function l($key)
     {
-        return $this->module->l($key, $this->getClassNameLower());
+        $module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
+
+        return $module->l($key, $this->getClassNameLower());
     }
 
     /**

@@ -51,6 +51,7 @@ use WirecardEE\Prestashop\Helper\CurrencyHelper;
  */
 class PaymentGuaranteedInvoiceRatepay extends Payment
 {
+    const TYPE = RatepayInvoiceTransaction::NAME;
     const MIN_AGE = 18;
 
     private $currencyHelper;
@@ -59,11 +60,11 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'invoice';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard Guaranteed Invoice';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
@@ -220,29 +221,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 )
             )
         );
-    }
-
-    /**
-     * Create config for ratepay invoice transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(RatepayInvoiceTransaction::NAME, $merchantAccountId, $secret);
-        $config->add($paymentConfig);
-
-        return $config;
     }
 
     /**

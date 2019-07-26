@@ -39,6 +39,7 @@ use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
+use WirecardEE\Prestashop\Helper\PaymentConfiguration;
 
 /**
  * Class WirecardAjaxController
@@ -62,14 +63,12 @@ class WirecardAjaxController extends ModuleAdminController
         switch (Tools::getValue('action')) {
             case 'TestConfig':
                 $method = Tools::getValue('method');
-                if ($method === 'sofortbanking') {
-                    $method = 'sofort';
-                }
+                $paymentConfiguration = new PaymentConfiguration($method);
 
-                $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
-                $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
-                $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
-                $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
+                $baseUrl = Tools::getValue($paymentConfiguration->getFieldName('base_url'));
+                $wppUrl = Tools::getValue($paymentConfiguration->getFieldName('wpp_url'));
+                $httpUser = Tools::getValue($paymentConfiguration->getFieldName('http_user'));
+                $httpPass = Tools::getValue($paymentConfiguration->getFieldName('http_pass'));
                 
                 $config = new Config($baseUrl, $httpUser, $httpPass);
                 $transactionService = new TransactionService($config, new Logger());

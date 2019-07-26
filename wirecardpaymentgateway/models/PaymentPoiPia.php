@@ -49,16 +49,18 @@ use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
  */
 class PaymentPoiPia extends Payment
 {
+    const TYPE = PoiPiaTransaction::NAME;
+
     /**
      * PaymentPoiPia constructor.
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'poipia';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard Payment on Invoice / Payment in Advance';
         $this->formFields = $this->createFormFields();
 
@@ -168,29 +170,6 @@ class PaymentPoiPia extends Payment
                 )
             )
         );
-    }
-
-    /**
-     * Create config for POI/PIA transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(PoiPiaTransaction::NAME, $merchantAccountId, $secret);
-        $config->add($paymentConfig);
-
-        return $config;
     }
 
     /**

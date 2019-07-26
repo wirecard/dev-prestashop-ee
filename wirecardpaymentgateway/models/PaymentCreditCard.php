@@ -34,7 +34,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Configuration;
 use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
@@ -52,6 +51,8 @@ use WirecardEE\Prestashop\Helper\TransactionBuilder;
  */
 class PaymentCreditCard extends Payment
 {
+    const TYPE = CreditCardTransaction::NAME;
+
     /** @var CreditCardTransaction */
     protected $transaction;
 
@@ -65,13 +66,13 @@ class PaymentCreditCard extends Payment
      * @since 2.0.0 Add logger
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
         $this->logger = new WirecardLogger();
         $this->transaction = new CreditCardTransaction();
-        $this->type = 'creditcard';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
         $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
@@ -232,51 +233,42 @@ class PaymentCreditCard extends Payment
      * @return \Wirecard\PaymentSdk\Config\Config
      * @since 1.0.0
      */
-    public function createPaymentConfig($paymentModule)
+    public function createConfig()
     {
         $currency = \Context::getContext()->currency;
-
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
         $currencyConverter = new CurrencyHelper();
 
-        if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
+        $config = parent::createConfig();
+        $paymentConfig = $config->get(self::TYPE);
+
+        if ($this->configuration->getField('three_d_merchant_account_id') !== '') {
             $paymentConfig->setThreeDCredentials(
-                $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id'),
-                $paymentModule->getConfigValue($this->type, 'three_d_secret')
+                $this->configuration->getField('three_d_merchant_account_id'),
+                $this->configuration->getField('three_d_secret')
             );
         }
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit'))
-            && $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
+        if (is_numeric($this->configuration->getField('ssl_max_limit'))
+            && $this->configuration->getField('ssl_max_limit') >= 0) {
             $paymentConfig->addSslMaxLimit(
                 $currencyConverter->getConvertedAmount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
+                    $this->configuration->getField('ssl_max_limit'),
                     $currency->iso_code
                 )
             );
         }
 
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit'))
-            && $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
+        if (is_numeric($this->configuration->getField('three_d_min_limit'))
+            && $this->configuration->getField('three_d_min_limit') >= 0) {
             $paymentConfig->addThreeDMinLimit(
                 $currencyConverter->getConvertedAmount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
+                    $this->configuration->getField('three_d_min_limit'),
                     $currency->iso_code
                 )
             );
         }
 
-        $config->add($paymentConfig);
-
-        return $config;
+        return $config->add($paymentConfig);
     }
 
     /**
@@ -317,9 +309,12 @@ class PaymentCreditCard extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $config = $this->createPaymentConfig($module);
+        $config = $this->createConfig();
 
-        $this->transaction->setConfig($config->get(CreditCardTransaction::NAME));
+        /** @var CreditCardConfig $paymentConfig */
+        $paymentConfig = $config->get(CreditCardTransaction::NAME);
+
+        $this->transaction->setConfig($paymentConfig);
         $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
 
         return $this->transaction;
@@ -373,17 +368,10 @@ class PaymentCreditCard extends Payment
      */
     protected function setTemplateData()
     {
-        $test = Configuration::get(
-            sprintf(
-                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-                \Tools::strtoupper($this->type),
-                \Tools::strtoupper('ccvault_enabled')
-            )
-        );
+        $ccVaultEnabled = $this->configuration->getField('ccvault_enabled');
 
-        $wppUrl = $this->module->getConfigValue('creditcard', 'wpp_url');
         return array(
-            'ccvaultenabled' => (bool) $test,
+            'ccvaultenabled' => (bool) $ccVaultEnabled,
         );
     }
 

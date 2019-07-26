@@ -66,6 +66,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
         $cartId = \Tools::getValue('order_number');
+
+        var_dump(\Tools::getValue('ideal_thingy'));
+        die();
+
         $cart = new Cart($cartId);
 
         $paymentType = \Tools::getValue('paymentType');

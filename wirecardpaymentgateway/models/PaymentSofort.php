@@ -37,7 +37,6 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SepaTransaction;
 use Wirecard\PaymentSdk\Transaction\SofortTransaction;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 
 /**
  * Class PaymentSofort
@@ -48,16 +47,18 @@ use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
  */
 class PaymentSofort extends Payment
 {
+    const TYPE = SofortTransaction::NAME;
+
     /**
      * PaymentSofort constructor.
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'sofortbanking';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard Sofort.';
         $this->formFields = $this->createFormFields();
 
@@ -156,33 +157,6 @@ class PaymentSofort extends Payment
                 )
             )
         );
-    }
-
-    /**
-     * Create config for Sofort. transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(
-            SofortTransaction::NAME,
-            $merchantAccountId,
-            $secret
-        );
-        $config->add($paymentConfig);
-
-        return $config;
     }
 
     /**

@@ -46,8 +46,9 @@ use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
-use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\PaymentConfiguration;
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 
 define('IS_CORE', false);
 
@@ -59,6 +60,9 @@ define('IS_CORE', false);
  */
 class WirecardPaymentGateway extends PaymentModule
 {
+    const NAME = 'wirecardpaymentgateway';
+    const VERSION = '2.0.0';
+
     /**
      * Payment fields for configuration
      *
@@ -83,9 +87,9 @@ class WirecardPaymentGateway extends PaymentModule
         require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
             DIRECTORY_SEPARATOR.'autoload.php');
 
-        $this->name = 'wirecardpaymentgateway';
+        $this->name = self::NAME;
+        $this->version = self::VERSION;
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -332,14 +336,12 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $params = array();
         foreach ($this->config as $group) {
+            $paymentConfiguration = new PaymentConfiguration($group['tab']);
             foreach ($group['fields'] as $f) {
                 if ('hidden' == $f['type']) {
                     continue;
                 }
-                $f['param_name'] = $this->buildParamName(
-                    $group['tab'],
-                    $f['name']
-                );
+                $f['param_name'] = $paymentConfiguration->getFieldName($f['name']);
                 $params[] = $f;
             }
         }
@@ -367,7 +369,7 @@ class WirecardPaymentGateway extends PaymentModule
                 continue;
             }
 
-            if (! $paymentMethod->isAvailable($this, $params['cart'])) {
+            if (!$paymentMethod->isAvailable($this, $params['cart'])) {
                 continue;
             }
 
@@ -378,6 +380,7 @@ class WirecardPaymentGateway extends PaymentModule
                 /** @var PaymentGuaranteedInvoiceRatepay $paymentMethod */
                 $this->createRatepayScript($paymentMethod);
             }
+
             $payment = new PaymentOption();
             $payment
                 ->setModuleName('wd-' . $paymentMethod->getType())
@@ -398,6 +401,16 @@ class WirecardPaymentGateway extends PaymentModule
                 Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
                     . $paymentMethod->getType() . '.png')
             );
+
+            if ($paymentMethod->getType() == 'ideal') {
+                $payment->setForm("<form action='" . $this->context->link->getModuleLink($this->name, 'payment', $paymentData, true) . "'><input type='text' name='ideal_thingy'></form>");
+                $payment->setAdditionalInformation("test");
+
+                echo "<pre>";
+                print_r($payment);
+                echo "</pre>";
+            }
+
             $result[] = $payment;
         }
 
@@ -455,40 +468,6 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return false;
-    }
-
-    /**
-     * Build prefix for configuration entries
-     *
-     * @param $name
-     * @param $field
-     *
-     * @return string
-     * @since 1.0.0
-     */
-    public function buildParamName($name, $field)
-    {
-        return sprintf(
-            'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-            Tools::strtoupper($name),
-            Tools::strtoupper($field)
-        );
-    }
-
-    /**
-     * Get Configuration value for specific field
-     *
-     * @param $name
-     * @param $field
-     * @return mixed
-     * @since 1.0.0
-     */
-    public function getConfigValue($name, $field)
-    {
-        if ('sofortbanking' == $name) {
-            $name = 'Sofort';
-        }
-        return Configuration::get($this->buildParamName($name, $field));
     }
 
     /**
@@ -612,17 +591,17 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'creditcard' => new PaymentCreditCard($this),
-            'paypal' => new PaymentPaypal($this),
-            'sepadirectdebit' => new PaymentSepaDirectDebit($this),
-            'sepacredittransfer' => new PaymentSepaCreditTransfer($this),
-            'sofortbanking' => new PaymentSofort($this),
-            'ideal' => new PaymentIdeal($this),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
-            'p24' => new PaymentPtwentyfour($this),
-            'poipia' => new PaymentPoiPia($this),
-            'masterpass' => new PaymentMasterpass($this),
-            'alipay-xborder' => new PaymentAlipayCrossborder($this)
+            'creditcard' => new PaymentCreditCard(),
+            'paypal' => new PaymentPaypal(),
+            'sepadirectdebit' => new PaymentSepaDirectDebit(),
+            'sepacredittransfer' => new PaymentSepaCreditTransfer(),
+            'sofortbanking' => new PaymentSofort(),
+            'ideal' => new PaymentIdeal(),
+            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
+            'p24' => new PaymentPtwentyfour(),
+            'poipia' => new PaymentPoiPia(),
+            'masterpass' => new PaymentMasterpass(),
+            'alipay-xborder' => new PaymentAlipayCrossborder()
         );
 
         return $payments;
@@ -656,8 +635,10 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected function isUrlConfigurationValid()
     {
-        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
-        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
+        $paymentConfiguration = new PaymentConfiguration(CreditCardTransaction::NAME);
+
+        $baseUrl = $paymentConfiguration->getField('base_url');
+        $wppUrl = $paymentConfiguration->getField('wpp_url');
 
         return UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl);
     }
@@ -722,12 +703,13 @@ class WirecardPaymentGateway extends PaymentModule
         foreach ($this->config as $value) {
             $tabname = $value['tab'];
             $tabs[$tabname] = $tabname;
+            $paymentConfiguration = new PaymentConfiguration($tabname);
             foreach ($value['fields'] as $f) {
                 if ('hidden' == $f['type']) {
                     continue;
                 }
                 $elem = array(
-                    'name' => $this->buildParamName($tabname, $f['name']),
+                    'name' => $paymentConfiguration->getFieldName($f['name']),
                     'label' => isset($f['label'])?$this->l($f['label']):'',
                     'tab' => $tabname,
                     'type' => $f['type'],
@@ -844,10 +826,11 @@ class WirecardPaymentGateway extends PaymentModule
     private function setDefaults()
     {
         foreach ($this->config as $config) {
+            $name = $config['tab'];
+            $paymentConfiguration = new PaymentConfiguration($name);
             foreach ($config['fields'] as $field) {
                 if (array_key_exists('default', $field)) {
-                    $name = $config['tab'];
-                    $configParam = $this->buildParamName($name, $field['name']);
+                    $configParam = $paymentConfiguration->getFieldName($field['name']);
                     $defValue = $field['default'];
                     if (is_array($defValue)) {
                         $defValue = Tools::jsonEncode($defValue);
@@ -872,12 +855,13 @@ class WirecardPaymentGateway extends PaymentModule
     private function deleteConfig()
     {
         foreach ($this->config as $config) {
+            $name = $config['tab'];
+            $paymentConfiguration = new PaymentConfiguration($name);
             foreach ($config['fields'] as $field) {
-                $name = $config['tab'];
-                $fieldname = $this->buildParamName($name, $field['name']);
-                $value = Configuration::get($fieldname);
+                $fieldName = $paymentConfiguration->getFieldName($field['name']);
+                $value = Configuration::get($fieldName);
                 if (isset($value)) {
-                    if (!Configuration::deleteByName($fieldname)) {
+                    if (!Configuration::deleteByName($fieldName)) {
                         return false;
                     }
                 }

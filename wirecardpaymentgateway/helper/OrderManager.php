@@ -54,7 +54,7 @@ class OrderManager
      * @param \PaymentModule $module
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
         $this->module = $module;
     }
