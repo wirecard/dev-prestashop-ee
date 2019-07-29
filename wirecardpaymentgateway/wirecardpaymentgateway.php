@@ -1008,15 +1008,17 @@ class WirecardPaymentGateway extends PaymentModule
                         'cartId' => $this->context->cart->id,
                     )
                 );
-                $this->context->smarty->assign(array(
-                    'spinner' => Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/spinner.gif')
-                ));
                 $this->context->controller->addJS(
                     _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
                     . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
                 );
             }
         }
+        $this->context->controller->addCSS(
+            _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
+            . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'app.css',
+            'all'
+        );
 
         return true;
     }

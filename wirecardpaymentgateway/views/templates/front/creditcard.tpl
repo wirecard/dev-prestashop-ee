@@ -62,7 +62,7 @@
                 class="btn btn-primary">{lFallback s='vault_use_new_text' mod='wirecardpaymentgateway'}</button>
     </p>
 {/if}
-<p id="card-spinner"><img alt="spinner" src="{$spinner}"></p>
+<p id="card-spinner" class="loader"></p>
 <div id="payment-processing-gateway-credit-card-form">
 </div>
 {if $ccvaultenabled == 'true'}
