@@ -100,18 +100,6 @@ matrix:
     env:
     - GATEWAY=API-WDCEE-TEST
     - PRESTASHOP_RELEASE_VERSION=3
-  - <<: *acceptance-test
-    env:
-    - GATEWAY=NOVA
-    - PRESTASHOP_RELEASE_VERSION=1
-  - <<: *acceptance-test
-    env:
-    - GATEWAY=NOVA
-    - PRESTASHOP_RELEASE_VERSION=2
-  - <<: *acceptance-test
-    env:
-    - GATEWAY=NOVA
-    - PRESTASHOP_RELEASE_VERSION=3
 
   - stage: deploy
     if: tag IS present AND type = push
