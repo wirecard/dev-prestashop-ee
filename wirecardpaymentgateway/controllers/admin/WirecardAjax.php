@@ -118,7 +118,11 @@ class WirecardAjaxController extends ModuleAdminController
             $success = false;
         }
         $status = $success ? 'ok' : 'error';
-        $message = $success ? $this->l('success_credentials') : $this->l('error_credentials');
+        if ($success) {
+            $message = $this->l('success_credentials');
+        } else {
+            $message = $this->l('error_credentials');
+        }
         $this->sendResponse($status, $message);
     }
 
