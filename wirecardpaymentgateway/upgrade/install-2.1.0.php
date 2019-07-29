@@ -33,6 +33,8 @@
  * @license GPLv3
  */
 
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+
 /**
  * Create new menu entry Wirecard Transactions in Sell part of admin menu
  */
@@ -48,7 +50,9 @@ if (!defined('_PS_VERSION_')) {
  */
 function upgrade_module_2_1_0($module)
 {
-    $tab = new Tab((int)Tab::getIdFromClassName('WirecardTransactions'));
+    $symfonyContainer = SymfonyContainer::getInstance();
+    $tabRepository = $symfonyContainer->get('prestashop.core.admin.tab.repository');
+    $tab = new Tab($tabRepository->findOneIdByClassName('WirecardTransactions'));
     $tab->icon = 'payment';
     // Show on Sell part of menu
     $tab->id_parent = 2;

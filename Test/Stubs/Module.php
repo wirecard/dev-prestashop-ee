@@ -81,4 +81,9 @@ class Module
     {
         return;
     }
+
+    public function get($serviceName)
+    {
+        return new Tab();
+    }
 }

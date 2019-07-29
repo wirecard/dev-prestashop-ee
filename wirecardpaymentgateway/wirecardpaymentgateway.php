@@ -85,7 +85,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.0';
+        $this->version = '2.1.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -241,8 +241,9 @@ class WirecardPaymentGateway extends PaymentModule
     public function uninstallTabs()
     {
         $tabs = array('WirecardTransactions','WirecardSupport', 'WirecardAjax');
+        $tabRepository = $this->get('prestashop.core.admin.tab.repository');
         foreach ($tabs as $tab) {
-            $id_tab = (int)Tab::getIdFromClassName($tab);
+            $id_tab = $tabRepository->findOneIdByClassName($tab);
             if ($id_tab) {
                 $tab = new Tab($id_tab);
                 $tab->delete();
