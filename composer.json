@@ -12,7 +12,8 @@
     "guzzlehttp/psr7": ">=1.4.2",
     "codacy/coverage": "^1.4",
     "wirecard/base-url-matcher": "1.0.0",
-    "wirecard/io-converter": "^1.0"
+    "wirecard/io-converter": "^1.0",
+    "ext-json": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "5.7.27",

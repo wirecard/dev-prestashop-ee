@@ -38,6 +38,7 @@ require dirname(__FILE__) . '/../../vendor/autoload.php';
 use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 
 /**
@@ -47,7 +48,7 @@ use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
  */
 class WirecardAjaxController extends ModuleAdminController
 {
-    use \WirecardEE\Prestashop\Helper\TranslationHelper;
+    use TranslationHelper;
 
     /** @var string */
     const TRANSLATION_FILE = "wirecardajax";
@@ -118,10 +119,9 @@ class WirecardAjaxController extends ModuleAdminController
             $success = false;
         }
         $status = $success ? 'ok' : 'error';
+        $message = $this->l('error_credentials');
         if ($success) {
             $message = $this->l('success_credentials');
-        } else {
-            $message = $this->l('error_credentials');
         }
         $this->sendResponse($status, $message);
     }
