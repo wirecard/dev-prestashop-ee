@@ -55,7 +55,7 @@ class ResponseProcessingFactory
      */
     public static function getResponseProcessing($response)
     {
-        switch(true) {
+        switch (true) {
             case $response instanceof SuccessResponse:
                 return new SuccessResponseProcessing();
             case $response instanceof InteractionResponse:

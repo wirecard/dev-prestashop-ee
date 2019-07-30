@@ -48,7 +48,8 @@ final class FailurePaymentProcessing implements PaymentProcessing
      * @param Response $response
      * @since 2.1.0
      */
-    public function process($response) {
+    public function process($response)
+    {
         // TODO: Implement process() method.
     }
 }
