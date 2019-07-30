@@ -84,6 +84,9 @@ class Module
 
     public function get($serviceName)
     {
-        return new Tab();
+        if('prestashop.core.admin.tab.repository' === $serviceName){
+            return new Tab();
+        }
+        return;
     }
 }

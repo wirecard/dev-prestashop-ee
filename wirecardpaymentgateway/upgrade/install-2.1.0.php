@@ -45,10 +45,9 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * @param WirecardPaymentGateway $module
  * @return mixed
  */
-function upgrade_module_2_1_0($module)
+function upgrade_module_2_1_0()
 {
     $symfonyContainer = SymfonyContainer::getInstance();
     $tabRepository = $symfonyContainer->get('prestashop.core.admin.tab.repository');
