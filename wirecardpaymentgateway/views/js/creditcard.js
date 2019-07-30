@@ -159,7 +159,7 @@ $(document).ready(
         {
             $('#card-spinner').hide();
             $("#stored-card").removeAttr("disabled");
-            $("#" + wrappingDiv + " > iframe").height(410);
+            $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
         }
 
         function logCallback(response)
