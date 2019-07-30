@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 At https://github.com/lukehaas/css-loaders you can find more spinners and change the code below to use another one.
  */
-.loader {
+.wd-loader {
     color: #000;
     margin: 100px auto;
     width: 1em;

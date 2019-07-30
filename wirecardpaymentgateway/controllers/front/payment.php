@@ -228,6 +228,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     private function createPostForm($data)
     {
         $logger = new \WirecardEE\Prestashop\Helper\Logger();
+        $data['baseUrl'] = __PS_BASE_URI__;
         try {
             $this->context->smarty->assign($data);
 
