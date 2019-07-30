@@ -40,6 +40,7 @@ use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class WirecardAjaxController
@@ -145,6 +146,8 @@ class WirecardAjaxController extends ModuleAdminController
      */
     protected function sendResponse($status, $message)
     {
-        die(json_encode(['status' => htmlspecialchars($status), 'message' => htmlspecialchars($message)]));
+        $content = json_encode(['status' => htmlspecialchars($status), 'message' => htmlspecialchars($message)]);
+        $response = new Response($content);
+        $response->sendContent();
     }
 }
