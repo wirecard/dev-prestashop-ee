@@ -33,12 +33,9 @@
  * @license GPLv3
  */
 
-use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Exception\MalformedResponseException;
-use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
+use WirecardEE\Prestashop\classes\ResponseProcessing\CancelResponseProcessing;
+use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
 
 /**
  * Class WirecardPaymentGatewayReturnModuleFrontController
@@ -50,116 +47,29 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
 {
-    use \WirecardEE\Prestashop\Helper\TranslationHelper;
-
-    /** @var string */
-    const TRANSLATION_FILE = "return";
+    const CANCEL_PAYMENT_STATE = 'cancel';
 
     /**
      * Process redirects and responses
-     *
      * @since 1.0.0
      */
     public function postProcess()
     {
         $response = $_REQUEST;
-        $paymentType = Tools::getValue('payment_type');
-        $paymentState = Tools::getValue('payment_state');
-        $orderId = Tools::getValue('id_order');
-        $cartId = Tools::getValue('id_cart');
-        if ($paymentType !== 'creditcard' && empty($cartId)) {
-            $cartId = Cart::getCartIdByOrderId($orderId);
-        }
+        $this->isCancelResponse(\Tools::getValue('payment_state'));
 
-        $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createPaymentConfig($this->module);
-        if ($paymentState == 'success') {
-            try {
-                $transactionService = new TransactionService($config, new WirecardLogger());
-                $result = $transactionService->handleResponse($response);
-                if ($result instanceof SuccessResponse) {
-                    $this->processSuccess($result, $cartId);
-                } elseif ($result instanceof FailureResponse) {
-                    $errors = "";
-                    foreach ($result->getStatusCollection()->getIterator() as $item) {
-                        $errors .= $item->getDescription() . "<br>";
-                    }
-                    $this->errors = $errors;
-                    $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-                }
-            } catch (\InvalidArgumentException $exception) {
-                $this->errors = 'Invalid Argument: ' . $exception->getMessage();
-                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-            } catch (\MalformedResponseException $exception) {
-                $this->errors = 'Malformed Response: ' . $exception->getMessage();
-                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-            } catch (Exception $exception) {
-                $this->errors = $exception->getMessage();
-                $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-            }
-        } else {
-            $orderId = Order::getIdByCartId((int)$cartId);
-            $order = new Order($orderId);
-            if ($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $order->setCurrentState(_PS_OS_ERROR_);
-                $params = array(
-                    'submitReorder' => true,
-                    'id_order' => (int)$orderId
-                );
-                if ($paymentState == 'cancel') {
-                    $this->errors = $this->l('canceled_payment_process');
-                }
-            } else {
-                $this->errors = $this->l('order_error');
-            }
-            $this->redirectWithNotifications(
-                $this->context->link->getPageLink('order', true, $order->id_lang, $params)
-            );
-        }
+        $return_payment_engine_processing = new ReturnPaymentEngineResponseProcessing();
+        $processed_return = $return_payment_engine_processing->process($response, $this);
+
+        $return_processing_strategy = ResponseProcessingFactory::getResponseProcessing($processed_return);
+        $return_processing_strategy->process($processed_return, $this->module);
     }
 
-    /**
-     * Create order and redirect for success response
-     *
-     * @param SuccessResponse $response
-     * @param string $cartId
-     * @since 1.0.0
-     */
-    public function processSuccess($response, $cartId)
+    private function isCancelResponse($payment_state)
     {
-        sleep(1);
-
-        $cart = new Cart((int)($cartId));
-        $customer = new Customer($cart->id_customer);
-        // Get orderid by cartid for creditcard
-        $orderId = Order::getIdByCartId($cartId);
-        $order = new Order($orderId);
-
-        if (($order->current_state == Configuration::get(OrderManager::WIRECARD_OS_STARTING))) {
-            $order->setCurrentState(Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+        if ($payment_state === self::CANCEL_PAYMENT_STATE) {
+            $cancel_response_processing = new CancelResponseProcessing();
+            $cancel_response_processing->process(null);
         }
-
-        $orderPayments = OrderPayment::getByOrderReference($order->reference);
-        if (!empty($orderPayments)) {
-            $orderPayments[count($orderPayments) - 1]->transaction_id = $response->getTransactionId();
-            $orderPayments[count($orderPayments) - 1]->save();
-        }
-
-        //set data for PIA to show on thank you page
-        $this->context->cookie->__set('pia-enabled', false);
-        if ($response->getPaymentMethod() === 'wiretransfer' &&
-            $this->module->getConfigValue('poipia', 'payment_type') === 'pia') {
-            $data = $response->getData();
-            $this->context->cookie->__set('pia-enabled', true);
-            $this->context->cookie->__set('pia-iban', $data['merchant-bank-account.0.iban']);
-            $this->context->cookie->__set('pia-bic', $data['merchant-bank-account.0.bic']);
-            $this->context->cookie->__set('pia-reference-id', $data['provider-transaction-reference-id']);
-        }
-
-        Tools::redirect('index.php?controller=order-confirmation&id_cart='
-            .$cart->id.'&id_module='
-            .$this->module->id.'&id_order='
-            .$order->id.'&key='
-            .$customer->secure_key);
     }
 }

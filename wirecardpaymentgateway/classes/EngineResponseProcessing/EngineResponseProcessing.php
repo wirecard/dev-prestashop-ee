@@ -37,15 +37,15 @@ namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
 
 /**
  * Interface EngineResponseProcessing
- * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\classes\EngineResponseProcessing
  */
 interface EngineResponseProcessing
 {
     /**
      * @param array $response
-     * @param \WirecardPaymentGateway $module
+     * @param \ModuleFrontController $controller
      * @since 2.1.0
      */
-    public function process($response, $module);
+    public function process($response, $controller);
 }
