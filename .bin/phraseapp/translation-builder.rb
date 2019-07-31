@@ -122,8 +122,7 @@ class TranslationBuilder
   end
 
   def self.generate_translation_entry(translations, translation_key, log)
-    translation_string = translations["#{translation_key}"]
-
+    translation_string = translations["#{translation_key}"].gsub(/'/, "\\\\'")
     if !translation_string
       log.error("Error: Missing translation for key: #{translation_key}")
       return translation_key
