@@ -41,6 +41,7 @@ use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\ThreeDSBuilder;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
@@ -301,6 +302,9 @@ class PaymentCreditCard extends Payment
         // Set unique cartId as orderId to avoid order creation before payment
         $transactionBuilder->setOrderId($cartId);
         $transaction = $transactionBuilder->buildTransaction();
+
+        // Set 3DS fields
+        $threeDSBuilder = new ThreeDSBuilder($transaction);
 
         return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
     }
