@@ -58,18 +58,18 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $response = $_REQUEST;
         $this->isCancelResponse(\Tools::getValue('payment_state'));
 
-        $return_payment_engine_processing = new ReturnPaymentEngineResponseProcessing();
-        $processed_return = $return_payment_engine_processing->process($response, $this);
+        $engine_processing = new ReturnPaymentEngineResponseProcessing();
+        $processed_return = $engine_processing->process($response, $this);
 
-        $return_processing_strategy = ResponseProcessingFactory::getResponseProcessing($processed_return);
-        $return_processing_strategy->process($processed_return, $this->module);
+        $return_processing = ResponseProcessingFactory::getResponseProcessing($processed_return);
+        $return_processing->process($processed_return, $this->module);
     }
 
     private function isCancelResponse($payment_state)
     {
         if ($payment_state === self::CANCEL_PAYMENT_STATE) {
-            $cancel_response_processing = new CancelResponseProcessing();
-            $cancel_response_processing->process(null);
+            $response_processing = new CancelResponseProcessing();
+            $response_processing->process(null);
         }
     }
 }
