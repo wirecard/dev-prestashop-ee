@@ -35,27 +35,25 @@
 
 namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
 
+use Wirecard\PaymentSdk\Response\Response;
+
 /**
  * Class NotificationPaymentEngineResponseProcessing
- * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\classes\EngineResponseProcessing
  */
 final class NotificationPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
 {
     /**
-     * @param array $response
+     * @param string $response
      * @param \WirecardPaymentGatewayNotifyModuleFrontController $controller
+     * @return Response
      * @since 2.1.0
      */
     public function process($response, $controller)
     {
         parent::process($response, $controller);
 
-        try {
-            return $this->backend_service->handleResponse($response);
-        } catch (\Exception $exception) {
-            $controller->errors = $exception->getMessage();
-            $controller->redirectWithNotifications('');
-        }
+        return $this->backend_service->handleNotification($response);
     }
 }

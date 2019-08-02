@@ -36,6 +36,7 @@
 use WirecardEE\Prestashop\classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
 use WirecardEE\Prestashop\classes\ResponseProcessing\CancelResponseProcessing;
 use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class WirecardPaymentGatewayReturnModuleFrontController
@@ -49,6 +50,19 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
 {
     const CANCEL_PAYMENT_STATE = 'cancel';
 
+    /** @var WirecardLogger  */
+    public $logger;
+
+    /**
+     * WirecardPaymentGatewayReturnModuleFrontController constructor.
+     * @since 2.1.0
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->logger = new WirecardLogger();
+    }
+
     /**
      * Process redirects and responses
      * @since 1.0.0
@@ -58,13 +72,26 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         $response = $_REQUEST;
         $this->isCancelResponse(\Tools::getValue('payment_state'));
 
-        $engine_processing = new ReturnPaymentEngineResponseProcessing();
-        $processed_return = $engine_processing->process($response, $this);
+        try {
+            $engine_processing = new ReturnPaymentEngineResponseProcessing();
+            $processed_return  = $engine_processing->process($response, $this);
 
-        $return_processing = ResponseProcessingFactory::getResponseProcessing($processed_return);
-        $return_processing->process($processed_return, $this->module);
+            //@TODO this is just here to see the result of a processed response
+            $this->logger->debug('return: <pre>' . print_r($processed_return, true). '</pre>');
+        } catch (\Exception $exception) {
+            $this->logger->error(
+                'Error in class:'. __CLASS__ .
+                ' method:' . __METHOD__ .
+                ' exception: ' . $exception->getMessage()
+            );
+            $this->errors = $exception->getMessage();
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        }
     }
 
+    /**
+     * @param string $payment_state
+     */
     private function isCancelResponse($payment_state)
     {
         if ($payment_state === self::CANCEL_PAYMENT_STATE) {

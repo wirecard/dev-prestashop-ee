@@ -43,7 +43,7 @@ namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
 interface EngineResponseProcessing
 {
     /**
-     * @param array $response
+     * @param array|string $response
      * @param \ModuleFrontController $controller
      * @since 2.1.0
      */

@@ -53,11 +53,7 @@ final class ReturnPaymentEngineResponseProcessing extends PaymentEngineResponseP
     public function process($response, $controller)
     {
         parent::process($response, $controller);
-        try {
-            return $this->backend_service->handleResponse($response);
-        } catch (\Exception $exception) {
-            $controller->errors = $exception->getMessage();
-            $controller->redirectWithNotifications('');
-        }
+
+        return $this->backend_service->handleResponse($response);
     }
 }
