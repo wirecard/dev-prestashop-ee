@@ -398,7 +398,9 @@ class WirecardPaymentGateway extends PaymentModule
                     . $paymentMethod->getType() . '.png')
             );
             if ('sofortbanking' === $paymentMethod->getType()) {
-                $payment->setLogo('https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/standard/pink.svg');
+                $payment->setLogo(
+                    'https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/standard/pink.svg'
+                );
             }
             $result[] = $payment;
         }
