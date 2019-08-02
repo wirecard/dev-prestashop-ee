@@ -84,11 +84,17 @@ class WirecardAjaxController extends ModuleAdminController
 
         $config = new Config($baseUrl, $httpUser, $httpPass);
         $transactionService = new TransactionService($config, new Logger());
-        $this->validateBaseUrl($baseUrl);
-        $this->validateBaseUrl($wppUrl);
-        $this->validateUrlConfiguration($method, $baseUrl, $wppUrl);
-        // Validate Credentials should be the last check.
-        $this->validateCredentials($transactionService);
+        try {
+            $this->validateBaseUrl($baseUrl);
+            $this->validateBaseUrl($wppUrl);
+            $this->validateUrlConfiguration($method, $baseUrl, $wppUrl);
+            // Validate Credentials should be the last check.
+            $this->validateCredentials($transactionService);
+            $message = $this->l('success_credentials');
+            $this->sendResponse('ok', $message);
+        } catch (InvalidArgumentException $exception) {
+            $this->sendResponse('error', $exception->getMessage());
+        }
     }
 
     /**
@@ -96,6 +102,7 @@ class WirecardAjaxController extends ModuleAdminController
      * Validate base Url.
      * It shouldn't have any path on the end of Url
      * @param string $baseUrl
+     * @throws InvalidArgumentException
      * @since 2.1.0
      */
     protected function validateBaseUrl($baseUrl)
@@ -103,14 +110,14 @@ class WirecardAjaxController extends ModuleAdminController
         $parsedUrl = parse_url($baseUrl);
         if ('https' !== $parsedUrl['scheme'] || isset($parsedUrl['path'])) {
             $message = $this->l('error_credentials');
-            $status = 'error';
-            $this->sendResponse($status, $message);
+            throw new InvalidArgumentException($message);
         }
     }
 
     /**
      * Check if transaction service can connect to ee and the credentials are valid
      * @param TransactionService $transactionService
+     * @throws InvalidArgumentException
      * @since 2.1.0
      */
     protected function validateCredentials($transactionService)
@@ -120,12 +127,10 @@ class WirecardAjaxController extends ModuleAdminController
         } catch (\Http\Client\Exception $exception) {
             $success = false;
         }
-        $status = $success ? 'ok' : 'error';
-        $message = $this->l('error_credentials');
-        if ($success) {
-            $message = $this->l('success_credentials');
+        if (!$success) {
+            $message = $this->l('error_credentials');
+            throw new InvalidArgumentException($message);
         }
-        $this->sendResponse($status, $message);
     }
 
     /**
@@ -133,14 +138,14 @@ class WirecardAjaxController extends ModuleAdminController
      * @param string $method
      * @param string $baseUrl
      * @param string $wppUrl
+     * @throws InvalidArgumentException
      * @since 2.1.0
      */
     protected function validateUrlConfiguration($method, $baseUrl, $wppUrl)
     {
         if (('creditcard' === $method) && !UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl)) {
             $message = $this->l('warning_credit_card_url_mismatch');
-            $status = 'error';
-            $this->sendResponse($status, $message);
+            throw new InvalidArgumentException($message);
         }
     }
 
