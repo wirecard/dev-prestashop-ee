@@ -39,8 +39,9 @@ use Wirecard\PaymentSdk\Response\Response;
 
 /**
  * Class ReturnPaymentEngineResponseProcessing
+ *
+ * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
  * @since 2.1.0
- *@package WirecardEE\Prestashop\classes\EngineResponseProcessing
  */
 final class ReturnPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
 {

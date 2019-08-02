@@ -40,8 +40,9 @@ use WirecardEE\Prestashop\Models\Payment;
 
 /**
  * Class PaymentEngineResponseProcessing
+ *
+ * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
  * @since 2.1.0
- *@package WirecardEE\Prestashop\classes\EngineResponseProcessing
  */
 abstract class PaymentEngineResponseProcessing implements EngineResponseProcessing
 {

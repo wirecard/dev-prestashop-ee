@@ -37,8 +37,9 @@ namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
 
 /**
  * Interface EngineResponseProcessing
+ *
+ * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
  * @since 2.1.0
- *@package WirecardEE\Prestashop\classes\EngineResponseProcessing
  */
 interface EngineResponseProcessing
 {

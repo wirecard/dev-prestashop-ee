@@ -35,12 +35,11 @@
 
 namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
-
 /**
  * Class NotificationPaymentEngineResponseProcessing
+ *
+ * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
  * @since 2.1.0
- *@package WirecardEE\Prestashop\classes\EngineResponseProcessing
  */
 final class NotificationPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
 {
