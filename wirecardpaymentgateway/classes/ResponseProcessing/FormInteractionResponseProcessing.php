@@ -35,7 +35,7 @@
 
 namespace WirecardEE\Prestashop\classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 
 /**
  * Class FormInteractionResponseProcessing
@@ -45,11 +45,25 @@ use Wirecard\PaymentSdk\Response\Response;
 final class FormInteractionResponseProcessing implements ResponseProcessing
 {
     /**
-     * @param Response $response
+     * @param FormInteractionResponse $response
      * @since 2.1.0
      */
     public function process($response)
     {
-        // TODO: Implement process() method.
+        $this->createPostForm($response);
+    }
+
+    private function createPostForm($response)
+    {
+        //$post['form_fields'] = '';
+
+        $curl_post = curl_init($response->getUrl());
+        curl_setopt($curl_post, CURLOPT_POST, true);
+        curl_setopt($curl_post, CURLOPT_POSTFIELDS, $response->getFormFields());
+        curl_setopt($curl_post, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl_post, CURLOPT_FOLLOWLOCATION, true);
+
+        header('Content-Type: text/html');
+        die(curl_exec($curl_post));
     }
 }
