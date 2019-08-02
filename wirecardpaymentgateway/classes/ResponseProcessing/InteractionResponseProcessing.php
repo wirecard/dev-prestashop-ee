@@ -35,7 +35,8 @@
 
 namespace WirecardEE\Prestashop\classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\InteractionResponse;
+use WirecardEE\Prestashop\Helper\Logger;
 
 /**
  * Class InteractionResponseProcessing
@@ -45,11 +46,13 @@ use Wirecard\PaymentSdk\Response\Response;
 final class InteractionResponseProcessing implements ResponseProcessing
 {
     /**
-     * @param Response $response
+     * @param InteractionResponse $response
      * @since 2.1.0
      */
     public function process($response)
     {
-        // TODO: Implement process() method.
+        \Tools::redirect(
+          $response->getRedirectUrl()
+        );
     }
 }
