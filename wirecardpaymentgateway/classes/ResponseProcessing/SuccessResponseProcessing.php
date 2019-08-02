@@ -35,7 +35,10 @@
 
 namespace WirecardEE\Prestashop\classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Helper\ModuleHelper;
+use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardPaymentGatewayReturnModuleFrontController;
 
 /**
  * Class SuccessResponseProcessing
@@ -44,12 +47,88 @@ use Wirecard\PaymentSdk\Response\Response;
  */
 final class SuccessResponseProcessing implements ResponseProcessing
 {
+    use ModuleHelper;
+
     /**
-     * @param Response $response
+     * @param SuccessResponse $response
      * @since 2.1.0
      */
     public function process($response)
     {
-        // TODO: Implement process() method.
+        $order_id = \Tools::getValue('id_order');
+        $payment_type = \Tools::getValue('payment_type');
+        $cart_id = $this->getCartId($order_id);
+
+        $cart = new \Cart((int) $cart_id);
+        $order = new \Order((int) $order_id);
+        $customer = new \Customer((int) $cart->id_customer);
+
+        if ($this->isOrderStarting($order)) {
+            $this->updateOrderTo($order, OrderManager::WIRECARD_OS_AWAITING);
+            $this->updateOrderPayments($order, $response);
+        }
+
+        //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
+
+        WirecardPaymentGatewayReturnModuleFrontController::redirectToSuccessCheckoutPage(
+            $cart_id,
+            $this->getModuleId(),
+            $order_id,
+            $customer->secure_key
+        );
+    }
+
+    /**
+     * @param \Order $order
+     * @param SuccessResponse $response
+     * @since 2.1.0
+     */
+    private function updateOrderPayments($order, $response)
+    {
+        $order_payments = \OrderPayment::getByOrderReference($order->reference);
+
+        if (!empty($order_payments)) {
+            $order_payments[count($order_payments) - 1]->transaction_id = $response->getTransactionId();
+            $order_payments[count($order_payments) - 1]->save();
+        }
+    }
+
+    /**
+     * @param \Order $order
+     * @param string $status
+     * @since 2.1.0
+     */
+    private function updateOrderTo($order, $status)
+    {
+        $order->setCurrentState(\Configuration::get($status));
+    }
+
+    /**
+     * @param \Order $order
+     * @return bool
+     * @since 2.1.0
+     */
+    private function isOrderStarting($order)
+    {
+        if ($order->current_state === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $order_id
+     * @return int
+     * @since 2.1.0
+     */
+    private function getCartId($order_id)
+    {
+        $cart_id = \Tools::getValue('id_cart');
+        if (empty($cart_id)) {
+            $cart_id = \Cart::getCartByOrderId($order_id);
+        }
+
+        return $cart_id;
     }
 }
