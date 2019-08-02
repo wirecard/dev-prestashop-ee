@@ -94,7 +94,7 @@ class WirecardAjaxController extends ModuleAdminController
      *
      * Validate base Url.
      * It shouldn't have any path on the end of Url
-     * @param $baseUrl
+     * @param string $baseUrl
      * @since 2.1.0
      */
     protected function validateBaseUrl($baseUrl)
@@ -129,6 +129,9 @@ class WirecardAjaxController extends ModuleAdminController
 
     /**
      * Check if base url and wpp url are on the same level (test or production)
+     * @param string $method
+     * @param string $baseUrl
+     * @param string $wppUrl
      * @since 2.1.0
      */
     protected function validateUrlConfiguration($method, $baseUrl, $wppUrl)
@@ -142,6 +145,8 @@ class WirecardAjaxController extends ModuleAdminController
 
     /**
      * Send response
+     * @param string $status
+     * @param string $message
      * @since 2.1.0
      */
     protected function sendResponse($status, $message)
