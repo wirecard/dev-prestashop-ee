@@ -100,7 +100,14 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         }
     }
 
-
+    /**
+     * Redirect to the success checkout page
+     * @param string $cart_id
+     * @param string $module_id
+     * @param string $order_id
+     * @param string $customer_secure_key
+     * @since 2.1.0
+     */
     public static function redirectToSuccessCheckoutPage($cart_id, $module_id, $order_id, $customer_secure_key)
     {
         \Tools::redirect('index.php?controller=order-confirmation&id_cart='
