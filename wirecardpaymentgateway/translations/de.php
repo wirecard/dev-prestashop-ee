@@ -25,8 +25,6 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_ced02f721e522
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_4621508b093588359d89d15019b0c713'] = 'Transaktionsstatus';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_3bd56bbf8734eb9b2d39537bbbf92cdd'] = 'Es wurde keine Transaktion gefunden.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_801af80081d36bd4abbc956818f28de9'] = 'Es wurde keine gültige Zahlung für diese Transaktion gefunden.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>return_fb8974a2d9268f875990859be9dcb769'] = 'Sie haben den Bezahlprozess abgebrochen.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>return_c5932c4717881c8965cea94ead28e157'] = 'Beim Bezahlprozess ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Aktivieren';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7c98f6003387a22f8930e088861ac1d1'] = 'Wirecard Alipay Cross-border aktivieren';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2433374a7348266aa2a46eab61a2fc5b'] = 'Titel';
