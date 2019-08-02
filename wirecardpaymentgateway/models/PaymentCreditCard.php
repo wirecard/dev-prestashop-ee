@@ -384,7 +384,6 @@ class PaymentCreditCard extends Payment
         $wppUrl = $this->module->getConfigValue('creditcard', 'wpp_url');
         return array(
             'ccvaultenabled' => (bool) $test,
-            'paymentPageScript' => $wppUrl . '/loader/paymentPage.js'
         );
     }
 
