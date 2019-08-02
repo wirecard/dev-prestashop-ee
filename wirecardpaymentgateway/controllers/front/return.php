@@ -76,8 +76,8 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             $engine_processing = new ReturnPaymentEngineResponseProcessing();
             $processed_return  = $engine_processing->process($response, $this);
 
-            $return_processing_strategy = ResponseProcessingFactory::getResponseProcessing($processed_return);
-            $return_processing_strategy->process($processed_return);
+            $processing_strategy = ResponseProcessingFactory::getResponseProcessing($processed_return);
+            $processing_strategy->process($processed_return);
         } catch (\Exception $exception) {
             $this->logger->error(
                 'Error in class:'. __CLASS__ .
@@ -110,4 +110,3 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                          .$customer_secure_key);
     }
 }
-

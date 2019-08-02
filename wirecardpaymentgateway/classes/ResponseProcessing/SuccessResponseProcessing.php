@@ -56,7 +56,6 @@ final class SuccessResponseProcessing implements ResponseProcessing
     public function process($response)
     {
         $order_id = \Tools::getValue('id_order');
-        $payment_type = \Tools::getValue('payment_type');
         $cart_id = $this->getCartId($order_id);
 
         $cart = new \Cart((int) $cart_id);
