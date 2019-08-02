@@ -85,6 +85,7 @@ class WirecardAjaxController extends ModuleAdminController
         $config = new Config($baseUrl, $httpUser, $httpPass);
         $transactionService = new TransactionService($config, new Logger());
         $this->validateBaseUrl($baseUrl);
+        $this->validateBaseUrl($wppUrl);
         $this->validateUrlConfiguration($method, $baseUrl, $wppUrl);
         // Validate Credentials should be the last check.
         $this->validateCredentials($transactionService);
