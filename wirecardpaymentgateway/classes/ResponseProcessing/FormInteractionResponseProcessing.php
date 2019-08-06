@@ -46,24 +46,36 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
 {
     /**
      * @param FormInteractionResponse $response
+     * @param int $order_id
      * @since 2.1.0
      */
-    public function process($response)
+    public function process($response, $order_id)
     {
-        $this->createPostForm($response);
+        $context = \Context::getContext();
+        $smarty_data = $this->getDataFromResponse($response);
+
+        $context->smarty->assign($smarty_data);
+        die($context->smarty->fetch($this->getFromTemplate()));
     }
 
-    private function createPostForm($response)
+    /**
+     * @param FormInteractionResponse $response
+     * @return array
+     * @since 2.1.0
+     */
+    private function getDataFromResponse($response)
     {
-        //$post['form_fields'] = '';
+        return [
+            'url' => $response->getUrl(),
+            'method' => $response->getMethod(),
+            'form_fields' => $response->getFormFields()
+        ];
+    }
 
-        $curl_post = curl_init($response->getUrl());
-        curl_setopt($curl_post, CURLOPT_POST, true);
-        curl_setopt($curl_post, CURLOPT_POSTFIELDS, $response->getFormFields());
-        curl_setopt($curl_post, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl_post, CURLOPT_FOLLOWLOCATION, true);
-
-        header('Content-Type: text/html');
-        die(curl_exec($curl_post));
+    private function getFromTemplate()
+    {
+        return _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
+               'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+               'creditcard_submitform.tpl';
     }
 }

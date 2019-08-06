@@ -38,7 +38,6 @@ namespace WirecardEE\Prestashop\classes\ResponseProcessing;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\ModuleHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardPaymentGatewayReturnModuleFrontController;
 
 /**
  * Class SuccessResponseProcessing
@@ -51,15 +50,13 @@ final class SuccessResponseProcessing implements ResponseProcessing
 
     /**
      * @param SuccessResponse $response
+     * @param int $order_id
      * @since 2.1.0
      */
-    public function process($response)
+    public function process($response, $order_id)
     {
-        $order_id = \Tools::getValue('id_order');
-        $cart_id = $this->getCartId($order_id);
-
-        $cart = new \Cart((int) $cart_id);
         $order = new \Order((int) $order_id);
+        $cart = $this->getCartIdFromOrder($order_id);
         $customer = new \Customer((int) $cart->id_customer);
 
         if ($this->isOrderStarting($order)) {
@@ -69,8 +66,8 @@ final class SuccessResponseProcessing implements ResponseProcessing
 
         //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
 
-        WirecardPaymentGatewayReturnModuleFrontController::redirectToSuccessCheckoutPage(
-            $cart_id,
+        $this->redirectToSuccessCheckoutPage(
+            $cart->id,
             $this->getModuleId(),
             $order_id,
             $customer->secure_key
@@ -118,16 +115,28 @@ final class SuccessResponseProcessing implements ResponseProcessing
 
     /**
      * @param int $order_id
-     * @return int
+     * @return \Cart
      * @since 2.1.0
      */
-    private function getCartId($order_id)
+    private function getCartIdFromOrder($order_id)
     {
-        $cart_id = \Tools::getValue('id_cart');
-        if (empty($cart_id)) {
-            $cart_id = \Cart::getCartByOrderId($order_id);
-        }
+        return \Cart::getCartByOrderId($order_id);
+    }
 
-        return $cart_id;
+    /**
+     * Redirect to the success checkout page
+     * @param string $cart_id
+     * @param string $module_id
+     * @param string $order_id
+     * @param string $customer_secure_key
+     * @since 2.1.0
+     */
+    private function redirectToSuccessCheckoutPage($cart_id, $module_id, $order_id, $customer_secure_key)
+    {
+        \Tools::redirect('index.php?controller=order-confirmation&id_cart='
+                         .$cart_id.'&id_module='
+                         .$module_id.'&id_order='
+                         .$order_id.'&key='
+                         .$customer_secure_key);
     }
 }

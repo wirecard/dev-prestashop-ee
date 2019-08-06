@@ -35,7 +35,6 @@
 
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
@@ -176,9 +175,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * @param $orderId
      * @since 2.0.0
      */
-    private function handleTransactionResponse($response, $orderId)
+    private function handleTransactionResponse($response, $order_id)
     {
         $response_strategy = ResponseProcessingFactory::getResponseProcessing($response);
-        $response_strategy->process($response);
+        $response_strategy->process($response, $order_id);
     }
 }

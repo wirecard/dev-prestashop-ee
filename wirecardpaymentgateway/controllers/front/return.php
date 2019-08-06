@@ -77,8 +77,10 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             $engine_processing = new ReturnPaymentEngineResponseProcessing();
             $processed_return  = $engine_processing->process($response, $this);
 
+            $order_id = \Tools::getValue('id_order');
+
             $processing_strategy = ResponseProcessingFactory::getResponseProcessing($processed_return);
-            $processing_strategy->process($processed_return);
+            $processing_strategy->process($processed_return, $order_id);
         } catch (\Exception $exception) {
             $this->logger->error(
                 'Error in class:'. __CLASS__ .
@@ -99,22 +101,5 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             $response_processing = new CancelResponseProcessing();
             $response_processing->process();
         }
-    }
-
-    /**
-     * Redirect to the success checkout page
-     * @param string $cart_id
-     * @param string $module_id
-     * @param string $order_id
-     * @param string $customer_secure_key
-     * @since 2.1.0
-     */
-    public static function redirectToSuccessCheckoutPage($cart_id, $module_id, $order_id, $customer_secure_key)
-    {
-        \Tools::redirect('index.php?controller=order-confirmation&id_cart='
-                         .$cart_id.'&id_module='
-                         .$module_id.'&id_order='
-                         .$order_id.'&key='
-                         .$customer_secure_key);
     }
 }

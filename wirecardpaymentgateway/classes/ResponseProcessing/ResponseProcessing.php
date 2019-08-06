@@ -45,7 +45,8 @@ interface ResponseProcessing
 {
     /**
      * @param Response $response
+     * @param int $order_id
      * @since 2.1.0
      */
-    public function process($response);
+    public function process($response, $order_id);
 }
