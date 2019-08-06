@@ -35,20 +35,47 @@
 
 namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
 
+use Wirecard\PaymentSdk\BackendService;
+use WirecardEE\Prestashop\Models\Payment;
+
 /**
  * Class PaymentEngineResponseProcessing
+ *
  * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
  * @since 2.1.0
  */
 abstract class PaymentEngineResponseProcessing implements EngineResponseProcessing
 {
+    /** @var BackendService */
+    protected $backend_service;
+
+    /** @var Payment */
+    protected $payment;
+
     /**
-     * @param array $response
-     * @param \WirecardPaymentGateway $module
+     * @param array|string $response
+     * @param \ModuleFrontController $controller
      * @since 2.1.0
      */
-    public function process($response, $module)
+    public function process($response, $controller)
     {
-        // TODO: Here the transaction service will be created and the payment config.
+        $config = $this->getPaymentConfig(
+            \Tools::getValue('payment_type'),
+            $controller->module
+        );
+        $this->backend_service = new BackendService($config, $controller->logger);
+    }
+
+    /**
+     * @param string $payment_type
+     * @param \WirecardPaymentGateway $module
+     * @return \Wirecard\PaymentSdk\Config\Config
+     * @since 2.1.0
+     */
+    private function getPaymentConfig($payment_type, $module)
+    {
+        /** @var Payment $payment */
+        $this->payment = $module->getPaymentFromType($payment_type);
+        return $this->payment->createPaymentConfig($module);
     }
 }
