@@ -35,20 +35,17 @@
 
 namespace WirecardEE\Prestashop\classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
-
 /**
  * Class CancelResponseProcessing
  * @package WirecardEE\Prestashop\classes\ResponseProcessing
  * @since 2.1.0
  */
-final class CancelResponseProcessing implements ResponseProcessing
+final class CancelResponseProcessing
 {
     /**
-     * @param Response $response
      * @since 2.1.0
      */
-    public function process($response)
+    public function process()
     {
         // TODO: Implement process() method.
     }

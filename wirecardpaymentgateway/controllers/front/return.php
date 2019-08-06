@@ -96,7 +96,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     {
         if ($payment_state === self::CANCEL_PAYMENT_STATE) {
             $response_processing = new CancelResponseProcessing();
-            $response_processing->process(null);
+            $response_processing->process();
         }
     }
 }
