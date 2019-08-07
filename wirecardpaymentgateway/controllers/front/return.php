@@ -71,13 +71,16 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     public function postProcess()
     {
         $response = $_REQUEST;
-        $this->isCancelResponse(\Tools::getValue('payment_state'));
+        $order_id = \Tools::getValue('id_order');
 
         try {
+            $this->isCancelResponse(
+                \Tools::getValue('payment_state'),
+                $order_id
+            );
+
             $engine_processing = new ReturnPaymentEngineResponseProcessing();
             $processed_return  = $engine_processing->process($response, $this);
-
-            $order_id = \Tools::getValue('id_order');
 
             $processing_strategy = ResponseProcessingFactory::getResponseProcessing($processed_return);
             $processing_strategy->process($processed_return, $order_id);
@@ -94,12 +97,15 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
 
     /**
      * @param string $payment_state
+     * @param int $order_id
+     * @throws \Exception
+     * @since 2.1.0
      */
-    private function isCancelResponse($payment_state)
+    private function isCancelResponse($payment_state, $order_id)
     {
         if ($payment_state === self::CANCEL_PAYMENT_STATE) {
             $response_processing = new CancelResponseProcessing();
-            $response_processing->process();
+            $response_processing->process($order_id);
         }
     }
 }

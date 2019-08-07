@@ -47,6 +47,7 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
     /**
      * @param FormInteractionResponse $response
      * @param int $order_id
+     * @return void
      * @since 2.1.0
      */
     public function process($response, $order_id)
@@ -72,6 +73,11 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
         ];
     }
 
+    /**
+     * Get path to the submit form
+     * @return string
+     * @since 2.1.0
+     */
     private function getFromTemplate()
     {
         return _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .

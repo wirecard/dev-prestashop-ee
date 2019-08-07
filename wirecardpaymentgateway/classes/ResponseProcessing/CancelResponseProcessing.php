@@ -35,18 +35,54 @@
 
 namespace WirecardEE\Prestashop\classes\ResponseProcessing;
 
+use WirecardEE\Prestashop\Helper\OrderManager;
+
 /**
  * Class CancelResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\classes\ResponseProcessing
  */
 final class CancelResponseProcessing
 {
     /**
+     * @param int $order_id
+     * @throws \Exception
      * @since 2.1.0
      */
-    public function process()
+    public function process($order_id)
     {
-        // TODO: Implement process() method.
+        $order = new \Order((int) $order_id);
+
+        if ($this->isOrderStarting($order)) {
+            $order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
+            $original_cart = \Cart::getCartByOrderId($order_id);
+            $cart_clone = $original_cart->duplicate()['cart'];
+            $this->saveCartToSession($cart_clone);
+
+            \Tools::redirect('index.php?controller=order');
+        }
+        throw new \Exception('The order is not cancalable');
+    }
+
+    private function saveCartToSession($cart_clone)
+    {
+        $context = \Context::getContext();
+        $context->cart = $cart_clone;
+        $context->id_cart = $cart_clone->id;
+        $context->cookie->id_cart = $cart_clone->id;
+    }
+
+    /**
+     * @param \Order $order
+     * @return bool
+     * @since 2.1.0
+     */
+    private function isOrderStarting($order)
+    {
+        if ($order->current_state === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            return true;
+        }
+
+        return false;
     }
 }
