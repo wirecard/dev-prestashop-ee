@@ -55,7 +55,7 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
         $smarty_data = $this->getDataFromResponse($response);
 
         $context->smarty->assign($smarty_data);
-        die($context->smarty->fetch($this->getFromTemplate()));
+        $context->smarty->display($this->getFromTemplate());
     }
 
     /**
