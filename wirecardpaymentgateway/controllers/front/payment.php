@@ -171,13 +171,12 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     /**
      * Handle the response of the transaction appropriately.
      *
-     * @param $response
-     * @param $orderId
+     * @param array $response
+     * @param int $orderId
      * @since 2.0.0
      */
     private function handleTransactionResponse($response, $order_id)
     {
-        $response_strategy = ResponseProcessingFactory::getResponseProcessing($response);
-        $response_strategy->process($response, $order_id);
+        ResponseProcessingFactory::getResponseProcessing($response)->process($response, $order_id);
     }
 }

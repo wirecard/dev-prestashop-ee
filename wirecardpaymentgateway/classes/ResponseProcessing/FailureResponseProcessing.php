@@ -35,7 +35,8 @@
 
 namespace WirecardEE\Prestashop\classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class FailureResponseProcessing
@@ -45,12 +46,60 @@ use Wirecard\PaymentSdk\Response\Response;
 final class FailureResponseProcessing implements ResponseProcessing
 {
     /**
-     * @param Response $response
+     * @param FailureResponse $response
      * @param int $order_id
      * @since 2.1.0
      */
     public function process($response, $order_id)
     {
-        // TODO: Implement process() method.
+        $order = new \Order((int) $order_id);
+
+        $errors = $this->getErrorsFromStatusCollection($response->getStatusCollection());
+
+        $context = \Context::getContext();
+        $context->controller->errors = $errors;
+
+        if ($this->isOrderStarting($order)) {
+            $order->setCurrentState(\Configuration::get('PS_OS_ERROR'));
+
+            $original_cart = \Cart::getCartByOrderId($order_id);
+            $cart_clone = $original_cart->duplicate()['cart'];
+            $this->saveCartToSession($cart_clone);
+
+            $context->controller->redirectWithNotifications('index.php?controller=order');
+        }
+    }
+
+    private function saveCartToSession($cart_clone)
+    {
+        $context = \Context::getContext();
+        $context->cart = $cart_clone;
+        $context->id_cart = $cart_clone->id;
+        $context->cookie->id_cart = $cart_clone->id;
+    }
+
+    private function getErrorsFromStatusCollection($statuses)
+    {
+        $error = array();
+
+        foreach ($statuses->getIterator() as $status) {
+            array_push($error, $status->getDescription());
+        }
+
+        return $error;
+    }
+
+    /**
+     * @param \Order $order
+     * @return bool
+     * @since 2.1.0
+     */
+    private function isOrderStarting($order)
+    {
+        if ($order->current_state === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            return true;
+        }
+
+        return false;
     }
 }
