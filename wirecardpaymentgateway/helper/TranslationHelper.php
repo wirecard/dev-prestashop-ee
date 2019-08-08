@@ -42,19 +42,30 @@ trait TranslationHelper
      *
      * @param string $key translation key
      * @param string|bool $specific filename of the translation key
-     * @param string|null $class not used!
-     * @param bool $addslashes not used!
-     * @param bool $htmlentities not used!
      *
      * @return string translation
      * @since 2.0.0
      */
-    protected function l($key, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
+    protected function l($key, $specific = false)
     {
-        if (!$specific) {
-            $specific = self::TRANSLATION_FILE;
+        if (!$specific && defined("static::TRANSLATION_FILE")) {
+            $specific = static::TRANSLATION_FILE;
         }
 
-        return $this->module->l($key, $specific);
+        if (!$specific) {
+            $specific = \WirecardPaymentGateway::NAME;
+        }
+
+        $translation = \Translate::getModuleTranslation(
+            \WirecardPaymentGateway::NAME,
+            $key,
+            $specific
+        );
+
+        if ($translation === $key) {
+            $translation = \WirecardPaymentGateway::getTranslationForLanguage('en', $key, $specific);
+        }
+
+        return $translation;
     }
 }

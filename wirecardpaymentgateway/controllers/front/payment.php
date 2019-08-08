@@ -67,15 +67,12 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->context->cookie->__set('pia-enabled', false);
         $cartId = \Tools::getValue('order_number');
 
-        var_dump(\Tools::getValue('ideal_thingy'));
-        die();
-
         $cart = new Cart($cartId);
 
         $paymentType = \Tools::getValue('paymentType');
         $operation = $this->module->getConfigValue($paymentType, 'payment_action');
         $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createPaymentConfig($this->module);
+        $config = $payment->createConfig();
 
         $this->transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
         // Create order and get orderId

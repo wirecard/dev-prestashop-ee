@@ -52,6 +52,7 @@ use WirecardEE\Prestashop\Helper\CurrencyHelper;
 class PaymentGuaranteedInvoiceRatepay extends Payment
 {
     const TYPE = RatepayInvoiceTransaction::NAME;
+    const TRANSLATION_FILE = "paymentguaranteedinvoiceratepay";
     const MIN_AGE = 18;
 
     private $currencyHelper;
@@ -406,12 +407,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $currency = \Context::getContext()->currency;
 
         $minimum = $currencyConverter->convertToCurrency(
-            $module->getConfigValue($this->type, 'amount_min'),
+            $this->configuration->getField('amount_min'),
             $currency->iso_code
         );
 
         $maximum = $currencyConverter->convertToCurrency(
-            $module->getConfigValue($this->type, 'amount_max'),
+            $this->configuration->getField('amount_max'),
             $currency->iso_code
         );
 
@@ -433,7 +434,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function isValidAddress($module, $shipping, $billing)
     {
-        $isSame = $module->getConfigValue($this->type, 'billingshipping_same');
+        $isSame = $this->configuration->getField('billingshipping_same');
         if ($isSame && $shipping->id != $billing->id) {
             $fields = array(
                 'country',
@@ -478,7 +479,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function getAllowedCountries($module, $type)
     {
-        $val = $module->getConfigValue($this->type, $type. '_countries');
+        $val = $this->configuration->getField($type . '_countries');
         if (!\Tools::strlen($val)) {
             return array();
         }
@@ -500,7 +501,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function getAllowedCurrencies($module)
     {
-        $val = $module->getConfigValue($this->type, 'allowed_currencies');
+        $val = $this->configuration->getField('allowed_currencies');
         if (!\Tools::strlen($val)) {
             return array();
         }

@@ -52,6 +52,7 @@ use WirecardEE\Prestashop\Helper\TransactionBuilder;
 class PaymentCreditCard extends Payment
 {
     const TYPE = CreditCardTransaction::NAME;
+    const TRANSLATION_FILE = "paymentcreditcard";
 
     /** @var CreditCardTransaction */
     protected $transaction;
@@ -68,15 +69,14 @@ class PaymentCreditCard extends Payment
      */
     public function __construct()
     {
-        parent::__construct();
-
         $this->logger = new WirecardLogger();
         $this->transaction = new CreditCardTransaction();
         $this->type = self::TYPE;
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
+
+        parent::__construct();
 
         $this->cancel  = array('authorization');
         $this->capture = array('authorization');
@@ -239,7 +239,7 @@ class PaymentCreditCard extends Payment
         $currencyConverter = new CurrencyHelper();
 
         $config = parent::createConfig();
-        $paymentConfig = $config->get(self::TYPE);
+        $paymentConfig = $config->get(static::TYPE);
 
         if ($this->configuration->getField('three_d_merchant_account_id') !== '') {
             $paymentConfig->setThreeDCredentials(
@@ -268,7 +268,9 @@ class PaymentCreditCard extends Payment
             );
         }
 
-        return $config->add($paymentConfig);
+        $config->add($paymentConfig);
+
+        return $config;
     }
 
     /**
@@ -283,10 +285,10 @@ class PaymentCreditCard extends Payment
      */
     public function getRequestData($module, $context, $cartId)
     {
-        $paymentAction = $module->getConfigValue($this->type, 'payment_action');
+        $paymentAction = $this->configuration->getField('payment_action');
         $operation = $this->getOperationForPaymentAction($paymentAction);
         $languageCode = $this->getSupportedLangCode($context);
-        $config = $this->createPaymentConfig($module);
+        $config = $this->createConfig();
 
         $transactionService = new TransactionService($config, $this->logger);
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
@@ -361,12 +363,13 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Set template variables
+     * Set required variables for template
      *
      * @return array
+     * @since 2.1.0 Change method name and use new configuration
      * @since 1.0.0
      */
-    protected function setTemplateData()
+    protected function getFormTemplateData()
     {
         $ccVaultEnabled = $this->configuration->getField('ccvault_enabled');
 

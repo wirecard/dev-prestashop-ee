@@ -63,7 +63,6 @@ class PaymentIdeal extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard iDEAL';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
 
         $this->refund  = array('debit');

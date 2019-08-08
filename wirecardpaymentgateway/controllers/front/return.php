@@ -72,7 +72,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         }
 
         $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createPaymentConfig($this->module);
+        $config = $payment->createConfig();
         if ($paymentState == 'success') {
             try {
                 $transactionService = new TransactionService($config, new WirecardLogger());

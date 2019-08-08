@@ -33,7 +33,6 @@
  * @license GPLv3
  */
 
-use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
@@ -259,10 +258,12 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFields()
     {
         $payments = array();
-        /** @var Payment $payment */
+
+        /** @var \WirecardEE\Prestashop\Models\Payment $payment */
         foreach ($this->getPayments() as $payment) {
             array_push($payments, $payment->getFormFields());
         }
+
         return $payments;
     }
 
@@ -353,68 +354,31 @@ class WirecardPaymentGateway extends PaymentModule
      * Payment options hook
      *
      * @param $params
-     * @return bool|void
+     * @return array|bool
      * @since 1.0.0
      */
     public function hookPaymentOptions($params)
     {
         if (!$this->active) {
-            return;
+            return false;
         }
 
         $result = array();
-        /** @var Payment $paymentMethod */
-        foreach ($this->getPayments() as $paymentMethod) {
-            if (! $this->getConfigValue($paymentMethod->getType(), 'enabled')) {
-                continue;
-            }
 
+        /** @var \WirecardEE\Prestashop\Models\Payment $paymentMethod */
+        foreach ($this->getPayments() as $paymentMethod) {
             if (!$paymentMethod->isAvailable($this, $params['cart'])) {
                 continue;
             }
 
-            $paymentData = array(
-                'paymentType' => $paymentMethod->getType(),
-            );
-            if ('invoice' == $paymentMethod->getType()) {
-                /** @var PaymentGuaranteedInvoiceRatepay $paymentMethod */
-                $this->createRatepayScript($paymentMethod);
-            }
+//            if ('invoice' == $paymentMethod->getType()) {
+//                /** @var PaymentGuaranteedInvoiceRatepay $paymentMethod */
+//                $this->createRatepayScript($paymentMethod);
+//            }
 
-            $payment = new PaymentOption();
-            $payment
-                ->setModuleName('wd-' . $paymentMethod->getType())
-                ->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
-                ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
-
-            if ($paymentMethod->getTemplateData()) {
-                $this->context->smarty->assign($paymentMethod->getTemplateData());
-            }
-
-            if ($paymentMethod->getAdditionalInformationTemplate()) {
-                $payment->setAdditionalInformation($this->fetch(
-                    'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
-                ));
-            }
-
-            $payment->setLogo(
-                Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
-                    . $paymentMethod->getType() . '.png')
-            );
-
-            if ($paymentMethod->getType() == 'ideal') {
-                $payment->setForm("<form action='" . $this->context->link->getModuleLink($this->name, 'payment', $paymentData, true) . "'><input type='text' name='ideal_thingy'></form>");
-                $payment->setAdditionalInformation("test");
-
-                echo "<pre>";
-                print_r($payment);
-                echo "</pre>";
-            }
-
-            $result[] = $payment;
+            $result[] = $paymentMethod->toPaymentOption();
         }
 
-        //Implement action validation before payment
         return count($result) ? $result : false;
     }
 
@@ -460,9 +424,6 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $payments = $this->getPayments();
 
-        if ('ratepay-invoice' == $paymentType) {
-            $paymentType = 'invoice';
-        }
         if (array_key_exists($paymentType, $payments)) {
             return $payments[$paymentType];
         }
@@ -591,17 +552,17 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'creditcard' => new PaymentCreditCard(),
-            'paypal' => new PaymentPaypal(),
-            'sepadirectdebit' => new PaymentSepaDirectDebit(),
-            'sepacredittransfer' => new PaymentSepaCreditTransfer(),
-            'sofortbanking' => new PaymentSofort(),
-            'ideal' => new PaymentIdeal(),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay(),
-            'p24' => new PaymentPtwentyfour(),
-            'poipia' => new PaymentPoiPia(),
-            'masterpass' => new PaymentMasterpass(),
-            'alipay-xborder' => new PaymentAlipayCrossborder()
+            PaymentCreditCard::TYPE => new PaymentCreditCard(),
+            PaymentPaypal::TYPE => new PaymentPaypal(),
+            PaymentSepaDirectDebit::TYPE => new PaymentSepaDirectDebit(),
+            PaymentSepaCreditTransfer::TYPE => new PaymentSepaCreditTransfer(),
+            PaymentSofort::TYPE => new PaymentSofort(),
+            PaymentIdeal::TYPE => new PaymentIdeal(),
+            PaymentGuaranteedInvoiceRatepay::TYPE => new PaymentGuaranteedInvoiceRatepay(),
+            PaymentPtwentyfour::TYPE => new PaymentPtwentyfour(),
+            PaymentPoiPia::TYPE => new PaymentPoiPia(),
+            PaymentMasterpass::TYPE => new PaymentMasterpass(),
+            PaymentAlipayCrossborder::TYPE => new PaymentAlipayCrossborder()
         );
 
         return $payments;
@@ -980,7 +941,8 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
+        $creditCardConfiguration = new PaymentConfiguration(PaymentCreditCard::TYPE);
+        $wppUrl = $creditCardConfiguration->getField('wpp_url');
 
         $this->context->controller->registerJavascript(
             'wd-wpp',
@@ -1076,7 +1038,8 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function hookActionDispatcher()
     {
-        $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
+        $context = \Context::getContext();
+        $context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
     }
 
     /**
@@ -1112,30 +1075,6 @@ class WirecardPaymentGateway extends PaymentModule
 
         if ($translation === $key) {
             $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $basename);
-        }
-
-        return $translation;
-    }
-
-    /**
-     * Overwritten translation function, uses the modules translation function with fallback language functionality
-     *
-     * @param string $key translation key
-     * @param string|bool $specific filename of the translation key
-     * @param string|null $locale not used!
-     *
-     * @return string translation
-     * @since 1.3.4
-     */
-    public function l($key, $specific = false, $locale = null)
-    {
-        if (!$specific) {
-            $specific = $this->name;
-        }
-
-        $translation = parent::l($key, $specific);
-        if ($translation === $key) {
-            $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $specific);
         }
 
         return $translation;

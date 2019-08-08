@@ -62,7 +62,6 @@ class PaymentSepaDirectDebit extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard SEPA Direct Debit';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
 
         $this->cancel  = array('pending-debit');
@@ -215,12 +214,7 @@ class PaymentSepaDirectDebit extends Payment
     public function createConfig()
     {
         $config = parent::createConfig();
-
-        $paymentConfig = new SepaConfig(
-            self::TYPE,
-            $this->configuration->getField('merchant_account_id'),
-            $this->configuration->getField('merchant_account_id')
-        );
+        $paymentConfig = $config->get(static::TYPE);
 
         $paymentConfig->setCreditorId(
             $this->configuration->getField('creditor_id')

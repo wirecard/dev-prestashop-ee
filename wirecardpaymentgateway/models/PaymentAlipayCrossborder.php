@@ -50,6 +50,7 @@ use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 class PaymentAlipayCrossborder extends Payment
 {
     const TYPE = AlipayCrossborderTransaction::NAME;
+    const TRANSLATION_FILE = "paymentalipaycrossborder";
 
     /**
      * PaymentAlipayCrossborder constructor.

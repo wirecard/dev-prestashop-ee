@@ -40,7 +40,7 @@ class Link
         return $string;
     }
 
-    public function getModuleLink($name = null, $func = null, $array = null)
+    public function getModuleLink($module = null, $controller = null, array $params = null, $ssl = null)
     {
         return 'http://test.com';
     }
