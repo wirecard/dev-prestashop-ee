@@ -70,7 +70,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
      */
     public function postProcess()
     {
-        $response = $_REQUEST;
+        $response = \Tools::getAllValues();
         $order_id = \Tools::getValue('id_order');
 
         try {
