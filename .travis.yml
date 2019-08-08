@@ -54,7 +54,7 @@ matrix:
     after_script: skip
 
   - stage: get-prestashop-versions
-    if: type != cron
+    if: type = cron
     php: 7.1
     install: skip
     before_script: skip
@@ -64,7 +64,7 @@ matrix:
 
   - &acceptance-test
     stage: acceptance-test
-    if: type = cron
+    if: type != cron
     php: 7.1
     env:
     - GATEWAY=API-TEST
