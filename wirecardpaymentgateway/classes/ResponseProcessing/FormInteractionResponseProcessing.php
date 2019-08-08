@@ -33,17 +33,22 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use WirecardEE\Prestashop\domain\ContextService;
 
 /**
  * Class FormInteractionResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 final class FormInteractionResponseProcessing implements ResponseProcessing
 {
+    const FORM_TEMPLATE = _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
+    'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+    'creditcard_submitform.tpl';
+
     /**
      * @param FormInteractionResponse $response
      * @param int $order_id
@@ -52,11 +57,12 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
      */
     public function process($response, $order_id)
     {
-        $context = \Context::getContext();
-        $smarty_data = $this->getDataFromResponse($response);
+        $context_service = new ContextService(\Context::getContext());
 
-        $context->smarty->assign($smarty_data);
-        $context->smarty->display($this->getFromTemplate());
+        $context_service->showTemplateWithData(
+            self::FORM_TEMPLATE,
+            $this->getDataFromResponse($response)
+        );
     }
 
     /**
@@ -71,17 +77,5 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
             'method' => $response->getMethod(),
             'form_fields' => $response->getFormFields()
         ];
-    }
-
-    /**
-     * Get path to the submit form
-     * @return string
-     * @since 2.1.0
-     */
-    private function getFromTemplate()
-    {
-        return _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-               'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-               'creditcard_submitform.tpl';
     }
 }

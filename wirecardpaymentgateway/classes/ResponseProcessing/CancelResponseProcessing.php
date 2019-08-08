@@ -33,14 +33,16 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
+use WirecardEE\Prestashop\domain\ContextService;
+use WirecardEE\Prestashop\domain\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class CancelResponseProcessing
  * @since 2.1.0
- *@package WirecardEE\Prestashop\classes\ResponseProcessing
+ *@package WirecardEE\Prestashop\Classes\ResponseProcessing
  */
 final class CancelResponseProcessing
 {
@@ -52,37 +54,17 @@ final class CancelResponseProcessing
     public function process($order_id)
     {
         $order = new \Order((int) $order_id);
+        $context_service = new ContextService(\Context::getContext());
+        $order_service = new OrderService($order);
 
-        if ($this->isOrderStarting($order)) {
+        if ($order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
             $order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
-            $original_cart = \Cart::getCartByOrderId($order_id);
-            $cart_clone = $original_cart->duplicate()['cart'];
-            $this->saveCartToSession($cart_clone);
+            $cart_clone = $order_service->getNewCartDuplicate();
+            $context_service->setCart($cart_clone);
 
             \Tools::redirect('index.php?controller=order');
         }
+
         throw new \Exception('The order is not cancalable');
-    }
-
-    private function saveCartToSession($cart_clone)
-    {
-        $context = \Context::getContext();
-        $context->cart = $cart_clone;
-        $context->id_cart = $cart_clone->id;
-        $context->cookie->id_cart = $cart_clone->id;
-    }
-
-    /**
-     * @param \Order $order
-     * @return bool
-     * @since 2.1.0
-     */
-    private function isOrderStarting($order)
-    {
-        if ($order->current_state === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-            return true;
-        }
-
-        return false;
     }
 }

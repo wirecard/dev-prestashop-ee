@@ -33,15 +33,16 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\domain\OrderService;
 use WirecardEE\Prestashop\Helper\ModuleHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class SuccessResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 final class SuccessResponseProcessing implements ResponseProcessing
@@ -56,12 +57,13 @@ final class SuccessResponseProcessing implements ResponseProcessing
     public function process($response, $order_id)
     {
         $order = new \Order((int) $order_id);
-        $cart = $this->getCartIdFromOrder($order_id);
+        $order_service = new OrderService($order);
+        $cart = $order_service->getOrderCart();
         $customer = new \Customer((int) $cart->id_customer);
 
-        if ($this->isOrderStarting($order)) {
-            $this->updateOrderTo($order, OrderManager::WIRECARD_OS_AWAITING);
-            $this->updateOrderPayments($order, $response);
+        if ($order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+            $order_service->setTransactionIdInOrderPayment($response->getTransactionId());
         }
 
         //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
@@ -72,55 +74,6 @@ final class SuccessResponseProcessing implements ResponseProcessing
             $order_id,
             $customer->secure_key
         );
-    }
-
-    /**
-     * @param \Order $order
-     * @param SuccessResponse $response
-     * @since 2.1.0
-     */
-    private function updateOrderPayments($order, $response)
-    {
-        $order_payments = \OrderPayment::getByOrderReference($order->reference);
-
-        if (!empty($order_payments)) {
-            $order_payments[count($order_payments) - 1]->transaction_id = $response->getTransactionId();
-            $order_payments[count($order_payments) - 1]->save();
-        }
-    }
-
-    /**
-     * @param \Order $order
-     * @param string $status
-     * @since 2.1.0
-     */
-    private function updateOrderTo($order, $status)
-    {
-        $order->setCurrentState(\Configuration::get($status));
-    }
-
-    /**
-     * @param \Order $order
-     * @return bool
-     * @since 2.1.0
-     */
-    private function isOrderStarting($order)
-    {
-        if ($order->current_state === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param int $order_id
-     * @return \Cart
-     * @since 2.1.0
-     */
-    private function getCartIdFromOrder($order_id)
-    {
-        return \Cart::getCartByOrderId($order_id);
     }
 
     /**

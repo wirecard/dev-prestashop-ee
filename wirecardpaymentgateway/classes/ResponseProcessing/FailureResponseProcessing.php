@@ -33,14 +33,16 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\domain\ContextService;
+use WirecardEE\Prestashop\domain\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class FailureResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 final class FailureResponseProcessing implements ResponseProcessing
@@ -53,29 +55,19 @@ final class FailureResponseProcessing implements ResponseProcessing
     public function process($response, $order_id)
     {
         $order = new \Order((int) $order_id);
+        $context_service = new ContextService(\Context::getContext());
+        $order_service = new OrderService($order);
 
         $errors = $this->getErrorsFromStatusCollection($response->getStatusCollection());
+        $context_service->setErrors($errors);
 
-        $context = \Context::getContext();
-        $context->controller->errors = $errors;
-
-        if ($this->isOrderStarting($order)) {
+        if ($order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
             $order->setCurrentState(\Configuration::get('PS_OS_ERROR'));
+            $cart_clone = $order_service->getNewCartDuplicate();
+            $context_service->setCart($cart_clone);
 
-            $original_cart = \Cart::getCartByOrderId($order_id);
-            $cart_clone = $original_cart->duplicate()['cart'];
-            $this->saveCartToSession($cart_clone);
-
-            $context->controller->redirectWithNotifications('index.php?controller=order');
+            $context_service->redirectWithNotification('index.php?controller=order');
         }
-    }
-
-    private function saveCartToSession($cart_clone)
-    {
-        $context = \Context::getContext();
-        $context->cart = $cart_clone;
-        $context->id_cart = $cart_clone->id;
-        $context->cookie->id_cart = $cart_clone->id;
     }
 
     private function getErrorsFromStatusCollection($statuses)
@@ -87,19 +79,5 @@ final class FailureResponseProcessing implements ResponseProcessing
         }
 
         return $error;
-    }
-
-    /**
-     * @param \Order $order
-     * @return bool
-     * @since 2.1.0
-     */
-    private function isOrderStarting($order)
-    {
-        if ($order->current_state === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-            return true;
-        }
-
-        return false;
     }
 }

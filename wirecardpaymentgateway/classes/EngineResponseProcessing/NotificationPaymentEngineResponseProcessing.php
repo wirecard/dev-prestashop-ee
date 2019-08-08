@@ -33,12 +33,12 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
 
 /**
  * Class NotificationPaymentEngineResponseProcessing
  *
- * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
  * @since 2.1.0
  */
 final class NotificationPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
