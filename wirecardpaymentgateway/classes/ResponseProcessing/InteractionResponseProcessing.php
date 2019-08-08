@@ -44,13 +44,25 @@ use Wirecard\PaymentSdk\Response\InteractionResponse;
  */
 final class InteractionResponseProcessing implements ResponseProcessing
 {
+    /** @var InteractionResponse  */
+    private $response;
+
     /**
+     * InteractionResponseProcessing constructor.
+     *
      * @param InteractionResponse $response
-     * @param int $order_id
      * @since 2.1.0
      */
-    public function process($response, $order_id)
+    public function __construct($response)
     {
-        \Tools::redirect($response->getRedirectUrl());
+        $this->response = $response;
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        \Tools::redirect($this->response->getRedirectUrl());
     }
 }

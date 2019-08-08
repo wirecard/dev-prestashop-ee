@@ -44,23 +44,39 @@ use WirecardEE\Prestashop\Helper\OrderManager;
  * @since 2.1.0
  *@package WirecardEE\Prestashop\Classes\ResponseProcessing
  */
-final class CancelResponseProcessing
+final class CancelResponseProcessing implements ResponseProcessing
 {
+    /** @var \Order */
+    private $order;
+
+    /** @var ContextService */
+    private $context_service;
+
+    /** @var OrderService */
+    private $order_service;
+
     /**
-     * @param int $order_id
+     * CancelResponseProcessing constructor.
+     *
+     * @param \Order $order
+     */
+    public function __construct($order)
+    {
+        $this->order = $order;
+        $this->context_service = new ContextService(\Context::getContext());
+        $this->order_service = new OrderService($order);
+    }
+
+    /**
      * @throws \Exception
      * @since 2.1.0
      */
-    public function process($order_id)
+    public function process()
     {
-        $order = new \Order((int) $order_id);
-        $context_service = new ContextService(\Context::getContext());
-        $order_service = new OrderService($order);
-
-        if ($order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
-            $cart_clone = $order_service->getNewCartDuplicate();
-            $context_service->setCart($cart_clone);
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
 
             \Tools::redirect('index.php?controller=order');
         }

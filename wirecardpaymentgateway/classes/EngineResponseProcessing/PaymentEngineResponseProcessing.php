@@ -36,6 +36,7 @@
 namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
 
 use Wirecard\PaymentSdk\BackendService;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Models\Payment;
 
 /**
@@ -54,16 +55,16 @@ abstract class PaymentEngineResponseProcessing implements EngineResponseProcessi
 
     /**
      * @param array|string $response
-     * @param \ModuleFrontController $controller
+     * @param Logger $logger
      * @since 2.1.0
      */
-    public function process($response, $controller)
+    public function process($response, $logger)
     {
         $config = $this->getPaymentConfig(
             \Tools::getValue('payment_type'),
-            $controller->module
+            \Module::getInstanceByName('wirecardpaymentgateway')
         );
-        $this->backend_service = new BackendService($config, $controller->logger);
+        $this->backend_service = new BackendService($config, $logger);
     }
 
     /**

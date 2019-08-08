@@ -64,7 +64,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $cartId = \Tools::getValue('order_number');
         $cart = new Cart($cartId);
 
-        $paymentType = \Tools::getValue('paymentType');
+        $paymentType = \Tools::getValue('payment_type');
         $operation = $this->module->getConfigValue($paymentType, 'payment_action');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createPaymentConfig($this->module);
@@ -155,7 +155,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      */
     private function executeSeamlessTransaction($data, $config, $cart, $orderId)
     {
-        $paymentType = \Tools::getValue('paymentType');
+        $paymentType = \Tools::getValue('payment_type');
         $redirectUrl =  $this->module->createRedirectUrl($orderId, $paymentType, 'success', $cart->id);
         $transactionService = new TransactionService($config, new WirecardLogger());
 
@@ -172,11 +172,14 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
      * Handle the response of the transaction appropriately.
      *
      * @param array $response
-     * @param int $orderId
+     * @param int $order_id
      * @since 2.0.0
      */
     private function handleTransactionResponse($response, $order_id)
     {
-        ResponseProcessingFactory::getResponseProcessing($response)->process($response, $order_id);
+        $order = new \Order((int) $order_id);
+        $response_factory = new ResponseProcessingFactory($response, $order);
+        $processing_strategy = $response_factory->getResponseProcessing(new WirecardLogger());
+        $processing_strategy->process();
     }
 }

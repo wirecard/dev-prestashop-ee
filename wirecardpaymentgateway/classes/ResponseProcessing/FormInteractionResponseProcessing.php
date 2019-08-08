@@ -49,19 +49,29 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
     'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
     'creditcard_submitform.tpl';
 
+    /** @var FormInteractionResponse  */
+    private $response;
+
     /**
+     * FormInteractionResponseProcessing constructor.
+     *
      * @param FormInteractionResponse $response
-     * @param int $order_id
-     * @return void
+     */
+    public function __construct($response)
+    {
+        $this->response = $response;
+    }
+
+    /**
      * @since 2.1.0
      */
-    public function process($response, $order_id)
+    public function process()
     {
         $context_service = new ContextService(\Context::getContext());
 
         $context_service->showTemplateWithData(
             self::FORM_TEMPLATE,
-            $this->getDataFromResponse($response)
+            $this->getDataFromResponse($this->response)
         );
     }
 

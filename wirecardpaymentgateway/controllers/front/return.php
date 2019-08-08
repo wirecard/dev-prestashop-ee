@@ -51,7 +51,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     const CANCEL_PAYMENT_STATE = 'cancel';
 
     /** @var WirecardLogger  */
-    public $logger;
+    private $logger;
 
     /**
      * WirecardPaymentGatewayReturnModuleFrontController constructor.
@@ -72,18 +72,13 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
     {
         $response = \Tools::getAllValues();
         $order_id = \Tools::getValue('id_order');
+        $payment_state = \Tools::getValue('payment_state');
 
         try {
-            $this->isCancelResponse(
-                \Tools::getValue('payment_state'),
-                $order_id
-            );
-
-            $engine_processing = new ReturnPaymentEngineResponseProcessing();
-            $processed_return  = $engine_processing->process($response, $this);
-
-            $processing_strategy = ResponseProcessingFactory::getResponseProcessing($processed_return);
-            $processing_strategy->process($processed_return, $order_id);
+            $order = new Order((int) $order_id);
+            $response_factory = new ResponseProcessingFactory($response, $order, $payment_state);
+            $processing_strategy = $response_factory->getResponseProcessing($this->logger);
+            $processing_strategy->process();
         } catch (\Exception $exception) {
             $this->logger->error(
                 'Error in class:'. __CLASS__ .
@@ -92,20 +87,6 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             );
             $this->errors = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        }
-    }
-
-    /**
-     * @param string $payment_state
-     * @param int $order_id
-     * @throws \Exception
-     * @since 2.1.0
-     */
-    private function isCancelResponse($payment_state, $order_id)
-    {
-        if ($payment_state === self::CANCEL_PAYMENT_STATE) {
-            $response_processing = new CancelResponseProcessing();
-            $response_processing->process($order_id);
         }
     }
 }

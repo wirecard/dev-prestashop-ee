@@ -47,26 +47,47 @@ use WirecardEE\Prestashop\Helper\OrderManager;
  */
 final class FailureResponseProcessing implements ResponseProcessing
 {
+    /** @var \Order  */
+    private $order;
+
+    /** @var FailureResponse  */
+    private $response;
+
+    /** @var ContextService  */
+    private $context_service;
+
+    /** @var OrderService  */
+    private $order_service;
+
     /**
+     * FailureResponseProcessing constructor.
+     *
+     * @param \Order $order
      * @param FailureResponse $response
-     * @param int $order_id
      * @since 2.1.0
      */
-    public function process($response, $order_id)
+    public function __construct($order, $response)
     {
-        $order = new \Order((int) $order_id);
-        $context_service = new ContextService(\Context::getContext());
-        $order_service = new OrderService($order);
+        $this->order = $order;
+        $this->response = $response;
+        $this->context_service = new ContextService(\Context::getContext());
+        $this->order_service = new OrderService($order);
+    }
 
-        $errors = $this->getErrorsFromStatusCollection($response->getStatusCollection());
-        $context_service->setErrors($errors);
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+        $this->context_service->setErrors($errors);
 
-        if ($order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $order->setCurrentState(\Configuration::get('PS_OS_ERROR'));
-            $cart_clone = $order_service->getNewCartDuplicate();
-            $context_service->setCart($cart_clone);
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get('PS_OS_ERROR'));
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
 
-            $context_service->redirectWithNotification('index.php?controller=order');
+            $this->context_service->redirectWithNotification('index.php?controller=order');
         }
     }
 

@@ -47,49 +47,59 @@ use WirecardEE\Prestashop\Helper\OrderManager;
  */
 final class SuccessResponseProcessing implements ResponseProcessing
 {
-    use ModuleHelper;
+    /** @var \Order  */
+    private $order;
+
+    /** @var SuccessResponse  */
+    private $response;
+
+    /** @var OrderService */
+    private $order_service;
+
+    /** @var \Cart */
+    private $cart;
+
+    /** @var \Customer */
+    private $customer;
+
+    /** @var \WirecardPaymentGateway */
+    private $module;
 
     /**
+     * SuccessResponseProcessing constructor.
+     *
+     * @param \Order $order
      * @param SuccessResponse $response
-     * @param int $order_id
      * @since 2.1.0
      */
-    public function process($response, $order_id)
+    public function __construct($order, $response)
     {
-        $order = new \Order((int) $order_id);
-        $order_service = new OrderService($order);
-        $cart = $order_service->getOrderCart();
-        $customer = new \Customer((int) $cart->id_customer);
+        $this->order = $order;
+        $this->response = $response;
+        $this->order_service = new OrderService($order);
+        $this->cart = $this->order_service->getOrderCart();
+        $this->customer = new \Customer((int) $this->cart->id_customer);
+        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+    }
 
-        if ($order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-            $order_service->setTransactionIdInOrderPayment($response->getTransactionId());
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+            $this->order_service->setTransactionIdInOrderPayment($this->response->getTransactionId());
         }
 
         //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
 
-        $this->redirectToSuccessCheckoutPage(
-            $cart->id,
-            $this->getModuleId(),
-            $order_id,
-            $customer->secure_key
+        \Tools::redirect(
+            'index.php?controller=order-confirmation&id_cart='
+            .$this->cart->id.'&id_module='
+            .$this->module->id.'&id_order='
+            .$this->order->id.'&key='
+            .$this->customer->secure_key
         );
-    }
-
-    /**
-     * Redirect to the success checkout page
-     * @param string $cart_id
-     * @param string $module_id
-     * @param string $order_id
-     * @param string $customer_secure_key
-     * @since 2.1.0
-     */
-    private function redirectToSuccessCheckoutPage($cart_id, $module_id, $order_id, $customer_secure_key)
-    {
-        \Tools::redirect('index.php?controller=order-confirmation&id_cart='
-                         .$cart_id.'&id_module='
-                         .$module_id.'&id_order='
-                         .$order_id.'&key='
-                         .$customer_secure_key);
     }
 }
