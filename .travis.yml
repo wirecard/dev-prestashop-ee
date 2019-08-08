@@ -54,7 +54,7 @@ matrix:
     after_script: skip
 
   - stage: get-prestashop-versions
-    if: type = cron
+    if: type != cron
     php: 7.1
     install: skip
     before_script: skip
@@ -71,14 +71,14 @@ matrix:
     - PRESTASHOP_RELEASE_VERSION=1
     before_install: skip
     install:
-    - |
-      export PRESTASHOP_VERSION=$(awk "NR==$PRESTASHOP_RELEASE_VERSION {print; exit}" ${PRESTASHOP_RELEASES_FILE})
+    - export PRESTASHOP_VERSION=$(awk "NR==$PRESTASHOP_RELEASE_VERSION {print; exit}" ${PRESTASHOP_RELEASES_FILE})
+    - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
-    - bash .bin/upload-logs-and-notify.sh
+#    - bash .bin/upload-logs-and-notify.sh
     after_failure:
-    - bash .bin/upload-logs-and-notify.sh fail
+#    - bash .bin/upload-logs-and-notify.sh fail
 
   - <<: *acceptance-test
     env:
@@ -158,5 +158,5 @@ notifications:
       - "%{repository}#%{build_number} (%{branch} : %{author}): %{message}"
       - "Change view : %{compare_url}"
       - "Build details : %{build_url}"
-    on_success: change
-    on_failure: change
+    on_success: never
+    on_failure: never

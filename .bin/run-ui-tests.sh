@@ -15,12 +15,14 @@ chmod +x $PWD/jq
 $PWD/ngrok authtoken $NGROK_TOKEN
 TIMESTAMP=$(date +%s)
 $PWD/ngrok http 8080 -subdomain="${TIMESTAMP}${GATEWAY}-presta-${PRESTASHOP_RELEASE_VERSION}" > /dev/null &
-NGROK_URL=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
+NGROK_URL_S=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
 
 # allow ngrok to initialize
-while [ ! ${NGROK_URL} ] || [ ${NGROK_URL} = 'null' ];  do
+while [ ! ${NGROK_URL_S} ] || [ ${NGROK_URL_S} = 'null' ];  do
     echo "Waiting for ngrok to initialize"
-    export NGROK_URL=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
+    NGROK_URL_S=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
+    export NGROK_URL=$(sed 's/https/http/g' <<< "$NGROK_URL_S")
+    echo $NGROK_URL
     sleep 1
 done
 
