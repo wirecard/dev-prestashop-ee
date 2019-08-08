@@ -36,7 +36,7 @@
 namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
-use WirecardEE\Prestashop\domain\ContextService;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 /**
  * Class FormInteractionResponseProcessing

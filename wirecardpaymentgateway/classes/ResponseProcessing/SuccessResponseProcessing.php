@@ -36,7 +36,7 @@
 namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
-use WirecardEE\Prestashop\domain\OrderService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\ModuleHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
 

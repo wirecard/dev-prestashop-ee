@@ -35,8 +35,8 @@
 
 namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
-use WirecardEE\Prestashop\domain\ContextService;
-use WirecardEE\Prestashop\domain\OrderService;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
