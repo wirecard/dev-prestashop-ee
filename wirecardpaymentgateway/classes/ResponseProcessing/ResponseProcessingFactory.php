@@ -35,12 +35,11 @@
 
 namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
+use Wirecard\PaymentSdk\Response\Response;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\Response\Response;
-use WirecardEE\Prestashop\Classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
 
 /**
  * Class ResponseProcessingFactory
@@ -49,7 +48,7 @@ use WirecardEE\Prestashop\Classes\EngineResponseProcessing\ReturnPaymentEngineRe
  */
 class ResponseProcessingFactory
 {
-    /** @var  */
+    /** @var Response|false */
     private $response;
 
     /** @var \Order  */
@@ -77,25 +76,22 @@ class ResponseProcessingFactory
      * @return ResponseProcessing
      * @since 2.1.0
      */
-    public function getResponseProcessing($logger)
+    public function getResponseProcessing()
     {
         if ($this->isCancelResponse($this->order_state)) {
             return new CancelResponseProcessing($this->order);
         }
 
-        $processed_return = $this->getProcessedReturn($logger);
-        //var_dump($processed_return);die();
-
         switch (true) {
-            case $processed_return instanceof SuccessResponse:
-                return new SuccessResponseProcessing($this->order, $processed_return);
-            case $processed_return instanceof InteractionResponse:
-                return new InteractionResponseProcessing($processed_return);
-            case $processed_return instanceof FormInteractionResponse:
-                return new FormInteractionResponseProcessing($processed_return);
-            case $processed_return instanceof FailureResponse:
+            case $this->response instanceof SuccessResponse:
+                return new SuccessResponseProcessing($this->order, $this->response);
+            case $this->response instanceof InteractionResponse:
+                return new InteractionResponseProcessing($this->response);
+            case $this->response instanceof FormInteractionResponse:
+                return new FormInteractionResponseProcessing($this->response);
+            case $this->response instanceof FailureResponse:
             default:
-                return new FailureResponseProcessing($this->order, $processed_return);
+                return new FailureResponseProcessing($this->order, $this->response);
         }
     }
 
@@ -112,11 +108,5 @@ class ResponseProcessingFactory
         }
 
         return false;
-    }
-
-    private function getProcessedReturn($logger)
-    {
-        $engine_processing = new ReturnPaymentEngineResponseProcessing();
-        return $engine_processing->process($this->response, $logger);
     }
 }

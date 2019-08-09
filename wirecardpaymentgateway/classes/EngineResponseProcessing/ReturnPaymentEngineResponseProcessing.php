@@ -36,7 +36,6 @@
 namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
 
 use Wirecard\PaymentSdk\Response\Response;
-use WirecardEE\Prestashop\Helper\Logger;
 
 /**
  * Class ReturnPaymentEngineResponseProcessing
@@ -48,14 +47,17 @@ final class ReturnPaymentEngineResponseProcessing extends PaymentEngineResponseP
 {
     /**
      * @param array $response
-     * @param Logger $logger
-     * @return Response
+     * @return Response|false
      * @since 2.1.0
      */
-    public function process($response, $logger)
+    public function process($response)
     {
-        parent::process($response, $logger);
+        if (isset($response)) {
+            parent::process($response);
 
-        return $this->backend_service->handleResponse($response);
+            return $this->backend_service->handleResponse($response);
+        }
+
+        return false;
     }
 }

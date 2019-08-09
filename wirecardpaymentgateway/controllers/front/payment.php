@@ -179,7 +179,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     {
         $order = new \Order((int) $order_id);
         $response_factory = new ResponseProcessingFactory($response, $order);
-        $processing_strategy = $response_factory->getResponseProcessing(new WirecardLogger());
+        $processing_strategy = $response_factory->getResponseProcessing();
         $processing_strategy->process();
     }
 }

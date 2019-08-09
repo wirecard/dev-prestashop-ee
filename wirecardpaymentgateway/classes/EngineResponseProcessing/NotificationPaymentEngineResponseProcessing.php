@@ -45,13 +45,12 @@ final class NotificationPaymentEngineResponseProcessing extends PaymentEngineRes
 {
     /**
      * @param string $response
-     * @param \WirecardPaymentGatewayNotifyModuleFrontController $controller
      * @return Response
      * @since 2.1.0
      */
-    public function process($response, $controller)
+    public function process($response)
     {
-        parent::process($response, $controller);
+        parent::process($response);
 
         return $this->backend_service->handleNotification($response);
     }

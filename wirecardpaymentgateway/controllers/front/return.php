@@ -34,7 +34,6 @@
  */
 
 use WirecardEE\Prestashop\classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
-use WirecardEE\Prestashop\classes\ResponseProcessing\CancelResponseProcessing;
 use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
@@ -76,8 +75,13 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
 
         try {
             $order = new Order((int) $order_id);
+
+            if ($payment_state !== 'cancel') {
+                $response = $this->processRawResponse($response);
+            }
+
             $response_factory = new ResponseProcessingFactory($response, $order, $payment_state);
-            $processing_strategy = $response_factory->getResponseProcessing($this->logger);
+            $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
         } catch (\Exception $exception) {
             $this->logger->error(
@@ -88,5 +92,11 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             $this->errors = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
+    }
+
+    private function processRawResponse($response)
+    {
+        $engine_processing = new ReturnPaymentEngineResponseProcessing();
+        return $engine_processing->process($response);
     }
 }

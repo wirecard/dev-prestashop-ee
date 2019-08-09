@@ -45,8 +45,7 @@ interface EngineResponseProcessing
 {
     /**
      * @param array|string $response
-     * @param \ModuleFrontController $controller
      * @since 2.1.0
      */
-    public function process($response, $controller);
+    public function process($response);
 }
