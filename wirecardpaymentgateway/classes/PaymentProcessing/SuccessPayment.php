@@ -35,21 +35,39 @@
 
 namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 
 /**
- * Class FailurePaymentProcessing
- * @package WirecardEE\Prestashop\Classes\PaymentProcessing
+ * Class SuccessPaymentProcessing
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\Classes\PaymentProcessing
  */
-final class FailurePaymentProcessing implements PaymentProcessing
+final class SuccessPayment implements ProcessablePaymentNotification
 {
+    /** @var \Order */
+    private $order;
+
+    /** @var SuccessResponse */
+    private $notification;
+
     /**
-     * @param Response $response
+     * SuccessPaymentProcessing constructor.
+     *
+     * @param \Order $order
+     * @param SuccessResponse $notification
      * @since 2.1.0
      */
-    public function process($response)
+    public function __construct($order, $notification)
     {
-        // TODO: Implement process() method.
+        $this->order = $order;
+        $this->notification = $notification;
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+
     }
 }

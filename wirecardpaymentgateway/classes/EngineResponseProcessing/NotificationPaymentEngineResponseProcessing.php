@@ -35,17 +35,20 @@
 
 namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
 
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+
 /**
  * Class NotificationPaymentEngineResponseProcessing
  *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\Classes\EngineResponseProcessing
  */
 final class NotificationPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
 {
     /**
      * @param string $response
-     * @return Response
+     * @return SuccessResponse|FailureResponse
      * @since 2.1.0
      */
     public function process($response)

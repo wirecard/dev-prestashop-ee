@@ -35,18 +35,39 @@
 
 namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\FailureResponse;
 
 /**
- * Interface PaymentProcessing
- * @package WirecardEE\Prestashop\Classes\PaymentProcessing
+ * Class FailurePaymentProcessing
  * @since 2.1.0
+ * @package WirecardEE\Prestashop\Classes\PaymentProcessing
  */
-interface PaymentProcessing
+final class FailurePayment implements ProcessablePaymentNotification
 {
+    /** @var \Order  */
+    private $order;
+
+    /** @var FailureResponse  */
+    private $notification;
+
     /**
-     * @param Response $response
+     * FailurePaymentProcessing constructor.
+     *
+     * @param \Order $order
+     * @param FailureResponse $notification
      * @since 2.1.0
      */
-    public function process($response);
+    public function __construct($order, $notification)
+    {
+        $this->order = $order;
+        $this->notification = $notification;
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+
+    }
 }

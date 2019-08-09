@@ -34,8 +34,8 @@
  */
 
 use WirecardEE\Prestashop\classes\EngineResponseProcessing\NotificationPaymentEngineResponseProcessing;
-use WirecardEE\Prestashop\classes\PaymentProcessing\SuccessPaymentProcessing;
-use WirecardEE\Prestashop\classes\PaymentProcessing\FailurePaymentProcessing;
+use WirecardEE\Prestashop\classes\PaymentProcessing\SuccessPayment;
+use WirecardEE\Prestashop\classes\PaymentProcessing\FailurePayment;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
@@ -64,8 +64,9 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
     public function postProcess()
     {
         $notification = Tools::file_get_contents('php://input');
+
         try {
-            $engine_processing      = new NotificationPaymentEngineResponseProcessing();
+            $engine_processing = new NotificationPaymentEngineResponseProcessing();
             $processed_notify = $engine_processing->process($notification);
 
             //@TODO this is just here to see the result of a processed notification
@@ -81,17 +82,18 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
 
     /**
      * Depending on the Response the processing strategy is chosen
+     *
      * @param Response $notification
      *
-     * @return FailurePaymentProcessing|SuccessPaymentProcessing
+     * @return FailurePayment|SuccessPayment
      * @since 2.1.0
      */
     public function getNotificationProcessing($notification)
     {
         if ($notification instanceof SuccessResponse) {
-            return new SuccessPaymentProcessing();
+            return new SuccessPayment();
         }
 
-        return new FailurePaymentProcessing();
+        return new FailurePayment();
     }
 }
