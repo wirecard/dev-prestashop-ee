@@ -69,11 +69,13 @@ class ContextService
 
     /**
      * @param array $errors
+     * @param string $controller_name
      * @since 2.1.0
      */
-    public function setErrors($errors)
+    public function redirectWithError($errors, $controller_name)
     {
-        $this->context = $errors;
+        $this->context->controller->errors = $errors;
+        $this->context->controller->redirectWithNotifications($this->context->link->getPageLink($controller_name));
     }
 
     /**

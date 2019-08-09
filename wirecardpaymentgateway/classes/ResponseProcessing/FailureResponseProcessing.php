@@ -35,6 +35,7 @@
 
 namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
+use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
@@ -79,18 +80,22 @@ final class FailureResponseProcessing implements ResponseProcessing
      */
     public function process()
     {
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->setErrors($errors);
-
         if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
             $this->order->setCurrentState(\Configuration::get('PS_OS_ERROR'));
             $cart_clone = $this->order_service->getNewCartDuplicate();
             $this->context_service->setCart($cart_clone);
 
-            $this->context_service->redirectWithNotification('index.php?controller=order');
+            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+            $this->context_service->redirectWithError($errors, 'order');
         }
     }
 
+    /**
+     * @param StatusCollection $statuses
+     *
+     * @return array
+     * @since 2.1.0
+     */
     private function getErrorsFromStatusCollection($statuses)
     {
         $error = array();
