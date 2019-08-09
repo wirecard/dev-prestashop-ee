@@ -79,11 +79,7 @@ class OrderService
     public function isOrderState($order_state)
     {
         $order_state = \Configuration::get($order_state);
-        if ($this->order->current_state === $order_state) {
-            return true;
-        }
-
-        return false;
+        return $this->order->current_state === $order_state;
     }
 
     /**

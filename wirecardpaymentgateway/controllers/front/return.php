@@ -34,6 +34,7 @@
  */
 
 use WirecardEE\Prestashop\classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
+use WirecardEE\Prestashop\Classes\ResponseProcessing\CancelResponseProcessing;
 use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
@@ -47,8 +48,6 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
 {
-    const CANCEL_PAYMENT_STATE = 'cancel';
-
     /** @var WirecardLogger  */
     private $logger;
 
@@ -76,7 +75,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         try {
             $order = new Order((int) $order_id);
 
-            if ($payment_state !== 'cancel') {
+            if ($payment_state !== CancelResponseProcessing::CANCEL_PAYMENT_STATE) {
                 $response = $this->processRawResponse($response);
             }
 

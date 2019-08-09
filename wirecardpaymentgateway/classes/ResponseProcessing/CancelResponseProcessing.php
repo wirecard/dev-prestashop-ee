@@ -46,6 +46,8 @@ use WirecardEE\Prestashop\Helper\OrderManager;
  */
 final class CancelResponseProcessing implements ResponseProcessing
 {
+    const CANCEL_PAYMENT_STATE = 'cancel';
+
     /** @var \Order */
     private $order;
 
@@ -81,6 +83,6 @@ final class CancelResponseProcessing implements ResponseProcessing
             \Tools::redirect('index.php?controller=order');
         }
 
-        throw new \Exception('The order is not cancalable');
+        throw new \Exception('The order is not cancelable');
     }
 }

@@ -45,12 +45,12 @@ use WirecardEE\Prestashop\Helper\Service\ContextService;
  */
 final class FormInteractionResponseProcessing implements ResponseProcessing
 {
-    const FORM_TEMPLATE = _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-    'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-    'creditcard_submitform.tpl';
 
     /** @var FormInteractionResponse  */
     private $response;
+
+    /** @var string */
+    private $template_path;
 
     /**
      * FormInteractionResponseProcessing constructor.
@@ -60,6 +60,10 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
     public function __construct($response)
     {
         $this->response = $response;
+        $this->template_path = join(
+            DIRECTORY_SEPARATOR,
+            [_PS_MODULE_DIR_ . 'wirecardpaymentgateway', 'views', 'templates', 'front', 'creditcard_submitform.tpl']
+        );
     }
 
     /**
@@ -70,7 +74,7 @@ final class FormInteractionResponseProcessing implements ResponseProcessing
         $context_service = new ContextService(\Context::getContext());
 
         $context_service->showTemplateWithData(
-            self::FORM_TEMPLATE,
+            $this->template_path,
             $this->getDataFromResponse($this->response)
         );
     }
