@@ -52,12 +52,8 @@ final class ReturnPaymentEngineResponseProcessing extends PaymentEngineResponseP
      */
     public function process($response)
     {
-        if (isset($response)) {
-            parent::process($response);
+        parent::process($response);
 
-            return $this->backend_service->handleResponse($response);
-        }
-
-        return false;
+        return $this->backend_service->handleResponse($response);
     }
 }
