@@ -33,25 +33,68 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Helper\Service;
 
 /**
- * Class NotificationPaymentEngineResponseProcessing
- *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
+ * Class ContextService
+ * @package WirecardEE\Prestashop\Helper\Service
  * @since 2.1.0
  */
-final class NotificationPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
+class ContextService
 {
+    /** @var \Context */
+    private $context;
+
     /**
-     * @param string $response
-     * @return Response
+     * ContextService constructor.
+     *
+     * @param \Context $context
      * @since 2.1.0
      */
-    public function process($response)
+    public function __construct($context)
     {
-        parent::process($response);
+        $this->context = $context;
+    }
 
-        return $this->backend_service->handleNotification($response);
+    /**
+     * @param \Cart $cart
+     * @since 2.1.0
+     */
+    public function setCart($cart)
+    {
+        $this->context->cart = $cart;
+        $this->context->id_cart = $cart->id;
+        $this->context->cookie->id_cart = $cart->id;
+    }
+
+    /**
+     * @param array $errors
+     * @param string $controller_name
+     * @since 2.1.0
+     */
+    public function redirectWithError($errors, $controller_name)
+    {
+        $this->context->controller->errors = $errors;
+        $this->context->controller->redirectWithNotifications($this->context->link->getPageLink($controller_name));
+    }
+
+    /**
+     * @param string $url
+     * @since 2.1.0
+     */
+    public function redirectWithNotification($url)
+    {
+        $this->context->controller->redirectWithNotifications($url);
+    }
+
+    /**
+     * @param string $template_path
+     * @param array $data
+     * @since 2.1.0
+     */
+    public function showTemplateWithData($template_path, $data)
+    {
+        $this->context->smarty->assign($data);
+        $this->context->smarty->display($template_path);
     }
 }

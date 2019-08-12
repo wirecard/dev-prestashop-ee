@@ -33,25 +33,71 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Helper\Service;
 
 /**
- * Class NotificationPaymentEngineResponseProcessing
- *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
+ * Class OrderService
+ * @package WirecardEE\Prestashop\Helper\Service
  * @since 2.1.0
  */
-final class NotificationPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
+class OrderService
 {
+    /** @var \Order */
+    private $order;
+
     /**
-     * @param string $response
-     * @return Response
+     * OrderService constructor.
+     *
+     * @param \Order $order
      * @since 2.1.0
      */
-    public function process($response)
+    public function __construct($order)
     {
-        parent::process($response);
+        $this->order = $order;
+    }
 
-        return $this->backend_service->handleNotification($response);
+    /**
+     * @param string $transaction_id
+     * @since 2.1.0
+     */
+    public function setTransactionIdInOrderPayment($transaction_id)
+    {
+        $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
+
+        if (!empty($order_payments)) {
+            $order_payments[count($order_payments) - 1]->transaction_id = $transaction_id;
+            $order_payments[count($order_payments) - 1]->save();
+        }
+    }
+
+    /**
+     * @param string $order_state
+     *
+     * @return boolean
+     * @since 2.1.0
+     */
+    public function isOrderState($order_state)
+    {
+        $order_state = \Configuration::get($order_state);
+        return $this->order->current_state === $order_state;
+    }
+
+    /**
+     * @return \Cart
+     * @since 2.1.0
+     */
+    public function getOrderCart()
+    {
+        return \Cart::getCartByOrderId($this->order->id);
+    }
+
+    /**
+     * @return \Cart
+     * @since 2.1.0
+     */
+    public function getNewCartDuplicate()
+    {
+        $original_cart = $this->getOrderCart();
+        return $original_cart->duplicate()['cart'];
     }
 }

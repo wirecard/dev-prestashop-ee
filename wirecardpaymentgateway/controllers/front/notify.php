@@ -66,7 +66,7 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $notification = Tools::file_get_contents('php://input');
         try {
             $engine_processing      = new NotificationPaymentEngineResponseProcessing();
-            $processed_notify = $engine_processing->process($notification, $this);
+            $processed_notify = $engine_processing->process($notification);
 
             //@TODO this is just here to see the result of a processed notification
             $this->logger->debug('notify: <pre>' . print_r($processed_notify, true) . '</pre>');

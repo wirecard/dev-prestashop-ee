@@ -33,23 +33,77 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Entity\StatusCollection;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class FailureResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 final class FailureResponseProcessing implements ResponseProcessing
 {
+    /** @var \Order  */
+    private $order;
+
+    /** @var FailureResponse  */
+    private $response;
+
+    /** @var ContextService  */
+    private $context_service;
+
+    /** @var OrderService  */
+    private $order_service;
+
     /**
-     * @param Response $response
+     * FailureResponseProcessing constructor.
+     *
+     * @param \Order $order
+     * @param FailureResponse $response
      * @since 2.1.0
      */
-    public function process($response)
+    public function __construct($order, $response)
     {
-        // TODO: Implement process() method.
+        $this->order = $order;
+        $this->response = $response;
+        $this->context_service = new ContextService(\Context::getContext());
+        $this->order_service = new OrderService($order);
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get('PS_OS_ERROR'));
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
+
+            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+            $this->context_service->redirectWithError($errors, 'order');
+        }
+    }
+
+    /**
+     * @param StatusCollection $statuses
+     *
+     * @return array
+     * @since 2.1.0
+     */
+    private function getErrorsFromStatusCollection($statuses)
+    {
+        $error = array();
+
+        foreach ($statuses->getIterator() as $status) {
+            array_push($error, $status->getDescription());
+        }
+
+        return $error;
     }
 }

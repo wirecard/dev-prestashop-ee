@@ -33,19 +33,16 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
-
-use Wirecard\PaymentSdk\Response\Response;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
 /**
  * Interface ResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  */
 interface ResponseProcessing
 {
     /**
-     * @param Response $response
      * @since 2.1.0
      */
-    public function process($response);
+    public function process();
 }

@@ -34,7 +34,7 @@
  */
 
 use WirecardEE\Prestashop\classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
-use WirecardEE\Prestashop\classes\ResponseProcessing\CancelResponseProcessing;
+use WirecardEE\Prestashop\Classes\ResponseProcessing\CancelResponseProcessing;
 use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
@@ -48,10 +48,8 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
 {
-    const CANCEL_PAYMENT_STATE = 'cancel';
-
     /** @var WirecardLogger  */
-    public $logger;
+    private $logger;
 
     /**
      * WirecardPaymentGatewayReturnModuleFrontController constructor.
@@ -65,19 +63,25 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
 
     /**
      * Process redirects and responses
+     *
      * @since 1.0.0
      */
     public function postProcess()
     {
-        $response = $_REQUEST;
-        $this->isCancelResponse(\Tools::getValue('payment_state'));
+        $response = \Tools::getAllValues();
+        $order_id = \Tools::getValue('id_order');
+        $payment_state = \Tools::getValue('payment_state');
 
         try {
-            $engine_processing = new ReturnPaymentEngineResponseProcessing();
-            $processed_return  = $engine_processing->process($response, $this);
+            $order = new Order((int) $order_id);
 
-            //@TODO this is just here to see the result of a processed response
-            $this->logger->debug('return: <pre>' . print_r($processed_return, true). '</pre>');
+            if ($payment_state !== CancelResponseProcessing::CANCEL_PAYMENT_STATE) {
+                $response = $this->processRawResponse($response);
+            }
+
+            $response_factory = new ResponseProcessingFactory($response, $order, $payment_state);
+            $processing_strategy = $response_factory->getResponseProcessing();
+            $processing_strategy->process();
         } catch (\Exception $exception) {
             $this->logger->error(
                 'Error in class:'. __CLASS__ .
@@ -89,14 +93,9 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         }
     }
 
-    /**
-     * @param string $payment_state
-     */
-    private function isCancelResponse($payment_state)
+    private function processRawResponse($response)
     {
-        if ($payment_state === self::CANCEL_PAYMENT_STATE) {
-            $response_processing = new CancelResponseProcessing();
-            $response_processing->process();
-        }
+        $engine_processing = new ReturnPaymentEngineResponseProcessing();
+        return $engine_processing->process($response);
     }
 }

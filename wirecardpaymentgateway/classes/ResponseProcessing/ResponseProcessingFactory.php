@@ -33,38 +33,76 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
+use Wirecard\PaymentSdk\Response\Response;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\Response\Response;
 
 /**
  * Class ResponseProcessingFactory
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 class ResponseProcessingFactory
 {
+    /** @var Response|false */
+    private $response;
+
+    /** @var \Order  */
+    private $order;
+
+    /** @var string */
+    private $order_state;
+
     /**
-     * @param Response $response
+     * ResponseProcessingFactory constructor.
+     *
+     * @param $response
+     * @param \Order $order
+     * @param string $order_state
+     * @since 2.1.0
+     */
+    public function __construct($response, $order, $order_state = null)
+    {
+        $this->order = $order;
+        $this->order_state = $order_state;
+        $this->response = $response;
+    }
+
+    /**
      * @return ResponseProcessing
      * @since 2.1.0
      */
-    public static function getResponseProcessing($response)
+    public function getResponseProcessing()
     {
-        switch (true) {
-            case $response instanceof SuccessResponse:
-                return new SuccessResponseProcessing();
-            case $response instanceof InteractionResponse:
-                return new InteractionResponseProcessing();
-            case $response instanceof FormInteractionResponse:
-                return new FormInteractionResponseProcessing();
-            case $response instanceof FailureResponse:
-            default:
-                return new FailureResponseProcessing();
+        if ($this->isCancelResponse($this->order_state)) {
+            return new CancelResponseProcessing($this->order);
         }
+
+        switch (true) {
+            case $this->response instanceof SuccessResponse:
+                return new SuccessResponseProcessing($this->order, $this->response);
+            case $this->response instanceof InteractionResponse:
+                return new InteractionResponseProcessing($this->response);
+            case $this->response instanceof FormInteractionResponse:
+                return new FormInteractionResponseProcessing($this->response);
+            case $this->response instanceof FailureResponse:
+            default:
+                return new FailureResponseProcessing($this->order, $this->response);
+        }
+    }
+
+    /**
+     * @param string $order_state
+     *
+     * @return bool
+     * @since 2.1.0
+     */
+    private function isCancelResponse($order_state)
+    {
+        return $order_state === CancelResponseProcessing::CANCEL_PAYMENT_STATE;
     }
 }

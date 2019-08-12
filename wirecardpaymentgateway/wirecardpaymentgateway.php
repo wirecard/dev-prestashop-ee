@@ -372,7 +372,7 @@ class WirecardPaymentGateway extends PaymentModule
             }
 
             $paymentData = array(
-                'paymentType' => $paymentMethod->getType(),
+                'payment_type' => $paymentMethod->getType(),
             );
             if ('invoice' == $paymentMethod->getType()) {
                 /** @var PaymentGuaranteedInvoiceRatepay $paymentMethod */

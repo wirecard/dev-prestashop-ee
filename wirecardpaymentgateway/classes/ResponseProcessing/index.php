@@ -27,31 +27,14 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
  */
-
-namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
-
-/**
- * Class NotificationPaymentEngineResponseProcessing
- *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
- * @since 2.1.0
- */
-final class NotificationPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
-{
-    /**
-     * @param string $response
-     * @return Response
-     * @since 2.1.0
-     */
-    public function process($response)
-    {
-        parent::process($response);
-
-        return $this->backend_service->handleNotification($response);
-    }
-}
+                        
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+                        
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+                        
+header("Location: ../");
+exit;

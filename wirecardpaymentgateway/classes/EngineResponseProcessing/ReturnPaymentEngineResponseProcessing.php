@@ -33,27 +33,26 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
 
 use Wirecard\PaymentSdk\Response\Response;
 
 /**
  * Class ReturnPaymentEngineResponseProcessing
  *
- * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
  * @since 2.1.0
  */
 final class ReturnPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
 {
     /**
      * @param array $response
-     * @param \ModuleFrontController $controller
-     * @return Response
+     * @return Response|false
      * @since 2.1.0
      */
-    public function process($response, $controller)
+    public function process($response)
     {
-        parent::process($response, $controller);
+        parent::process($response);
 
         return $this->backend_service->handleResponse($response);
     }

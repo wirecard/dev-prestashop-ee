@@ -33,13 +33,13 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\PaymentProcessing;
+namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
 
 use Wirecard\PaymentSdk\Response\Response;
 
 /**
  * Class FailurePaymentProcessing
- * @package WirecardEE\Prestashop\classes\PaymentProcessing
+ * @package WirecardEE\Prestashop\Classes\PaymentProcessing
  * @since 2.1.0
  */
 final class FailurePaymentProcessing implements PaymentProcessing

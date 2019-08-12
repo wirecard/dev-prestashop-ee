@@ -33,23 +33,73 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\ModuleHelper;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class SuccessResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 final class SuccessResponseProcessing implements ResponseProcessing
 {
+    /** @var \Order  */
+    private $order;
+
+    /** @var SuccessResponse  */
+    private $response;
+
+    /** @var OrderService */
+    private $order_service;
+
+    /** @var \Cart */
+    private $cart;
+
+    /** @var \Customer */
+    private $customer;
+
+    /** @var \WirecardPaymentGateway */
+    private $module;
+
     /**
-     * @param Response $response
+     * SuccessResponseProcessing constructor.
+     *
+     * @param \Order $order
+     * @param SuccessResponse $response
      * @since 2.1.0
      */
-    public function process($response)
+    public function __construct($order, $response)
     {
-        // TODO: Implement process() method.
+        $this->order = $order;
+        $this->response = $response;
+        $this->order_service = new OrderService($order);
+        $this->cart = $this->order_service->getOrderCart();
+        $this->customer = new \Customer((int) $this->cart->id_customer);
+        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+            $this->order_service->setTransactionIdInOrderPayment($this->response->getTransactionId());
+        }
+
+        //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
+
+        \Tools::redirect(
+            'index.php?controller=order-confirmation&id_cart='
+            .$this->cart->id.'&id_module='
+            .$this->module->id.'&id_order='
+            .$this->order->id.'&key='
+            .$this->customer->secure_key
+        );
     }
 }

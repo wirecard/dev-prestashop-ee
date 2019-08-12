@@ -33,20 +33,19 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
 
 /**
  * Interface EngineResponseProcessing
  *
- * @package WirecardEE\Prestashop\classes\EngineResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
  * @since 2.1.0
  */
 interface EngineResponseProcessing
 {
     /**
      * @param array|string $response
-     * @param \ModuleFrontController $controller
      * @since 2.1.0
      */
-    public function process($response, $controller);
+    public function process($response);
 }

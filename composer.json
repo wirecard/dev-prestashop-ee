@@ -33,8 +33,10 @@
   "autoload": {
     "psr-4": {
       "WirecardEE\\Prestashop\\": "wirecardpaymentgateway/",
+      "WirecardEE\\Prestashop\\Classes\\": "wirecardpaymentgateway/classes/",
       "WirecardEE\\Prestashop\\Models\\": "wirecardpaymentgateway/models/",
       "WirecardEE\\Prestashop\\Helper\\": "wirecardpaymentgateway/helper/",
+      "WirecardEE\\Prestashop\\Helper\\Service\\": "wirecardpaymentgateway/helper/service",
       "WirecardEE\\Prestashop\\Controllers\\": "wirecardpaymentgateway/controllers/"
     }
   },

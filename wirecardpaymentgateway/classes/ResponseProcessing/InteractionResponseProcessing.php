@@ -33,23 +33,36 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\InteractionResponse;
 
 /**
  * Class InteractionResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 final class InteractionResponseProcessing implements ResponseProcessing
 {
+    /** @var InteractionResponse  */
+    private $response;
+
     /**
-     * @param Response $response
+     * InteractionResponseProcessing constructor.
+     *
+     * @param InteractionResponse $response
      * @since 2.1.0
      */
-    public function process($response)
+    public function __construct($response)
     {
-        // TODO: Implement process() method.
+        $this->response = $response;
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        \Tools::redirect($this->response->getRedirectUrl());
     }
 }

@@ -33,23 +33,63 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
 
-use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 /**
  * Class FormInteractionResponseProcessing
- * @package WirecardEE\Prestashop\classes\ResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\ResponseProcessing
  * @since 2.1.0
  */
 final class FormInteractionResponseProcessing implements ResponseProcessing
 {
+
+    /** @var FormInteractionResponse  */
+    private $response;
+
+    /** @var string */
+    private $template_path;
+
     /**
-     * @param Response $response
+     * FormInteractionResponseProcessing constructor.
+     *
+     * @param FormInteractionResponse $response
+     */
+    public function __construct($response)
+    {
+        $this->response = $response;
+        $this->template_path = join(
+            DIRECTORY_SEPARATOR,
+            [_PS_MODULE_DIR_ . 'wirecardpaymentgateway', 'views', 'templates', 'front', 'creditcard_submitform.tpl']
+        );
+    }
+
+    /**
      * @since 2.1.0
      */
-    public function process($response)
+    public function process()
     {
-        // TODO: Implement process() method.
+        $context_service = new ContextService(\Context::getContext());
+
+        $context_service->showTemplateWithData(
+            $this->template_path,
+            $this->getDataFromResponse($this->response)
+        );
+    }
+
+    /**
+     * @param FormInteractionResponse $response
+     * @return array
+     * @since 2.1.0
+     */
+    private function getDataFromResponse($response)
+    {
+        return [
+            'url' => $response->getUrl(),
+            'method' => $response->getMethod(),
+            'form_fields' => $response->getFormFields()
+        ];
     }
 }
