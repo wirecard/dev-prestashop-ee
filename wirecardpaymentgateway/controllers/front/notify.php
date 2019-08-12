@@ -67,8 +67,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
             $processed_notify = $engine_processing->process($notification);
 
             $order = new \Order((int) $order_id);
-            $notify_processing_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
-            $payment_processing = $notify_processing_factory->getPaymentProcessing();
+            $notify_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
+            $payment_processing = $notify_factory->getPaymentProcessing();
             $payment_processing->process();
         } catch (\Exception $exception) {
             $this->logger->error(

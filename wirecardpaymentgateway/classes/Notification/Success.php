@@ -124,7 +124,8 @@ final class Success implements ProcessablePaymentNotification
      */
     private function isIgnorable($notification)
     {
-        return $notification->getTransactionType() === 'check-payer-response' || $this->isMasterpassIgnorable($notification);
+        return $notification->getTransactionType() === 'check-payer-response' ||
+               $this->isMasterpassIgnorable($notification);
     }
 
     /**
