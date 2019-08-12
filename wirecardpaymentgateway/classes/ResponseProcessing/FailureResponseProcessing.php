@@ -81,7 +81,8 @@ final class FailureResponseProcessing implements ResponseProcessing
     public function process()
     {
         if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->order->setCurrentState(\Configuration::get('PS_OS_ERROR'));
+            $this->order->setCurrentState(_PS_OS_ERROR_);
+            $this->order->save();
             $cart_clone = $this->order_service->getNewCartDuplicate();
             $this->context_service->setCart($cart_clone);
 

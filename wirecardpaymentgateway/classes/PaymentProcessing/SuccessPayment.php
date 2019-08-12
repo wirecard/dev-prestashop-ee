@@ -35,7 +35,14 @@
 
 namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
 
+use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Models\Payment;
+use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class SuccessPaymentProcessing
@@ -50,6 +57,15 @@ final class SuccessPayment implements ProcessablePaymentNotification
     /** @var SuccessResponse */
     private $notification;
 
+    /** @var OrderService */
+    private $order_service;
+
+    /** @var \WirecardPaymentGateway */
+    private $module;
+
+    /** @var BackendService */
+    private $backend_service;
+
     /**
      * SuccessPaymentProcessing constructor.
      *
@@ -61,6 +77,14 @@ final class SuccessPayment implements ProcessablePaymentNotification
     {
         $this->order = $order;
         $this->notification = $notification;
+        $this->order_service = new OrderService($order);
+        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+
+        /** @var Payment $payment */
+        $payment = $this->module->getPaymentFromType($this->notification->getPaymentMethod());
+        $config = $payment->createPaymentConfig($this->module);
+
+        $this->backend_service = new BackendService($config, new WirecardLogger());
     }
 
     /**
@@ -68,6 +92,106 @@ final class SuccessPayment implements ProcessablePaymentNotification
      */
     public function process()
     {
+        if (!$this->isIgnorable($this->notification)) {
+            $order_state = $this->getPrestaShopOrderState();
+            $this->order->setCurrentState($order_state);
+            $this->order->save();
 
+            $amount = $this->notification->getRequestedAmount();
+            $this->order_service->updateOrderPayment(
+                $this->notification->getTransactionId(),
+                _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
+            );
+
+            Transaction::create(
+                $this->order->id,
+                $this->order->id_cart,
+                $amount->getValue(),
+                $amount->getCurrency(),
+                $this->notification,
+                $this->getTransactionState(),
+                $this->order->reference
+            );
+        }
+    }
+
+    /**
+     * Ignore all 'check-payer-response' transaction types and masterpass 'debit' and 'authorization' notifications
+     *
+     * @param SuccessResponse $notification
+     * @return boolean
+     * @since 2.1.0
+     */
+    private function isIgnorable($notification)
+    {
+        return $notification->getTransactionType() === 'check-payer-response' || $this->isMasterpassIgnorable($notification);
+    }
+
+    /**
+     * @param SuccessResponse $notification
+     * @return boolean
+     * @since 2.1.0
+     */
+    private function isMasterpassIgnorable($notification)
+    {
+        return $notification->getPaymentMethod() === 'masterpass' &&
+               ($notification->getTransactionType() === 'debit' ||
+               $notification->getTransactionType() === 'authorization');
+    }
+
+    /**
+     * @return int
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    private function getPrestaShopOrderState()
+    {
+        $order_state = $this->getOrderState();
+        return $this->orderStateToPrestaShopOrderState($order_state);
+    }
+
+    /**
+     * @return string
+     * @since 2.1.0
+     */
+    private function getOrderState()
+    {
+        return $this->backend_service->getOrderState($this->notification->getTransactionType());
+    }
+
+    /**
+     * @param string $order_state
+     * @return mixed
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    private function orderStateToPrestaShopOrderState($order_state)
+    {
+        switch ($order_state) {
+            case BackendService::TYPE_AUTHORIZED:
+                return \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
+            case BackendService::TYPE_CANCELLED:
+                return _PS_OS_CANCELED_;
+            case BackendService::TYPE_REFUNDED:
+                return _PS_OS_REFUND_;
+            case BackendService::TYPE_PROCESSING:
+                return _PS_OS_PAYMENT_;
+            case BackendService::TYPE_PENDING:
+                return __PS_OS_PENDING_;
+            default:
+                throw new \Exception('Order state not mappable');
+        }
+    }
+
+    /**
+     * @return string
+     * @since 2.1.0
+     */
+    private function getTransactionState()
+    {
+        if ($this->backend_service->isFinal($this->notification->getTransactionType())) {
+            return 'close';
+        }
+        return 'open';
     }
 }

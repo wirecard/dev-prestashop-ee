@@ -89,7 +89,9 @@ final class SuccessResponseProcessing implements ResponseProcessing
     {
         if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
             $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-            $this->order_service->setTransactionIdInOrderPayment($this->response->getTransactionId());
+            $this->order->save();
+
+            $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
         }
 
         //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
