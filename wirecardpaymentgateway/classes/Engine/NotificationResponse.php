@@ -33,47 +33,28 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
+namespace WirecardEE\Prestashop\Classes\Engine;
 
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 
 /**
- * Class PaymentProcessingFactory
+ * Class NotificationResponse
+ *
  * @since 2.1.0
- *@package WirecardEE\Prestashop\Classes\PaymentProcessing
+ *@package WirecardEE\Prestashop\Classes\Engine
  */
-class PaymentProcessingFactory
+final class NotificationResponse extends PaymentSdkResponse
 {
-    /** @var \Order  */
-    private $order;
-
-    /** @var FailureResponse|SuccessResponse  */
-    private $notification;
-
     /**
-     * PaymentProcessingFactory constructor.
-     *
-     * @param \Order $order
-     * @param SuccessResponse|FailureResponse $notification
+     * @param string $response
+     * @return SuccessResponse|FailureResponse
      * @since 2.1.0
      */
-    public function __construct($order, $notification)
+    public function process($response)
     {
-        $this->order = $order;
-        $this->notification = $notification;
-    }
+        parent::process($response);
 
-    /**
-     * @return FailurePayment|SuccessPayment
-     * @since 2.1.0
-     */
-    public function getPaymentProcessing()
-    {
-        if ($this->notification instanceof SuccessResponse) {
-            return new SuccessPayment($this->order, $this->notification);
-        }
-
-        return new FailurePayment($this->order, $this->notification);
+        return $this->backend_service->handleNotification($response);
     }
 }

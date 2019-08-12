@@ -33,54 +33,78 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Response;
 
+use Wirecard\PaymentSdk\Entity\StatusCollection;
+use Wirecard\PaymentSdk\Response\FailureResponse;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
- * Class CancelResponseProcessing
+ * Class Failure
+ * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
- *@package WirecardEE\Prestashop\Classes\ResponseProcessing
  */
-final class CancelResponseProcessing implements ResponseProcessing
+final class Failure implements ProcessablePaymentResponse
 {
-    /** @var \Order */
+    /** @var \Order  */
     private $order;
 
-    /** @var ContextService */
+    /** @var FailureResponse  */
+    private $response;
+
+    /** @var ContextService  */
     private $context_service;
 
-    /** @var OrderService */
+    /** @var OrderService  */
     private $order_service;
 
     /**
-     * CancelResponseProcessing constructor.
+     * FailureResponseProcessing constructor.
      *
      * @param \Order $order
+     * @param FailureResponse $response
+     * @since 2.1.0
      */
-    public function __construct($order)
+    public function __construct($order, $response)
     {
         $this->order = $order;
+        $this->response = $response;
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
     }
 
     /**
-     * @throws \Exception
      * @since 2.1.0
      */
     public function process()
     {
         if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
+            $this->order->setCurrentState(_PS_OS_ERROR_);
+            $this->order->save();
             $cart_clone = $this->order_service->getNewCartDuplicate();
             $this->context_service->setCart($cart_clone);
 
-            \Tools::redirect('index.php?controller=order');
+            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+            $this->context_service->redirectWithError($errors, 'order');
+        }
+    }
+
+    /**
+     * @param StatusCollection $statuses
+     *
+     * @return array
+     * @since 2.1.0
+     */
+    private function getErrorsFromStatusCollection($statuses)
+    {
+        $error = array();
+
+        foreach ($statuses->getIterator() as $status) {
+            array_push($error, $status->getDescription());
         }
 
-        throw new \Exception('The order is not cancalable');
+        return $error;
     }
 }

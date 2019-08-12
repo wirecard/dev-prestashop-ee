@@ -33,49 +33,59 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Response;
 
-use Wirecard\PaymentSdk\BackendService;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Models\Payment;
+use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 /**
- * Class PaymentEngineResponseProcessing
- *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
+ * Class FormPost
+ * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-abstract class PaymentEngineResponseProcessing implements EngineResponseProcessing
+final class FormPost implements ProcessablePaymentResponse
 {
-    /** @var BackendService */
-    protected $backend_service;
+    const FORM_TEMPLATE = _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
+    'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+    'creditcard_submitform.tpl';
 
-    /** @var Payment */
-    protected $payment;
+    /** @var FormInteractionResponse  */
+    private $response;
 
     /**
-     * @param array|string $response
-     * @since 2.1.0
+     * FormInteractionResponseProcessing constructor.
+     *
+     * @param FormInteractionResponse $response
      */
-    public function process($response)
+    public function __construct($response)
     {
-        $config = $this->getPaymentConfig(
-            \Tools::getValue('payment_type'),
-            \Module::getInstanceByName('wirecardpaymentgateway')
-        );
-        $this->backend_service = new BackendService($config, new WirecardLogger());
+        $this->response = $response;
     }
 
     /**
-     * @param string $payment_type
-     * @param \WirecardPaymentGateway $module
-     * @return \Wirecard\PaymentSdk\Config\Config
      * @since 2.1.0
      */
-    private function getPaymentConfig($payment_type, $module)
+    public function process()
     {
-        /** @var Payment $payment */
-        $this->payment = $module->getPaymentFromType($payment_type);
-        return $this->payment->createPaymentConfig($module);
+        $context_service = new ContextService(\Context::getContext());
+
+        $context_service->showTemplateWithData(
+            self::FORM_TEMPLATE,
+            $this->getDataFromResponse($this->response)
+        );
+    }
+
+    /**
+     * @param FormInteractionResponse $response
+     * @return array
+     * @since 2.1.0
+     */
+    private function getDataFromResponse($response)
+    {
+        return [
+            'url' => $response->getUrl(),
+            'method' => $response->getMethod(),
+            'form_fields' => $response->getFormFields()
+        ];
     }
 }

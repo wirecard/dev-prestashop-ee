@@ -33,75 +33,80 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Response;
 
+use Wirecard\PaymentSdk\Response\Response;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\ModuleHelper;
-use WirecardEE\Prestashop\Helper\OrderManager;
+use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use Wirecard\PaymentSdk\Response\FailureResponse;
 
 /**
- * Class SuccessResponseProcessing
- * @package WirecardEE\Prestashop\Classes\ResponseProcessing
+ * Class ProcessablePaymentResponseFactory
+ * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-final class SuccessResponseProcessing implements ResponseProcessing
+class ProcessablePaymentResponseFactory
 {
+    /** @var Response|false */
+    private $response;
+
     /** @var \Order  */
     private $order;
 
-    /** @var SuccessResponse  */
-    private $response;
-
-    /** @var OrderService */
-    private $order_service;
-
-    /** @var \Cart */
-    private $cart;
-
-    /** @var \Customer */
-    private $customer;
-
-    /** @var \WirecardPaymentGateway */
-    private $module;
+    /** @var string */
+    private $order_state;
 
     /**
-     * SuccessResponseProcessing constructor.
+     * ResponseProcessingFactory constructor.
      *
+     * @param Response $response
      * @param \Order $order
-     * @param SuccessResponse $response
+     * @param string $order_state
      * @since 2.1.0
      */
-    public function __construct($order, $response)
+    public function __construct($response, $order, $order_state = null)
     {
         $this->order = $order;
+        $this->order_state = $order_state;
         $this->response = $response;
-        $this->order_service = new OrderService($order);
-        $this->cart = $this->order_service->getOrderCart();
-        $this->customer = new \Customer((int) $this->cart->id_customer);
-        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
     }
 
     /**
+     * @return ProcessablePaymentResponse
      * @since 2.1.0
      */
-    public function process()
+    public function getResponseProcessing()
     {
-        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-            $this->order->save();
-
-            $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
+        if ($this->isCancelResponse($this->order_state)) {
+            return new Cancel($this->order);
         }
 
-        //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
+        switch (true) {
+            case $this->response instanceof SuccessResponse:
+                return new Success($this->order, $this->response);
+            case $this->response instanceof InteractionResponse:
+                return new Redirect($this->response);
+            case $this->response instanceof FormInteractionResponse:
+                return new FormPost($this->response);
+            case $this->response instanceof FailureResponse:
+            default:
+                return new Failure($this->order, $this->response);
+        }
+    }
 
-        \Tools::redirect(
-            'index.php?controller=order-confirmation&id_cart='
-            .$this->cart->id.'&id_module='
-            .$this->module->id.'&id_order='
-            .$this->order->id.'&key='
-            .$this->customer->secure_key
-        );
+    /**
+     * @param string $order_state
+     *
+     * @return bool
+     * @since 2.1.0
+     */
+    private function isCancelResponse($order_state)
+    {
+        if ($order_state === 'cancel') {
+            return true;
+        }
+
+        return false;
     }
 }

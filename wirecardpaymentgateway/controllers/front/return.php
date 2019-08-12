@@ -33,8 +33,8 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
-use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
+use WirecardEE\Prestashop\Classes\Engine\ReturnResponse;
+use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -80,7 +80,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
                 $response = $this->processRawResponse($response);
             }
 
-            $response_factory = new ResponseProcessingFactory($response, $order, $payment_state);
+            $response_factory = new ProcessablePaymentResponseFactory($response, $order, $payment_state);
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
         } catch (\Exception $exception) {
@@ -96,7 +96,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
 
     private function processRawResponse($response)
     {
-        $engine_processing = new ReturnPaymentEngineResponseProcessing();
+        $engine_processing = new ReturnResponse();
         return $engine_processing->process($response);
     }
 }

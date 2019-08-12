@@ -33,46 +33,34 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Notification;
 
-use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use WirecardEE\Prestashop\Helper\Service\ContextService;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
- * Class FailureResponseProcessing
- * @package WirecardEE\Prestashop\Classes\ResponseProcessing
+ * Class Failure
  * @since 2.1.0
+ * @package WirecardEE\Prestashop\Classes\Notification
  */
-final class FailureResponseProcessing implements ResponseProcessing
+final class Failure implements ProcessablePaymentNotification
 {
     /** @var \Order  */
     private $order;
 
     /** @var FailureResponse  */
-    private $response;
-
-    /** @var ContextService  */
-    private $context_service;
-
-    /** @var OrderService  */
-    private $order_service;
+    private $notification;
 
     /**
-     * FailureResponseProcessing constructor.
+     * FailurePaymentProcessing constructor.
      *
      * @param \Order $order
-     * @param FailureResponse $response
+     * @param FailureResponse $notification
      * @since 2.1.0
      */
-    public function __construct($order, $response)
+    public function __construct($order, $notification)
     {
         $this->order = $order;
-        $this->response = $response;
-        $this->context_service = new ContextService(\Context::getContext());
-        $this->order_service = new OrderService($order);
+        $this->notification = $notification;
     }
 
     /**
@@ -80,31 +68,7 @@ final class FailureResponseProcessing implements ResponseProcessing
      */
     public function process()
     {
-        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->order->setCurrentState(_PS_OS_ERROR_);
-            $this->order->save();
-            $cart_clone = $this->order_service->getNewCartDuplicate();
-            $this->context_service->setCart($cart_clone);
-
-            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-            $this->context_service->redirectWithError($errors, 'order');
-        }
-    }
-
-    /**
-     * @param StatusCollection $statuses
-     *
-     * @return array
-     * @since 2.1.0
-     */
-    private function getErrorsFromStatusCollection($statuses)
-    {
-        $error = array();
-
-        foreach ($statuses->getIterator() as $status) {
-            array_push($error, $status->getDescription());
-        }
-
-        return $error;
+        $this->order->setCurrentState(_PS_OS_ERROR_);
+        $this->order->save();
     }
 }

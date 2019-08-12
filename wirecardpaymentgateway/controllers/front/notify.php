@@ -33,14 +33,9 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\classes\EngineResponseProcessing\NotificationPaymentEngineResponseProcessing;
-use WirecardEE\Prestashop\Classes\PaymentProcessing\PaymentProcessingFactory;
-use WirecardEE\Prestashop\classes\PaymentProcessing\SuccessPayment;
-use WirecardEE\Prestashop\classes\PaymentProcessing\FailurePayment;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-
-use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Response\Response;
+use WirecardEE\Prestashop\Classes\Engine\NotificationResponse;
+use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotificationFactory;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {
@@ -68,11 +63,11 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $order_id = \Tools::getValue('id_order');
 
         try {
-            $engine_processing = new NotificationPaymentEngineResponseProcessing();
+            $engine_processing = new NotificationResponse();
             $processed_notify = $engine_processing->process($notification);
 
             $order = new \Order((int) $order_id);
-            $notify_processing_factory = new PaymentProcessingFactory($order, $processed_notify);
+            $notify_processing_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
             $payment_processing = $notify_processing_factory->getPaymentProcessing();
             $payment_processing->process();
         } catch (\Exception $exception) {
@@ -82,22 +77,5 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
                 ' exception: ' . $exception->getMessage()
             );
         }
-    }
-
-    /**
-     * Depending on the Response the processing strategy is chosen
-     *
-     * @param Response $notification
-     *
-     * @return FailurePayment|SuccessPayment
-     * @since 2.1.0
-     */
-    public function getNotificationProcessing($notification)
-    {
-        if ($notification instanceof SuccessResponse) {
-            return new SuccessPayment();
-        }
-
-        return new FailurePayment();
     }
 }

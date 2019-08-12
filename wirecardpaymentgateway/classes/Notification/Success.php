@@ -33,7 +33,7 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
+namespace WirecardEE\Prestashop\Classes\Notification;
 
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
@@ -45,11 +45,11 @@ use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
- * Class SuccessPaymentProcessing
+ * Class Success
  * @since 2.1.0
- *@package WirecardEE\Prestashop\Classes\PaymentProcessing
+ *@package WirecardEE\Prestashop\Classes\Notification
  */
-final class SuccessPayment implements ProcessablePaymentNotification
+final class Success implements ProcessablePaymentNotification
 {
     /** @var \Order */
     private $order;
