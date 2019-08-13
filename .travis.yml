@@ -138,7 +138,7 @@ matrix:
       - bin/rake trigger_build
 
 before_install:
-  - travis_retry composer require hirak/prestissimo
+  - travis_retry composer global require hirak/prestissimo
 install:
   - travis_retry composer require --dev $COMPOSER_ARGS
   - travis_retry composer install $COMPOSER_ARGS
