@@ -24,7 +24,6 @@ matrix:
     before_script:
       - pip install --user bs4
       - bash .bin/generate-release-package.sh
-      - trevis_retry composer global require hirak/prestissimo
       - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
     script:
       - bash .bin/run-validator-test.sh
@@ -108,6 +107,7 @@ matrix:
     php: 7.1
     before_install: skip
     install:
+      - travis_retry composer install hirak/prestissimo
       - travis_retry composer require --dev $COMPOSER_ARGS
       - travis_retry composer install $COMPOSER_ARGS
       - rvm install 2.5.3
