@@ -137,7 +137,7 @@ matrix:
       - cd $TMPDIR && travis_retry bundle install
       - bin/rake trigger_build
 
-before_script:
+before_install:
   - travis_retry composer require hirak/prestissimo
 install:
   - travis_retry composer require --dev $COMPOSER_ARGS
