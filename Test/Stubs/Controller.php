@@ -51,4 +51,9 @@ class Controller
     {
         Tools::redirect($redirect);
     }
+
+    public function getLanguages()
+    {
+        return new Language();
+    }
 }

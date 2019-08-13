@@ -24,6 +24,7 @@ matrix:
     before_script:
       - pip install --user bs4
       - bash .bin/generate-release-package.sh
+      - trevis_retry composer global require hirak/prestissimo
       - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
     script:
       - bash .bin/run-validator-test.sh
