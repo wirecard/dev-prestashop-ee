@@ -5,11 +5,9 @@ namespace WirecardEE\Prestashop\Helper;
 use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\Entity\Redirect;
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Models\Payment;
-use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 class TransactionBuilder
 {
@@ -33,6 +31,12 @@ class TransactionBuilder
 
     /** @var AdditionalInformationBuilder */
     private $additionalInformationBuilder;
+
+    /**
+     * @var ThreeDSBuilder
+     * @since 2.2.0
+     */
+    private $threeDsBuilder;
 
     /** @var string */
     private $orderId;
@@ -60,6 +64,7 @@ class TransactionBuilder
         $this->currency = new \Currency($this->cart->id_currency);
         $this->customFields = new CustomFieldCollection();
         $this->additionalInformationBuilder = new AdditionalInformationBuilder();
+        $this->threeDsBuilder = new ThreeDSBuilder();
         $this->currencyHelper = new CurrencyHelper();
     }
 
@@ -101,7 +106,7 @@ class TransactionBuilder
         $this->addBasket();
         $this->addDescriptor();
         $this->addAdditionalInformation();
-
+        $this->addThreeDsFields();
         return $this->transaction;
     }
 
@@ -197,6 +202,15 @@ class TransactionBuilder
             $this->transaction->setDescriptor($this->additionalInformationBuilder->createDescriptor($this->orderId));
         }
     }
+
+    /**
+     * @since 2.2.0
+     */
+    private function addThreeDsFields()
+    {
+        $this->transaction = $this->threeDsBuilder->getThreeDsTransaction();
+    }
+
 
     /**
      * Add additional information if required
