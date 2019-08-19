@@ -106,7 +106,7 @@ class TransactionBuilder
         $this->addBasket();
         $this->addDescriptor();
         $this->addAdditionalInformation();
-        $this->addThreeDsFields();
+        //$this->addThreeDsFields($this->transaction);
         return $this->transaction;
     }
 
@@ -204,11 +204,12 @@ class TransactionBuilder
     }
 
     /**
+     * @var Transaction $transaction
      * @since 2.2.0
      */
-    private function addThreeDsFields()
+    private function addThreeDsFields($transaction)
     {
-        $this->transaction = $this->threeDsBuilder->getThreeDsTransaction();
+        $this->transaction = $this->threeDsBuilder->getThreeDsTransaction($transaction);
     }
 
 

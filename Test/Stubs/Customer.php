@@ -44,4 +44,8 @@ class Customer
             $this->birthday = '01-01-1980';
         }
     }
+
+    public static function isLogged($withGuest = false){
+     return $withGuest;
+    }
 }

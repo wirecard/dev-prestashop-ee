@@ -36,6 +36,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Configuration;
 use Wirecard\Converter\WppVTwoConverter;
+use Wirecard\PaymentSdk\Constant\ChallengeInd;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
@@ -187,6 +188,17 @@ class PaymentCreditCard extends Payment
                     'options' => array(
                         array('key' => 'reserve', 'value' => $this->l('text_payment_action_reserve')),
                         array('key' => 'pay', 'value' => $this->l('text_payment_action_pay')),
+                    ),
+                ),
+                array(
+                    'name' => 'requestor_challenge',
+                    'type'    => 'select',
+                    'default' => '01',
+                    'label'   => $this->l('requestor_challenge'),
+                    'options' => array(
+                        array('key' => ChallengeInd::NO_PREFERENCE, 'value' => $this->l('config_challenge_no_preference')),
+                        array('key' => ChallengeInd::NO_CHALLENGE, 'value' => $this->l('config_challenge_no_challenge')),
+                        array('key' => ChallengeInd::CHALLENGE_THREED, 'value' => $this->l('config_challenge_challenge_threed'))
                     ),
                 ),
                 array(
