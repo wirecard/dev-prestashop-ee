@@ -16,7 +16,8 @@ class ThreeDSBuilder
      * @return Transaction|\WirecardEE\Prestashop\Models\Transaction
      * @since 2.2.0
      */
-    public function getThreeDsTransaction(){
+    public function getThreeDsTransaction()
+    {
 
         $shipping_account = $this->getShippingAccount();
         $account_holder   = $this->getCardHolderAccount();
@@ -37,29 +38,28 @@ class ThreeDSBuilder
     /**
      * @since 2.2.0
      */
-    private function getShippingAccount(){
-
+    private function getShippingAccount()
+    {
     }
 
     /**
      *
      */
-    private function getCardHolderAccount(){
-
+    private function getCardHolderAccount()
+    {
     }
 
     /**
      * @since 2.2.0
      */
-    private function getAccountInfo(){
-
+    private function getAccountInfo()
+    {
     }
 
     /**
      * @since 2.2.0
      */
-    private function getRiskInfo(){
-
+    private function getRiskInfo()
+    {
     }
-
 }
