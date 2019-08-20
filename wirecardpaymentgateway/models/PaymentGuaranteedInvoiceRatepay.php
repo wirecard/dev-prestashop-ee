@@ -41,6 +41,7 @@ use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
+use WirecardEE\Prestashop\Helper\DeviceIdentificationHelper;
 
 /**
  * Class PaymentGuaranteedInvoiceRatepay
@@ -378,22 +379,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * Returns deviceIdentToken for ratepayscript
-     *
-     * @param string $merchantAccountId
-     * @return string
-     * @since 1.0.0
-     */
-    public function createDeviceIdent($merchantAccountId)
-    {
-        $timestamp = microtime();
-        $customerId = $merchantAccountId;
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
-
-        return $deviceIdentToken;
-    }
-
-    /**
      * Check if total amount is in limit minimum and maximum amount
      *
      * @param \WirecardPaymentGateway $module
@@ -512,5 +497,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return $currencies;
+    }
+
+    protected function getFormTemplateData()
+    {
+        return array(
+          'device_identification' => DeviceIdentificationHelper::generateFingerprint()
+        );
     }
 }

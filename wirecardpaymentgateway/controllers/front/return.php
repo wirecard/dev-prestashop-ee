@@ -36,9 +36,10 @@
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Exception\MalformedResponseException;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\PaymentConfiguration;
+use WirecardEE\Prestashop\Models\PaymentPoiPia;
 
 /**
  * Class WirecardPaymentGatewayReturnModuleFrontController
@@ -147,8 +148,10 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
 
         //set data for PIA to show on thank you page
         $this->context->cookie->__set('pia-enabled', false);
-        if ($response->getPaymentMethod() === 'wiretransfer' &&
-            $this->module->getConfigValue('poipia', 'payment_type') === 'pia') {
+        $poiPiaConfiguration = new PaymentConfiguration(PaymentPoiPia::TYPE);
+
+        if ($response->getPaymentMethod() === 'wiretransfer'
+            && $poiPiaConfiguration->getField('payment_type') === 'pia') {
             $data = $response->getData();
             $this->context->cookie->__set('pia-enabled', true);
             $this->context->cookie->__set('pia-iban', $data['merchant-bank-account.0.iban']);

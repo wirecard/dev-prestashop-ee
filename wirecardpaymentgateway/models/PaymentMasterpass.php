@@ -51,6 +51,7 @@ use Wirecard\PaymentSdk\Entity\Amount;
 class PaymentMasterpass extends Payment
 {
     const TYPE = MasterpassTransaction::NAME;
+    const TRANSLATION_FILE = "paymentmasterpass";
 
     /**
      * PaymentiDEAL constructor.

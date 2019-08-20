@@ -39,6 +39,9 @@ use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Config\SepaConfig;
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
+use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
+use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use WirecardEE\Prestashop\Helper\PaymentConfiguration;
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
@@ -172,6 +175,8 @@ abstract class Payment extends PaymentOption
      */
     protected $configuration;
 
+    /** @var string */
+    protected $action_link;
 
     /**
      * WirecardPayment constructor.
@@ -184,7 +189,7 @@ abstract class Payment extends PaymentOption
         $logoPath = \Media::getMediaPath(
             _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME . '/views/img/paymenttypes/' . static::TYPE . '.png'
         );
-        $actionLink = $context->link->getModuleLink(
+        $this->action_link = $context->link->getModuleLink(
             \WirecardPaymentGateway::NAME,
             'payment',
             [ 'paymentType' => static::TYPE ],
@@ -195,7 +200,7 @@ abstract class Payment extends PaymentOption
         $this->transactionTypes = array('authorization', 'capture');
         $this->configuration = new PaymentConfiguration(static::TYPE);
 
-        $this->setAction($actionLink);
+        $this->setAction($this->action_link);
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->l($this->configuration->getField('title')));
@@ -231,11 +236,11 @@ abstract class Payment extends PaymentOption
         $this->sdkConfiguration->setPluginInfo(self::EXTENSION_HEADER_PLUGIN_NAME, \WirecardPaymentGateway::VERSION);
 
         switch (static::TYPE) {
-            case 'creditcard':
+            case CreditCardTransaction::NAME:
                 $paymentMethodConfig = new CreditCardConfig($maid, $secret);
                 break;
-            case 'sepacredittransfer':
-            case 'sepadirectdebit':
+            case SepaCreditTransferTransaction::NAME:
+            case SepaDirectDebitTransaction::NAME:
                 $paymentMethodConfig = new SepaConfig(static::TYPE, $maid, $secret);
                 break;
             default:
@@ -325,11 +330,14 @@ abstract class Payment extends PaymentOption
         try {
             $templatePath = join(
                 DIRECTORY_SEPARATOR,
-                [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', static::TYPE . ".tpl"]
+                [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', static::TYPE  . ".tpl"]
             );
 
             $context = \Context::getContext();
-            $context->smarty->assign($this->getFormTemplateData());
+            $context->smarty->assign(array_merge(
+                $this->getFormTemplateData(),
+                [ 'action_link' => $this->action_link ]
+            ));
 
             return $context->smarty->fetch($templatePath);
         } catch (\SmartyException $e) {

@@ -65,12 +65,14 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
     {
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
-        $cartId = \Tools::getValue('order_number');
-
-        $cart = new Cart($cartId);
 
         $paymentType = \Tools::getValue('paymentType');
-        $operation = $this->module->getConfigValue($paymentType, 'payment_action');
+        $paymentConfiguration = new \WirecardEE\Prestashop\Helper\PaymentConfiguration($paymentType);
+
+        $cartId = \Tools::getValue('order_number');
+        $cart = new Cart($cartId);
+
+        $operation = $paymentConfiguration->getField('payment_action');
         $payment = $this->module->getPaymentFromType($paymentType);
         $config = $payment->createConfig();
 

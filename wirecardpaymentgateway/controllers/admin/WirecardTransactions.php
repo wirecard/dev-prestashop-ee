@@ -40,6 +40,8 @@ use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Operation;
+use WirecardEE\Prestashop\Models\PaymentMasterpass;
+use WirecardEE\Prestashop\Helper\PaymentConfiguration;
 
 /**
  * Class WirecardTransactions
@@ -318,8 +320,10 @@ class WirecardTransactionsController extends ModuleAdminController
     private function checkPaymentName($orderId)
     {
         $order = new Order($orderId);
+        $masterpassConfiguration = new PaymentConfiguration(PaymentMasterpass::TYPE);
+
         switch ($order->payment) {
-            case $this->module->getConfigValue('masterpass', 'title'):
+            case $masterpassConfiguration->getField('title'):
                 return 'masterpass';
             default:
                 return 'creditcard';

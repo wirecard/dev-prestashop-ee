@@ -33,71 +33,59 @@
 var form = null;
 var sepaCheck = false;
 
-$(document).ready(
-    function () {
-        $('form').submit(function (event) {
-            form = $(this);
-            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-            if (paymentMethod === 'wd-sepadirectdebit') {
-                placeOrder(event);
-            }
-        });
-
-        function placeOrder(e)
-        {
-            if (sepaCheck) {
-                return;
-            }
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-
-            displayPopup();
+$(document).ready(function () {
+    $('form').submit(function (event) {
+        form = this;
+        let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
+        if (paymentMethod === 'wd-sepadirectdebit' && !sepaCheck) {
+            placeOrder(event);
         }
+    });
 
-        function displayPopup(html)
-        {
-            if (document.getElementById('sepaMandateModal')) {
-                console.log("delete");
-                document.getElementById('sepaMandateModal').remove();
-            }
-            let sepaModal = $('#sepaMandateModal');
-            sepaModal.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
-            sepaModal.find('.bank_iban').text($('#sepaIban').val());
-            sepaModal.find('.bank_bic').text($('#sepaBic').val());
-            sepaModal.modal('show');
+    function placeOrder(e)
+    {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
 
-            let cancelButton = docum1ent.getElementById('sepaCancelButton');
-            cancelButton.addEventListener('click', close, false);
-
-            let confirmButton = document.getElementById('sepaConfirmButton');
-            confirmButton.addEventListener('click', process_order, false);
-
-            let check_box = document.getElementById('sepaCheck');
-            check_box.addEventListener('change', check_change, false);
-        }
-
-        function process_order()
-        {
-            sepaCheck = true;
-            $('#sepaFirstName').attr('type', 'hidden').appendTo(form);
-            $('#sepaLastName').attr('type', 'hidden').appendTo(form);
-            $('#sepaIban').attr('type', 'hidden').appendTo(form);
-            $('#sepaBic').attr('type', 'hidden').appendTo(form);
-            form.submit();
-        }
-
-        function check_change()
-        {
-            $('#sepaConfirmButton').toggleClass('disabled');
-        }
-
-        function close()
-        {
-            $("#sepaMandateModal").modal('hide');
-        }
+        displayPopup();
     }
-);
+
+    function displayPopup()
+    {
+        let sepaModal = $('#sepaMandateModal');
+
+        sepaModal.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
+        sepaModal.find('.bank_iban').text($('#sepaIban').val());
+        sepaModal.find('.bank_bic').text($('#sepaBic').val());
+        sepaModal.modal('show');
+
+        let cancelButton = document.getElementById('sepaCancelButton');
+        cancelButton.addEventListener('click', close, false);
+
+        let confirmButton = document.getElementById('sepaConfirmButton');
+        confirmButton.addEventListener('click', processOrder, false);
+
+        let checkBox = document.getElementById('sepaCheck');
+        checkBox.addEventListener('change', checkChange, false);
+    }
+
+    function processOrder()
+    {
+        console.log(form);
+        form.submit();
+    }
+
+    function checkChange()
+    {
+        $('#sepaConfirmButton').toggleClass('disabled');
+    }
+
+    function close()
+    {
+        $("#sepaMandateModal").modal('hide');
+    }
+});
 
 
 

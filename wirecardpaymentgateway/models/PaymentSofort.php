@@ -48,6 +48,7 @@ use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 class PaymentSofort extends Payment
 {
     const TYPE = SofortTransaction::NAME;
+    const TRANSLATION_FILE = "paymentsofort";
 
     /**
      * PaymentSofort constructor.
@@ -186,7 +187,7 @@ class PaymentSofort extends Payment
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepaCreditTransfer($module);
+        $sepa = new PaymentSepaCreditTransfer();
         return $sepa->createRefundTransaction($transactionData, $module);
     }
 }

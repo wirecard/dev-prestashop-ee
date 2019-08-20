@@ -49,6 +49,7 @@ use Wirecard\PaymentSdk\Entity\Mandate;
 class PaymentSepaDirectDebit extends Payment
 {
     const TYPE = SepaDirectDebitTransaction::NAME;
+    const TRANSLATION_FILE = "paymentsepadirectdebit";
 
     /**
      * PaymentSepaDirectDebit constructor.
@@ -152,7 +153,7 @@ class PaymentSepaDirectDebit extends Payment
                     'required' => false,
                 ),
                 array(
-                    'name' => 'sepa_mandate_textextra',
+                    'name' => 'sepadirectdebit_textextra',
                     'label'   => $this->l('config_mandate_text'),
                     'type'    => 'textarea',
                     'doc'     => $this->l('config_mandate_text_desc'),
@@ -238,6 +239,7 @@ class PaymentSepaDirectDebit extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new SepaDirectDebitTransaction();
+
         if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
             $account_holder = new AccountHolder();
             $account_holder->setFirstName($values['sepaFirstName']);
@@ -246,7 +248,7 @@ class PaymentSepaDirectDebit extends Payment
             $transaction->setAccountHolder($account_holder);
             $transaction->setIban($values['sepaIban']);
 
-            if ($module->getConfigValue('sepadirectdebit', 'enable_bic')) {
+            if ($this->configuration->getField('enable_bic')) {
                 if (isset($values['sepaBic'])) {
                     $transaction->setBic($values['sepaBic']);
                 }
@@ -278,17 +280,16 @@ class PaymentSepaDirectDebit extends Payment
      * @return array
      * @since 1.3.0
      */
-    private function setTemplateData()
+    protected function getFormTemplateData()
     {
-        $data = array();
-        $data['creditorName']      = $this->module->getConfigValue($this->type, 'creditor_name');
-        $data['creditorStoreCity'] = $this->module->getConfigValue($this->type, 'creditor_city');
-        $data['creditorId']        = $this->module->getConfigValue($this->type, 'creditor_id');
-        $data['additionalText']    = $this->module->getConfigValue($this->type, 'sepa_mandate_textextra');
-        $data['bicEnabled']        = (bool) $this->module->getConfigValue($this->type, 'enable_bic');
-        $data['date']              = date('d.m.Y');
-
-        return $data;
+        return array(
+            'creditorName'      => $this->configuration->getField('creditor_name'),
+            'creditorStoreCity' => $this->configuration->getField('creditor_city'),
+            'creditorId'        => $this->configuration->getField('creditor_id'),
+            'additionalText'    => $this->configuration->getField('sepadirectdebit_textextra'),
+            'bicEnabled'        => (bool) $this->configuration->getField('enable_bic'),
+            'date'              => date('d.m.Y'),
+        );
     }
 
     /**
@@ -300,7 +301,7 @@ class PaymentSepaDirectDebit extends Payment
      */
     public function generateMandateId($paymentModule, $orderId)
     {
-        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
+        return $this->configuration->getField('creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

@@ -50,6 +50,7 @@ use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 class PaymentPoiPia extends Payment
 {
     const TYPE = PoiPiaTransaction::NAME;
+    const TRANSLATION_FILE = "paymentpoipia";
 
     /**
      * PaymentPoiPia constructor.

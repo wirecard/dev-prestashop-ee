@@ -367,50 +367,20 @@ class WirecardPaymentGateway extends PaymentModule
 
         /** @var \WirecardEE\Prestashop\Models\Payment $paymentMethod */
         foreach ($this->getPayments() as $paymentMethod) {
-            if (!$paymentMethod->isAvailable($this, $params['cart'])) {
+            $paymentConfiguration = new PaymentConfiguration($paymentMethod::TYPE);
+
+            if ($paymentConfiguration->getField('enabled') == false) {
                 continue;
             }
 
-//            if ('invoice' == $paymentMethod->getType()) {
-//                /** @var PaymentGuaranteedInvoiceRatepay $paymentMethod */
-//                $this->createRatepayScript($paymentMethod);
-//            }
+            if (!$paymentMethod->isAvailable($this, $params['cart'])) {
+                continue;
+            }
 
             $result[] = $paymentMethod->toPaymentOption();
         }
 
         return count($result) ? $result : false;
-    }
-
-    /**
-     * Create ratepay script and device ident
-     *
-     * @param PaymentGuaranteedInvoiceRatepay $paymentMethod
-     * @since 1.0.0
-     */
-    public function createRatepayScript($paymentMethod)
-    {
-        $merchantAccount = $this->getConfigValue('invoice', 'merchant_account_id');
-        $deviceIdent = $paymentMethod->createDeviceIdent($merchantAccount);
-
-        if (!isset($this->context->cookie->wirecardDeviceIdent)) {
-            $this->context->cookie->wirecardDeviceIdent = $deviceIdent;
-        }
-
-        $this->context->smarty->assign(array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent));
-
-        try {
-            echo $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-                'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-                'ratepayscript.tpl');
-        } catch (SmartyException $e) {
-        } catch (Exception $e) {
-        }
-
-        $paymentMethod->setAdditionalInformationTemplate(
-            'invoice',
-            array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent)
-        );
     }
 
     /**
@@ -954,12 +924,10 @@ class WirecardPaymentGateway extends PaymentModule
             if ($paymentMethod->getLoadJs()) {
                 $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
                 $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
-                $ajaxSepaUrl = $link->getModuleLink('wirecardpaymentgateway', 'sepadirectdebit');
                 Media::addJsDef(
                     array(
                         'configProviderURL' => $ajaxLink,
                         'ccVaultURL' => $ccVaultLink,
-                        'ajaxsepaurl' => $ajaxSepaUrl,
                         'cartId' => $this->context->cart->id,
                     )
                 );
@@ -1077,7 +1045,7 @@ class WirecardPaymentGateway extends PaymentModule
             $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $basename);
         }
 
-        return $translation;
+        return html_entity_decode($translation);
     }
 
     /**

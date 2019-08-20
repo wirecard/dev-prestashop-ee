@@ -1,4 +1,3 @@
-<?php
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -27,37 +26,30 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
  */
 
-/**
- * @property WirecardPaymentGateway module
- *
- * @since 1.0.0
- */
-class WirecardPaymentGatewaySepaDirectDebitModuleFrontController extends ModuleFrontController
-{
-    public function initContent()
-    {
-        $this->ajax = true;
-        parent::initContent();
-    }
+var form = null;
 
-    /**
-     * Return the SEPA mandate template
-     * @since 1.0.0
-     */
-    public function displayAjaxSepaMandate()
-    {
+$(document).ready(function () {
+    $('form').submit(function (event) {
+        form = $(this);
+        let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
+        if (paymentMethod === 'wd-ratepayinvoice' && $('#invoiceDataProtectionCheckbox').prop("checked") === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            let hint = document.getElementById('invoiceDataProtectionHint');
+            hint.style.display = "block";
+
+            $('#payment-confirmation button').removeAttr('disabled')
+        }
+    });
+});
 
 
-        $this->context->smarty->assign($data);
-        $template = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR .
-            'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-            'sepa_mandate.tpl');
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode(array('html' => $template)));
-    }
-}
+
+
+
+
+

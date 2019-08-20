@@ -28,7 +28,7 @@
 * Please do not use the plugin if you do not agree to these terms of use!
 *}
 
-<form id="payment-form" action="/test" method="POST">
+<form id="payment-form" action="{$action_link}" method="POST">
 {if $ccvaultenabled == 'true'}
 <div class="modal fade" id="wirecard-ccvault-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">

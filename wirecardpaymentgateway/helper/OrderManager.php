@@ -56,7 +56,7 @@ class OrderManager
      */
     public function __construct()
     {
-        $this->module = $module;
+        $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
     }
 
     /**
@@ -70,11 +70,13 @@ class OrderManager
      */
     public function createOrder($cart, $state, $paymentType)
     {
+        $paymentConfiguration = new PaymentConfiguration($paymentType);
+
         $this->module->validateOrder(
             $cart->id,
             \Configuration::get($state),
             $cart->getOrderTotal(true),
-            $this->module->getConfigValue($paymentType, 'title'),
+            $paymentConfiguration->getField('title'),
             null,
             array(),
             null,

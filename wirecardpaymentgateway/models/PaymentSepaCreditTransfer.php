@@ -37,6 +37,7 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
+use WirecardEE\Prestashop\Helper\PaymentConfiguration;
 
 /**
  * Class PaymentSepaDirectDebit
@@ -48,6 +49,7 @@ use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 class PaymentSepaCreditTransfer extends Payment
 {
     const TYPE = SepaCreditTransferTransaction::NAME;
+    const TRANSLATION_FILE = "paymentsepacredittransfer";
 
     /**
      * PaymentSepaDirectDebit constructor.
@@ -223,7 +225,9 @@ class PaymentSepaCreditTransfer extends Payment
      */
     public function generateMandateId($paymentModule, $orderId)
     {
-        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
+        $paymentConfiguration = new PaymentConfiguration(static::TYPE);
+
+        return $paymentConfiguration->getField('creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

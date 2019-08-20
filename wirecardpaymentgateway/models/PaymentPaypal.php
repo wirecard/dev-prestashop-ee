@@ -50,6 +50,7 @@ use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 class PaymentPaypal extends Payment
 {
     const TYPE = PayPalTransaction::NAME;
+    const TRANSLATION_FILE = "paymentpaypal";
 
     /**
      * PaymentPaypal constructor.

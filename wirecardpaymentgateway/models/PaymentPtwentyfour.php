@@ -50,6 +50,7 @@ use Wirecard\PaymentSdk\Entity\Amount;
 class PaymentPtwentyfour extends Payment
 {
     const TYPE = PtwentyfourTransaction::NAME;
+    const TRANSLATION_FILE = "paymentptwentyfour";
 
     /**
      * PaymentPtwentyfour constructor.
