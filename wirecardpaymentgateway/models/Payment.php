@@ -322,9 +322,8 @@ abstract class Payment extends PaymentOption
         return array();
     }
 
-
     /**
-     * Get the template back
+     * Get the template with its appropriate data
      *
      * @return bool|string
      * @since 1.0.0
@@ -449,6 +448,12 @@ abstract class Payment extends PaymentOption
         return $action;
     }
 
+    /**
+     * Turn our custom PaymentOption into one that is compatible with PrestaShop
+     *
+     * @return PaymentOption
+     * @since 2.1.0
+     */
     public function toPaymentOption() {
         $paymentOption = (new PaymentOption());
         $paymentOption->setAction($this->getAction());
