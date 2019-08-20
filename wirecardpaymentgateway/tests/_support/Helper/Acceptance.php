@@ -74,9 +74,11 @@ class Acceptance extends \Codeception\Module
     public static function fillFieldsWithData($dataType, $page)
     {
         if (strpos($dataType, 'Customer') !== false) {
-            $page->fillBillingDetails();
+            $page->fillCustomerDetails();
         } elseif (strpos($dataType, 'Credit Card') !== false) {
             $page->fillCreditCardDetails();
+        } elseif (strpos($dataType, 'Billing') !== false) {
+            $page->fillBillingDetails();
         }
     }
 }

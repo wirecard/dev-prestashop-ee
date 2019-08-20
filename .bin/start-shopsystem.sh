@@ -1,13 +1,14 @@
 #!/bin/bash
 #set -e # Exit with nonzero exit code if anything fails
 
-export PRESTASHOP_CONTAINER_NAME=prestashop-web
+set -a
+source .env
+set +a
+
+# remove http ot https from the link
 export PRESTASHOP_CONTAINER_DOMAIN=${NGROK_URL#*//}
 export PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_DOMAIN}
 export PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_VERSION}
-export PRESTASHOP_DB_PASSWORD=supersecret
-export PRESTASHOP_DB_SERVER=prestashop-database
-export PRESTASHOP_DB_NAME=prestashop
 
 # used to change the compatibility version to match the prestashop version
 # has to be done before generate-release-package.sh is executed
@@ -39,4 +40,4 @@ docker exec --env PRESTASHOP_DB_PASSWORD=${PRESTASHOP_DB_PASSWORD} \
             --env PRESTASHOP_DB_SERVER=${PRESTASHOP_DB_SERVER} \
             --env PRESTASHOP_DB_NAME=${PRESTASHOP_DB_NAME} \
             --env GATEWAY=${GATEWAY} \
-            ${PRESTASHOP_CONTAINER_NAME} bash -c "cd /var/www/html/_data && php configure_payment_method_db.php creditcard"
+            ${PRESTASHOP_CONTAINER_NAME} bash -c "cd /var/www/html/_data && php configure_payment_method_db.php creditcard reserve"
