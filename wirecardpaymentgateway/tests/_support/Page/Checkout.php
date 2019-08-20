@@ -78,7 +78,7 @@ class Checkout extends Base
         "Order with an obligation to pay" => "//*[@class='btn btn-primary center-block']",
 
         'I agree to the terms and conditions and the privacy policy' => "//*[@name='psgdpr']",
-        'Continue To Billing Data' => "//*[@name='continue']"
+        'Next' => "//*[@name='continue']"
     );
 
     /**

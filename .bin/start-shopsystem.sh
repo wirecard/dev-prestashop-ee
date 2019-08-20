@@ -5,7 +5,7 @@ set -a
 source .env
 set +a
 
-# remove http ot https from the link
+# remove http or https from the link
 export PRESTASHOP_CONTAINER_DOMAIN=${NGROK_URL#*//}
 export PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_DOMAIN}
 export PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_VERSION}

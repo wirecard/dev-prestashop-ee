@@ -8,8 +8,8 @@ Feature: CreditCard3DSPurchaseHappyPath
     And I am on "Checkout" page
     And I fill fields with "Customer Data"
     When I check "I agree to the terms and conditions and the privacy policy"
-    And I click "Continue To Billing Data"
-    And I fill fields with "Valid Billing Data"
+    And I click "Next"
+    And I fill fields with "Billing Data"
     Then I see "Wirecard Credit Card"
 
   @env ui_test @ui_test

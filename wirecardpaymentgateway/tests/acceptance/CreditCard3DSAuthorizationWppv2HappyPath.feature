@@ -1,4 +1,4 @@
-Feature: CreditCard3DSAuthorizeHappyPath
+Feature: CreditCard3DSWppv2AuthorizationHappyPath
   As a guest  user
   I want to make a authorization with a Credit Card 3DS
   And to see that authorization was successful
@@ -9,8 +9,8 @@ Feature: CreditCard3DSAuthorizeHappyPath
     And I am on "Checkout" page
     And I fill fields with "Customer Data"
     When I check "I agree to the terms and conditions and the privacy policy"
-    And I click "Continue To Billing Data"
-    And I fill fields with "Valid Billing Data"
+    And I click "Next"
+    And I fill fields with "Billing Data"
     Then I see "Wirecard Credit Card"
 
   @env ui_test @ui_test
