@@ -50,7 +50,16 @@ use Wirecard\PaymentSdk\Entity\Amount;
  */
 class PaymentMasterpass extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = MasterpassTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TRANSLATION_FILE = "paymentmasterpass";
 
     /**

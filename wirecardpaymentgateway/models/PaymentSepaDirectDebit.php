@@ -48,7 +48,16 @@ use Wirecard\PaymentSdk\Entity\Mandate;
  */
 class PaymentSepaDirectDebit extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = SepaDirectDebitTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TRANSLATION_FILE = "paymentsepadirectdebit";
 
     /**

@@ -35,7 +35,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\SepaTransaction;
+use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 
 /**
@@ -47,7 +47,16 @@ use Wirecard\PaymentSdk\Transaction\SofortTransaction;
  */
 class PaymentSofort extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = SofortTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TRANSLATION_FILE = "paymentsofort";
 
     /**
@@ -181,8 +190,8 @@ class PaymentSofort extends Payment
      * Create refund Sofort.
      *
      * @param Transaction $transactionData
-     * @param module
-     * @return SepaTransaction
+     * @param $module
+     * @return SepaCreditTransferTransaction
      * @since 1.0.0
      */
     public function createRefundTransaction($transactionData, $module)

@@ -48,7 +48,16 @@ use WirecardEE\Prestashop\Helper\PaymentConfiguration;
  */
 class PaymentSepaCreditTransfer extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = SepaCreditTransferTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TRANSLATION_FILE = "paymentsepacredittransfer";
 
     /**

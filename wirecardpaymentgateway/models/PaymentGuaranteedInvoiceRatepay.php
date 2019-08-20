@@ -52,8 +52,18 @@ use WirecardEE\Prestashop\Helper\DeviceIdentificationHelper;
  */
 class PaymentGuaranteedInvoiceRatepay extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = RatepayInvoiceTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TRANSLATION_FILE = "paymentguaranteedinvoiceratepay";
+
     const MIN_AGE = 18;
 
     private $currencyHelper;

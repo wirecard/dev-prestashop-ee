@@ -57,6 +57,10 @@ abstract class Payment extends PaymentOption
 {
     use TranslationHelper;
 
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = "";
 
     /**

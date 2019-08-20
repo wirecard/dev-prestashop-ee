@@ -49,7 +49,16 @@ use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
  */
 class PaymentIdeal extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = IdealTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TRANSLATION_FILE = "paymentideal";
 
     /**

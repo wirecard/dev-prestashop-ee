@@ -971,6 +971,16 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Hook for registering new functions to smarty
+     *
+     * @since 1.3.4
+     */
+    public function hookActionDispatcher()
+    {
+        $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
+    }
+
+    /**
      * Return the translation for a string given a language iso code 'en' 'fr' ..
      *
      * @param string $iso_lang language iso code
@@ -997,17 +1007,6 @@ class WirecardPaymentGateway extends PaymentModule
         } else {
             return $key;
         }
-    }
-
-    /**
-     * Hook for registering new functions to smarty
-     *
-     * @since 1.3.4
-     */
-    public function hookActionDispatcher()
-    {
-        $context = \Context::getContext();
-        $context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
     }
 
     /**

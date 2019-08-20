@@ -51,7 +51,16 @@ use WirecardEE\Prestashop\Helper\TransactionBuilder;
  */
 class PaymentCreditCard extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TYPE = CreditCardTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const TRANSLATION_FILE = "paymentcreditcard";
 
     /** @var CreditCardTransaction */
