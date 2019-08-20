@@ -60,8 +60,4 @@ class PaymentOption
     public function setModuleName($string) {
         return $this;
     }
-
-    public function setForm($string) {
-        return;
-    }
 }
