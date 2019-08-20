@@ -72,11 +72,7 @@ class WirecardAjaxController extends ModuleAdminController
      */
     protected function testCredentials()
     {
-        $method = Tools::getValue('method');
-        if ($method === 'sofortbanking') {
-            $method = 'sofort';
-        }
-
+        $method = $this->getPaymentMethodCode();
         $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
         $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
         $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
@@ -95,6 +91,21 @@ class WirecardAjaxController extends ModuleAdminController
         } catch (InvalidArgumentException $exception) {
             $this->sendResponse('error', $exception->getMessage());
         }
+    }
+
+    /**
+     * Get payment method code.
+     * Needed for sofort payment
+     * @return string
+     * @since 2.1.0
+     */
+    protected function getPaymentMethodCode()
+    {
+        $method = Tools::getValue('method');
+        if ($method === 'sofortbanking') {
+            $method = 'sofort';
+        }
+        return $method;
     }
 
     /**
