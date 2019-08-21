@@ -119,4 +119,14 @@ class Base
     {
         $this->tester->checkOption($this->getElement($box));
     }
+
+    /**
+     * Method fillCustomerDetails
+     *
+     * @since 2.0.1
+     */
+    public function fillCustomerDetails()
+    {
+        ;
+    }
 }

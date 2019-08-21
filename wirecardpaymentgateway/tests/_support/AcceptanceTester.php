@@ -71,6 +71,21 @@ class AcceptanceTester extends \Codeception\Actor
     private $currentPage;
 
     /**
+     * @var array
+     * @since 2.0.1
+     */
+    private $mappedPaymentActions = [
+        'config' => [
+            'reserve' => 'reserve',
+            'pay' => 'pay',
+        ],
+        'tx_table' => [
+            'authorization' => 'authorization',
+            'purchase' => 'purchase'
+        ]
+    ];
+
+    /**
      * Method selectPage
      *
      * @param string $name
@@ -200,5 +215,34 @@ class AcceptanceTester extends \Codeception\Actor
     public function iCheck($box)
     {
         $this->currentPage->checkBox($box);
+    }
+
+    /**
+     * @Given I activate payment action :paymentAction in configuration
+     * @param string $paymentAction
+     * @since 2.0.1
+     */
+    public function iActivatePaymentActionInConfiguration($paymentAction)
+    {
+        $this->updateInDatabase(
+            'ps_configuration',
+            ['value' => $this->mappedPaymentActions['config'][$paymentAction]],
+            ['name' => 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_PAYMENT_ACTION']
+        );
+    }
+    /**
+     * @Then I see :paymentAction in transaction table
+     * @param string $paymentAction
+     * @since 2.0.1
+     */
+    public function iSeeInTransactionTable($paymentAction)
+    {
+        $this->seeInDatabase(
+            'ps_wirecard_payment_gateway_tx',
+            ['transaction_type' => $this->mappedPaymentActions['tx_table'][$paymentAction]]
+        );
+        //check that last transaction in the table is the one under test
+        $transactionTypes = $this->getColumnFromDatabaseNoCriteria('ps_wirecard_payment_gateway_tx', 'transaction_type');
+        $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions['tx_table'][$paymentAction]);
     }
 }

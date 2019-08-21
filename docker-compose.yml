@@ -1,10 +1,14 @@
 version: '3'
 services:
-# Reference: https://hub.docker.com/_/mysql
+  # Reference: https://hub.docker.com/_/mysql
   prestashop.database:
     container_name: prestashop-database
     image: mysql
+    ports:
+      - ${MYSQL_PORT_OUT}:${MYSQL_PORT_IN}
     restart: always
+    env_file:
+      - .env
     environment:
       - MYSQL_ROOT_PASSWORD=${PRESTASHOP_DB_PASSWORD}
       - MYSQL_DATABASE=${PRESTASHOP_DB_NAME}
@@ -15,9 +19,9 @@ services:
       - "--collation-server=utf8_unicode_ci"
       - "--default-authentication-plugin=mysql_native_password"
 
-# Default admin credentials:
-# demo@prestashop.com ; prestashop_demo
-# Reference: https://hub.docker.com/r/prestashop/prestashop
+  # Default admin credentials:
+  # demo@prestashop.com ; prestashop_demo
+  # Reference: https://hub.docker.com/r/prestashop/prestashop
   prestashop.web:
     container_name: "${PRESTASHOP_CONTAINER_NAME}"
     build:
@@ -36,6 +40,8 @@ services:
       - prestashop-net
     ports:
       - "8080:80"
+    env_file:
+      - .env
     depends_on:
       - prestashop.database
 
