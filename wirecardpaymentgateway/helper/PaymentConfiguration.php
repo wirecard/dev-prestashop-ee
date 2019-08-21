@@ -13,7 +13,8 @@ use Wirecard\PaymentSdk\Transaction\SofortTransaction;
  * @package WirecardEE\Prestashop\Helper
  * @since 2.1.0
  */
-class PaymentConfiguration {
+class PaymentConfiguration
+{
     /**
      * @var string
      * @since 2.1.0
@@ -45,7 +46,8 @@ class PaymentConfiguration {
      * @param $type
      * @since 2.1.0
      */
-    public function __construct($type) {
+    public function __construct($type)
+    {
         $this->type = $type;
     }
 
@@ -56,7 +58,8 @@ class PaymentConfiguration {
      * @return string
      * @since 2.1.0
      */
-    public function getField($field) {
+    public function getField($field)
+    {
         $databaseFieldName = $this->getFieldName($field);
 
         return \Configuration::get($databaseFieldName);
@@ -86,7 +89,8 @@ class PaymentConfiguration {
      * @return string
      * @since 2.1.0
      */
-    private function getCurrentType() {
+    private function getCurrentType()
+    {
         if (key_exists($this->type, self::FALLBACK_NAMES)) {
             return self::FALLBACK_NAMES[$this->type];
         }

@@ -318,7 +318,8 @@ abstract class Payment extends PaymentOption
      * @return array
      * @since 1.0.0
      */
-    protected function getFormTemplateData() {
+    protected function getFormTemplateData()
+    {
         return array();
     }
 
@@ -454,7 +455,8 @@ abstract class Payment extends PaymentOption
      * @return PaymentOption
      * @since 2.1.0
      */
-    public function toPaymentOption() {
+    public function toPaymentOption()
+    {
         $paymentOption = (new PaymentOption());
         $paymentOption->setAction($this->getAction());
         $paymentOption->setLogo($this->getLogo());

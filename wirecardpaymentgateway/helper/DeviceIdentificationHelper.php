@@ -10,7 +10,8 @@ use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
  * @package WirecardEE\Prestashop\Helper
  * @since 2.1.0
  */
-class DeviceIdentificationHelper {
+class DeviceIdentificationHelper
+{
     /**
      * Generate a device fingerprint for Guaranteed Invoice By Wirecard
      *
