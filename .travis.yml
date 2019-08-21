@@ -64,7 +64,7 @@ matrix:
 
   - &acceptance-test
     stage: acceptance-test
-    if: type = cron
+    if: type != cron
     php: 7.1
     env:
     - GATEWAY=API-TEST
@@ -76,9 +76,9 @@ matrix:
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
-    - bash .bin/upload-logs-and-notify.sh
+#    - bash .bin/upload-logs-and-notify.sh
     after_failure:
-    - bash .bin/upload-logs-and-notify.sh fail
+#    - bash .bin/upload-logs-and-notify.sh fail
 
   - <<: *acceptance-test
     env:
@@ -158,5 +158,5 @@ notifications:
       - "%{repository}#%{build_number} (%{branch} : %{author}): %{message}"
       - "Change view : %{compare_url}"
       - "Build details : %{build_url}"
-    on_success: change
-    on_failure: change
+    on_success: never
+    on_failure: never
