@@ -62,7 +62,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'ssl_max_limit' =>  50.0,
             'three_d_min_limit' => 150.0,
             'shopping_basket' => true,
-            'descriptor' => true
+            'descriptor' => true,
+            'requestor_challenge' => '02'
             );
 
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
@@ -161,7 +162,16 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'shipping_city' => null,
             'shipping_country' => null,
             'order_number' => 123,
-            'consumer_id' => 1
+            'consumer_id' => 1,
+            'email'=>'max.mustermann@email.com',
+            'authentication_method' => '02',
+            'authentication_timestamp' => '1970-01-01T00:00:00Z',
+            'challenge_indicator' => '02',
+            'account_creation_date' => '2019-08-21',
+            'account_update_date' => '2019-08-21',
+            'account_password_change_date' => '2019-08-21',
+            'shipping_address_first_use' => '2019-08-21',
+            'purchases_last_six_months' => 0
         );
 
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));

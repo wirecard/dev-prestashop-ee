@@ -106,7 +106,7 @@ class TransactionBuilder
         $this->addBasket();
         $this->addDescriptor();
         $this->addAdditionalInformation();
-        //$this->addThreeDsFields($this->transaction);
+        $this->addThreeDsFields();
         return $this->transaction;
     }
 
@@ -207,9 +207,15 @@ class TransactionBuilder
      * @var Transaction $transaction
      * @since 2.2.0
      */
-    private function addThreeDsFields($transaction)
+    private function addThreeDsFields()
     {
-        $this->transaction = $this->threeDsBuilder->getThreeDsTransaction($transaction);
+        $challengeInd = $this->module->getConfigValue($this->paymentType, 'requestor_challenge');
+        $this->transaction = $this->threeDsBuilder->getThreeDsTransaction(
+            $this->cart,
+            $this->orderId,
+            $this->transaction,
+            $challengeInd
+        );
     }
 
 

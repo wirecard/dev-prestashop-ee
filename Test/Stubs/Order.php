@@ -51,4 +51,17 @@ class Order
     public function getCurrentState() {
         return "starting";
     }
+
+    /**
+     * Get customer orders.
+     *
+     * @param int $id_customer Customer id
+     * @param bool $show_hidden_status Display or not hidden order statuses
+     *
+     * @return array Customer orders
+     */
+    public static function getCustomerOrders($id_customer, $show_hidden_status = false, Context $context = null){
+        return array();
+    }
+
 }
