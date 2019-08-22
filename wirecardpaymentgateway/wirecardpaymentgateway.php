@@ -110,6 +110,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->name = self::NAME;
         $this->version = self::VERSION;
         $this->tab = 'payments_gateways';
+        $this->version = '2.1.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -934,7 +935,6 @@ class WirecardPaymentGateway extends PaymentModule
         $link = new Link;
         $creditCardConfig = new ShopConfigurationService(PaymentCreditCard::TYPE);
         $wppUrl = $creditCardConfig->getField('wpp_url');
-
         $this->context->controller->registerJavascript(
             'wd-wpp',
             $wppUrl . '/loader/paymentPage.js',
