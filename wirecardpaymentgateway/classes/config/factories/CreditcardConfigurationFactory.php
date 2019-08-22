@@ -7,6 +7,12 @@ use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Classes\Config\Interfaces\ConfigurationFactoryInterface;
 use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 
+/**
+ * Class CreditcardConfigurationFactory
+ *
+ * @package WirecardEE\Prestashop\Classes\Config\Factories
+ * @since 2.1.0
+ */
 class CreditcardConfigurationFactory implements ConfigurationFactoryInterface {
     /**
      * @var ShopConfigurationService
@@ -14,10 +20,22 @@ class CreditcardConfigurationFactory implements ConfigurationFactoryInterface {
      */
     protected $configService;
 
+    /**
+     * CreditcardConfigurationFactory constructor.
+     *
+     * @param ShopConfigurationService $configService
+     * @since 2.1.0
+     */
     public function __construct(ShopConfigurationService $configService) {
         $this->configService = $configService;
     }
 
+    /**
+     * Makes a credit card-specific config
+     *
+     * @return CreditCardConfig
+     * @since 2.1.0
+     */
     public function createConfig() {
         $currency = \Context::getContext()->currency;
         $currencyConverter = new CurrencyHelper();
