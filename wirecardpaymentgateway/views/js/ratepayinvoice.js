@@ -21,7 +21,7 @@
  * for customized shop systems or installed plugins of other vendors of plugins within the same
  * shop system.
  *
- * Customers are responsible for testing the plugin's functionality before starting productive
+ * Customers are responsible for testing the plugin"s functionality before starting productive
  * operation.
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
@@ -31,18 +31,18 @@
 var form = null;
 
 $(document).ready(function () {
-    $('form').submit(function (event) {
+    $("form").submit(function (event) {
         form = $(this);
-        let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-        if (paymentMethod === 'wd-ratepayinvoice' && $('#invoiceDataProtectionCheckbox').prop("checked") === false) {
+        let paymentMethod = $("input[name='payment-option']:checked").data("module-name");
+        if (paymentMethod === "wd-ratepayinvoice" && $("#invoiceDataProtectionCheckbox").prop("checked") === false) {
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
 
-            let hint = document.getElementById('invoiceDataProtectionHint');
+            let hint = document.getElementById("invoiceDataProtectionHint");
             hint.style.display = "block";
 
-            $('#payment-confirmation button').removeAttr('disabled')
+            $("#payment-confirmation button").removeAttr("disabled");
         }
     });
 });

@@ -21,7 +21,7 @@
  * for customized shop systems or installed plugins of other vendors of plugins within the same
  * shop system.
  *
- * Customers are responsible for testing the plugin's functionality before starting productive
+ * Customers are responsible for testing the plugin"s functionality before starting productive
  * operation.
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
@@ -34,13 +34,21 @@ var form = null;
 var sepaCheck = false;
 
 $(document).ready(function () {
-    $('form').submit(function (event) {
-        form = this;
-        let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-        if (paymentMethod === 'wd-sepadirectdebit' && !sepaCheck) {
-            placeOrder(event);
-        }
-    });
+    function processOrder()
+    {
+        console.log(form);
+        form.submit();
+    }
+
+    function checkChange()
+    {
+        $("#sepaConfirmButton").toggleClass("disabled");
+    }
+
+    function close()
+    {
+        $("#sepaMandateModal").modal("hide");
+    }
 
     function placeOrder(e)
     {
@@ -53,38 +61,30 @@ $(document).ready(function () {
 
     function displayPopup()
     {
-        let sepaModal = $('#sepaMandateModal');
+        let sepaModal = $("#sepaMandateModal");
 
-        sepaModal.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
-        sepaModal.find('.bank_iban').text($('#sepaIban').val());
-        sepaModal.find('.bank_bic').text($('#sepaBic').val());
-        sepaModal.modal('show');
+        sepaModal.find(".first_last_name").text($("#sepaFirstName").val() + " " + $("#sepaLastName").val());
+        sepaModal.find(".bank_iban").text($("#sepaIban").val());
+        sepaModal.find(".bank_bic").text($("#sepaBic").val());
+        sepaModal.modal("show");
 
-        let cancelButton = document.getElementById('sepaCancelButton');
-        cancelButton.addEventListener('click', close, false);
+        let cancelButton = document.getElementById("sepaCancelButton");
+        cancelButton.addEventListener("click", close, false);
 
-        let confirmButton = document.getElementById('sepaConfirmButton');
-        confirmButton.addEventListener('click', processOrder, false);
+        let confirmButton = document.getElementById("sepaConfirmButton");
+        confirmButton.addEventListener("click", processOrder, false);
 
-        let checkBox = document.getElementById('sepaCheck');
-        checkBox.addEventListener('change', checkChange, false);
+        let checkBox = document.getElementById("sepaCheck");
+        checkBox.addEventListener("change", checkChange, false);
     }
 
-    function processOrder()
-    {
-        console.log(form);
-        form.submit();
-    }
-
-    function checkChange()
-    {
-        $('#sepaConfirmButton').toggleClass('disabled');
-    }
-
-    function close()
-    {
-        $("#sepaMandateModal").modal('hide');
-    }
+    $("form").submit(function (event) {
+        form = this;
+        let paymentMethod = $("input[name='payment-option']:checked").data("module-name");
+        if (paymentMethod === "wd-sepadirectdebit" && !sepaCheck) {
+            placeOrder(event);
+        }
+    });
 });
 
 
