@@ -36,6 +36,8 @@
 namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\ModuleHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
@@ -65,6 +67,9 @@ final class Success implements ProcessablePaymentResponse
     /** @var \WirecardPaymentGateway */
     private $module;
 
+    /** @var ContextService  */
+    private $context_service;
+
     /**
      * SuccessResponseProcessing constructor.
      *
@@ -80,6 +85,7 @@ final class Success implements ProcessablePaymentResponse
         $this->cart = $this->order_service->getOrderCart();
         $this->customer = new \Customer((int) $this->cart->id_customer);
         $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+        $this->context_service = new ContextService(\Context::getContext());
     }
 
     /**
@@ -87,14 +93,17 @@ final class Success implements ProcessablePaymentResponse
      */
     public function process()
     {
-        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+        if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
             $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
             $this->order->save();
 
             $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
         }
 
-        //@TODO think of a better implementation of the POI/PIA data to be set and displayed in checkout
+        if ($this->response->getPaymentMethod() === 'wiretransfer' &&
+            $this->module->getConfigValue('poipia', 'payment_type') === 'pia') {
+            $this->context_service->setPiaCookie($this->response);
+        }
 
         \Tools::redirect(
             'index.php?controller=order-confirmation&id_cart='

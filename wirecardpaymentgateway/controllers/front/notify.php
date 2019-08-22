@@ -59,14 +59,14 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     public function postProcess()
     {
-        $notification = Tools::file_get_contents('php://input');
-        $order_id = \Tools::getValue('id_order');
+        $notification = \Tools::file_get_contents('php://input');
 
         try {
+            $order = $this->getOrder();
+
             $engine_processing = new NotificationResponse();
             $processed_notify = $engine_processing->process($notification);
 
-            $order = new \Order((int) $order_id);
             $notify_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
             $payment_processing = $notify_factory->getPaymentProcessing();
             $payment_processing->process();
@@ -77,5 +77,44 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
                 ' exception: ' . $exception->getMessage()
             );
         }
+    }
+
+    /**
+     * @return Order
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    private function getOrder()
+    {
+        $order_id = \Tools::getValue('id_order');
+        if (\Tools::getValue('payment_type') === 'creditcard') {
+            $order_id = $this->getOrderFromCart();
+        }
+
+        return new \Order((int) $order_id);
+    }
+
+    /**
+     * @param int $tick
+     * @return int
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    private function getOrderFromCart($tick = 1)
+    {
+        $cart_id = \Tools::getValue('id_cart');
+        if ($tick > 30) {
+            throw new \Exception('Order with cart id '. $cart_id .' was not mappable');
+        }
+
+        /** @var false|int $order_id */
+        $order_id = \Order::getIdByCartId($cart_id);
+
+        if ($order_id) {
+            return $order_id;
+        }
+
+        sleep(1);
+        return $this->getOrderFromCart();
     }
 }
