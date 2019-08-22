@@ -85,7 +85,7 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->name = 'wirecardpaymentgateway';
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.1';
+        $this->version = '2.2.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -940,7 +940,9 @@ class WirecardPaymentGateway extends PaymentModule
                 "user_id" => array( "INT(10)", "NOT NULL" ),
                 "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
                 "address_id" => array( "INT(10)", "NULL" ),
-                "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
+                "masked_pan" => array( "VARCHAR(30)", "NOT NULL" ),
+                "date_add" => array("DATETIME", "NULL"),
+                "date_last_used" => array("DATETIME", "NULL")
             ) );
 
         return $defs[$name];

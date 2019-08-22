@@ -193,7 +193,7 @@ class PaymentCreditCard extends Payment
                 array(
                     'name' => 'requestor_challenge',
                     'type'    => 'select',
-                    'default' => '01',
+                    'default' => ChallengeInd::NO_PREFERENCE,
                     'label'   => $this->l('requestor_challenge'),
                     'options' => array(
                         array('key' => ChallengeInd::NO_PREFERENCE, 'value' => $this->l('config_challenge_no_preference')),
