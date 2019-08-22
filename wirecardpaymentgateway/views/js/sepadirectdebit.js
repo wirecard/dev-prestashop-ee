@@ -50,15 +50,6 @@ $(document).ready(function () {
         $("#sepaMandateModal").modal("hide");
     }
 
-    function placeOrder(e)
-    {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-
-        displayPopup();
-    }
-
     function displayPopup()
     {
         let sepaModal = $("#sepaMandateModal");
@@ -76,6 +67,15 @@ $(document).ready(function () {
 
         let checkBox = document.getElementById("sepaCheck");
         checkBox.addEventListener("change", checkChange, false);
+    }
+
+    function placeOrder(e)
+    {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        displayPopup();
     }
 
     $("form").submit(function (event) {
