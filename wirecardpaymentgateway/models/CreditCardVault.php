@@ -168,5 +168,4 @@ class CreditCardVault
         $db = \Db::getInstance();
         return $db->update($this->table, ['date_last_used' => date('Y-m-d H:i:s')], 'token=' . $token);
     }
-
 }
