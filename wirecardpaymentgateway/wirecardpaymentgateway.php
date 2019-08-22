@@ -1051,8 +1051,8 @@ class WirecardPaymentGateway extends PaymentModule
         $key = $params['s'];
         $basename = basename($smarty->source->name, '.tpl');
 
-        $translation = Translate::postProcessTranslation(
-            Translate::getModuleTranslation(
+        $translation = \Translate::postProcessTranslation(
+            \Translate::getModuleTranslation(
                 $params['mod'],
                 $key,
                 $basename,

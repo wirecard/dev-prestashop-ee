@@ -73,6 +73,7 @@ require __DIR__ . '/Stubs/Order.php';
 require __DIR__ . '/Stubs/OrderState.php';
 require __DIR__ . '/Stubs/Validate.php';
 require __DIR__ . '/Stubs/Cookie.php';
+require __DIR__ . '/Stubs/Translate.php';
 require __DIR__ . '/Stubs/DbQuery.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
