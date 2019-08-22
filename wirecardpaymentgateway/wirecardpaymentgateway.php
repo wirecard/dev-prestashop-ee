@@ -911,8 +911,8 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $creditCardConfiguration = new PaymentConfiguration(PaymentCreditCard::TYPE);
-        $wppUrl = $creditCardConfiguration->getField('wpp_url');
+        $creditCardConfig = new PaymentConfiguration(PaymentCreditCard::TYPE);
+        $wppUrl = $creditCardConfig->getField('wpp_url');
 
         $this->context->controller->registerJavascript(
             'wd-wpp',

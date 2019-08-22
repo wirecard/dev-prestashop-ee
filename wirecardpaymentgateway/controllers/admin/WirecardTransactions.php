@@ -320,10 +320,10 @@ class WirecardTransactionsController extends ModuleAdminController
     private function checkPaymentName($orderId)
     {
         $order = new Order($orderId);
-        $masterpassConfiguration = new PaymentConfiguration(PaymentMasterpass::TYPE);
+        $masterpassConfig = new PaymentConfiguration(PaymentMasterpass::TYPE);
 
         switch ($order->payment) {
-            case $masterpassConfiguration->getField('title'):
+            case $masterpassConfig->getField('title'):
                 return 'masterpass';
             default:
                 return 'creditcard';

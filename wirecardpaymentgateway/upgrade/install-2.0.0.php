@@ -54,10 +54,10 @@ if (!defined('_PS_VERSION_')) {
  */
 function upgrade_module_2_0_0()
 {
-    $creditCardConfiguration = new PaymentConfiguration('creditcard');
+    $creditCardConfig = new PaymentConfiguration('creditcard');
 
-    $baseUrl = $creditCardConfiguration->getField('base_url');
-    $wppUrlDbKey = $creditCardConfiguration->getFieldName('wpp_url');
+    $baseUrl = $creditCardConfig->getField('base_url');
+    $wppUrlDbKey = $creditCardConfig->getFieldName('wpp_url');
 
     $wppUrl = BaseUrlMatcherService::getWppUrl($baseUrl);
     Configuration::updateGlobalValue($wppUrlDbKey, $wppUrl);
