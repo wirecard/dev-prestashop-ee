@@ -10,7 +10,8 @@ use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
  * @package WirecardEE\Prestashop\Classes\Config\Interfaces
  * @since 2.1.0
  */
-interface ConfigurationFactoryInterface {
+interface ConfigurationFactoryInterface
+{
     /**
      * This method should take all necessary steps to return a fully fledged PaymentMethodConfig
      *

@@ -15,7 +15,8 @@ use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
  * @package WirecardEE\Prestashop\Classes\Config\Factories
  * @since 2.1.0
  */
-class PaymentConfigurationFactory {
+class PaymentConfigurationFactory
+{
 
     /**
      * @var ShopConfigurationService
@@ -29,7 +30,8 @@ class PaymentConfigurationFactory {
      * @param ShopConfigurationService $configService
      * @since 2.1.0
      */
-    public function __construct(ShopConfigurationService $configService) {
+    public function __construct(ShopConfigurationService $configService)
+    {
         $this->configService = $configService;
     }
 
@@ -39,7 +41,8 @@ class PaymentConfigurationFactory {
      * @return Config
      * @since 2.1.0
      */
-    public function createConfig() {
+    public function createConfig()
+    {
         $factoryType = $this->resolveFactoryType();
 
         /** @var ConfigurationFactoryInterface $configFactory */
@@ -51,8 +54,16 @@ class PaymentConfigurationFactory {
             $this->configService->getField('http_pass')
         );
 
-        $sdkConfiguration->setShopInfo(\WirecardPaymentGateway::SHOP_NAME, _PS_VERSION_);
-        $sdkConfiguration->setPluginInfo(\WirecardPaymentGateway::EXTENSION_HEADER_PLUGIN_NAME, \WirecardPaymentGateway::VERSION);
+        $sdkConfiguration->setShopInfo(
+            \WirecardPaymentGateway::SHOP_NAME,
+            _PS_VERSION_
+        );
+
+        $sdkConfiguration->setPluginInfo(
+            \WirecardPaymentGateway::EXTENSION_HEADER_PLUGIN_NAME,
+            \WirecardPaymentGateway::VERSION
+        );
+
         $sdkConfiguration->add(
             $configFactory->createConfig()
         );
@@ -66,7 +77,8 @@ class PaymentConfigurationFactory {
      * @return string
      * @since 2.1.0
      */
-    private function resolveFactoryType() {
+    private function resolveFactoryType()
+    {
         switch ($this->configService->getType()) {
             case CreditCardTransaction::NAME:
                 return CreditcardConfigurationFactory::class;

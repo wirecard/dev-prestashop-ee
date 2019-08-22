@@ -12,7 +12,8 @@ use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
  * @package WirecardEE\Prestashop\Classes\Config\Factories
  * @since 2.1.0
  */
-class SepaConfigurationFactory implements ConfigurationFactoryInterface {
+class SepaConfigurationFactory implements ConfigurationFactoryInterface
+{
     /**
      * @var ShopConfigurationService
      * @since 2.1.0
@@ -25,7 +26,8 @@ class SepaConfigurationFactory implements ConfigurationFactoryInterface {
      * @param ShopConfigurationService $configService
      * @since 2.1.0
      */
-    public function __construct(ShopConfigurationService $configService) {
+    public function __construct(ShopConfigurationService $configService)
+    {
         $this->configService = $configService;
     }
 
@@ -35,7 +37,8 @@ class SepaConfigurationFactory implements ConfigurationFactoryInterface {
      * @return SepaConfig
      * @since 2.1.0
      */
-    public function createConfig() {
+    public function createConfig()
+    {
         $paymentConfig = $paymentMethodConfig = new SepaConfig(
             $this->configService->getType(),
             $this->configService->getField('merchant_account_id'),

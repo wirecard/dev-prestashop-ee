@@ -104,7 +104,8 @@ class ShopConfigurationService
      * @return string
      * @since 2.1.0
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 }

@@ -13,7 +13,8 @@ use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
  * @package WirecardEE\Prestashop\Classes\Config\Factories
  * @since 2.1.0
  */
-class CreditcardConfigurationFactory implements ConfigurationFactoryInterface {
+class CreditcardConfigurationFactory implements ConfigurationFactoryInterface
+{
     /**
      * @var ShopConfigurationService
      * @since 2.1.0
@@ -26,7 +27,8 @@ class CreditcardConfigurationFactory implements ConfigurationFactoryInterface {
      * @param ShopConfigurationService $configService
      * @since 2.1.0
      */
-    public function __construct(ShopConfigurationService $configService) {
+    public function __construct(ShopConfigurationService $configService)
+    {
         $this->configService = $configService;
     }
 
@@ -36,7 +38,8 @@ class CreditcardConfigurationFactory implements ConfigurationFactoryInterface {
      * @return CreditCardConfig
      * @since 2.1.0
      */
-    public function createConfig() {
+    public function createConfig()
+    {
         $currency = \Context::getContext()->currency;
         $currencyConverter = new CurrencyHelper();
 
