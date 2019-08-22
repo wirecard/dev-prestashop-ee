@@ -167,10 +167,10 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'authentication_method' => '02',
             'authentication_timestamp' => '1970-01-01T00:00:00Z',
             'challenge_indicator' => '02',
-            'account_creation_date' => '2019-08-21',
-            'account_update_date' => '2019-08-21',
-            'account_password_change_date' => '2019-08-21',
-            'shipping_address_first_use' => '2019-08-21',
+            'account_creation_date' => date('Y-m-d'),
+            'account_update_date' => date('Y-m-d'),
+            'account_password_change_date' => date('Y-m-d'),
+            'shipping_address_first_use' => date('Y-m-d'),
             'purchases_last_six_months' => 0
         );
 
