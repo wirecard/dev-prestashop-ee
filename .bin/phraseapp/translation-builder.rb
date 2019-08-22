@@ -114,7 +114,7 @@ class TranslationBuilder
   end
 
   def self.escape_characters_in_string(string)
-    pattern = /(\'|\"|\.|\*|\/|\-|\\|\)|\$|\+|\(|\^|\?|\!|\~|\`)/
+    pattern = /(\'|\"|\\)/
     string.gsub(pattern){|match|"\\"  + match}
   end
 
