@@ -51,12 +51,12 @@ class ThreeDSBuilder
         );
         $accountInfo = $this->getAccountInfo($customer, $cart);
         $accountHolder->setAccountInfo($accountInfo);
+        $accountHolder->setCrmId($this->getMerchantCrmId($customer));
         $transaction->setAccountHolder($accountHolder);
 
-//        $accountHolder->setCrmId( $this->get_merchant_crm_id() );
-//        $risk_info        = $this->getRiskInfo();
-//        $this->transaction->setRiskInfo( $risk_info );
-//        $this->transaction->setIsoTransactionType( IsoTransactionType::GOODS_SERVICE_PURCHASE );
+//        $risk_info = $this->getRiskInfo();
+//        $transaction->setRiskInfo( $risk_info );
+        $transaction->setIsoTransactionType(IsoTransactionType::GOODS_SERVICE_PURCHASE);
 
         return $transaction;
     }
@@ -72,6 +72,7 @@ class ThreeDSBuilder
         $accountInfo = new AccountInfo();
         // Add specific AccountInfo data for authenticated user
         $accountInfo->setAuthMethod(AuthMethod::GUEST_CHECKOUT);
+        $accountInfo->setAuthTimestamp();
         if (!$customer->isGuest()) {
             $accountInfo->setAuthMethod(AuthMethod::USER_CHECKOUT);
             $accountInfo->setAuthTimestamp($this->customerHelper->getAccountLastLogin());
@@ -82,7 +83,7 @@ class ThreeDSBuilder
             $accountInfo->setShippingAddressFirstUse(
                 $this->customerHelper->getShippingAddressFirstUse($cart->id_address_delivery)
             );
-            //$accountInfo->setCardCreationDate( $this->customerHelper->getCardCreationDate() );
+            $accountInfo->setCardCreationDate($this->customerHelper->getCardCreationDate());
             $accountInfo->setAmountPurchasesLastSixMonths(
                 $this->customerHelper->getSuccessfulOrdersLastSixMonths()
             );
@@ -90,11 +91,34 @@ class ThreeDSBuilder
         return $accountInfo;
     }
 
+    /**
+     * Get merchant crm id from user id
+     * @param Customer $customer
+     * @return null|string
+     *
+     * @since 2.2.0
+     */
+    private function getMerchantCrmId($customer)
+    {
+        if (!$customer->isGuest()) {
+            return (string) $customer->id;
+        }
+        return null;
+    }
 
-//    /**
-//     * @since 2.2.0
-//     */
-//    private function getRiskInfo()
-//    {
-//    }
+
+    /**
+     * Get risk info.
+     * @param \Customer $customer
+     * @return RiskInfo
+     *
+     * @since 2.2.0
+     */
+    private function getRiskInfo($customer)
+    {
+        $riskInfo = new RiskInfo();
+        $riskInfo->setDeliveryEmailAddress($customer->email);
+        //$riskInfo->setReorderItems($this->customerHelper->isReorderedItems() );
+        return $riskInfo;
+    }
 }

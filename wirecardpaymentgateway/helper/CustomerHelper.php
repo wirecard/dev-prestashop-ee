@@ -7,34 +7,37 @@ use Order;
 use WirecardEE\Prestashop\Models\CreditCardVault;
 use Wirecard\PaymentSdk\Constant\ChallengeInd;
 
+/**
+ * Class CustomerHelper
+ * @package WirecardEE\Prestashop\Helper
+ *
+ * @since 2.2.0
+ */
 class CustomerHelper
 {
-    const UNLIMITED = -1;
-
     /**
      * @var \Customer
+     * @since 2.2.0
      */
     private $customer;
 
     /**
      * @var \Order
+     * @since 2.2.0
      */
     private $currentOrder;
 
     /**
      * @var string
+     * @since 2.2.0
      */
     private $challengeInd;
 
     /**
      * @var string|null
+     * @since 2.2.0
      */
     private $tokenId;
-
-    /**
-     * @var \Address $address
-     */
-    private $address;
 
     /**
      * CustomerHelper constructor.
@@ -42,6 +45,7 @@ class CustomerHelper
      * @param int $orderId
      * @param string $challengeInd
      * @param string|null $tokenId
+     *
      * @since 2.2.0
      */
     public function __construct($customer, $orderId, $challengeInd, $tokenId)
@@ -53,7 +57,9 @@ class CustomerHelper
     }
 
     /**
+     * Get Challenge indicator
      * @return string
+     *
      * @since 2.2.0
      */
     public function getChallengeIndicator()
@@ -71,6 +77,7 @@ class CustomerHelper
     /**
      * Get Customers date of account creation
      * @return DateTime
+     *
      * @since 2.2.0
      */
     public function getAccountCreationDate()
@@ -81,6 +88,7 @@ class CustomerHelper
     /**
      * Get Customers date of last login
      * @return string
+     *
      * @since 2.2.0
      */
     public function getAccountLastLogin()
@@ -92,6 +100,7 @@ class CustomerHelper
     /**
      * Get Customers date of account update
      * @return DateTime
+     *
      * @since 2.2.0
      */
     public function getAccountUpdateDate()
@@ -102,6 +111,7 @@ class CustomerHelper
     /**
      * Get Customers date of account update
      * @return DateTime
+     *
      * @since 2.2.0
      */
     public function getAccountPassChangeDate()
@@ -113,6 +123,7 @@ class CustomerHelper
      * Get customers date of first shipping address use
      * @param int $shippingAddressId
      * @return DateTime
+     *
      * @since 2.2.0
      */
     public function getShippingAddressFirstUse($shippingAddressId)
@@ -124,40 +135,60 @@ class CustomerHelper
     /**
      * Get successful orders from last six months
      * @return int
+     *
      * @since 2.2.0
      */
     public function getSuccessfulOrdersLastSixMonths()
     {
-        $orders = Order::getCustomerOrders($this->customer->id);
+        $states = [\OrderState::FLAG_PAID, \OrderState::FLAG_SHIPPED, \OrderState::FLAG_DELIVERY, \OrderState::FLAG_LOGABLE];
         $dateBeforeSixMonths = $this->convertToDateTime("-6 months");
+        return $this->countOrders($dateBeforeSixMonths, $states);
+    }
+
+    /**
+     * Count Orders.
+     * @param DateTime $pastDate
+     * @param array $states
+     * @return int
+     *
+     * @since 2.2.0
+     */
+    private function countOrders($pastDate, $states)
+    {
         $count = 0;
+        $orders = Order::getCustomerOrders($this->customer->id);
         foreach ($orders as $order) {
             $orderDate = $this->convertToDateTime($order['date_add']);
-            if (($orderDate > $dateBeforeSixMonths) && ($order['id_order_state'] === \OrderState::FLAG_PAID)) {
+            if (($orderDate > $pastDate) && (in_array($order['id_order_state'], $states))) {
                 $count++;
             }
         }
         return $count;
     }
 
-//    /**
-//     * Get Customers date of card creation
-//     * @return DateTime
-//     * @since 2.2.0
-//     */
-//    public function getCardCreationDate() {
-//        $vault = new CreditCardVault($this->customer->id);
-//        $card = $vault->getCard( $this->tokenId );
-//        if (isset($card)) {
-//            return $this->convertToDateTime($card["date_add"]);
-//        }
-//        return $this->convertToDateTime('now');
-//    }
+
+    /**
+     * Get Customers date of card creation
+     * @return DateTime
+     *
+     * @since 2.2.0
+     */
+    public function getCardCreationDate()
+    {
+        $vault = new CreditCardVault($this->customer->id);
+        $card = $vault->getCard($this->tokenId);
+        if (isset($card)) {
+            return $this->convertToDateTime($card["date_add"]);
+        }
+        return $this->convertToDateTime('now');
+    }
 
     /**
      * Convert to DateTime
      * @param string $time
      * @return null|DateTime
+     *
+     * @since 2.2.0
      */
     private function convertToDateTime($time)
     {
@@ -168,4 +199,8 @@ class CustomerHelper
         }
         return $dateAdd;
     }
+
+//    public function isReorderedItems(){
+//
+//    }
 }

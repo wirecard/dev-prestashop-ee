@@ -171,7 +171,9 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'account_update_date' => date('Y-m-d'),
             'account_password_change_date' => date('Y-m-d'),
             'shipping_address_first_use' => date('Y-m-d'),
-            'purchases_last_six_months' => 0
+            'purchases_last_six_months' => 0,
+            'merchant_crm_id' => '',
+            'card_creation_date' => date('Y-m-d')
         );
 
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));
