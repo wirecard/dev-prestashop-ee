@@ -46,7 +46,7 @@ use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 
 define('IS_CORE', false);
@@ -780,7 +780,7 @@ class WirecardPaymentGateway extends PaymentModule
     {
         foreach ($this->config as $config) {
             $name = $config['tab'];
-            $shopConfigService = new Sho($name);
+            $shopConfigService = new ShopConfigurationService($name);
             foreach ($config['fields'] as $field) {
                 if (array_key_exists('default', $field)) {
                     $configParam = $shopConfigService->getFieldName($field['name']);
