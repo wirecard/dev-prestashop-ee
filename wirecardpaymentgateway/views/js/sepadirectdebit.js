@@ -36,7 +36,6 @@ var sepaCheck = false;
 $(document).ready(function () {
     function processOrder()
     {
-        console.log(form);
         form.submit();
     }
 
