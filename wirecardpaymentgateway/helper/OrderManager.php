@@ -35,6 +35,8 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+
 /**
  * Class OrderManager
  *
@@ -70,13 +72,13 @@ class OrderManager
      */
     public function createOrder($cart, $state, $paymentType)
     {
-        $paymentConfiguration = new PaymentConfiguration($paymentType);
+        $shopConfigService = new ShopConfigurationService($paymentType);
 
         $this->module->validateOrder(
             $cart->id,
             \Configuration::get($state),
             $cart->getOrderTotal(true),
-            $paymentConfiguration->getField('title'),
+            $shopConfigService->getField('title'),
             null,
             array(),
             null,

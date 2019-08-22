@@ -46,7 +46,7 @@ use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\PaymentConfiguration;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 
 define('IS_CORE', false);
@@ -59,8 +59,29 @@ define('IS_CORE', false);
  */
 class WirecardPaymentGateway extends PaymentModule
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
     const NAME = 'wirecardpaymentgateway';
+
+    /**
+     * @var string
+     * @since 2.0.0
+     */
     const VERSION = '2.0.0';
+
+    /**
+     * @var string
+     * @since 2.0.0
+     */
+    const SHOP_NAME = 'Prestashop';
+
+    /**
+     * @var string
+     * @since 2.0.0
+     */
+    const EXTENSION_HEADER_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 
     /**
      * Payment fields for configuration
@@ -337,12 +358,12 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $params = array();
         foreach ($this->config as $group) {
-            $paymentConfiguration = new PaymentConfiguration($group['tab']);
+            $shopConfigService = new ShopConfigurationService($group['tab']);
             foreach ($group['fields'] as $f) {
                 if ('hidden' == $f['type']) {
                     continue;
                 }
-                $f['param_name'] = $paymentConfiguration->getFieldName($f['name']);
+                $f['param_name'] = $shopConfigService->getFieldName($f['name']);
                 $params[] = $f;
             }
         }
@@ -367,9 +388,9 @@ class WirecardPaymentGateway extends PaymentModule
 
         /** @var \WirecardEE\Prestashop\Models\Payment $paymentMethod */
         foreach ($this->getPayments() as $paymentMethod) {
-            $paymentConfiguration = new PaymentConfiguration($paymentMethod::TYPE);
+            $shopConfigService = new ShopConfigurationService($paymentMethod::TYPE);
 
-            if ($paymentConfiguration->getField('enabled') == false) {
+            if ($shopConfigService->getField('enabled') == false) {
                 continue;
             }
 
@@ -566,10 +587,10 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected function isUrlConfigurationValid()
     {
-        $paymentConfiguration = new PaymentConfiguration(CreditCardTransaction::NAME);
+        $shopConfigService = new ShopConfigurationService(CreditCardTransaction::NAME);
 
-        $baseUrl = $paymentConfiguration->getField('base_url');
-        $wppUrl = $paymentConfiguration->getField('wpp_url');
+        $baseUrl = $shopConfigService->getField('base_url');
+        $wppUrl = $shopConfigService->getField('wpp_url');
 
         return UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl);
     }
@@ -634,13 +655,13 @@ class WirecardPaymentGateway extends PaymentModule
         foreach ($this->config as $value) {
             $tabname = $value['tab'];
             $tabs[$tabname] = $tabname;
-            $paymentConfiguration = new PaymentConfiguration($tabname);
+            $shopConfigService = new ShopConfigurationService($tabname);
             foreach ($value['fields'] as $f) {
                 if ('hidden' == $f['type']) {
                     continue;
                 }
                 $elem = array(
-                    'name' => $paymentConfiguration->getFieldName($f['name']),
+                    'name' => $shopConfigService->getFieldName($f['name']),
                     'label' => isset($f['label'])?$this->l($f['label']):'',
                     'tab' => $tabname,
                     'type' => $f['type'],
@@ -758,10 +779,10 @@ class WirecardPaymentGateway extends PaymentModule
     {
         foreach ($this->config as $config) {
             $name = $config['tab'];
-            $paymentConfiguration = new PaymentConfiguration($name);
+            $shopConfigService = new Sho($name);
             foreach ($config['fields'] as $field) {
                 if (array_key_exists('default', $field)) {
-                    $configParam = $paymentConfiguration->getFieldName($field['name']);
+                    $configParam = $shopConfigService->getFieldName($field['name']);
                     $defValue = $field['default'];
                     if (is_array($defValue)) {
                         $defValue = Tools::jsonEncode($defValue);
@@ -787,9 +808,9 @@ class WirecardPaymentGateway extends PaymentModule
     {
         foreach ($this->config as $config) {
             $name = $config['tab'];
-            $paymentConfiguration = new PaymentConfiguration($name);
+            $shopConfigService = new ShopConfigurationService($name);
             foreach ($config['fields'] as $field) {
-                $fieldName = $paymentConfiguration->getFieldName($field['name']);
+                $fieldName = $shopConfigService->getFieldName($field['name']);
                 $value = Configuration::get($fieldName);
                 if (isset($value)) {
                     if (!Configuration::deleteByName($fieldName)) {
@@ -911,7 +932,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionFrontControllerSetMedia()
     {
         $link = new Link;
-        $creditCardConfig = new PaymentConfiguration(PaymentCreditCard::TYPE);
+        $creditCardConfig = new ShopConfigurationService(PaymentCreditCard::TYPE);
         $wppUrl = $creditCardConfig->getField('wpp_url');
 
         $this->context->controller->registerJavascript(

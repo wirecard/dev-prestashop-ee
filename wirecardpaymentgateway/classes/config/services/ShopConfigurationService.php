@@ -1,6 +1,6 @@
 <?php
 
-namespace WirecardEE\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Classes\Config\Services;
 
 use Wirecard\PaymentSdk\Transaction\PoiPiaTransaction;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
@@ -8,12 +8,12 @@ use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 
 /**
- * Class PaymentConfiguration
+ * Class ShopConfigurationService
  *
  * @package WirecardEE\Prestashop\Helper
  * @since 2.1.0
  */
-class PaymentConfiguration
+class ShopConfigurationService
 {
     /**
      * @var string
@@ -22,7 +22,7 @@ class PaymentConfiguration
     const CONFIG_TEMPLATE = 'WIRECARD_PAYMENT_GATEWAY_%s_%s';
 
     /**
-     * Ensures compatibility with existing database keys.
+     * Ensures  compatibility with existing database keys.
      *
      * @var array
      * @string 2.1.0
@@ -74,7 +74,7 @@ class PaymentConfiguration
      */
     public function getFieldName($field)
     {
-        $type = $this->getCurrentType();
+        $type = $this->getPrestashopType();
 
         return sprintf(
             self::CONFIG_TEMPLATE,
@@ -89,12 +89,22 @@ class PaymentConfiguration
      * @return string
      * @since 2.1.0
      */
-    private function getCurrentType()
+    private function getPrestashopType()
     {
         if (key_exists($this->type, self::FALLBACK_NAMES)) {
             return self::FALLBACK_NAMES[$this->type];
         }
 
+        return $this->type;
+    }
+
+    /**
+     * Get the original type for use with the SDK
+     *
+     * @return string
+     * @since 2.1.0
+     */
+    public function getType() {
         return $this->type;
     }
 }

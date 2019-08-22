@@ -215,27 +215,6 @@ class PaymentSepaDirectDebit extends Payment
     }
 
     /**
-     * Create config for SEPA transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createConfig()
-    {
-        $config = parent::createConfig();
-        $paymentConfig = $config->get(static::TYPE);
-
-        $paymentConfig->setCreditorId(
-            $this->configuration->getField('creditor_id')
-        );
-
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create sepa transaction
      *
      * @param \WirecardPaymentGateway $module

@@ -38,7 +38,7 @@ use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use WirecardEE\Prestashop\Helper\CurrencyHelper;
+use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
@@ -236,53 +236,6 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Create config for credit card transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createConfig()
-    {
-        $currency = \Context::getContext()->currency;
-        $currencyConverter = new CurrencyHelper();
-
-        $config = parent::createConfig();
-        $paymentConfig = $config->get(static::TYPE);
-
-        if ($this->configuration->getField('three_d_merchant_account_id') !== '') {
-            $paymentConfig->setThreeDCredentials(
-                $this->configuration->getField('three_d_merchant_account_id'),
-                $this->configuration->getField('three_d_secret')
-            );
-        }
-
-        if (is_numeric($this->configuration->getField('ssl_max_limit'))
-            && $this->configuration->getField('ssl_max_limit') >= 0) {
-            $paymentConfig->addSslMaxLimit(
-                $currencyConverter->getConvertedAmount(
-                    $this->configuration->getField('ssl_max_limit'),
-                    $currency->iso_code
-                )
-            );
-        }
-
-        if (is_numeric($this->configuration->getField('three_d_min_limit'))
-            && $this->configuration->getField('three_d_min_limit') >= 0) {
-            $paymentConfig->addThreeDMinLimit(
-                $currencyConverter->getConvertedAmount(
-                    $this->configuration->getField('three_d_min_limit'),
-                    $currency->iso_code
-                )
-            );
-        }
-
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create request data for credit card ui
      *
      * @param \WirecardPaymentGateway $module
@@ -297,7 +250,7 @@ class PaymentCreditCard extends Payment
         $paymentAction = $this->configuration->getField('payment_action');
         $operation = $this->getOperationForPaymentAction($paymentAction);
         $languageCode = $this->getSupportedLangCode($context);
-        $config = $this->createConfig();
+        $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
 
         $transactionService = new TransactionService($config, $this->logger);
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
@@ -320,7 +273,7 @@ class PaymentCreditCard extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $config = $this->createConfig();
+        $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
 
         /** @var CreditCardConfig $paymentConfig */
         $paymentConfig = $config->get(CreditCardTransaction::NAME);

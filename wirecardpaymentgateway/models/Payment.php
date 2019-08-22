@@ -35,15 +35,8 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Config\Config;
-use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Config\SepaConfig;
-use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
-use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
-use WirecardEE\Prestashop\Helper\PaymentConfiguration;
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
@@ -74,27 +67,9 @@ abstract class Payment extends PaymentOption
 
     /**
      * @var string
-     * @since 2.0.0
-     */
-    const SHOP_NAME = 'Prestashop';
-
-    /**
-     * @var string
-     * @since 2.0.0
-     */
-    const EXTENSION_HEADER_PLUGIN_NAME = 'prestashop-ee+Wirecard';
-
-    /**
-     * @var string
      * @since 1.0.0
      */
     protected $name;
-
-    /**
-     * @var Config
-     * @since 1.0.0
-     */
-    protected $sdkConfiguration;
 
     /**
      * @var string
@@ -175,7 +150,7 @@ abstract class Payment extends PaymentOption
     protected $loadJs;
 
     /**
-     * @var PaymentConfiguration $configuration
+     * @var ShopConfigurationService $configuration
      */
     protected $configuration;
 
@@ -202,7 +177,7 @@ abstract class Payment extends PaymentOption
 
         $this->name = 'Wirecard Payment Processing Gateway';
         $this->transactionTypes = array('authorization', 'capture');
-        $this->configuration = new PaymentConfiguration(static::TYPE);
+        $this->configuration = new ShopConfigurationService(static::TYPE);
 
         $this->setAction($this->action_link);
         $this->setLogo($logoPath);
@@ -217,47 +192,6 @@ abstract class Payment extends PaymentOption
     }
 
     /**
-     * Create config for transaction service
-     *
-     * @param $baseUrl
-     * @param $httpUser
-     * @param $httpPass
-     * @return Config
-     * @since 1.0.0
-     */
-    public function createConfig()
-    {
-        $maid = $this->configuration->getField('merchant_account_id');
-        $secret = $this->configuration->getField('secret');
-
-        $this->sdkConfiguration = new Config(
-            $this->configuration->getField('base_url'),
-            $this->configuration->getField('http_user'),
-            $this->configuration->getField('http_pass')
-        );
-
-        $this->sdkConfiguration->setShopInfo(self::SHOP_NAME, _PS_VERSION_);
-        $this->sdkConfiguration->setPluginInfo(self::EXTENSION_HEADER_PLUGIN_NAME, \WirecardPaymentGateway::VERSION);
-
-        switch (static::TYPE) {
-            case CreditCardTransaction::NAME:
-                $paymentMethodConfig = new CreditCardConfig($maid, $secret);
-                break;
-            case SepaCreditTransferTransaction::NAME:
-            case SepaDirectDebitTransaction::NAME:
-                $paymentMethodConfig = new SepaConfig(static::TYPE, $maid, $secret);
-                break;
-            default:
-                $paymentMethodConfig = new PaymentMethodConfig(static::TYPE, $maid, $secret);
-                break;
-        }
-
-        $this->sdkConfiguration->add($paymentMethodConfig);
-
-        return $this->sdkConfiguration;
-    }
-
-    /**
      * Get payment name
      *
      * @return string
@@ -266,17 +200,6 @@ abstract class Payment extends PaymentOption
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Get payment config
-     *
-     * @return Config
-     * @since 1.0.0
-     */
-    public function getConfig()
-    {
-        return $this->sdkConfiguration;
     }
 
     /**

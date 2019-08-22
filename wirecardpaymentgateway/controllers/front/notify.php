@@ -40,6 +40,8 @@ use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\BackendService;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {
@@ -57,8 +59,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
         $logger = new WirecardLogger();
         $paymentType = Tools::getValue('payment_type');
         $cartId = Tools::getValue('id_cart');
-        $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createConfig();
+        $shopConfigService = new ShopConfigurationService($paymentType);
+        $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
         $notification = Tools::file_get_contents('php://input');
         try {
             $this->backendService = new BackendService($config, $logger);

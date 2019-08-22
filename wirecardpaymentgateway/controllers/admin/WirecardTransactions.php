@@ -41,7 +41,9 @@ use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
-use WirecardEE\Prestashop\Helper\PaymentConfiguration;
+use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
 
 /**
  * Class WirecardTransactions
@@ -225,14 +227,15 @@ class WirecardTransactionsController extends ModuleAdminController
         /** @var Payment $payment */
         $payment = $this->module->getPaymentFromType($paymentType);
         if ($payment) {
-            $config = $payment->createConfig();
+            $shopConfigService = new ShopConfigurationService($paymentType);
+            $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
             $operation = $this->getOperation($paymentType, $operation);
             switch ($operation) {
                 case Operation::REFUND:
                     $transaction = $payment->createRefundTransaction($transactionData, $this->module);
                     if (in_array($paymentType, array('ideal', 'sofortbanking', 'sepadirectdebit'))) {
-                        $payment = $this->module->getPaymentFromType('sepacredittransfer');
-                        $config = $payment->createConfig();
+                        $shopConfigService = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
+                        $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
                         $operation = Operation::CREDIT;
                     }
                     if ($paymentType == 'ratepay-invoice') {
@@ -320,7 +323,7 @@ class WirecardTransactionsController extends ModuleAdminController
     private function checkPaymentName($orderId)
     {
         $order = new Order($orderId);
-        $masterpassConfig = new PaymentConfiguration(PaymentMasterpass::TYPE);
+        $masterpassConfig = new ShopConfigurationService(PaymentMasterpass::TYPE);
 
         switch ($order->payment) {
             case $masterpassConfig->getField('title'):

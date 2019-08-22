@@ -38,8 +38,9 @@ use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Helper\PaymentConfiguration;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
 
 /**
  * Class WirecardPaymentGatewayReturnModuleFrontController
@@ -72,8 +73,8 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
             $cartId = Cart::getCartIdByOrderId($orderId);
         }
 
-        $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createConfig();
+        $shopConfigService = new ShopConfigurationService($paymentType);
+        $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
         if ($paymentState == 'success') {
             try {
                 $transactionService = new TransactionService($config, new WirecardLogger());
@@ -148,7 +149,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
 
         //set data for PIA to show on thank you page
         $this->context->cookie->__set('pia-enabled', false);
-        $poiPiaConfiguration = new PaymentConfiguration(PaymentPoiPia::TYPE);
+        $poiPiaConfiguration = new ShopConfigurationService(PaymentPoiPia::TYPE);
 
         if ($response->getPaymentMethod() === 'wiretransfer'
             && $poiPiaConfiguration->getField('payment_type') === 'pia') {

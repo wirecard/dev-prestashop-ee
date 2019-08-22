@@ -35,9 +35,8 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
-use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
-use WirecardEE\Prestashop\Helper\PaymentConfiguration;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 
 /**
  * Class PaymentSepaDirectDebit
@@ -162,32 +161,6 @@ class PaymentSepaCreditTransfer extends Payment
     }
 
     /**
-     * Create config for SEPA transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function creatConfig()
-    {
-        $config = parent::createConfig();
-
-        $paymentConfig = new SepaConfig(
-            self::TYPE,
-            $this->configuration->getField('merchant_account_id'),
-            $this->configuration->getField('merchant_account_id')
-        );
-
-        $paymentConfig->setCreditorId(
-            $this->configuration->getField('creditor_id')
-        );
-
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create sepa transaction
      *
      * @param \WirecardPaymentGateway $module
@@ -234,7 +207,7 @@ class PaymentSepaCreditTransfer extends Payment
      */
     public function generateMandateId($paymentModule, $orderId)
     {
-        $paymentConfiguration = new PaymentConfiguration(static::TYPE);
+        $paymentConfiguration = new ShopConfigurationService(static::TYPE);
 
         return $paymentConfiguration->getField('creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));

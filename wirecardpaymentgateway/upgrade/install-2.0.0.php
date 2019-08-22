@@ -37,11 +37,11 @@ require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendo
     DIRECTORY_SEPARATOR.'wirecard'.DIRECTORY_SEPARATOR.'base-url-matcher'.
     DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'BaseUrlMatcherService.php');
 
-require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'helper'.
-    DIRECTORY_SEPARATOR.'PaymentConfiguration.php');
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'classes'.
+    DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'services'.DIRECTORY_SEPARATOR.'ShopConfigurationService.php');
 
 use Wirecard\BaseUrlMatcher\BaseUrlMatcherService;
-use WirecardEE\Prestashop\Helper\PaymentConfiguration;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -54,7 +54,7 @@ if (!defined('_PS_VERSION_')) {
  */
 function upgrade_module_2_0_0()
 {
-    $creditCardConfig = new PaymentConfiguration('creditcard');
+    $creditCardConfig = new ShopConfigurationService('creditcard');
 
     $baseUrl = $creditCardConfig->getField('base_url');
     $wppUrlDbKey = $creditCardConfig->getFieldName('wpp_url');

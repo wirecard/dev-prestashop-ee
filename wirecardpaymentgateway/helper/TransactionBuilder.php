@@ -8,6 +8,7 @@ use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
@@ -43,8 +44,8 @@ class TransactionBuilder
     /** @var CurrencyHelper */
     private $currencyHelper;
 
-    /** @var PaymentConfiguration */
-    private $paymentConfiguration;
+    /** @var ShopConfigurationService */
+    private $shopConfigService;
 
     /**
      * TransactionBuilder constructor.
@@ -59,7 +60,7 @@ class TransactionBuilder
         $this->module = $module;
         $this->context = $context;
         $this->paymentType = $paymentType;
-        $this->paymentConfiguration = new PaymentConfiguration($paymentType);
+        $this->shopConfigService = new ShopConfigurationService($paymentType);
         $this->cart = new \Cart((int) $cartId);
         $this->currency = new \Currency($this->cart->id_currency);
         $this->customFields = new CustomFieldCollection();
@@ -179,7 +180,7 @@ class TransactionBuilder
      */
     private function addBasket()
     {
-        if ($this->paymentConfiguration->getField('shopping_basket')) {
+        if ($this->shopConfigService->getField('shopping_basket')) {
             $this->transaction->setBasket(
                 $this->additionalInformationBuilder->createBasket(
                     $this->cart,
@@ -197,7 +198,7 @@ class TransactionBuilder
      */
     private function addDescriptor()
     {
-        if ($this->paymentConfiguration->getField('descriptor')) {
+        if ($this->shopConfigService->getField('descriptor')) {
             $this->transaction->setDescriptor($this->additionalInformationBuilder->createDescriptor($this->orderId));
         }
     }
@@ -209,7 +210,7 @@ class TransactionBuilder
      */
     private function addAdditionalInformation()
     {
-        if ($this->paymentConfiguration->getField('send_additional')) {
+        if ($this->shopConfigService->getField('send_additional')) {
             $firstName = null;
             $lastName = null;
 

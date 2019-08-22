@@ -42,6 +42,8 @@ use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
+use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -67,14 +69,13 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
         $this->context->cookie->__set('pia-enabled', false);
 
         $paymentType = \Tools::getValue('paymentType');
-        $paymentConfiguration = new \WirecardEE\Prestashop\Helper\PaymentConfiguration($paymentType);
+        $shopConfigService = new ShopConfigurationService($paymentType);
 
         $cartId = \Tools::getValue('order_number');
         $cart = new Cart($cartId);
 
-        $operation = $paymentConfiguration->getField('payment_action');
-        $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createConfig();
+        $operation = $shopConfigService->getField('payment_action');
+        $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
 
         $this->transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
         // Create order and get orderId
