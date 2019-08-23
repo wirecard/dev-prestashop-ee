@@ -78,30 +78,6 @@ abstract class Payment extends PaymentOption
     protected $type;
 
     /**
-     * @var \Wirecard\PaymentSdk\Transaction\Transaction
-     * @since 1.0.0
-     */
-    protected $transaction;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $baseUrl;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $httpUser;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $httpPass;
-
-    /**
      * @var array
      * @since 1.0.0
      */
@@ -112,12 +88,6 @@ abstract class Payment extends PaymentOption
      * @since 1.0.0
      */
     protected $formFields;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $additionalInformationTemplate;
 
     /**
      * @var array
@@ -138,12 +108,6 @@ abstract class Payment extends PaymentOption
     protected $capture;
 
     /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $templateData;
-
-    /**
      * @var bool
      * @since 1.0.0
      */
@@ -154,7 +118,9 @@ abstract class Payment extends PaymentOption
      */
     protected $configuration;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $action_link;
 
     /**

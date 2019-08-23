@@ -39,9 +39,11 @@ use WirecardEE\Prestashop\Models\PaymentPaypal;
 
 class PaymentTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var PaymentPaypal */
     private $payment;
     private $config;
-    private $paypalPayment;
+
+    /** @var WirecardPaymentGateway */
     private $paymentModule;
 
     public function setUp()
@@ -50,14 +52,11 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
-
-        $this->payment = new Payment($this->paymentModule);
+        $this->payment = new PaymentPaypal();
         $this->payment->context = new \Context();
         $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
         $this->config->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
-        $this->config->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
-        $this->paypalPayment = new PaymentPaypal($this->paymentModule);
+        $this->config->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule::VERSION);
     }
 
     public function testName()
@@ -65,16 +64,6 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         $actual = $this->payment->getName();
 
         $expected = 'Wirecard Payment Processing Gateway';
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testConfig()
-    {
-        $this->payment->createConfig('baseUrl', 'httpUser', 'httpPass');
-        $actual = $this->payment->getConfig();
-
-        $expected = $this->config;
 
         $this->assertEquals($expected, $actual);
     }
@@ -99,7 +88,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
 
     public function testType()
     {
-        $actual = $this->paypalPayment->getType();
+        $actual = $this->payment->getType();
 
         $expected = 'paypal';
 
@@ -108,7 +97,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateTransactionIsNull()
     {
-        $actual = $this->payment->createTransaction(new PaymentModule(), new Cart(), array(), 'ADB123');
+        $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), array(), 'ADB123');
 
         $this->assertNull($actual);
     }
