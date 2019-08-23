@@ -47,7 +47,7 @@ use WirecardEE\Prestashop\Models\Transaction;
 /**
  * Class Success
  * @since 2.1.0
- *@package WirecardEE\Prestashop\Classes\Notification
+ * @package WirecardEE\Prestashop\Classes\Notification
  */
 final class Success implements ProcessablePaymentNotification
 {

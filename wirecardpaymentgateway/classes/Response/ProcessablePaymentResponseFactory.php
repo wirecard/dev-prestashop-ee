@@ -103,10 +103,6 @@ class ProcessablePaymentResponseFactory
      */
     private function isCancelResponse($order_state)
     {
-        if ($order_state === 'cancel') {
-            return true;
-        }
-
-        return false;
+        return $order_state === Cancel::CANCEL_PAYMENT_STATE;
     }
 }
