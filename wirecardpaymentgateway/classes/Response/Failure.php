@@ -33,76 +33,78 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Response;
 
-use Wirecard\PaymentSdk\Response\Response;
-use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Response\InteractionResponse;
-use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
- * Class ResponseProcessingFactory
- * @package WirecardEE\Prestashop\Classes\ResponseProcessing
+ * Class Failure
+ * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-class ResponseProcessingFactory
+final class Failure implements ProcessablePaymentResponse
 {
-    /** @var Response|false */
-    private $response;
-
     /** @var \Order  */
     private $order;
 
-    /** @var string */
-    private $order_state;
+    /** @var FailureResponse  */
+    private $response;
+
+    /** @var ContextService  */
+    private $context_service;
+
+    /** @var OrderService  */
+    private $order_service;
 
     /**
-     * ResponseProcessingFactory constructor.
+     * FailureResponseProcessing constructor.
      *
-     * @param $response
      * @param \Order $order
-     * @param string $order_state
+     * @param FailureResponse $response
      * @since 2.1.0
      */
-    public function __construct($response, $order, $order_state = null)
+    public function __construct($order, $response)
     {
         $this->order = $order;
-        $this->order_state = $order_state;
         $this->response = $response;
+        $this->context_service = new ContextService(\Context::getContext());
+        $this->order_service = new OrderService($order);
     }
 
     /**
-     * @return ResponseProcessing
      * @since 2.1.0
      */
-    public function getResponseProcessing()
+    public function process()
     {
-        if ($this->isCancelResponse($this->order_state)) {
-            return new CancelResponseProcessing($this->order);
-        }
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(_PS_OS_ERROR_);
+            $this->order->save();
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
 
-        switch (true) {
-            case $this->response instanceof SuccessResponse:
-                return new SuccessResponseProcessing($this->order, $this->response);
-            case $this->response instanceof InteractionResponse:
-                return new InteractionResponseProcessing($this->response);
-            case $this->response instanceof FormInteractionResponse:
-                return new FormInteractionResponseProcessing($this->response);
-            case $this->response instanceof FailureResponse:
-            default:
-                return new FailureResponseProcessing($this->order, $this->response);
+            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+            $this->context_service->redirectWithError($errors, 'order');
         }
     }
 
     /**
-     * @param string $order_state
+     * @param StatusCollection $statuses
      *
-     * @return bool
+     * @return array
      * @since 2.1.0
      */
-    private function isCancelResponse($order_state)
+    private function getErrorsFromStatusCollection($statuses)
     {
-        return $order_state === CancelResponseProcessing::CANCEL_PAYMENT_STATE;
+        $error = array();
+
+        foreach ($statuses->getIterator() as $status) {
+            array_push($error, $status->getDescription());
+        }
+
+        return $error;
     }
 }

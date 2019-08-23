@@ -33,36 +33,28 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Engine;
 
-use Wirecard\PaymentSdk\Response\InteractionResponse;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 
 /**
- * Class InteractionResponseProcessing
- * @package WirecardEE\Prestashop\Classes\ResponseProcessing
+ * Class NotificationResponse
+ *
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\Classes\Engine
  */
-final class InteractionResponseProcessing implements ResponseProcessing
+final class NotificationResponse extends PaymentSdkResponse
 {
-    /** @var InteractionResponse  */
-    private $response;
-
     /**
-     * InteractionResponseProcessing constructor.
-     *
-     * @param InteractionResponse $response
+     * @param string $response
+     * @return SuccessResponse|FailureResponse
      * @since 2.1.0
      */
-    public function __construct($response)
+    public function process($response)
     {
-        $this->response = $response;
-    }
+        parent::process($response);
 
-    /**
-     * @since 2.1.0
-     */
-    public function process()
-    {
-        \Tools::redirect($this->response->getRedirectUrl());
+        return $this->backend_service->handleNotification($response);
     }
 }

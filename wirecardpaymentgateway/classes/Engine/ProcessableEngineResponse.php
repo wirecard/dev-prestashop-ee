@@ -33,23 +33,19 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
-
-use Wirecard\PaymentSdk\Response\Response;
+namespace WirecardEE\Prestashop\Classes\Engine;
 
 /**
- * Class SuccessPaymentProcessing
- * @package WirecardEE\Prestashop\Classes\PaymentProcessing
+ * Interface ProcessableEngineResponse
+ *
+ * @package WirecardEE\Prestashop\Classes\Engine
  * @since 2.1.0
  */
-final class SuccessPaymentProcessing implements PaymentProcessing
+interface ProcessableEngineResponse
 {
     /**
-     * @param Response $response
+     * @param array|string $response
      * @since 2.1.0
      */
-    public function process($response)
-    {
-        // TODO: Implement process() method.
-    }
+    public function process($response);
 }

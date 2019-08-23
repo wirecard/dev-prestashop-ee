@@ -33,13 +33,13 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Response;
 
 /**
- * Interface ResponseProcessing
- * @package WirecardEE\Prestashop\Classes\ResponseProcessing
+ * Interface ProcessableResponse
+ * @package WirecardEE\Prestashop\Classes\Response
  */
-interface ResponseProcessing
+interface ProcessablePaymentResponse
 {
     /**
      * @since 2.1.0

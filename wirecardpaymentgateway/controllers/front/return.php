@@ -33,9 +33,9 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\classes\EngineResponseProcessing\ReturnPaymentEngineResponseProcessing;
-use WirecardEE\Prestashop\Classes\ResponseProcessing\CancelResponseProcessing;
-use WirecardEE\Prestashop\classes\ResponseProcessing\ResponseProcessingFactory;
+use WirecardEE\Prestashop\Classes\Engine\ReturnResponse;
+use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
+use WirecardEE\Prestashop\Classes\Response\Cancel;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -48,6 +48,8 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
 {
+    const CANCEL_PAYMENT_STATE = 'cancel';
+
     /** @var WirecardLogger  */
     private $logger;
 
@@ -75,11 +77,11 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         try {
             $order = new Order((int) $order_id);
 
-            if ($payment_state !== CancelResponseProcessing::CANCEL_PAYMENT_STATE) {
+            if ($payment_state !== Cancel::CANCEL_PAYMENT_STATE) {
                 $response = $this->processRawResponse($response);
             }
 
-            $response_factory = new ResponseProcessingFactory($response, $order, $payment_state);
+            $response_factory = new ProcessablePaymentResponseFactory($response, $order, $payment_state);
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
         } catch (\Exception $exception) {
@@ -93,9 +95,15 @@ class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontContr
         }
     }
 
+    /**
+     * @param $response
+     *
+     * @return false|\Wirecard\PaymentSdk\Response\Response
+     * @since 2.1.0
+     */
     private function processRawResponse($response)
     {
-        $engine_processing = new ReturnPaymentEngineResponseProcessing();
+        $engine_processing = new ReturnResponse();
         return $engine_processing->process($response);
     }
 }

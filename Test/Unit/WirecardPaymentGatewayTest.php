@@ -49,6 +49,7 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->gateway = new \WirecardPaymentGateway();
+        $this->gateway->context->controller = new Controller();
     }
 
     public function testConfiguration()

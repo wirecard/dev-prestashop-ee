@@ -33,13 +33,9 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\classes\EngineResponseProcessing\NotificationPaymentEngineResponseProcessing;
-use WirecardEE\Prestashop\classes\PaymentProcessing\SuccessPaymentProcessing;
-use WirecardEE\Prestashop\classes\PaymentProcessing\FailurePaymentProcessing;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-
-use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Response\Response;
+use WirecardEE\Prestashop\Classes\Engine\NotificationResponse;
+use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotificationFactory;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {
@@ -63,13 +59,17 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     public function postProcess()
     {
-        $notification = Tools::file_get_contents('php://input');
+        $notification = \Tools::file_get_contents('php://input');
+
         try {
-            $engine_processing      = new NotificationPaymentEngineResponseProcessing();
+            $order = $this->getOrder();
+
+            $engine_processing = new NotificationResponse();
             $processed_notify = $engine_processing->process($notification);
 
-            //@TODO this is just here to see the result of a processed notification
-            $this->logger->debug('notify: <pre>' . print_r($processed_notify, true) . '</pre>');
+            $notify_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
+            $payment_processing = $notify_factory->getPaymentProcessing();
+            $payment_processing->process();
         } catch (\Exception $exception) {
             $this->logger->error(
                 'Error in class:'. __CLASS__ .
@@ -80,18 +80,41 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
     }
 
     /**
-     * Depending on the Response the processing strategy is chosen
-     * @param Response $notification
-     *
-     * @return FailurePaymentProcessing|SuccessPaymentProcessing
+     * @return Order
+     * @throws \Exception
      * @since 2.1.0
      */
-    public function getNotificationProcessing($notification)
+    private function getOrder()
     {
-        if ($notification instanceof SuccessResponse) {
-            return new SuccessPaymentProcessing();
+        $order_id = \Tools::getValue('id_order');
+        if (\Tools::getValue('payment_type') === 'creditcard') {
+            $order_id = $this->getOrderFromCart();
         }
 
-        return new FailurePaymentProcessing();
+        return new \Order((int) $order_id);
+    }
+
+    /**
+     * @param int $tick
+     * @return int
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    private function getOrderFromCart($tick = 1)
+    {
+        $cart_id = \Tools::getValue('id_cart');
+        if ($tick > 30) {
+            throw new \Exception('Order with cart id '. $cart_id .' was not mappable');
+        }
+
+        /** @var false|int $order_id */
+        $order_id = \Order::getIdByCartId($cart_id);
+
+        if ($order_id) {
+            return $order_id;
+        }
+
+        sleep(1);
+        return $this->getOrderFromCart();
     }
 }

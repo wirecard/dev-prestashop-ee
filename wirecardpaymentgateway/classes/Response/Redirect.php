@@ -33,27 +33,36 @@
  * @license GPLv3
  */
 
-class Controller
+namespace WirecardEE\Prestashop\Classes\Response;
+
+use Wirecard\PaymentSdk\Response\InteractionResponse;
+
+/**
+ * Class Redirect
+ * @package WirecardEE\Prestashop\Classes\Response
+ * @since 2.1.0
+ */
+final class Redirect implements ProcessablePaymentResponse
 {
-    protected $context;
+    /** @var InteractionResponse  */
+    private $response;
 
-    protected $template;
-
-    public $controller_type;
-
-    public function __construct()
+    /**
+     * InteractionResponseProcessing constructor.
+     *
+     * @param InteractionResponse $response
+     * @since 2.1.0
+     */
+    public function __construct($response)
     {
-        $this->context = Context::getContext();
-        $this->context->controller = $this;
+        $this->response = $response;
     }
 
-    public function redirectWithNotifications($redirect)
+    /**
+     * @since 2.1.0
+     */
+    public function process()
     {
-        Tools::redirect($redirect);
-    }
-
-    public function getLanguages()
-    {
-        return new Language();
+        \Tools::redirect($this->response->getRedirectUrl());
     }
 }

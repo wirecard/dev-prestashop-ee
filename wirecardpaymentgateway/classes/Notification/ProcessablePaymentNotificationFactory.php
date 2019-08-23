@@ -33,63 +33,47 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Notification;
 
-use Wirecard\PaymentSdk\Response\FormInteractionResponse;
-use WirecardEE\Prestashop\Helper\Service\ContextService;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 
 /**
- * Class FormInteractionResponseProcessing
- * @package WirecardEE\Prestashop\Classes\ResponseProcessing
+ * Class ProcessablePaymentNotificationFactory
  * @since 2.1.0
+ * @package WirecardEE\Prestashop\Classes\Notification
  */
-final class FormInteractionResponseProcessing implements ResponseProcessing
+class ProcessablePaymentNotificationFactory
 {
+    /** @var \Order  */
+    private $order;
 
-    /** @var FormInteractionResponse  */
-    private $response;
-
-    /** @var string */
-    private $template_path;
+    /** @var FailureResponse|SuccessResponse  */
+    private $notification;
 
     /**
-     * FormInteractionResponseProcessing constructor.
+     * PaymentProcessingFactory constructor.
      *
-     * @param FormInteractionResponse $response
+     * @param \Order $order
+     * @param SuccessResponse|FailureResponse $notification
+     * @since 2.1.0
      */
-    public function __construct($response)
+    public function __construct($order, $notification)
     {
-        $this->response = $response;
-        $this->template_path = join(
-            DIRECTORY_SEPARATOR,
-            [_PS_MODULE_DIR_ . 'wirecardpaymentgateway', 'views', 'templates', 'front', 'creditcard_submitform.tpl']
-        );
+        $this->order = $order;
+        $this->notification = $notification;
     }
 
     /**
+     * @return Failure|Success
      * @since 2.1.0
      */
-    public function process()
+    public function getPaymentProcessing()
     {
-        $context_service = new ContextService(\Context::getContext());
+        if ($this->notification instanceof SuccessResponse) {
+            return new Success($this->order, $this->notification);
+        }
 
-        $context_service->showTemplateWithData(
-            $this->template_path,
-            $this->getDataFromResponse($this->response)
-        );
-    }
-
-    /**
-     * @param FormInteractionResponse $response
-     * @return array
-     * @since 2.1.0
-     */
-    private function getDataFromResponse($response)
-    {
-        return [
-            'url' => $response->getUrl(),
-            'method' => $response->getMethod(),
-            'form_fields' => $response->getFormFields()
-        ];
+        return new Failure($this->order, $this->notification);
     }
 }

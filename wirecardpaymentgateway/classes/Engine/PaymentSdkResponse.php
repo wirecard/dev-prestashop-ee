@@ -33,19 +33,19 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Engine;
 
 use Wirecard\PaymentSdk\BackendService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Models\Payment;
 
 /**
- * Class PaymentEngineResponseProcessing
+ * Class PaymentSdkResponse
  *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\Engine
  * @since 2.1.0
  */
-abstract class PaymentEngineResponseProcessing implements EngineResponseProcessing
+abstract class PaymentSdkResponse implements ProcessableEngineResponse
 {
     /** @var BackendService */
     protected $backend_service;

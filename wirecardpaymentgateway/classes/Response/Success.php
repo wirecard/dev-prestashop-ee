@@ -33,56 +33,83 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\ResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Response;
 
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\ModuleHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
- * Class CancelResponseProcessing
+ * Class Success
+ * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
- *@package WirecardEE\Prestashop\Classes\ResponseProcessing
  */
-final class CancelResponseProcessing implements ResponseProcessing
+final class Success implements ProcessablePaymentResponse
 {
-    const CANCEL_PAYMENT_STATE = 'cancel';
-
-    /** @var \Order */
+    /** @var \Order  */
     private $order;
 
-    /** @var ContextService */
-    private $context_service;
+    /** @var SuccessResponse  */
+    private $response;
 
     /** @var OrderService */
     private $order_service;
 
+    /** @var \Cart */
+    private $cart;
+
+    /** @var \Customer */
+    private $customer;
+
+    /** @var \WirecardPaymentGateway */
+    private $module;
+
+    /** @var ContextService  */
+    private $context_service;
+
     /**
-     * CancelResponseProcessing constructor.
+     * SuccessResponseProcessing constructor.
      *
      * @param \Order $order
+     * @param SuccessResponse $response
+     * @since 2.1.0
      */
-    public function __construct($order)
+    public function __construct($order, $response)
     {
         $this->order = $order;
-        $this->context_service = new ContextService(\Context::getContext());
+        $this->response = $response;
         $this->order_service = new OrderService($order);
+        $this->cart = $this->order_service->getOrderCart();
+        $this->customer = new \Customer((int) $this->cart->id_customer);
+        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+        $this->context_service = new ContextService(\Context::getContext());
     }
 
     /**
-     * @throws \Exception
      * @since 2.1.0
      */
     public function process()
     {
-        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
-            $cart_clone = $this->order_service->getNewCartDuplicate();
-            $this->context_service->setCart($cart_clone);
+        if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+            $this->order->save();
 
-            \Tools::redirect('index.php?controller=order');
+            $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
         }
 
-        throw new \Exception('The order is not cancelable');
+        if ($this->response->getPaymentMethod() === 'wiretransfer' &&
+            $this->module->getConfigValue('poipia', 'payment_type') === 'pia') {
+            $this->context_service->setPiaCookie($this->response);
+        }
+
+        \Tools::redirect(
+            'index.php?controller=order-confirmation&id_cart='
+            .$this->cart->id.'&id_module='
+            .$this->module->id.'&id_order='
+            .$this->order->id.'&key='
+            .$this->customer->secure_key
+        );
     }
 }

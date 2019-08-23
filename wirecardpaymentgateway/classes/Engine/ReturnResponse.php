@@ -33,17 +33,17 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Engine;
 
 use Wirecard\PaymentSdk\Response\Response;
 
 /**
- * Class ReturnPaymentEngineResponseProcessing
+ * Class ReturnResponse
  *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
+ * @package WirecardEE\Prestashop\Classes\Engine
  * @since 2.1.0
  */
-final class ReturnPaymentEngineResponseProcessing extends PaymentEngineResponseProcessing
+final class ReturnResponse extends PaymentSdkResponse
 {
     /**
      * @param array $response

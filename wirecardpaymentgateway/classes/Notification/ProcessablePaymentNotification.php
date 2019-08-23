@@ -33,19 +33,17 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\EngineResponseProcessing;
+namespace WirecardEE\Prestashop\Classes\Notification;
 
 /**
- * Interface EngineResponseProcessing
- *
- * @package WirecardEE\Prestashop\Classes\EngineResponseProcessing
+ * Interface ProcessablePaymentNotification
+ * @package WirecardEE\Prestashop\Classes\Notification
  * @since 2.1.0
  */
-interface EngineResponseProcessing
+interface ProcessablePaymentNotification
 {
     /**
-     * @param array|string $response
      * @since 2.1.0
      */
-    public function process($response);
+    public function process();
 }

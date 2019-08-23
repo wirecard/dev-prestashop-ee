@@ -33,20 +33,56 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\PaymentProcessing;
+namespace WirecardEE\Prestashop\Classes\Response;
 
-use Wirecard\PaymentSdk\Response\Response;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
- * Interface PaymentProcessing
- * @package WirecardEE\Prestashop\Classes\PaymentProcessing
+ * Class Cancel
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\Classes\Response
  */
-interface PaymentProcessing
+final class Cancel implements ProcessablePaymentResponse
 {
+    const CANCEL_PAYMENT_STATE = 'cancel';
+
+    /** @var \Order */
+    private $order;
+
+    /** @var ContextService */
+    private $context_service;
+
+    /** @var OrderService */
+    private $order_service;
+
     /**
-     * @param Response $response
+     * CancelResponseProcessing constructor.
+     *
+     * @param \Order $order
+     */
+    public function __construct($order)
+    {
+        $this->order = $order;
+        $this->context_service = new ContextService(\Context::getContext());
+        $this->order_service = new OrderService($order);
+    }
+
+    /**
+     * @throws \Exception
      * @since 2.1.0
      */
-    public function process($response);
+    public function process()
+    {
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
+
+            \Tools::redirect('index.php?controller=order');
+        }
+
+        throw new \Exception('The order is not cancelable');
+    }
 }
