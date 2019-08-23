@@ -64,4 +64,32 @@ class PaymentOption
     public function setForm($string) {
         return;
     }
+
+    public function getCallToActionText()
+    {
+        return "callToActionText";
+    }
+
+    public function getAction()
+    {
+        return "action";
+    }
+
+    public function getLogo()
+    {
+        return "Logo";
+    }
+
+    public function getAdditionalInformation()
+    {
+        return "additionalInformation";
+    }
+
+    public function getModuleName() {
+        return \WirecardPaymentGateway::NAME;
+    }
+
+    public function getForm() {
+        return "form";
+    }
 }

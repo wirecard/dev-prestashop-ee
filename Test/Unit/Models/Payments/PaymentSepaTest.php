@@ -58,7 +58,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
+        $this->paymentModule->version = \WirecardPaymentGateway::VERSION;
 
         $this->payment = new PaymentSepaDirectDebit($this->paymentModule);
     }
@@ -115,7 +115,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
 
     public function testSepaMandate()
     {
-        $acual = '-id-' . strtotime(date('Y-m-d H:i:s'));
-        $this->assertEquals($acual, $this->payment->generateMandateId($this->paymentModule, 'id'));
+        $expected = 'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_CREDITOR_ID-id-' . strtotime(date('Y-m-d H:i:s'));
+        $this->assertEquals($expected, $this->payment->generateMandateId($this->paymentModule, 'id'));
     }
 }

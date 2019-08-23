@@ -55,7 +55,7 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
+        $this->paymentModule->version = \WirecardPaymentGateway::VERSION;
 
         $this->payment = new PaymentSofort($this->paymentModule);
 

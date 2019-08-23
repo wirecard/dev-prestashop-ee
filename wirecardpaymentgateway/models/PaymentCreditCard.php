@@ -78,14 +78,14 @@ class PaymentCreditCard extends Payment
      */
     public function __construct()
     {
+        parent::__construct();
+
         $this->logger = new WirecardLogger();
         $this->transaction = new CreditCardTransaction();
         $this->type = self::TYPE;
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
-
-        parent::__construct();
 
         $this->cancel  = array('authorization');
         $this->capture = array('authorization');

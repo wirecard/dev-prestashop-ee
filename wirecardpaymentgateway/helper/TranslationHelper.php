@@ -45,6 +45,8 @@ trait TranslationHelper
      *
      * @return string translation
      * @since 2.0.0
+     *
+     * @SuppressWarnings(PHPMD.ShortMethodName)
      */
     protected function l($key, $specific = false)
     {

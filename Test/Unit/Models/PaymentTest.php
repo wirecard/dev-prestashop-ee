@@ -63,7 +63,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Payment Processing Gateway';
+        $expected = 'Wirecard PayPal';
 
         $this->assertEquals($expected, $actual);
     }
@@ -81,9 +81,8 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getFormFields();
 
-        $expected = null;
-
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals('PayPal', $actual['tab']);
+        $this->assertCount(12, $actual['fields']);
     }
 
     public function testType()
@@ -99,7 +98,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), array(), 'ADB123');
 
-        $this->assertNull($actual);
+        $this->assertInstanceOf(\Wirecard\PaymentSdk\Transaction\PayPalTransaction::class, $actual);
     }
 
     public function testCanCancel()
