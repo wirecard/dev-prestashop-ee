@@ -5,7 +5,7 @@ Feature: CreditCard3DSWppv2AuthorizationHappyPath
 
   Background:
     Given I activate payment action "reserve" in configuration
-    And I prepare checkout
+    And I prepare checkout "3DS"
     And I am on "Checkout" page
     And I fill fields with "Customer Data"
     When I check "I agree to the terms and conditions and the privacy policy"

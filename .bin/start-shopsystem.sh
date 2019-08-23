@@ -36,6 +36,7 @@ done
 docker exec ${PRESTASHOP_CONTAINER_NAME} /var/www/html/bin/console prestashop:module install wirecardpaymentgateway
 
 #configure enable credit card settings
+#reserve means authorization
 docker exec --env PRESTASHOP_DB_PASSWORD=${PRESTASHOP_DB_PASSWORD} \
             --env PRESTASHOP_DB_SERVER=${PRESTASHOP_DB_SERVER} \
             --env PRESTASHOP_DB_NAME=${PRESTASHOP_DB_NAME} \
