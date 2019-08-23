@@ -56,7 +56,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         $this->payment->context = new \Context();
         $this->config = new Config('baseUrl', 'httpUser', 'httpPass');
         $this->config->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
-        $this->config->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule::VERSION);
+        $this->config->setPluginInfo(EXPECTED_PLUGIN_NAME, \WirecardPaymentGateway::VERSION);
     }
 
     public function testName()
