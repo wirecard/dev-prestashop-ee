@@ -42,6 +42,7 @@ const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 const EXPECTED_SHOP_NAME = 'Prestashop';
 
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
+require_once __DIR__ . '/util/functions.php';
 
 //stub objects
 require __DIR__ . '/Stubs/Currency.php';

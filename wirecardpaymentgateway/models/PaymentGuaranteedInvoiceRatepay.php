@@ -367,13 +367,13 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         if ($cart->isVirtualCart()) {
             return false;
-        }
+        };
 
         if ($age < self::MIN_AGE) {
             return false;
         }
 
-        if (! $this->isInLimit($module, $cart->getOrderTotal())) {
+        if (!$this->isInLimit($module, $cart->getOrderTotal())) {
             return false;
         }
 
@@ -497,6 +497,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     private function getAllowedCurrencies($module)
     {
         $val = $this->configuration->getField('allowed_currencies');
+
         if (!\Tools::strlen($val)) {
             return array();
         }

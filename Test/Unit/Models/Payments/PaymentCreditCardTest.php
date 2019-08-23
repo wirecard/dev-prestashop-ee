@@ -69,7 +69,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getConfigValue', 'createRedirectUrl', 'createNotificationUrl'])
             ->getMock();
-        $this->paymentModule->version = '9.9.9';
+        $this->paymentModule->version = \WirecardPaymentGateway::VERSION;
 
         $this->payment = new PaymentCreditCard();
 

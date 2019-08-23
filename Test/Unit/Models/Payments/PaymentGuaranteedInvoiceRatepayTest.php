@@ -34,6 +34,7 @@
  */
 
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
+use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
 
 class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 {
@@ -47,19 +48,24 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->config = array(
-            'base_url',
-            'http_user',
-            'http_pass',
-            'merchant_account_id',
-            'secret'
-        );
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->paymentModule->version = \WirecardPaymentGateway::VERSION;
 
+        $shopConfig = $this->createMock(ShopConfigurationService::class);
+
+        $shopConfig->method('getField')
+            ->will(
+                $this->returnValueMap([
+                    ['amount_min', 20],
+                    ['amount_max', 350],
+                    ['allowed_currencies', '["EUR"]']
+                ])
+            );
+
         $this->payment = new PaymentGuaranteedInvoiceRatepay($this->paymentModule);
+        setProtectedProperty($this->payment, 'configuration', $shopConfig);
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
@@ -87,27 +93,6 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($actual));
     }
 
-    public function testCreatePaymentConfig()
-    {
-        for ($i = 0; $i <= 4; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
-        }
-        $actual = $this->payment->createPaymentConfig($this->paymentModule);
-
-        $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
-        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
-
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\PaymentMethodConfig(
-            'ratepayinvoice',
-            'merchant_account_id',
-            'secret'
-        );
-        $expected->add($expectedPaymentConfig);
-
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testCreateTransaction()
     {
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
@@ -124,14 +109,6 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $cart->id_customer = 2;
         $cart->method('getOrderTotal')->willReturn(40);
-
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(20);
-        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn(3500);
-        $this->paymentModule->expects($this->at(2))->method('getConfigValue')->willReturn(false);
-        $this->paymentModule->expects($this->at(3))->method('getConfigValue')->willReturn('AT,DE,CH');
-        $this->paymentModule->expects($this->at(4))->method('getConfigValue')->willReturn('AT,DE,CH');
-        $currencies = json_encode(Currency::getTestCurrency());
-        $this->paymentModule->expects($this->at(5))->method('getConfigValue')->willReturn($currencies);
 
         $actual = $this->payment->isAvailable($this->paymentModule, $cart);
 
@@ -159,9 +136,6 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $cart->id_customer = 2;
         $cart->method('getOrderTotal')->willReturn(15);
-
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(20);
-        $this->paymentModule->expects($this->at(1))->method('getConfigValue')->willReturn(3500);
 
         $actual = $this->payment->isAvailable($this->paymentModule, $cart);
 
