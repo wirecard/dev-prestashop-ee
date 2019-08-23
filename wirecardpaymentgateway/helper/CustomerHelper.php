@@ -4,6 +4,7 @@ namespace WirecardEE\Prestashop\Helper;
 
 use DateTime;
 use Order;
+use Wirecard\PaymentSdk\Constant\RiskInfoReorder;
 use WirecardEE\Prestashop\Models\CreditCardVault;
 use Wirecard\PaymentSdk\Constant\ChallengeInd;
 
@@ -200,7 +201,33 @@ class CustomerHelper
         return $dateAdd;
     }
 
-//    public function isReorderedItems(){
-//
-//    }
+    /**
+     * Check if one item in
+     * @param \Cart $cart
+     * @return string
+     *
+     * @since 2.2.0
+     */
+    public function isReorderedItems($cart)
+    {
+        // All orders from customer
+        $orders = Order::getCustomerOrders($cart->id_customer);
+        $cartProducts = $cart->getProducts();
+        $cartProductIds = array();
+        /* @var \Product $product */
+        foreach ($cartProducts as $product) {
+            $cartProductIds[] = $product['id_product'];
+        }
+        /* @var Order $order */
+        foreach ($orders as $order) {
+            $orderClass= new \Order($order['id_order']);
+            $orderProducts = $orderClass->getProducts();
+            foreach ($orderProducts as $orderProduct) {
+                if (in_array($orderProduct['id_product'], $cartProductIds)) {
+                    return RiskInfoReorder::REORDERED;
+                }
+            }
+        }
+        return RiskInfoReorder::FIRST_TIME_ORDERED;
+    }
 }

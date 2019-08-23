@@ -52,7 +52,7 @@ class Cart
         }
 
         $this->amount = 20;
-        $this->id = 102;
+        $this->id = $id;
     }
 
 
@@ -62,6 +62,18 @@ class Cart
 
     public function getProducts()
     {
+        if (123 === $this->id) {
+            return [
+                0 => [
+                    'id_product' => 1,
+                    'cart_quantity' => 1,
+                    'total_wt' => 2,
+                    'name' => 'Product 1',
+                    'total' => 100,
+                    'description_short' => 'short desc',
+                    'reference' => 'reference']
+            ];
+        }
         return $this->products;
     }
 

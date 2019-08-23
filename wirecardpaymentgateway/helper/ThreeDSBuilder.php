@@ -54,8 +54,8 @@ class ThreeDSBuilder
         $accountHolder->setCrmId($this->getMerchantCrmId($customer));
         $transaction->setAccountHolder($accountHolder);
 
-//        $risk_info = $this->getRiskInfo();
-//        $transaction->setRiskInfo( $risk_info );
+        $risk_info = $this->getRiskInfo($customer, $cart);
+        $transaction->setRiskInfo($risk_info);
         $transaction->setIsoTransactionType(IsoTransactionType::GOODS_SERVICE_PURCHASE);
 
         return $transaction;
@@ -114,11 +114,13 @@ class ThreeDSBuilder
      *
      * @since 2.2.0
      */
-    private function getRiskInfo($customer)
+    private function getRiskInfo($customer, $cart)
     {
         $riskInfo = new RiskInfo();
         $riskInfo->setDeliveryEmailAddress($customer->email);
-        //$riskInfo->setReorderItems($this->customerHelper->isReorderedItems() );
+        if (!$customer->isGuest()) {
+            $riskInfo->setReorderItems($this->customerHelper->isReorderedItems($cart));
+        }
         return $riskInfo;
     }
 }

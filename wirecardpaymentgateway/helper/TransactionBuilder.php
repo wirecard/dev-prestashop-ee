@@ -49,10 +49,10 @@ class TransactionBuilder
 
     /**
      * TransactionBuilder constructor.
-     * @param $module
-     * @param $context
-     * @param $cartId
-     * @param $paymentType
+     * @param \WirecardPaymentGateway $module
+     * @param \Context $context
+     * @param int $cartId
+     * @param string $paymentType
      * @since 2.0.0
      */
     public function __construct($module, $context, $cartId, $paymentType)

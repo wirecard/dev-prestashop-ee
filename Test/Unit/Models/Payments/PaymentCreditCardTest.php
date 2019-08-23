@@ -150,7 +150,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'attempt_three_d' => false,
             'ip_address' => '127.0.0.1',
             'field_name_1' => 'paysdk_cartId',
-            'field_value_1' => 102,
+            'field_value_1' => 123,
             'shop_system_name' => EXPECTED_SHOP_NAME,
             'shop_system_version' => _PS_VERSION_,
             'plugin_name' => EXPECTED_PLUGIN_NAME,
@@ -173,7 +173,15 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'shipping_address_first_use' => date('Y-m-d'),
             'purchases_last_six_months' => 0,
             'merchant_crm_id' => '',
-            'card_creation_date' => date('Y-m-d')
+            'card_creation_date' => date('Y-m-d'),
+            'orderItems1.name'            => 'Product 1',
+            'orderItems1.quantity'        => 1,
+            'orderItems1.amount.value'    => 2,
+            'orderItems1.amount.currency' => 'EUR',
+            'orderItems1.articleNumber'   => 'reference',
+            'orderItems1.taxRate'         => -4900,
+            'risk_info_delivery_mail'     => 'max.mustermann@email.com',
+            'risk_info_reorder_items'     => '02'
         );
 
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));

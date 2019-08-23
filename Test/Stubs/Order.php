@@ -60,8 +60,30 @@ class Order
      *
      * @return array Customer orders
      */
-    public static function getCustomerOrders($id_customer, $show_hidden_status = false, Context $context = null){
-        return array();
+    public static function getCustomerOrders($id_customer, $show_hidden_status = false, Context $context = null)
+    {
+        return [
+            0 => [
+                'id_order' => 1,
+                'date_add' => '2019-01-01T00:00:00Z'
+            ],
+            1 => [
+                'id_order' => 50,
+                'date_add' => '2019-01-01T00:00:00Z'
+            ]
+        ];
     }
 
+    public function getProducts()
+    {
+        return [0 => ['id_product'        => 1,
+                      'cart_quantity'     => 1,
+                      'total_wt'          => 2,
+                      'name'              => 'Product 1',
+                      'total'             => 100,
+                      'description_short' => 'short desc',
+                      'reference'         => 'reference'
+        ]
+        ];
+    }
 }
