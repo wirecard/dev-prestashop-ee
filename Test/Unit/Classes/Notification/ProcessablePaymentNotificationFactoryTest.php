@@ -52,9 +52,11 @@ class ProcessablePaymentNotificationFactoryTest extends \PHPUnit_Framework_TestC
      */
     public function testGetPaymentProcessing($response_class_name, $add_payment_method, $expected)
     {
+        /** @var \Wirecard\PaymentSdk\Response\Response $response */
         $response = $this->getMockBuilder($response_class_name)
                          ->disableOriginalConstructor()
                          ->getMock();
+
         if ($add_payment_method) {
             $response->method('getPaymentMethod')
                      ->willReturn('creditcard');
