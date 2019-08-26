@@ -39,7 +39,7 @@ use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 /**
  * Class WirecardAjaxController

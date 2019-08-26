@@ -233,9 +233,9 @@ $(document).ready(
             for (var row in response) {
                 var card = response[row];
                 var tr = "<tr>";
-                tr += "<td><label for="ccVaultId">" + card.masked_pan + "</label></td>";
-                tr += "<td><button class="btn btn-success" data-tokenid="" + card.token + ""><b>+</b></button>";
-                tr += " <button class="btn btn-danger" data-cardid="" + card.cc_id + ""><b>-</b></button></td>";
+                tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
+                tr += "<td><button class='btn btn-success' data-tokenid='" + card.token + "'><b>+</b></button>";
+                tr += " <button class='btn btn-danger' data-cardid=''" + card.cc_id + "'><b>-</b></button></td>";
                 tr += "</tr>";
                 table.append(tr);
             }

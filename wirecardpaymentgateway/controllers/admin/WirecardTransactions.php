@@ -42,8 +42,8 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 
 /**
  * Class WirecardTransactions

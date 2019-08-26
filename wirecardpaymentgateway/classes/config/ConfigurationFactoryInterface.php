@@ -33,48 +33,23 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Models\PaymentSofort;
+namespace WirecardEE\Prestashop\Classes\Config;
 
-class ShopConfigurationServiceTest extends \PHPUnit_Framework_TestCase
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+
+/**
+ * Interface ConfigurationFactoryInterface
+ *
+ * @package WirecardEE\Prestashop\Classes\Config
+ * @since 2.1.0
+ */
+interface ConfigurationFactoryInterface
 {
-    /** @var ShopConfigurationService */
-    private $shopConfigService;
-
-    public function setUp()
-    {
-        $this->shopConfigService = new ShopConfigurationService(PaymentCreditCard::TYPE);
-    }
-
-    public function testItReturnsTheCorrectFieldName()
-    {
-        $actual = $this->shopConfigService->getFieldName('secret');
-
-        $this->assertEquals(
-            'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_SECRET',
-            $actual
-        );
-    }
-
-    public function testItReturnsTheCorrectFieldValue()
-    {
-        $actual = $this->shopConfigService->getField('payment_action');
-
-        $this->assertEquals(
-            'reserve',
-            $actual
-        );
-    }
-
-    public function testItUsesFallbackNamesForPrestaShop()
-    {
-        $sofortConfigService = new ShopConfigurationService(PaymentSofort::TYPE);
-
-        $this->assertEquals($sofortConfigService->getType(), PaymentSofort::TYPE);
-        $this->assertEquals(
-            $sofortConfigService->getFieldName('secret'),
-            'WIRECARD_PAYMENT_GATEWAY_SOFORT_SECRET'
-        );
-    }
+    /**
+     * This method should take all necessary steps to return a fully fledged PaymentMethodConfig
+     *
+     * @return PaymentMethodConfig
+     * @since 2.1.0
+     */
+    public function createConfig();
 }

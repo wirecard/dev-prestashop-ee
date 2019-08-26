@@ -38,7 +38,7 @@ use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 

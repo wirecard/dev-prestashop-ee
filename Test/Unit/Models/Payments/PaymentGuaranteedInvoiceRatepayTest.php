@@ -34,7 +34,7 @@
  */
 
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 {

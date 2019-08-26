@@ -170,7 +170,7 @@ class AdditionalInformationBuilder
         }
 
         $transaction->setShipping($this->createAccountHolder($cart, 'shipping'));
-        $transaction->setOrderNumber("RBR20190820" . $id);
+        $transaction->setOrderNumber($id);
         $transaction->setBasket($this->createBasket($cart, $transaction, $currency));
         $transaction->setIpAddress($this->getConsumerIpAddress());
         $transaction->setConsumerId($cart->id_customer);

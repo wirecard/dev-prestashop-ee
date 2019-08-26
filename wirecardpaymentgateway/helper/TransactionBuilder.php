@@ -8,7 +8,7 @@ use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
 

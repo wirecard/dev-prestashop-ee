@@ -40,8 +40,8 @@ use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\BackendService;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Classes\Config\Factories\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {

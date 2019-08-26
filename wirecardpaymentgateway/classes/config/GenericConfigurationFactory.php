@@ -1,15 +1,14 @@
 <?php
 
-namespace WirecardEE\Prestashop\Classes\Config\Factories;
+namespace WirecardEE\Prestashop\Classes\Config;
 
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use WirecardEE\Prestashop\Classes\Config\Interfaces\ConfigurationFactoryInterface;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 /**
  * Class GenericConfigurationFactory
  *
- * @package WirecardEE\Prestashop\Classes\Config\Factories
+ * @package WirecardEE\Prestashop\Classes\Config
  * @since 2.1.0
  */
 class GenericConfigurationFactory implements ConfigurationFactoryInterface

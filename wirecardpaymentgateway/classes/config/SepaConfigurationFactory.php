@@ -33,48 +33,54 @@
  * @license GPLv3
  */
 
+namespace WirecardEE\Prestashop\Classes\Config;
+
+use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Models\PaymentSofort;
 
-class ShopConfigurationServiceTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class SepaConfigurationFactory
+ *
+ * @package WirecardEE\Prestashop\Classes\Config
+ * @since 2.1.0
+ */
+class SepaConfigurationFactory implements ConfigurationFactoryInterface
 {
-    /** @var ShopConfigurationService */
-    private $shopConfigService;
+    /**
+     * @var ShopConfigurationService
+     * @since 2.1.0
+     */
+    protected $configService;
 
-    public function setUp()
+    /**
+     * SepaConfigurationFactory constructor.
+     *
+     * @param ShopConfigurationService $configService
+     * @since 2.1.0
+     */
+    public function __construct(ShopConfigurationService $configService)
     {
-        $this->shopConfigService = new ShopConfigurationService(PaymentCreditCard::TYPE);
+        $this->configService = $configService;
     }
 
-    public function testItReturnsTheCorrectFieldName()
+    /**
+     * Builds up a SEPA-specific config
+     *
+     * @return SepaConfig
+     * @since 2.1.0
+     */
+    public function createConfig()
     {
-        $actual = $this->shopConfigService->getFieldName('secret');
-
-        $this->assertEquals(
-            'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_SECRET',
-            $actual
+        $paymentConfig = $paymentMethodConfig = new SepaConfig(
+            $this->configService->getType(),
+            $this->configService->getField('merchant_account_id'),
+            $this->configService->getField('secret')
         );
-    }
 
-    public function testItReturnsTheCorrectFieldValue()
-    {
-        $actual = $this->shopConfigService->getField('payment_action');
-
-        $this->assertEquals(
-            'reserve',
-            $actual
+        $paymentConfig->setCreditorId(
+            $this->configService->getField('creditor_id')
         );
-    }
 
-    public function testItUsesFallbackNamesForPrestaShop()
-    {
-        $sofortConfigService = new ShopConfigurationService(PaymentSofort::TYPE);
-
-        $this->assertEquals($sofortConfigService->getType(), PaymentSofort::TYPE);
-        $this->assertEquals(
-            $sofortConfigService->getFieldName('secret'),
-            'WIRECARD_PAYMENT_GATEWAY_SOFORT_SECRET'
-        );
+        return $paymentMethodConfig;
     }
 }

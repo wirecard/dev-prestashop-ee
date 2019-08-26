@@ -36,7 +36,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 /**
  * Class PaymentSepaDirectDebit

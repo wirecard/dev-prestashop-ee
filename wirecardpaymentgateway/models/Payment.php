@@ -36,7 +36,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**

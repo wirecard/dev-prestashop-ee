@@ -41,7 +41,7 @@ require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'class
     DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'services'.DIRECTORY_SEPARATOR.'ShopConfigurationService.php');
 
 use Wirecard\BaseUrlMatcher\BaseUrlMatcherService;
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 if (!defined('_PS_VERSION_')) {
     exit;

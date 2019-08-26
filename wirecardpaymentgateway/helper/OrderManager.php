@@ -35,7 +35,7 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use WirecardEE\Prestashop\Classes\Config\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 /**
  * Class OrderManager
