@@ -107,4 +107,9 @@ class Address
 
     /** @var bool True if address has been deleted (staying in database as deleted) */
     public $deleted = 0;
+
+    public function __construct($addressId)
+    {
+    }
+
 }

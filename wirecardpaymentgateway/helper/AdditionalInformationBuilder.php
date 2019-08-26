@@ -41,7 +41,6 @@ use Wirecard\PaymentSdk\Entity\Address;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Helper\CurrencyHelper;
 
 /**
  * Class AdditionalInformation
@@ -189,25 +188,18 @@ class AdditionalInformationBuilder
     public function createAccountHolder($cart, $type)
     {
         $customer = new \Customer($cart->id_customer);
-        $billing = new \Address($cart->id_address_invoice);
-        $shipping = new \Address($cart->id_address_delivery);
-
+        $addressId = ('shipping' == $type) ? $cart->id_address_delivery : $cart->id_address_invoice;
+        $address = new \Address($addressId);
         $accountHolder = new AccountHolder();
-        if ('shipping' == $type) {
-            $accountHolder->setAddress($this->createAddressData($shipping, $type));
-            $accountHolder->setFirstName($shipping->firstname);
-            $accountHolder->setLastName($shipping->lastname);
-        } else {
-            $accountHolder->setAddress($this->createAddressData($billing, $type));
-            $accountHolder->setEmail($customer->email);
-            $accountHolder->setFirstName($billing->firstname);
-            $accountHolder->setLastName($billing->lastname);
-            $accountHolder->setPhone($billing->phone);
-            if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
-                $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
-            }
+        $accountHolder->setAddress($this->createAddressData($address, $type));
+        $accountHolder->setEmail($customer->email);
+        $accountHolder->setFirstName($address->firstname);
+        $accountHolder->setLastName($address->lastname);
+        $accountHolder->setPhone($address->phone);
+        $accountHolder->setMobilePhone($address->phone_mobile);
+        if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
+            $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
         }
-
         return $accountHolder;
     }
 
@@ -223,17 +215,19 @@ class AdditionalInformationBuilder
     public function createCreditCardAccountHolder($cart, $firstName, $lastName)
     {
         $customer = new \Customer($cart->id_customer);
-        $billing = new \Address($cart->id_address_invoice);
-
+        $billingAddress = new \Address($cart->id_address_invoice);
         $accountHolder = new AccountHolder();
 
-        $accountHolder->setAddress($this->createAddressData($billing, 'billing'));
+        $accountHolder->setAddress($this->createAddressData($billingAddress, 'billing'));
         $accountHolder->setEmail($customer->email);
         if ($firstName) {
             $accountHolder->setFirstName($firstName);
         }
         $accountHolder->setLastName($lastName);
-        $accountHolder->setPhone($billing->phone);
+        $accountHolder->setPhone($billingAddress->phone);
+        if (\Tools::strlen($billingAddress->phone_mobile)) {
+            $accountHolder->setMobilePhone($billingAddress->phone_mobile);
+        }
         if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
             $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
         }
