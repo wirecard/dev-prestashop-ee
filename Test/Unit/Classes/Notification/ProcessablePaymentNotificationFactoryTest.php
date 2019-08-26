@@ -50,7 +50,7 @@ class ProcessablePaymentNotificationFactoryTest extends \PHPUnit_Framework_TestC
      * @param string $expected
      * @dataProvider provider
      */
-    public function testGetPaymentProcessing($response_class_name, $add_payment_method , $expected)
+    public function testGetPaymentProcessing($response_class_name, $add_payment_method, $expected)
     {
         $response = $this->getMockBuilder($response_class_name)
                          ->disableOriginalConstructor()
