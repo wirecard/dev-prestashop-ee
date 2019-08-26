@@ -38,11 +38,11 @@ const _PS_PRICE_COMPUTE_PRECISION_ = 2;
 const _DB_PREFIX_ = 'Prefix_';
 const _MYSQL_ENGINE_ = 'mysql';
 
-const EXPECTED_PLUGIN_VERSION = '9.9.9';
 const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 const EXPECTED_SHOP_NAME = 'Prestashop';
 
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
+require_once __DIR__ . '/util/functions.php';
 
 //stub objects
 require __DIR__ . '/Stubs/Currency.php';
@@ -73,6 +73,7 @@ require __DIR__ . '/Stubs/Order.php';
 require __DIR__ . '/Stubs/OrderState.php';
 require __DIR__ . '/Stubs/Validate.php';
 require __DIR__ . '/Stubs/Cookie.php';
+require __DIR__ . '/Stubs/Translate.php';
 require __DIR__ . '/Stubs/DbQuery.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';

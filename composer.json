@@ -35,7 +35,7 @@
       "WirecardEE\\Prestashop\\": "wirecardpaymentgateway/",
       "WirecardEE\\Prestashop\\Models\\": "wirecardpaymentgateway/models/",
       "WirecardEE\\Prestashop\\Helper\\": "wirecardpaymentgateway/helper/",
-      "WirecardEE\\Prestashop\\Controllers\\": "wirecardpaymentgateway/controllers/"
+      "WirecardEE\\Prestashop\\Classes\\Config\\": "wirecardpaymentgateway/classes/config/"
     }
   },
   "config": {

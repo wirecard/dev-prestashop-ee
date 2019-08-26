@@ -1,3 +1,4 @@
+<?php
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -26,47 +27,60 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-var form = null;
+namespace WirecardEE\Prestashop\Classes\Config;
 
-$(document).ready(
-    function () {
-        function setDataProtectionInfo()
-        {
-            let dataProtectionLabelElement = $('#invoiceDataProtectionLabel');
-            let dataProtectionInfo = dataProtectionLabelElement.text();
-            dataProtectionLabelElement.text('');
-            dataProtectionLabelElement.append(dataProtectionInfo);
-        }
+use Wirecard\PaymentSdk\Config\SepaConfig;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
-        if ($('#payment-processing-gateway-ratepay-form').length > 0) {
-            setDataProtectionInfo();
-        }
+/**
+ * Class SepaConfigurationFactory
+ *
+ * @package WirecardEE\Prestashop\Classes\Config
+ * @since 2.1.0
+ */
+class SepaConfigurationFactory implements ConfigurationFactoryInterface
+{
+    /**
+     * @var ShopConfigurationService
+     * @since 2.1.0
+     */
+    protected $configService;
 
-        $('form').submit(function (event) {
-            form = $(this);
-            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-            if (paymentMethod === 'wd-invoice') {
-                if ($('#invoiceDataProtectionCheckbox:checked').val() === '1') {
-                    // check device ident setter for transaction and cookie management
-                    $('#invoiceDeviceIdent').attr('type', 'hidden').appendTo(form);
-                } else {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    event.stopImmediatePropagation();
-
-                    let hint = document.getElementById('invoiceDataProtectionHint');
-                    hint.style.display = "block";
-                }
-            }
-        });
+    /**
+     * SepaConfigurationFactory constructor.
+     *
+     * @param ShopConfigurationService $configService
+     * @since 2.1.0
+     */
+    public function __construct(ShopConfigurationService $configService)
+    {
+        $this->configService = $configService;
     }
-);
 
+    /**
+     * Builds up a SEPA-specific config
+     *
+     * @return SepaConfig
+     * @since 2.1.0
+     */
+    public function createConfig()
+    {
+        $paymentConfig = $paymentMethodConfig = new SepaConfig(
+            $this->configService->getType(),
+            $this->configService->getField('merchant_account_id'),
+            $this->configService->getField('secret')
+        );
 
+        $paymentConfig->setCreditorId(
+            $this->configService->getField('creditor_id')
+        );
 
-
-
-
-
+        return $paymentMethodConfig;
+    }
+}

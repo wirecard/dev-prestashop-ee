@@ -34,12 +34,11 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Configuration;
 use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
-use WirecardEE\Prestashop\Helper\CurrencyHelper;
+use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
@@ -52,6 +51,18 @@ use WirecardEE\Prestashop\Helper\TransactionBuilder;
  */
 class PaymentCreditCard extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TYPE = CreditCardTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TRANSLATION_FILE = "paymentcreditcard";
+
     /** @var CreditCardTransaction */
     protected $transaction;
 
@@ -65,16 +76,15 @@ class PaymentCreditCard extends Payment
      * @since 2.0.0 Add logger
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
         $this->logger = new WirecardLogger();
         $this->transaction = new CreditCardTransaction();
-        $this->type = 'creditcard';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
 
         $this->cancel  = array('authorization');
@@ -226,60 +236,6 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Create config for credit card transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $currency = \Context::getContext()->currency;
-
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new CreditCardConfig($merchantAccountId, $secret);
-        $currencyConverter = new CurrencyHelper();
-
-        if ($paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id') !== '') {
-            $paymentConfig->setThreeDCredentials(
-                $paymentModule->getConfigValue($this->type, 'three_d_merchant_account_id'),
-                $paymentModule->getConfigValue($this->type, 'three_d_secret')
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'ssl_max_limit'))
-            && $paymentModule->getConfigValue($this->type, 'ssl_max_limit') >= 0) {
-            $paymentConfig->addSslMaxLimit(
-                $currencyConverter->getConvertedAmount(
-                    $paymentModule->getConfigValue($this->type, 'ssl_max_limit'),
-                    $currency->iso_code
-                )
-            );
-        }
-
-        if (is_numeric($paymentModule->getConfigValue($this->type, 'three_d_min_limit'))
-            && $paymentModule->getConfigValue($this->type, 'three_d_min_limit') >= 0) {
-            $paymentConfig->addThreeDMinLimit(
-                $currencyConverter->getConvertedAmount(
-                    $paymentModule->getConfigValue($this->type, 'three_d_min_limit'),
-                    $currency->iso_code
-                )
-            );
-        }
-
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create request data for credit card ui
      *
      * @param \WirecardPaymentGateway $module
@@ -291,10 +247,10 @@ class PaymentCreditCard extends Payment
      */
     public function getRequestData($module, $context, $cartId)
     {
-        $paymentAction = $module->getConfigValue($this->type, 'payment_action');
+        $paymentAction = $this->configuration->getField('payment_action');
         $operation = $this->getOperationForPaymentAction($paymentAction);
         $languageCode = $this->getSupportedLangCode($context);
-        $config = $this->createPaymentConfig($module);
+        $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
 
         $transactionService = new TransactionService($config, $this->logger);
         $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
@@ -317,9 +273,12 @@ class PaymentCreditCard extends Payment
      */
     public function createTransaction($module, $cart, $values, $orderId)
     {
-        $config = $this->createPaymentConfig($module);
+        $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
 
-        $this->transaction->setConfig($config->get(CreditCardTransaction::NAME));
+        /** @var CreditCardConfig $paymentConfig */
+        $paymentConfig = $config->get(CreditCardTransaction::NAME);
+
+        $this->transaction->setConfig($paymentConfig);
         $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
 
         return $this->transaction;
@@ -366,24 +325,18 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Set template variables
+     * Set required variables for template
      *
      * @return array
+     * @since 2.1.0 Change method name and use new configuration
      * @since 1.0.0
      */
-    protected function setTemplateData()
+    protected function getFormTemplateData()
     {
-        $test = Configuration::get(
-            sprintf(
-                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-                \Tools::strtoupper($this->type),
-                \Tools::strtoupper('ccvault_enabled')
-            )
-        );
+        $ccVaultEnabled = $this->configuration->getField('ccvault_enabled');
 
-        $wppUrl = $this->module->getConfigValue('creditcard', 'wpp_url');
         return array(
-            'ccvaultenabled' => (bool) $test,
+            'ccvaultenabled' => (bool) $ccVaultEnabled,
         );
     }
 

@@ -1,3 +1,4 @@
+<?php
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -26,26 +27,16 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-var form = null;
-
-$(document).ready(
-    function () {
-        $('form').submit(function (event) {
-            form = $(this);
-            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-            if (paymentMethod === 'wd-ideal') {
-                $('#idealBankBic').attr('type', 'hidden').appendTo(form);
-            }
-        });
-    }
-);
-
-
-
-
-
-
-
-
+function setProtectedProperty($object, $property, $value)
+{
+    $reflection = new ReflectionClass($object);
+    $reflection_property = $reflection->getProperty($property);
+    $reflection_property->setAccessible(true);
+    $reflection_property->setValue($object, $value);
+}
