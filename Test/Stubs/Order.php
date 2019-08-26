@@ -39,9 +39,12 @@ class Order
 
     public $current_state;
 
-    public function __construct($order)
+    public function __construct($order_id = null)
     {
         $this->id = 1;
+        if ($order_id) {
+            $this->id = $order_id;
+        }
     }
 
     public static function getIdByCartId($cartId) {
@@ -50,5 +53,9 @@ class Order
 
     public function getCurrentState() {
         return "starting";
+    }
+
+    public function setCurrentState($state) {
+        $this->current_state = $state;
     }
 }
