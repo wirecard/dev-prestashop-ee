@@ -141,26 +141,24 @@ class CustomerHelper
      */
     public function getSuccessfulOrdersLastSixMonths()
     {
-        $states = [\OrderState::FLAG_PAID, \OrderState::FLAG_SHIPPED, \OrderState::FLAG_DELIVERY, \OrderState::FLAG_LOGABLE];
         $dateBeforeSixMonths = $this->convertToDateTime("-6 months");
-        return $this->countOrders($dateBeforeSixMonths, $states);
+        return $this->countOrders($dateBeforeSixMonths);
     }
 
     /**
-     * Count Orders.
+     * Count only valid Orders fom specific date.
      * @param DateTime $pastDate
-     * @param array $states
      * @return int
      *
      * @since 2.2.0
      */
-    private function countOrders($pastDate, $states)
+    private function countOrders($pastDate)
     {
         $count = 0;
         $orders = Order::getCustomerOrders($this->customer->id);
         foreach ($orders as $order) {
             $orderDate = $this->convertToDateTime($order['date_add']);
-            if (($orderDate > $pastDate) && (in_array($order['id_order_state'], $states))) {
+            if (($orderDate > $pastDate) && $order['valid']) {
                 $count++;
             }
         }
