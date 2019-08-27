@@ -36,7 +36,7 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class DeviceIdentificationHelper

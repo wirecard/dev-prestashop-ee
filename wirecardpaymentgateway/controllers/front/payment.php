@@ -38,7 +38,7 @@ use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 
 /**

@@ -33,7 +33,7 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Helper\Services;
+namespace WirecardEE\Prestashop\Helper\Service;
 
 use Wirecard\PaymentSdk\Transaction\PoiPiaTransaction;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
@@ -43,7 +43,7 @@ use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 /**
  * Class ShopConfigurationService
  *
- * @package WirecardEE\Prestashop\Helper\Services
+ * @package WirecardEE\Prestashop\Helper\Service
  * @since 2.1.0
  */
 class ShopConfigurationService
