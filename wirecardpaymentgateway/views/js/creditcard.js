@@ -116,7 +116,11 @@ $(document).ready(
                 url: configProviderURL,
                 data: {
                     action: "getSeamlessConfig",
-                    "cartId": cartId
+                    /**
+                     * The eslint warnings are disabled here as we are still
+                     * retaining compatibility with an older version of JavaScript
+                     */
+                    "cartId": cartId //eslint-disable-line no-undef, object-shorthand
                 },
                 type: "GET",
                 dataType: "json",
