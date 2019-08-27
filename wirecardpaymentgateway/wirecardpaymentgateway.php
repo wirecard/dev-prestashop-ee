@@ -937,9 +937,26 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function hookActionFrontControllerSetMedia()
     {
-        $link = new Link;
         $creditCardConfig = new ShopConfigurationService(PaymentCreditCard::TYPE);
         $wppUrl = $creditCardConfig->getField('wpp_url');
+
+        $link = new Link;
+        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
+        $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
+
+        Media::addJsDef(
+            array(
+                'configProviderURL' => $ajaxLink,
+                'ccVaultURL' => $ccVaultLink,
+                'cartId' => $this->context->cart->id,
+            )
+        );
+
+        $this->context->controller->registerStylesheet(
+            'wd-css',
+            'modules/' . $this->name . '/views/css/app.css'
+        );
+
         $this->context->controller->registerJavascript(
             'wd-wpp',
             $wppUrl . '/loader/paymentPage.js',
@@ -947,22 +964,14 @@ class WirecardPaymentGateway extends PaymentModule
         );
 
         foreach ($this->getPayments() as $paymentMethod) {
-            if ($paymentMethod->getLoadJs()) {
-                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
-                $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
-                Media::addJsDef(
-                    array(
-                        'configProviderURL' => $ajaxLink,
-                        'ccVaultURL' => $ccVaultLink,
-                        'cartId' => $this->context->cart->id,
-                    )
-                );
-
-                $this->context->controller->addJS(
-                    _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
-                    . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
-                );
+            if (!$paymentMethod->getLoadJs()) {
+                continue;
             }
+
+            $this->context->controller->registerJavaScript(
+                'wd-js-' . $paymentMethod->getType(),
+                'modules/' . $this->name . '/views/js/' . $paymentMethod->getType() . '.js'
+            );
         }
 
         return true;
