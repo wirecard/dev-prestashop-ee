@@ -72,6 +72,10 @@ class PaymentSofort extends Payment
         $this->name = 'Wirecard Sofort.';
         $this->formFields = $this->createFormFields();
 
+        $this->setLogo(
+            'https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/standard/pink.svg'
+        );
+
         $this->refund  = array('debit');
     }
 

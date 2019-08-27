@@ -1012,6 +1012,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function hookActionDispatcher()
     {
+        $this->context->smarty->assign('base_url', Context::getContext()->shop->getBaseURL(true));
         $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
     }
 
