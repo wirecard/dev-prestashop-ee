@@ -57,6 +57,7 @@ abstract class PaymentSdkResponse implements ProcessableEngineResponse
 
     /**
      * @param array|string $response
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @since 2.1.0
      */
     public function process($response)
