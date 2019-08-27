@@ -1,3 +1,4 @@
+<?php
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -26,47 +27,16 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-var form = null;
-
-$(document).ready(
-    function () {
-        function setDataProtectionInfo()
-        {
-            let dataProtectionLabelElement = $('#invoiceDataProtectionLabel');
-            let dataProtectionInfo = dataProtectionLabelElement.text();
-            dataProtectionLabelElement.text('');
-            dataProtectionLabelElement.append(dataProtectionInfo);
-        }
-
-        if ($('#payment-processing-gateway-ratepay-form').length > 0) {
-            setDataProtectionInfo();
-        }
-
-        $('form').submit(function (event) {
-            form = $(this);
-            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-            if (paymentMethod === 'wd-invoice') {
-                if ($('#invoiceDataProtectionCheckbox:checked').val() === '1') {
-                    // check device ident setter for transaction and cookie management
-                    $('#invoiceDeviceIdent').attr('type', 'hidden').appendTo(form);
-                } else {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    event.stopImmediatePropagation();
-
-                    let hint = document.getElementById('invoiceDataProtectionHint');
-                    hint.style.display = "block";
-                }
-            }
-        });
-    }
-);
-
-
-
-
-
-
-
+function setProtectedProperty($object, $property, $value)
+{
+    $reflection = new ReflectionClass($object);
+    $reflection_property = $reflection->getProperty($property);
+    $reflection_property->setAccessible(true);
+    $reflection_property->setValue($object, $value);
+}

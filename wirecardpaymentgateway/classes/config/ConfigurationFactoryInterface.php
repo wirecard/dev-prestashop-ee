@@ -33,48 +33,23 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\Engine;
+namespace WirecardEE\Prestashop\Classes\Config;
 
-use Wirecard\PaymentSdk\BackendService;
-use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\Payment;
+use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 
 /**
- * Class PaymentSdkResponse
+ * Interface ConfigurationFactoryInterface
  *
- * @package WirecardEE\Prestashop\Classes\Engine
+ * @package WirecardEE\Prestashop\Classes\Config
  * @since 2.1.0
  */
-abstract class PaymentSdkResponse implements ProcessableEngineResponse
+interface ConfigurationFactoryInterface
 {
-    /** @var BackendService */
-    protected $backend_service;
-
-    /** @var Payment */
-    protected $payment;
-
     /**
-     * @param array|string $response
+     * This method should take all necessary steps to return a fully fledged PaymentMethodConfig
+     *
+     * @return PaymentMethodConfig
      * @since 2.1.0
      */
-    public function process($response)
-    {
-        $config = $this->getPaymentConfig(
-            \Tools::getValue('payment_type')
-        );
-        $this->backend_service = new BackendService($config, new WirecardLogger());
-    }
-
-    /**
-     * @param string $payment_type
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 2.1.0
-     */
-    private function getPaymentConfig($payment_type)
-    {
-        $shopConfigService = new ShopConfigurationService($payment_type);
-        return (new PaymentConfigurationFactory($shopConfigService))->createConfig();
-    }
+    public function createConfig();
 }

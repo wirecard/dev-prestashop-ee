@@ -49,18 +49,29 @@ use Wirecard\PaymentSdk\Entity\Mandate;
 class PaymentSepaDirectDebit extends Payment
 {
     /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TYPE = SepaDirectDebitTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TRANSLATION_FILE = "paymentsepadirectdebit";
+
+    /**
      * PaymentSepaDirectDebit constructor.
      *
      * @since 1.3.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'sepadirectdebit';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard SEPA Direct Debit';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
         $this->setLoadJs(true);
 
         $this->cancel  = array('pending-debit');
@@ -151,7 +162,7 @@ class PaymentSepaDirectDebit extends Payment
                     'required' => false,
                 ),
                 array(
-                    'name' => 'sepa_mandate_textextra',
+                    'name' => 'sepadirectdebit_textextra',
                     'label'   => $this->l('config_mandate_text'),
                     'type'    => 'textarea',
                     'doc'     => $this->l('config_mandate_text_desc'),
@@ -204,30 +215,6 @@ class PaymentSepaDirectDebit extends Payment
     }
 
     /**
-     * Create config for SEPA transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.3.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new SepaConfig(SepaDirectDebitTransaction::NAME, $merchantAccountId, $secret);
-        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create sepa transaction
      *
      * @param \WirecardPaymentGateway $module
@@ -240,6 +227,7 @@ class PaymentSepaDirectDebit extends Payment
     public function createTransaction($module, $cart, $values, $orderId)
     {
         $transaction = new SepaDirectDebitTransaction();
+
         if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
             $account_holder = new AccountHolder();
             $account_holder->setFirstName($values['sepaFirstName']);
@@ -248,7 +236,7 @@ class PaymentSepaDirectDebit extends Payment
             $transaction->setAccountHolder($account_holder);
             $transaction->setIban($values['sepaIban']);
 
-            if ($module->getConfigValue('sepadirectdebit', 'enable_bic')) {
+            if ($this->configuration->getField('enable_bic')) {
                 if (isset($values['sepaBic'])) {
                     $transaction->setBic($values['sepaBic']);
                 }
@@ -280,17 +268,16 @@ class PaymentSepaDirectDebit extends Payment
      * @return array
      * @since 1.3.0
      */
-    private function setTemplateData()
+    protected function getFormTemplateData()
     {
-        $test = \Configuration::get(
-            sprintf(
-                'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-                \Tools::strtoupper($this->type),
-                \Tools::strtoupper('enable_bic')
-            )
+        return array(
+            'creditorName'      => $this->configuration->getField('creditor_name'),
+            'creditorStoreCity' => $this->configuration->getField('creditor_city'),
+            'creditorId'        => $this->configuration->getField('creditor_id'),
+            'additionalText'    => $this->configuration->getField('sepadirectdebit_textextra'),
+            'bicEnabled'        => (bool) $this->configuration->getField('enable_bic'),
+            'date'              => date('d.m.Y'),
         );
-
-        return array('bicEnabled' => (bool) $test);
     }
 
     /**
@@ -302,7 +289,7 @@ class PaymentSepaDirectDebit extends Payment
      */
     public function generateMandateId($paymentModule, $orderId)
     {
-        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
+        return $this->configuration->getField('creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

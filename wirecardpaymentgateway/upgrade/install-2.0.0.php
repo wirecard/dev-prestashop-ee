@@ -37,23 +37,29 @@ require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendo
     DIRECTORY_SEPARATOR.'wirecard'.DIRECTORY_SEPARATOR.'base-url-matcher'.
     DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'BaseUrlMatcherService.php');
 
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'helper'
+              .DIRECTORY_SEPARATOR.'services'.DIRECTORY_SEPARATOR.'ShopConfigurationService.php');
+
 use Wirecard\BaseUrlMatcher\BaseUrlMatcherService;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 /**
- * @param WirecardPaymentGateway $module
  *
  * @return bool
  * @since 2.0.0
  */
-function upgrade_module_2_0_0($module)
+function upgrade_module_2_0_0()
 {
-    $baseUrl = $module->getConfigValue('creditcard', 'base_url');
+    $creditCardConfig = new ShopConfigurationService('creditcard');
+
+    $baseUrl = $creditCardConfig->getField('base_url');
+    $wppUrlDbKey = $creditCardConfig->getFieldName('wpp_url');
+
     $wppUrl = BaseUrlMatcherService::getWppUrl($baseUrl);
-    $wppUrlDbKey = $module->buildParamName('creditcard', 'wpp_url');
     Configuration::updateGlobalValue($wppUrlDbKey, $wppUrl);
 
     return true;

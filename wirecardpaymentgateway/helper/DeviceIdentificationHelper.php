@@ -33,48 +33,33 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\Engine;
+namespace WirecardEE\Prestashop\Helper;
 
-use Wirecard\PaymentSdk\BackendService;
-use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\Payment;
 
 /**
- * Class PaymentSdkResponse
+ * Class DeviceIdentificationHelper
  *
- * @package WirecardEE\Prestashop\Classes\Engine
+ * @package WirecardEE\Prestashop\Helper
  * @since 2.1.0
  */
-abstract class PaymentSdkResponse implements ProcessableEngineResponse
+class DeviceIdentificationHelper
 {
-    /** @var BackendService */
-    protected $backend_service;
-
-    /** @var Payment */
-    protected $payment;
-
     /**
-     * @param array|string $response
+     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
+     *
      * @since 2.1.0
+     * @return string
      */
-    public function process($response)
+    public static function generateFingerprint()
     {
-        $config = $this->getPaymentConfig(
-            \Tools::getValue('payment_type')
-        );
-        $this->backend_service = new BackendService($config, new WirecardLogger());
-    }
+        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
 
-    /**
-     * @param string $payment_type
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 2.1.0
-     */
-    private function getPaymentConfig($payment_type)
-    {
-        $shopConfigService = new ShopConfigurationService($payment_type);
-        return (new PaymentConfigurationFactory($shopConfigService))->createConfig();
+        $timestamp = microtime();
+        $customerId = $shopConfigService->getField('merachant_account_id');
+        $deviceIdentToken = md5($customerId . "_" . $timestamp);
+
+        return $deviceIdentToken;
     }
 }

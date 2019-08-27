@@ -35,7 +35,10 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Config\Config;
+use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Basic Payment class
@@ -44,8 +47,16 @@ use Wirecard\PaymentSdk\Config\Config;
  *
  * @since 1.0.0
  */
-class Payment
+abstract class Payment extends PaymentOption
 {
+    use TranslationHelper;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TYPE = "";
+
     /**
      * @var array
      * @since 2.0.0
@@ -57,57 +68,15 @@ class Payment
 
     /**
      * @var string
-     * @since 2.0.0
-     */
-    const SHOP_NAME = 'Prestashop';
-
-    /**
-     * @var string
-     * @since 2.0.0
-     */
-    const EXTENSION_HEADER_PLUGIN_NAME = 'prestashop-ee+Wirecard';
-
-    /**
-     * @var string
      * @since 1.0.0
      */
     protected $name;
-
-    /**
-     * @var Config
-     * @since 1.0.0
-     */
-    protected $config;
 
     /**
      * @var string
      * @since 1.0.0
      */
     protected $type;
-
-    /**
-     * @var \Wirecard\PaymentSdk\Transaction\Transaction
-     * @since 1.0.0
-     */
-    protected $transaction;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $baseUrl;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $httpUser;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $httpPass;
 
     /**
      * @var array
@@ -120,12 +89,6 @@ class Payment
      * @since 1.0.0
      */
     protected $formFields;
-
-    /**
-     * @var string
-     * @since 1.0.0
-     */
-    protected $additionalInformationTemplate;
 
     /**
      * @var array
@@ -146,57 +109,53 @@ class Payment
     protected $capture;
 
     /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $templateData;
-
-    /**
      * @var bool
      * @since 1.0.0
      */
     protected $loadJs;
 
     /**
-     * @var wirecardpaymentgateway
+     * @var ShopConfigurationService $configuration
      */
-    protected $module;
+    protected $configuration;
 
+    /**
+     * @var string
+     */
+    protected $action_link;
 
     /**
      * WirecardPayment constructor.
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
+        $context = \Context::getContext();
+        $logoPath = \Media::getMediaPath(
+            _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME . '/views/img/paymenttypes/' . static::TYPE . '.png'
+        );
+        $this->action_link = $context->link->getModuleLink(
+            \WirecardPaymentGateway::NAME,
+            'payment',
+            [ 'payment_type' => static::TYPE ],
+            true
+        );
+
         $this->name = 'Wirecard Payment Processing Gateway';
         $this->transactionTypes = array('authorization', 'capture');
+        $this->configuration = new ShopConfigurationService(static::TYPE);
+
+        $this->setAction($this->action_link);
+        $this->setLogo($logoPath);
+        $this->setModuleName('wd-' . static::TYPE);
+        $this->setCallToActionText($this->l($this->configuration->getField('title')));
+        //$this->setForm($this->getFormTemplateWithData());
 
         //Default back-end operation possibilities
         $this->cancel = array('authorization');
         $this->refund = array('capture-authorization');
         $this->capture = array('authorization');
-        $this->module = $module;
-    }
-
-    /**
-     * Create config for transaction service
-     *
-     * @param $baseUrl
-     * @param $httpUser
-     * @param $httpPass
-     * @return Config
-     * @since 1.0.0
-     */
-    public function createConfig($baseUrl, $httpUser, $httpPass)
-    {
-        $this->config = new Config($baseUrl, $httpUser, $httpPass);
-
-        $this->config->setShopInfo(self::SHOP_NAME, _PS_VERSION_);
-        $this->config->setPluginInfo(self::EXTENSION_HEADER_PLUGIN_NAME, $this->module->version);
-
-        return $this->config;
     }
 
     /**
@@ -208,17 +167,6 @@ class Payment
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Get payment config
-     *
-     * @return Config
-     * @since 1.0.0
-     */
-    public function getConfig()
-    {
-        return $this->config;
     }
 
     /**
@@ -255,49 +203,63 @@ class Payment
     }
 
     /**
-     * Create Default Transaction
+     * Get the template data required for rendering the payment method form
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
-     * @param array $values
-     * @param int $orderId
-     * @return null
+     * @return array
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    protected function getFormTemplateData()
     {
-        return null;
+        return array();
     }
 
     /**
-     * Set a template to display additional information
-     *
-     * @param $template
-     * @since 1.0.0
-     */
-    public function setAdditionalInformationTemplate($template, $data = null)
-    {
-        $this->additionalInformationTemplate = 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR . 'views' .
-            DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR . $template;
-
-        if ($data != null) {
-            $this->templateData = $data;
-        }
-    }
-
-    /**
-     * Get the template back
+     * Get the template with its appropriate data
      *
      * @return bool|string
      * @since 1.0.0
      */
-    public function getAdditionalInformationTemplate()
+    public function getFormTemplateWithData()
     {
-        if (isset($this->additionalInformationTemplate)) {
-            return $this->additionalInformationTemplate;
-        } else {
+        try {
+            $templatePath = join(
+                DIRECTORY_SEPARATOR,
+                [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', static::TYPE  . ".tpl"]
+            );
+
+            $context = \Context::getContext();
+            $context->smarty->assign(array_merge(
+                $this->getFormTemplateData(),
+                [ 'action_link' => $this->action_link ]
+            ));
+
+            return $context->smarty->fetch($templatePath);
+        } catch (\SmartyException $e) {
             return false;
         }
+    }
+
+    /**
+     * Check if js should be loaded
+     *
+     * @return bool
+     * @since 1.0.0
+     */
+    public function getLoadJs()
+    {
+        return isset($this->loadJs) ? $this->loadJs : false;
+    }
+
+
+    /**
+     * Set loadJs
+     *
+     * @param bool $load
+     * @since 1.0.0
+     */
+    public function setLoadJs($load)
+    {
+        $this->loadJs = $load;
     }
 
     /**
@@ -349,43 +311,6 @@ class Payment
     }
 
     /**
-     * Get the template data back
-     *
-     * @return bool|array
-     * @since 1.0.0
-     */
-    public function getTemplateData()
-    {
-        if (isset($this->templateData)) {
-            return $this->templateData;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Set loadJs
-     *
-     * @param bool $load
-     * @since 1.0.0
-     */
-    public function setLoadJs($load)
-    {
-        $this->loadJs = $load;
-    }
-
-    /**
-     * Check if js should be loaded
-     *
-     * @return bool
-     * @since 1.0.0
-     */
-    public function getLoadJs()
-    {
-        return isset($this->loadJs) ? $this->loadJs : false;
-    }
-
-    /**
      * Check if payment is available for specific cart content default true
      *
      * @param \WirecardPaymentGateway $module
@@ -415,26 +340,31 @@ class Payment
     }
 
     /**
-     * Translation function for payment classes
+     * Turn our custom PaymentOption into one that is compatible with PrestaShop
      *
-     * @param string $key
-     * @return string
-     * @since 1.3.4
+     * @return PaymentOption
+     * @since 2.1.0
      */
-    protected function l($key)
+    public function toPaymentOption()
     {
-        return $this->module->l($key, $this->getClassNameLower());
+        $paymentOption = (new PaymentOption());
+        $paymentOption->setAction($this->getAction());
+        $paymentOption->setLogo($this->getLogo());
+        $paymentOption->setModuleName($this->getModuleName());
+        $paymentOption->setCallToActionText($this->getCallToActionText());
+        $paymentOption->setForm($this->getFormTemplateWithData());
+
+        return $paymentOption;
     }
 
     /**
-     * Returns the lower case class name of the child class
+     * Create Default Transaction
      *
-     * @return string
-     * @since 1.3.4
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @since 1.0.0
      */
-    private function getClassNameLower()
-    {
-        $class = get_class($this);
-        return \Tools::strtolower(\Tools::substr($class, strrpos($class, '\\') + 1));
-    }
+    abstract public function createTransaction($module, $cart, $values, $orderId);
 }

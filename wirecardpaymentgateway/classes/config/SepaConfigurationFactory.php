@@ -33,48 +33,54 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\Engine;
+namespace WirecardEE\Prestashop\Classes\Config;
 
-use Wirecard\PaymentSdk\BackendService;
-use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\Payment;
 
 /**
- * Class PaymentSdkResponse
+ * Class SepaConfigurationFactory
  *
- * @package WirecardEE\Prestashop\Classes\Engine
+ * @package WirecardEE\Prestashop\Classes\Config
  * @since 2.1.0
  */
-abstract class PaymentSdkResponse implements ProcessableEngineResponse
+class SepaConfigurationFactory implements ConfigurationFactoryInterface
 {
-    /** @var BackendService */
-    protected $backend_service;
-
-    /** @var Payment */
-    protected $payment;
-
     /**
-     * @param array|string $response
+     * @var ShopConfigurationService
      * @since 2.1.0
      */
-    public function process($response)
+    protected $configService;
+
+    /**
+     * SepaConfigurationFactory constructor.
+     *
+     * @param ShopConfigurationService $configService
+     * @since 2.1.0
+     */
+    public function __construct(ShopConfigurationService $configService)
     {
-        $config = $this->getPaymentConfig(
-            \Tools::getValue('payment_type')
-        );
-        $this->backend_service = new BackendService($config, new WirecardLogger());
+        $this->configService = $configService;
     }
 
     /**
-     * @param string $payment_type
-     * @return \Wirecard\PaymentSdk\Config\Config
+     * Builds up a SEPA-specific config
+     *
+     * @return SepaConfig
      * @since 2.1.0
      */
-    private function getPaymentConfig($payment_type)
+    public function createConfig()
     {
-        $shopConfigService = new ShopConfigurationService($payment_type);
-        return (new PaymentConfigurationFactory($shopConfigService))->createConfig();
+        $paymentConfig = $paymentMethodConfig = new SepaConfig(
+            $this->configService->getType(),
+            $this->configService->getField('merchant_account_id'),
+            $this->configService->getField('secret')
+        );
+
+        $paymentConfig->setCreditorId(
+            $this->configService->getField('creditor_id')
+        );
+
+        return $paymentMethodConfig;
     }
 }

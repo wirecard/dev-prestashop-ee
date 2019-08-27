@@ -49,7 +49,7 @@ class ModuleFrontController extends Controller
         return new Language();
     }
 
-    protected function l($string, $specific = false, $class = null, $addslashes = false, $htmlentities = true)
+    protected function l($string, $specific = false)
     {
         if (isset($this->module) && is_a($this->module, 'Module')) {
             return $this->module->l($string, $specific);

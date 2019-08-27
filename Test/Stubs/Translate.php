@@ -33,48 +33,20 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Classes\Engine;
-
-use Wirecard\PaymentSdk\BackendService;
-use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\Payment;
-
-/**
- * Class PaymentSdkResponse
- *
- * @package WirecardEE\Prestashop\Classes\Engine
- * @since 2.1.0
- */
-abstract class PaymentSdkResponse implements ProcessableEngineResponse
-{
-    /** @var BackendService */
-    protected $backend_service;
-
-    /** @var Payment */
-    protected $payment;
-
-    /**
-     * @param array|string $response
-     * @since 2.1.0
-     */
-    public function process($response)
-    {
-        $config = $this->getPaymentConfig(
-            \Tools::getValue('payment_type')
-        );
-        $this->backend_service = new BackendService($config, new WirecardLogger());
+class Translate {
+    public static function postProcessTranslation($translation) {
+        return $translation;
     }
 
-    /**
-     * @param string $payment_type
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 2.1.0
-     */
-    private function getPaymentConfig($payment_type)
-    {
-        $shopConfigService = new ShopConfigurationService($payment_type);
-        return (new PaymentConfigurationFactory($shopConfigService))->createConfig();
+    public static function getModuleTranslation(
+        $module,
+        $originalString,
+        $source,
+        $sprintf = null,
+        $js = false,
+        $locale = null,
+        $fallback = true
+    ) {
+        return $originalString;
     }
 }
