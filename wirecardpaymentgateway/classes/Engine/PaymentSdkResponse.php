@@ -75,7 +75,7 @@ abstract class PaymentSdkResponse implements ProcessableEngineResponse
      */
     private function getPaymentConfig($payment_type)
     {
-        $shopConfigService = new ShopConfigurationService($payment_type);
-        return (new PaymentConfigurationFactory($shopConfigService))->createConfig();
+        $shop_config_service = new ShopConfigurationService($payment_type);
+        return (new PaymentConfigurationFactory($shop_config_service))->createConfig();
     }
 }
