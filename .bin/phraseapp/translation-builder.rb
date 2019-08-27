@@ -113,6 +113,11 @@ class TranslationBuilder
     files
   end
 
+  def self.escape_characters_in_string(string)
+    pattern = /(\'|\"|\\)/
+    string.gsub(pattern){|match|"\\"  + match}
+  end
+
   def self.get_translated_keys(file_path)
     file = File.open(file_path, 'r:utf-8')
     translation_keys = file.read.scan(/  "(.*)": /)
@@ -122,8 +127,7 @@ class TranslationBuilder
   end
 
   def self.generate_translation_entry(translations, translation_key, log)
-    translation_string = translations["#{translation_key}"]
-
+    translation_string = escape_characters_in_string(translations["#{translation_key}"])
     if !translation_string
       log.error("Error: Missing translation for key: #{translation_key}")
       return translation_key
