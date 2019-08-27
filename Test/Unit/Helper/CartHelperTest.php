@@ -58,7 +58,6 @@ class CartHelperTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->cartHelper->isReorderedItems();
         $this->assertEquals(RiskInfoReorder::REORDERED, $actual);
-
     }
 
     public function testIsReorderedItemsFalse()

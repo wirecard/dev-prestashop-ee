@@ -63,7 +63,8 @@ class CartHelper
     /**
      * @param $cart
      */
-    public function setCart($cart){
+    public function setCart($cart)
+    {
         $this->cart = $cart;
     }
 
