@@ -27,43 +27,54 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-/**
- * @property WirecardPaymentGateway module
- *
- * @since 1.0.0
- */
-class WirecardPaymentGatewaySepaDirectDebitModuleFrontController extends ModuleFrontController
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Models\PaymentSofort;
+
+class ShopConfigurationServiceTest extends \PHPUnit_Framework_TestCase
 {
-    public function initContent()
+    /** @var ShopConfigurationService */
+    private $shopConfigService;
+
+    public function setUp()
     {
-        $this->ajax = true;
-        parent::initContent();
+        $this->shopConfigService = new ShopConfigurationService(PaymentCreditCard::TYPE);
     }
 
-    /**
-     * Return the SEPA mandate template
-     * @since 1.0.0
-     */
-    public function displayAjaxSepaMandate()
+    public function testItReturnsTheCorrectFieldName()
     {
-        $data = array();
-        $data['creditorName']      = $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
-        $data['creditorStoreCity'] = $this->module->getConfigValue('sepadirectdebit', 'creditor_city');
-        $data['creditorId']        = $this->module->getConfigValue('sepadirectdebit', 'creditor_id');
-        $data['enableBic']         = (bool) $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
-        $data['additionalText']    = $this->module->getConfigValue('sepadirectdebit', 'sepa_mandate_textextra');
-        $data['date']              = date('d.m.Y');
+        $actual = $this->shopConfigService->getFieldName('secret');
 
-        $this->context->smarty->assign($data);
-        $template = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR .
-            'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-            'sepa_mandate.tpl');
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode(array('html' => $template)));
+        $this->assertEquals(
+            'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_SECRET',
+            $actual
+        );
+    }
+
+    public function testItReturnsTheCorrectFieldValue()
+    {
+        $actual = $this->shopConfigService->getField('payment_action');
+
+        $this->assertEquals(
+            'reserve',
+            $actual
+        );
+    }
+
+    public function testItUsesFallbackNamesForPrestaShop()
+    {
+        $sofortConfigService = new ShopConfigurationService(PaymentSofort::TYPE);
+
+        $this->assertEquals($sofortConfigService->getType(), PaymentSofort::TYPE);
+        $this->assertEquals(
+            $sofortConfigService->getFieldName('secret'),
+            'WIRECARD_PAYMENT_GATEWAY_SOFORT_SECRET'
+        );
     }
 }

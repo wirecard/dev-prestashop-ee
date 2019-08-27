@@ -1,3 +1,4 @@
+<?php
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -26,26 +27,34 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-var form = null;
+use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 
-$(document).ready(
-    function () {
-        $('form').submit(function (event) {
-            form = $(this);
-            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-            if (paymentMethod === 'wd-ideal') {
-                $('#idealBankBic').attr('type', 'hidden').appendTo(form);
-            }
-        });
-    }
-);
+/**
+ * Create new menu entry Wirecard Transactions in Sell part of admin menu
+ */
 
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
-
-
-
-
-
+/**
+ * @return mixed
+ */
+function upgrade_module_2_1_0()
+{
+    $symfonyContainer = SymfonyContainer::getInstance();
+    $tabRepository = $symfonyContainer->get('prestashop.core.admin.tab.repository');
+    $tab = new Tab($tabRepository->findOneIdByClassName('WirecardTransactions'));
+    $tab->icon = 'payment';
+    // Show on Sell part of menu
+    $tab->id_parent = 2;
+    $tab->parent_class_name = 'SELL';
+    return $tab->update();
+}

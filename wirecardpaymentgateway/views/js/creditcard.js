@@ -21,7 +21,7 @@
  * for customized shop systems or installed plugins of other vendors of plugins within the same
  * shop system.
  *
- * Customers are responsible for testing the plugin's functionality before starting productive
+ * Customers are responsible for testing the plugin"s functionality before starting productive
  * operation.
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
@@ -34,41 +34,41 @@ var orderNumber = null;
 var paymentMethod = null;
 var wrappingDiv = null;
 var paymentNameMap = {
-    'creditcard': 'credit-card'
+    "creditcard": "credit-card"
 };
 
 function processAjaxUrl(url, params)
 {
-    var querySign = '?';
+    var querySign = "?";
     if (url.includes("?")) {
-        querySign = '&';
+        querySign = "&";
     }
     params.forEach(function (param) {
-        url += querySign + param.index + '=' + param.data;
-        querySign = '&';
+        url += querySign + param.index + "=" + param.data;
+        querySign = "&";
     });
     return url;
 }
 
 $(document).ready(
     function () {
-        $(document).on('click', 'input[name="payment-option"]', function () {
-            paymentMethod = $(this).data('module-name').replace('wd-', '');
-            wrappingDiv = 'payment-processing-gateway-' + paymentNameMap[paymentMethod] + '-form';
+        $(document).on("click", "input[name='payment-option']", function () {
+            paymentMethod = $(this).data("module-name").replace("wd-", "");
+            wrappingDiv = "payment-processing-gateway-" + paymentNameMap[paymentMethod] + "-form";
 
-            if ($('#' + wrappingDiv).children().length > 0) {
+            if ($("#" + wrappingDiv).children().length > 0) {
                 return;
             }
 
             getRequestData();
         });
 
-        $(document).on('submit', '#payment-form', function (e) {
+        $(document).on("submit", "#payment-form", function (e) {
             form = $(this);
             placeOrder(e);
         });
 
-        $("#new-card").on('click', function () {
+        $("#new-card").on("click", function () {
             getRequestData();
             $("#new-card").hide();
             $("#new-card-text").hide();
@@ -76,7 +76,7 @@ $(document).ready(
             $("#wirecard-vault").show();
         });
 
-        $("#wirecard-ccvault-modal").on('show.bs.modal', function () {
+        $("#wirecard-ccvault-modal").on("show.bs.modal", function () {
             getStoredCards();
         });
 
@@ -97,8 +97,8 @@ $(document).ready(
         function getStoredCards()
         {
             var params = [{
-                index: 'action',
-                data: 'liststoredcards'
+                index: "action",
+                data: "liststoredcards"
             }];
             $.ajax({
                 url: processAjaxUrl(ccVaultURL, params),
@@ -115,11 +115,15 @@ $(document).ready(
             $.ajax({
                 url: configProviderURL,
                 data: {
-                    action: 'getSeamlessConfig',
-                    'cartId': cartId
+                    action: "getSeamlessConfig",
+                    /**
+                     * The eslint warnings are disabled here as we are still
+                     * retaining compatibility with an older version of JavaScript
+                     */
+                    "cartId": cartId //eslint-disable-line no-undef, object-shorthand
                 },
                 type: "GET",
-                dataType: 'json',
+                dataType: "json",
                 success: function (response) {
                     renderForm(JSON.parse(response));
                 },
@@ -135,12 +139,12 @@ $(document).ready(
             orderNumber = config.field_value_1;
 
             // Since we already generated an order, add the new order id to every payment method.
-            $('.js-payment-option-form form').append(
+            $(".js-payment-option-form form").append(
                 jQuery("<input>")
                     .attr({
-                        type: 'hidden',
+                        type: "hidden",
                         value: orderNumber,
-                        name: 'order_number'
+                        name: "order_number"
                     })
             );
 
@@ -176,7 +180,7 @@ $(document).ready(
 
                 jQuery("<input>")
                     .attr({
-                        type: 'hidden',
+                        type: "hidden",
                         value: value,
                         name: field
                     })
@@ -186,9 +190,9 @@ $(document).ready(
             if (response.masked_account_number !== undefined) {
                 jQuery("<input>")
                     .attr({
-                        type: 'hidden',
+                        type: "hidden",
                         value: true,
-                        name: 'jsresponse'
+                        name: "jsresponse"
                     })
                     .appendTo(form);
             }
@@ -204,13 +208,13 @@ $(document).ready(
 
             if (response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
                 var params = [{
-                    index: 'action',
-                    data: 'addcard'
+                    index: "action",
+                    data: "addcard"
                 }, {
-                    index: 'tokenid',
+                    index: "tokenid",
                     data: token
                 }, {
-                    index: 'maskedpan',
+                    index: "maskedpan",
                     data: response.masked_account_number
                 }];
                 $.ajax({
@@ -226,8 +230,8 @@ $(document).ready(
         function buildWcdStoredCardView(response)
         {
             var table = $("#wirecard-ccvault-modal .modal-body table");
-            table.find(".btn-danger").unbind('click');
-            table.find(".btn-success").unbind('click');
+            table.find(".btn-danger").unbind("click");
+            table.find(".btn-success").unbind("click");
             table.empty();
 
             for (var row in response) {
@@ -235,18 +239,18 @@ $(document).ready(
                 var tr = "<tr>";
                 tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
                 tr += "<td><button class='btn btn-success' data-tokenid='" + card.token + "'><b>+</b></button>";
-                tr += " <button class='btn btn-danger' data-cardid='" + card.cc_id + "'><b>-</b></button></td>";
+                tr += " <button class='btn btn-danger' data-cardid=''" + card.cc_id + "'><b>-</b></button></td>";
                 tr += "</tr>";
                 table.append(tr);
             }
 
-            table.find(".btn-danger").bind('click', function () {
+            table.find(".btn-danger").bind("click", function () {
                 var params = [{
-                    index: 'action',
-                    data: 'deletecard'
+                    index: "action",
+                    data: "deletecard"
                 }, {
-                    index: 'ccid',
-                    data: $(this).data('cardid')
+                    index: "ccid",
+                    data: $(this).data("cardid")
                 }];
 
                 $.ajax({
@@ -259,15 +263,15 @@ $(document).ready(
                 });
             });
 
-            table.find(".btn-success").bind('click', function () {
-                token = $(this).data('tokenid');
+            table.find(".btn-success").bind("click", function () {
+                token = $(this).data("tokenid");
 
-                $('.js-payment-option-form form').append(
+                $(".js-payment-option-form form").append(
                     jQuery("<input>")
                         .attr({
-                            type: 'hidden',
+                            type: "hidden",
                             value: token,
-                            name: 'token_id'
+                            name: "token_id"
                         })
                 );
 

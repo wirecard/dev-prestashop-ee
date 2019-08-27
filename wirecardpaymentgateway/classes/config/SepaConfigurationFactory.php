@@ -27,42 +27,60 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
+namespace WirecardEE\Prestashop\Classes\Config;
+
+use Wirecard\PaymentSdk\Config\SepaConfig;
+use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
 
 /**
- * @property WirecardPaymentGateway module
+ * Class SepaConfigurationFactory
  *
- * @since 1.0.0
+ * @package WirecardEE\Prestashop\Classes\Config
+ * @since 2.1.0
  */
-class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFrontController
+class SepaConfigurationFactory implements ConfigurationFactoryInterface
 {
-    public function initContent()
+    /**
+     * @var ShopConfigurationService
+     * @since 2.1.0
+     */
+    protected $configService;
+
+    /**
+     * SepaConfigurationFactory constructor.
+     *
+     * @param ShopConfigurationService $configService
+     * @since 2.1.0
+     */
+    public function __construct(ShopConfigurationService $configService)
     {
-        parent::initContent();
-        $this->ajax = true;
+        $this->configService = $configService;
     }
 
     /**
-     * Generate Credit Card config
-     * @since 1.0.0
+     * Builds up a SEPA-specific config
+     *
+     * @return SepaConfig
+     * @since 2.1.0
      */
-    public function displayAjaxGetSeamlessConfig()
+    public function createConfig()
     {
-        $cartId = Tools::getValue('cartId');
-        $payment = new PaymentCreditCard();
+        $paymentConfig = $paymentMethodConfig = new SepaConfig(
+            $this->configService->getType(),
+            $this->configService->getField('merchant_account_id'),
+            $this->configService->getField('secret')
+        );
 
-        try {
-            $requestData = $payment->getRequestData($this->module, $this->context, $cartId);
+        $paymentConfig->setCreditorId(
+            $this->configService->getField('creditor_id')
+        );
 
-            header('Content-Type: application/json; charset=utf8');
-            die(Tools::jsonEncode($requestData));
-        } catch (\Exception $exception) {
-            die(Tools::jsonEncode(null));
-        }
+        return $paymentMethodConfig;
     }
 }
