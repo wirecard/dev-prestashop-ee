@@ -37,6 +37,8 @@ class Db
 {
     protected static $instance;
 
+    private $return;
+
     public function __construct()
     {
     }
@@ -60,9 +62,9 @@ class Db
         return $query;
     }
 
-    public static function getRow()
+    public static function getRow($query)
     {
-        return true;
+        return $query->return;
     }
 
     public static function delete()
