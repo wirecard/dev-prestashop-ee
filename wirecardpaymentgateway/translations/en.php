@@ -198,7 +198,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_ca223103c3b51750b19e
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_77de2a7d1e366bd416e2a9e186e9f268'] = 'Password';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_36245276e84306a410a410785ac986b3'] = 'Send Additional Information';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test Configuration';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a5ffbe10bf416c7db8773f0ed801a022'] = 'Wirecard Payment Processing Gateway';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a5ffbe10bf416c7db8773f0ed801a022'] = 'Wirecard Payment Gateway';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_62e5cde27ad49944de104bbe346fd8e8'] = 'Wirecard PrestaShop Module';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_fec1fd6c6e6d2422514a8107cc9784c1'] = 'Are you sure you want to uninstall?';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Wirecard Transactions';
@@ -243,12 +243,12 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5809325b75110f574df44ec
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5a8a180808e7b94259768ce42bab4c4e'] = 'Save for later use.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_submitform_93f05ad4c93885541f619d9bb1320106'] = 'You are being redirected. Please wait.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ideal_cc58efdf2d5748696717291d583d9ef8'] = 'Bank';
-$_MODULE['<{wirecardpaymentgateway}prestashop>ratepayinvoice_c78f9b2a75c840335bea59dcad2e4925'] = 'I herewith confirm that I have read the <a href="https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/" target="_blank">privacy notice</a> and <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/">additional terms and conditions</a> for Wirecard payment types and that I accept their validity.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>ratepayinvoice_3471b47ae35836a5c315c049f13b211e'] = 'You must agree to the privacy notice and additional terms of Wirecard payment methods.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>payment_infos_cf277798cf7aac4f868b64b537a9e821'] = 'Enter additional information here...';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_f8b13c2ea0fa8968dc0503b4ef5a3110'] = 'Please transfer the amount using the following data:';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_e9f40e1f1d1658681dad2dac4ae0971e'] = 'Amount';
 $_MODULE['<{wirecardpaymentgateway}prestashop>pia_45eaff517a0479ed43fd7dd8de339ec3'] = 'Provider Transaction Reference ID';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ratepayinvoice_c78f9b2a75c840335bea59dcad2e4925'] = 'I herewith confirm that I have read the <a href="https://www.wirecardbank.de/privacy-documents/datenschutzhinweis-fur-die-wirecard-zahlarten/" target="_blank">privacy notice</a> and <a target="_blank" href="https://www.wirecardbank.de/privacy-documents/zusatzliche-geschaftsbedingungen-fur-wirecard-zahlarten/">additional terms and conditions</a> for Wirecard payment types and that I accept their validity.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ratepayinvoice_3471b47ae35836a5c315c049f13b211e'] = 'You must agree to the privacy notice and additional terms of Wirecard payment methods.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_65c55738e0d21515c1e026a8dd7eae21'] = 'First Name';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_b7250955039269f0611a6dab9c340ae9'] = 'Last Name';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_945122a0f892e1b60519029eff19f89e'] = 'IBAN';
@@ -268,7 +268,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_4f75ff5e69e0c6f3dd
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_963781e40052d2e34f572c9f7b66db3f'] = 'I have read and accepted the SEPA Direct Debit Mandate information.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_10aec35353f9c4096a71c38654c3d402'] = 'Cancel';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_016ee38c4b145a0841684d8b22d3db84'] = 'Confirm';
-$_MODULE['<{wirecardpaymentgateway}prestashop>infos_841061061b3e6d814c1b275405fd2d6f'] = 'Pay with Wirecard Payment Processing Gateway.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>infos_841061061b3e6d814c1b275405fd2d6f'] = 'Pay with Wirecard Payment Gateway.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_6a19862e5ec18d1115989f244ef711c3'] = 'Transactions';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_f7e6cfa31fe7825f61f3b1aea2c03e95'] = 'Support';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_0813f19bf4c28c620953669ae9caf5ac'] = 'Terms of Use';
