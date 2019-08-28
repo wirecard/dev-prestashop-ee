@@ -139,7 +139,7 @@ $(document).ready(
             orderNumber = config.field_value_1;
 
             //Show card spinner if is hidden
-            $('#card-spinner').show();
+            $("#card-spinner").show();
 
             // Since we already generated an order, add the new order id to every payment method.
             $(".js-payment-option-form form").append(
@@ -161,7 +161,7 @@ $(document).ready(
 
         function resizeIframe()
         {
-            $('#card-spinner').hide();
+            $("#card-spinner").hide();
             $("#stored-card").removeAttr("disabled");
             $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
         }
