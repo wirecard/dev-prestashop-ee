@@ -36,7 +36,6 @@
 			wait.innerHTML += ".";
 	}, 200);
 </script>
-{$base_dir}
 <link rel="stylesheet" type="text/css" href="{$base_url}/modules/wirecardpaymentgateway/views/css/app.css" />
 <div style="display: flex; justify-content: center; font-size: 20px;">{lFallback s='redirect_text' mod='wirecardpaymentgateway'}<span id="wait" style="font-size: 20px; width: 50px;">.</span></div>
 <p id="card-spinner" class="wd-loader"></p>
