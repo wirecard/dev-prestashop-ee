@@ -76,7 +76,7 @@ class WirecardAjaxController extends ModuleAdminController
      */
     protected function testCredentials()
     {
-        $method = $this->getPaymentMethodCode();
+        $method = Tools::getValue('method');
         $shop_config = new ShopConfigurationService($method);
 
         $base_url = Tools::getValue($shop_config->getFieldName('base_url'));
@@ -153,21 +153,6 @@ class WirecardAjaxController extends ModuleAdminController
         }
 
         return true;
-    }
-
-    /**
-     * Get payment method code.
-     * Needed for Sofort. payment
-     * @return string
-     * @since 2.1.0
-     */
-    protected function getPaymentMethodCode()
-    {
-        $method = Tools::getValue('method');
-        if ($method === 'sofortbanking') {
-            $method = 'sofort';
-        }
-        return $method;
     }
 
     /**
