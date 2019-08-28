@@ -53,7 +53,10 @@ class WirecardAjaxController extends ModuleAdminController
     use TranslationHelper;
 
     /** @var string */
-    const TRANSLATION_FILE = "wirecardajax";
+    const TRANSLATION_FILE = 'wirecardajax';
+
+    /** @var string  */
+    const CONFIG_ACTION = 'TestConfig';
 
     /**
      * Handle ajax actions
@@ -62,7 +65,7 @@ class WirecardAjaxController extends ModuleAdminController
      */
     public function postProcess()
     {
-        if ('TestConfig' === Tools::getValue('action')) {
+        if (self::CONFIG_ACTION === Tools::getValue('action')) {
             $this->testCredentials();
         }
     }
@@ -74,29 +77,87 @@ class WirecardAjaxController extends ModuleAdminController
     protected function testCredentials()
     {
         $method = $this->getPaymentMethodCode();
-        $baseUrl = Tools::getValue($this->module->buildParamName($method, 'base_url'));
-        $wppUrl = Tools::getValue($this->module->buildParamName($method, 'wpp_url'));
-        $httpUser = Tools::getValue($this->module->buildParamName($method, 'http_user'));
-        $httpPass = Tools::getValue($this->module->buildParamName($method, 'http_pass'));
+        $shop_config = new ShopConfigurationService($method);
 
-        $config = new Config($baseUrl, $httpUser, $httpPass);
-        $transactionService = new TransactionService($config, new Logger());
+        $base_url = Tools::getValue($shop_config->getFieldName('base_url'));
+        $wpp_url = Tools::getValue($shop_config->getFieldName('wpp_url'));
+        $http_user = Tools::getValue($shop_config->getFieldName('http_user'));
+        $http_pass = Tools::getValue($shop_config->getFieldName('http_pass'));
+
+        $status = 'error';
+        $message = $this->l('error_credentials');
+
         try {
-            $this->validateBaseUrl($baseUrl);
-            $this->validateBaseUrl($wppUrl);
-            $this->validateUrlConfiguration($method, $baseUrl, $wppUrl);
-            // Validate Credentials should be the last check.
-            $this->validateCredentials($transactionService);
-            $message = $this->l('success_credentials');
-            $this->sendResponse('ok', $message);
-        } catch (InvalidArgumentException $exception) {
-            $this->sendResponse('error', $exception->getMessage());
+            if ($this->validatePaymentMethod($base_url, $http_user, $http_pass, $wpp_url, $method)) {
+                $status = 'ok';
+                $message = $this->l('success_credentials');
+            }
+        } catch (\Exception $exception) {
+            $message = $exception->getMessage();
         }
+
+        $this->sendResponse($status, $message);
+    }
+
+    /**
+     * @param string $base_url
+     * @param string $http_user
+     * @param string $http_pass
+     * @param string $wpp_url
+     * @param string $method
+     *
+     * @return bool
+     * @throws \Http\Client\Exception
+     * @since 2.1.0
+     */
+    private function validatePaymentMethod($base_url, $http_user, $http_pass, $wpp_url, $method)
+    {
+        $status = $this->validateBaseUrl($base_url) && $this->validateCredentials($base_url, $http_user, $http_pass);
+        if ($method == 'creditcard' && $status) {
+            $status = $this->validateBaseUrl($wpp_url);
+            if (!UrlConfigurationChecker::isUrlConfigurationValid($base_url, $wpp_url)) {
+                throw new \Exception($this->l('warning_credit_card_url_mismatch'));
+            }
+        }
+
+        return $status;
+    }
+
+    /**
+     * @param string $base_url
+     * @param string $http_user
+     * @param string $http_pass
+     *
+     * @return boolean
+     * @throws \Http\Client\Exception
+     * @since 2.1.0
+     */
+    private function validateCredentials($base_url, $http_user, $http_pass)
+    {
+        $config = new Config($base_url, $http_user, $http_pass);
+        $transactionService = new TransactionService($config, new Logger());
+        return $transactionService->checkCredentials();
+    }
+
+    /**
+     * Check if the base url has a path if so return false
+     * @param string $base_url
+     * @return boolean
+     * @since 2.1.0
+     */
+    private function validateBaseUrl($base_url)
+    {
+        $parsed_url = parse_url($base_url);
+        if ('https' !== $parsed_url['scheme'] || isset($parsed_url['path'])) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Get payment method code.
-     * Needed for sofort payment
+     * Needed for Sofort. payment
      * @return string
      * @since 2.1.0
      */
@@ -107,65 +168,6 @@ class WirecardAjaxController extends ModuleAdminController
             $method = 'sofort';
         }
         return $method;
-    }
-                $baseUrl = Tools::getValue($shopConfigService->getFieldName('base_url'));
-                $wppUrl = Tools::getValue($shopConfigService->getFieldName('wpp_url'));
-                $httpUser = Tools::getValue($shopConfigService->getFieldName('http_user'));
-                $httpPass = Tools::getValue($shopConfigService->getFieldName('http_pass'));
-
-                $config = new Config($baseUrl, $httpUser, $httpPass);
-                $transactionService = new TransactionService($config, new Logger());
-
-    /**
-     *
-     * Validate base Url.
-     * It shouldn't have any path on the end of Url
-     * @param string $baseUrl
-     * @throws InvalidArgumentException
-     * @since 2.1.0
-     */
-    protected function validateBaseUrl($baseUrl)
-    {
-        $parsedUrl = parse_url($baseUrl);
-        if ('https' !== $parsedUrl['scheme'] || isset($parsedUrl['path'])) {
-            $message = $this->l('error_credentials');
-            throw new InvalidArgumentException($message);
-        }
-    }
-
-    /**
-     * Check if transaction service can connect to ee and the credentials are valid
-     * @param TransactionService $transactionService
-     * @throws InvalidArgumentException
-     * @since 2.1.0
-     */
-    protected function validateCredentials($transactionService)
-    {
-        try {
-            $success = $transactionService->checkCredentials();
-        } catch (\Http\Client\Exception $exception) {
-            $success = false;
-        }
-        if (!$success) {
-            $message = $this->l('error_credentials');
-            throw new InvalidArgumentException($message);
-        }
-    }
-
-    /**
-     * Check if base url and wpp url are on the same level (test or production)
-     * @param string $method
-     * @param string $baseUrl
-     * @param string $wppUrl
-     * @throws InvalidArgumentException
-     * @since 2.1.0
-     */
-    protected function validateUrlConfiguration($method, $baseUrl, $wppUrl)
-    {
-        if (('creditcard' === $method) && !UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl)) {
-            $message = $this->l('warning_credit_card_url_mismatch');
-            throw new InvalidArgumentException($message);
-        }
     }
 
     /**
