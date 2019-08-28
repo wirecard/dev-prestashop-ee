@@ -43,7 +43,6 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -67,6 +66,9 @@ final class Success implements ProcessablePaymentNotification
 
     /** @var BackendService */
     private $backend_service;
+
+    /** @var OrderManager */
+    private $order_manager;
 
     /**
      * SuccessPaymentProcessing constructor.
@@ -94,7 +96,7 @@ final class Success implements ProcessablePaymentNotification
      */
     public function process()
     {
-        if (!$this->isIgnorable($this->notification)) {
+        if (!OrderManager::isIgnorable($this->notification)) {
             $order_state = $this->getPrestaShopOrderState();
             $this->order->setCurrentState($order_state);
             $this->order->save();
@@ -115,31 +117,6 @@ final class Success implements ProcessablePaymentNotification
                 $this->order->reference
             );
         }
-    }
-
-    /**
-     * Ignore all 'check-payer-response' transaction types and masterpass 'debit' and 'authorization' notifications
-     *
-     * @param SuccessResponse $notification
-     * @return boolean
-     * @since 2.1.0
-     */
-    private function isIgnorable($notification)
-    {
-        return $notification->getTransactionType() === 'check-payer-response' ||
-               $this->isMasterpassIgnorable($notification);
-    }
-
-    /**
-     * @param SuccessResponse $notification
-     * @return boolean
-     * @since 2.1.0
-     */
-    private function isMasterpassIgnorable($notification)
-    {
-        return $notification->getPaymentMethod() === 'masterpass' &&
-               ($notification->getTransactionType() === 'debit' ||
-               $notification->getTransactionType() === 'authorization');
     }
 
     /**

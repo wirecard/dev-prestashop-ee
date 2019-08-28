@@ -35,6 +35,7 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
@@ -151,5 +152,30 @@ class OrderManager
                     'en' => 'Wirecard payment awaiting'
                 );
         }
+    }
+
+    /**
+     * Ignore all 'check-payer-response' transaction types and masterpass 'debit' and 'authorization' notifications
+     *
+     * @param SuccessResponse $notification
+     * @return boolean
+     * @since 2.1.0
+     */
+    public static function isIgnorable($notification)
+    {
+        return $notification->getTransactionType() === 'check-payer-response' ||
+               self::isMasterpassIgnorable($notification);
+    }
+
+    /**
+     * @param SuccessResponse $notification
+     * @return boolean
+     * @since 2.1.0
+     */
+    public static function isMasterpassIgnorable($notification)
+    {
+        return $notification->getPaymentMethod() === 'masterpass' &&
+               ($notification->getTransactionType() === 'debit' ||
+                $notification->getTransactionType() === 'authorization');
     }
 }
