@@ -27,39 +27,14 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
  */
-
-namespace WirecardEE\Prestashop\Helper;
-
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-
-/**
- * Class DeviceIdentificationHelper
- *
- * @package WirecardEE\Prestashop\Helper
- * @since 2.1.0
- */
-class DeviceIdentificationHelper
-{
-    /**
-     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
-     *
-     * @since 2.1.0
-     * @return string
-     */
-    public static function generateFingerprint()
-    {
-        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
-
-        $timestamp = microtime();
-        $customerId = $shopConfigService->getField('merachant_account_id');
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
-
-        return $deviceIdentToken;
-    }
-}
+                        
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+                        
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+                        
+header("Location: ../");
+exit;

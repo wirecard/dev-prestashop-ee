@@ -39,7 +39,7 @@ use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class PaymentConfigurationFactory

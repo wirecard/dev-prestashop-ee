@@ -46,7 +46,7 @@ use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 
 define('IS_CORE', false);
@@ -105,7 +105,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function __construct()
     {
         require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
-            DIRECTORY_SEPARATOR.'autoload.php');
+                     DIRECTORY_SEPARATOR.'autoload.php');
 
         $this->name = self::NAME;
         $this->version = self::VERSION;
@@ -763,7 +763,7 @@ class WirecardPaymentGateway extends PaymentModule
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'btnSubmit';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
         $helper->tpl_vars = array(
@@ -861,29 +861,29 @@ class WirecardPaymentGateway extends PaymentModule
     private function getColumnDefsTable($name)
     {
         $defs = array( 'tx' =>
-            array(
-                "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
-                "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
-                "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
-                "order_id" => array( "INT(10)", "NULL" ),
-                "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
-                "ordernumber" => array( "VARCHAR(32)", "NULL" ),
-                "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
-                "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
-                "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
-                "amount" => array( "FLOAT", "NOT NULL" ),
-                "currency" => array( "VARCHAR(3)", "NOT NULL" ),
-                "response" => array( "TEXT", "NULL" ),
-                "created" => array( "DATETIME", "NOT NULL" ),
-                "modified" => array( "DATETIME", "NULL" ),
-            ),
-            'cc' => array(
-                "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
-                "user_id" => array( "INT(10)", "NOT NULL" ),
-                "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
-                "address_id" => array( "INT(10)", "NULL" ),
-                "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
-            ) );
+                           array(
+                               "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                               "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
+                               "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
+                               "order_id" => array( "INT(10)", "NULL" ),
+                               "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
+                               "ordernumber" => array( "VARCHAR(32)", "NULL" ),
+                               "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
+                               "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
+                               "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
+                               "amount" => array( "FLOAT", "NOT NULL" ),
+                               "currency" => array( "VARCHAR(3)", "NOT NULL" ),
+                               "response" => array( "TEXT", "NULL" ),
+                               "created" => array( "DATETIME", "NOT NULL" ),
+                               "modified" => array( "DATETIME", "NULL" ),
+                           ),
+                       'cc' => array(
+                           "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                           "user_id" => array( "INT(10)", "NOT NULL" ),
+                           "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
+                           "address_id" => array( "INT(10)", "NULL" ),
+                           "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
+                       ) );
 
         return $defs[$name];
     }
@@ -1065,8 +1065,8 @@ class WirecardPaymentGateway extends PaymentModule
         $key = $params['s'];
         $basename = basename($smarty->source->name, '.tpl');
 
-        $translation = \Translate::postProcessTranslation(
-            \Translate::getModuleTranslation(
+        $translation = Translate::postProcessTranslation(
+            Translate::getModuleTranslation(
                 $params['mod'],
                 $key,
                 $basename,

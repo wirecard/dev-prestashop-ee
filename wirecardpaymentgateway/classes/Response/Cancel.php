@@ -33,33 +33,56 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Classes\Response;
 
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
- * Class DeviceIdentificationHelper
- *
- * @package WirecardEE\Prestashop\Helper
+ * Class Cancel
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\Classes\Response
  */
-class DeviceIdentificationHelper
+final class Cancel implements ProcessablePaymentResponse
 {
+    const CANCEL_PAYMENT_STATE = 'cancel';
+
+    /** @var \Order */
+    private $order;
+
+    /** @var ContextService */
+    private $context_service;
+
+    /** @var OrderService */
+    private $order_service;
+
     /**
-     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
+     * CancelResponseProcessing constructor.
      *
-     * @since 2.1.0
-     * @return string
+     * @param \Order $order
      */
-    public static function generateFingerprint()
+    public function __construct($order)
     {
-        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
+        $this->order = $order;
+        $this->context_service = new ContextService(\Context::getContext());
+        $this->order_service = new OrderService($order);
+    }
 
-        $timestamp = microtime();
-        $customerId = $shopConfigService->getField('merachant_account_id');
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
+    /**
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get('PS_OS_CANCELED'));
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
 
-        return $deviceIdentToken;
+            \Tools::redirect('index.php?controller=order');
+        }
+
+        throw new \Exception('The order is not cancelable');
     }
 }

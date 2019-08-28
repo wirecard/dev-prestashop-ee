@@ -37,7 +37,7 @@ namespace WirecardEE\Prestashop\Classes\Config;
 
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class CreditcardConfigurationFactory

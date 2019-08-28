@@ -33,33 +33,59 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Classes\Response;
 
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use Wirecard\PaymentSdk\Response\FormInteractionResponse;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 /**
- * Class DeviceIdentificationHelper
- *
- * @package WirecardEE\Prestashop\Helper
+ * Class FormPost
+ * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-class DeviceIdentificationHelper
+final class FormPost implements ProcessablePaymentResponse
 {
+    const FORM_TEMPLATE = _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
+    'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
+    'creditcard_submitform.tpl';
+
+    /** @var FormInteractionResponse  */
+    private $response;
+
     /**
-     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
+     * FormInteractionResponseProcessing constructor.
      *
-     * @since 2.1.0
-     * @return string
+     * @param FormInteractionResponse $response
      */
-    public static function generateFingerprint()
+    public function __construct($response)
     {
-        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
+        $this->response = $response;
+    }
 
-        $timestamp = microtime();
-        $customerId = $shopConfigService->getField('merachant_account_id');
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
+    /**
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        $context_service = new ContextService(\Context::getContext());
 
-        return $deviceIdentToken;
+        $context_service->showTemplateWithData(
+            self::FORM_TEMPLATE,
+            $this->getDataFromResponse($this->response)
+        );
+    }
+
+    /**
+     * @param FormInteractionResponse $response
+     * @return array
+     * @since 2.1.0
+     */
+    private function getDataFromResponse($response)
+    {
+        return [
+            'url' => $response->getUrl(),
+            'method' => $response->getMethod(),
+            'form_fields' => $response->getFormFields()
+        ];
     }
 }

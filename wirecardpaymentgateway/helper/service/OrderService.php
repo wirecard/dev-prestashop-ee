@@ -33,33 +33,75 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Helper;
-
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+namespace WirecardEE\Prestashop\Helper\Service;
 
 /**
- * Class DeviceIdentificationHelper
- *
- * @package WirecardEE\Prestashop\Helper
+ * Class OrderService
+ * @package WirecardEE\Prestashop\Helper\Service
  * @since 2.1.0
  */
-class DeviceIdentificationHelper
+class OrderService
 {
+    /** @var \Order */
+    private $order;
+
     /**
-     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
+     * OrderService constructor.
      *
+     * @param \Order $order
      * @since 2.1.0
-     * @return string
      */
-    public static function generateFingerprint()
+    public function __construct($order)
     {
-        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
+        $this->order = $order;
+    }
 
-        $timestamp = microtime();
-        $customerId = $shopConfigService->getField('merachant_account_id');
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
+    /**
+     * @param string $transaction_id
+     * @param float $amount
+     * @since 2.1.0
+     */
+    public function updateOrderPayment($transaction_id, $amount)
+    {
+        $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
 
-        return $deviceIdentToken;
+        $last_index = count($order_payments) - 1;
+
+        if (!empty($order_payments)) {
+            $order_payments[$last_index]->transaction_id = $transaction_id;
+            $order_payments[$last_index]->amount = $amount;
+            $order_payments[$last_index]->save();
+        }
+    }
+
+    /**
+     * @param string $order_state
+     *
+     * @return boolean
+     * @since 2.1.0
+     */
+    public function isOrderState($order_state)
+    {
+        $order_state = \Configuration::get($order_state);
+        return $this->order->current_state === $order_state;
+    }
+
+    /**
+     * @return \Cart
+     * @since 2.1.0
+     */
+    public function getOrderCart()
+    {
+        return \Cart::getCartByOrderId($this->order->id);
+    }
+
+    /**
+     * @return \Cart
+     * @since 2.1.0
+     */
+    public function getNewCartDuplicate()
+    {
+        $original_cart = $this->getOrderCart();
+        return $original_cart->duplicate()['cart'];
     }
 }

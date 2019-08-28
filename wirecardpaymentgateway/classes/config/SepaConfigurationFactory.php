@@ -36,7 +36,7 @@
 namespace WirecardEE\Prestashop\Classes\Config;
 
 use Wirecard\PaymentSdk\Config\SepaConfig;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class SepaConfigurationFactory

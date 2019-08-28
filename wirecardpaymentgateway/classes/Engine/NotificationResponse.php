@@ -33,33 +33,28 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Classes\Engine;
 
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 
 /**
- * Class DeviceIdentificationHelper
+ * Class NotificationResponse
  *
- * @package WirecardEE\Prestashop\Helper
  * @since 2.1.0
+ *@package WirecardEE\Prestashop\Classes\Engine
  */
-class DeviceIdentificationHelper
+final class NotificationResponse extends PaymentSdkResponse
 {
     /**
-     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
-     *
+     * @param string $response
+     * @return SuccessResponse|FailureResponse
      * @since 2.1.0
-     * @return string
      */
-    public static function generateFingerprint()
+    public function process($response)
     {
-        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
+        parent::process($response);
 
-        $timestamp = microtime();
-        $customerId = $shopConfigService->getField('merachant_account_id');
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
-
-        return $deviceIdentToken;
+        return $this->backend_service->handleNotification($response);
     }
 }

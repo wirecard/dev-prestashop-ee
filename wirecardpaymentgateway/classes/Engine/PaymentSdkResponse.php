@@ -33,33 +33,49 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Classes\Engine;
 
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
+use Wirecard\PaymentSdk\BackendService;
+use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Models\Payment;
 
 /**
- * Class DeviceIdentificationHelper
+ * Class PaymentSdkResponse
  *
- * @package WirecardEE\Prestashop\Helper
+ * @package WirecardEE\Prestashop\Classes\Engine
  * @since 2.1.0
  */
-class DeviceIdentificationHelper
+abstract class PaymentSdkResponse implements ProcessableEngineResponse
 {
+    /** @var BackendService */
+    protected $backend_service;
+
+    /** @var Payment */
+    protected $payment;
+
     /**
-     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
-     *
+     * @param array|string $response
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @since 2.1.0
-     * @return string
      */
-    public static function generateFingerprint()
+    public function process($response)
     {
-        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
+        $config = $this->getPaymentConfig(
+            \Tools::getValue('payment_type')
+        );
+        $this->backend_service = new BackendService($config, new WirecardLogger());
+    }
 
-        $timestamp = microtime();
-        $customerId = $shopConfigService->getField('merachant_account_id');
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
-
-        return $deviceIdentToken;
+    /**
+     * @param string $payment_type
+     * @return \Wirecard\PaymentSdk\Config\Config
+     * @since 2.1.0
+     */
+    private function getPaymentConfig($payment_type)
+    {
+        $shop_config_service = new ShopConfigurationService($payment_type);
+        return (new PaymentConfigurationFactory($shop_config_service))->createConfig();
     }
 }

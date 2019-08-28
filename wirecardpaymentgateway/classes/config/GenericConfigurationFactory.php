@@ -3,7 +3,7 @@
 namespace WirecardEE\Prestashop\Classes\Config;
 
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class GenericConfigurationFactory

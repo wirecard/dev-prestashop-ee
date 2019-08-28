@@ -36,7 +36,8 @@
 namespace WirecardEE\Prestashop\Models;
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
@@ -137,7 +138,7 @@ abstract class Payment extends PaymentOption
         $this->action_link = $context->link->getModuleLink(
             \WirecardPaymentGateway::NAME,
             'payment',
-            [ 'paymentType' => static::TYPE ],
+            [ 'payment_type' => static::TYPE ],
             true
         );
 
@@ -149,7 +150,7 @@ abstract class Payment extends PaymentOption
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->l($this->configuration->getField('title')));
-        $this->setForm($this->getFormTemplateWithData());
+        //$this->setForm($this->getFormTemplateWithData());
 
         //Default back-end operation possibilities
         $this->cancel = array('authorization');
@@ -351,7 +352,7 @@ abstract class Payment extends PaymentOption
         $paymentOption->setLogo($this->getLogo());
         $paymentOption->setModuleName($this->getModuleName());
         $paymentOption->setCallToActionText($this->getCallToActionText());
-        $paymentOption->setForm($this->getForm());
+        $paymentOption->setForm($this->getFormTemplateWithData());
 
         return $paymentOption;
     }

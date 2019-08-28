@@ -33,33 +33,47 @@
  * @license GPLv3
  */
 
-namespace WirecardEE\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Classes\Notification;
 
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 
 /**
- * Class DeviceIdentificationHelper
- *
- * @package WirecardEE\Prestashop\Helper
+ * Class ProcessablePaymentNotificationFactory
  * @since 2.1.0
+ * @package WirecardEE\Prestashop\Classes\Notification
  */
-class DeviceIdentificationHelper
+class ProcessablePaymentNotificationFactory
 {
+    /** @var \Order  */
+    private $order;
+
+    /** @var FailureResponse|SuccessResponse  */
+    private $notification;
+
     /**
-     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
+     * PaymentProcessingFactory constructor.
      *
+     * @param \Order $order
+     * @param SuccessResponse|FailureResponse $notification
      * @since 2.1.0
-     * @return string
      */
-    public static function generateFingerprint()
+    public function __construct($order, $notification)
     {
-        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
+        $this->order = $order;
+        $this->notification = $notification;
+    }
 
-        $timestamp = microtime();
-        $customerId = $shopConfigService->getField('merachant_account_id');
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
+    /**
+     * @return Failure|Success
+     * @since 2.1.0
+     */
+    public function getPaymentProcessing()
+    {
+        if ($this->notification instanceof SuccessResponse) {
+            return new Success($this->order, $this->notification);
+        }
 
-        return $deviceIdentToken;
+        return new Failure($this->order, $this->notification);
     }
 }

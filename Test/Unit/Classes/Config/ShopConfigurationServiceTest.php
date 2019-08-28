@@ -33,7 +33,7 @@
  * @license GPLv3
  */
 
-use WirecardEE\Prestashop\Helper\Services\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentSofort;
 
