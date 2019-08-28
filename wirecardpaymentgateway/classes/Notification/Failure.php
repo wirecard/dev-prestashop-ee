@@ -27,43 +27,48 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
+namespace WirecardEE\Prestashop\Classes\Notification;
+
+use Wirecard\PaymentSdk\Response\FailureResponse;
+
 /**
- * @property WirecardPaymentGateway module
- *
- * @since 1.0.0
+ * Class Failure
+ * @since 2.1.0
+ * @package WirecardEE\Prestashop\Classes\Notification
  */
-class WirecardPaymentGatewaySepaDirectDebitModuleFrontController extends ModuleFrontController
+final class Failure implements ProcessablePaymentNotification
 {
-    public function initContent()
+    /** @var \Order  */
+    private $order;
+
+    /** @var FailureResponse  */
+    private $notification;
+
+    /**
+     * FailurePaymentProcessing constructor.
+     *
+     * @param \Order $order
+     * @param FailureResponse $notification
+     * @since 2.1.0
+     */
+    public function __construct($order, $notification)
     {
-        $this->ajax = true;
-        parent::initContent();
+        $this->order = $order;
+        $this->notification = $notification;
     }
 
     /**
-     * Return the SEPA mandate template
-     * @since 1.0.0
+     * @since 2.1.0
      */
-    public function displayAjaxSepaMandate()
+    public function process()
     {
-        $data = array();
-        $data['creditorName']      = $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
-        $data['creditorStoreCity'] = $this->module->getConfigValue('sepadirectdebit', 'creditor_city');
-        $data['creditorId']        = $this->module->getConfigValue('sepadirectdebit', 'creditor_id');
-        $data['enableBic']         = (bool) $this->module->getConfigValue('sepadirectdebit', 'creditor_name');
-        $data['additionalText']    = $this->module->getConfigValue('sepadirectdebit', 'sepa_mandate_textextra');
-        $data['date']              = date('d.m.Y');
-
-        $this->context->smarty->assign($data);
-        $template = $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway'. DIRECTORY_SEPARATOR .
-            'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-            'sepa_mandate.tpl');
-        header('Content-Type: application/json; charset=utf8');
-        die(Tools::jsonEncode(array('html' => $template)));
+        $this->order->setCurrentState(_PS_OS_ERROR_);
+        $this->order->save();
     }
 }

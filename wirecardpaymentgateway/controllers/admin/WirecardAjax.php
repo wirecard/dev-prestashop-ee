@@ -40,6 +40,7 @@ use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -107,6 +108,13 @@ class WirecardAjaxController extends ModuleAdminController
         }
         return $method;
     }
+                $baseUrl = Tools::getValue($shopConfigService->getFieldName('base_url'));
+                $wppUrl = Tools::getValue($shopConfigService->getFieldName('wpp_url'));
+                $httpUser = Tools::getValue($shopConfigService->getFieldName('http_user'));
+                $httpPass = Tools::getValue($shopConfigService->getFieldName('http_pass'));
+
+                $config = new Config($baseUrl, $httpUser, $httpPass);
+                $transactionService = new TransactionService($config, new Logger());
 
     /**
      *

@@ -1,5 +1,14 @@
 [
   {
+    "release": "2.0.1",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.5.2",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Load paymentPage script unconditionally"
+    ]
+  },
+  {
     "release": "2.0.0",
     "shopsystem": "PrestaShop",
     "tested": "1.7.5.2",

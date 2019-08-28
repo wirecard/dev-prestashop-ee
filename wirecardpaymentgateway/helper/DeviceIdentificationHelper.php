@@ -1,3 +1,4 @@
+<?php
 /**
  * Shop System Plugins - Terms of Use
  *
@@ -26,47 +27,39 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
+ *
+ * @author Wirecard AG
+ * @copyright Wirecard AG
+ * @license GPLv3
  */
 
-var form = null;
+namespace WirecardEE\Prestashop\Helper;
 
-$(document).ready(
-    function () {
-        function setDataProtectionInfo()
-        {
-            let dataProtectionLabelElement = $('#invoiceDataProtectionLabel');
-            let dataProtectionInfo = dataProtectionLabelElement.text();
-            dataProtectionLabelElement.text('');
-            dataProtectionLabelElement.append(dataProtectionInfo);
-        }
+use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
-        if ($('#payment-processing-gateway-ratepay-form').length > 0) {
-            setDataProtectionInfo();
-        }
+/**
+ * Class DeviceIdentificationHelper
+ *
+ * @package WirecardEE\Prestashop\Helper
+ * @since 2.1.0
+ */
+class DeviceIdentificationHelper
+{
+    /**
+     * Generate a device fingerprint for Guaranteed Invoice By Wirecard
+     *
+     * @since 2.1.0
+     * @return string
+     */
+    public static function generateFingerprint()
+    {
+        $shopConfigService = new ShopConfigurationService(PaymentGuaranteedInvoiceRatepay::TYPE);
 
-        $('form').submit(function (event) {
-            form = $(this);
-            let paymentMethod = $('input[name="payment-option"]:checked').data('module-name');
-            if (paymentMethod === 'wd-invoice') {
-                if ($('#invoiceDataProtectionCheckbox:checked').val() === '1') {
-                    // check device ident setter for transaction and cookie management
-                    $('#invoiceDeviceIdent').attr('type', 'hidden').appendTo(form);
-                } else {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    event.stopImmediatePropagation();
+        $timestamp = microtime();
+        $customerId = $shopConfigService->getField('merachant_account_id');
+        $deviceIdentToken = md5($customerId . "_" . $timestamp);
 
-                    let hint = document.getElementById('invoiceDataProtectionHint');
-                    hint.style.display = "block";
-                }
-            }
-        });
+        return $deviceIdentToken;
     }
-);
-
-
-
-
-
-
-
+}

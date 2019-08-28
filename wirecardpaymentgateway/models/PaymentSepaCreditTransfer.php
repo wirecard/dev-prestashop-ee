@@ -35,8 +35,8 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
-use Wirecard\PaymentSdk\Config\SepaConfig;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class PaymentSepaDirectDebit
@@ -48,15 +48,27 @@ use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 class PaymentSepaCreditTransfer extends Payment
 {
     /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TYPE = SepaCreditTransferTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TRANSLATION_FILE = "paymentsepacredittransfer";
+
+    /**
      * PaymentSepaDirectDebit constructor.
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'sepacredittransfer';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard SEPA Credit Transfer';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
@@ -149,30 +161,6 @@ class PaymentSepaCreditTransfer extends Payment
     }
 
     /**
-     * Create config for SEPA transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new SepaConfig(SepaCreditTransferTransaction::NAME, $merchantAccountId, $secret);
-        $paymentConfig->setCreditorId($paymentModule->getConfigValue($this->type, 'creditor_id'));
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create sepa transaction
      *
      * @param \WirecardPaymentGateway $module
@@ -219,7 +207,9 @@ class PaymentSepaCreditTransfer extends Payment
      */
     public function generateMandateId($paymentModule, $orderId)
     {
-        return $paymentModule->getConfigValue($this->type, 'creditor_id') . '-' . $orderId
+        $paymentConfiguration = new ShopConfigurationService(static::TYPE);
+
+        return $paymentConfiguration->getField('creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

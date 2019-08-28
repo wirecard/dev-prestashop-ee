@@ -41,6 +41,7 @@ use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
+use WirecardEE\Prestashop\Helper\DeviceIdentificationHelper;
 
 /**
  * Class PaymentGuaranteedInvoiceRatepay
@@ -51,6 +52,18 @@ use WirecardEE\Prestashop\Helper\CurrencyHelper;
  */
 class PaymentGuaranteedInvoiceRatepay extends Payment
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TYPE = RatepayInvoiceTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TRANSLATION_FILE = "paymentguaranteedinvoiceratepay";
+
     const MIN_AGE = 18;
 
     private $currencyHelper;
@@ -59,11 +72,11 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'invoice';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard Guaranteed Invoice';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
@@ -223,29 +236,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * Create config for ratepay invoice transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(RatepayInvoiceTransaction::NAME, $merchantAccountId, $secret);
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create Ratepay invoice transaction
      *
      * @param \WirecardPaymentGateway $module
@@ -377,13 +367,13 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
         if ($cart->isVirtualCart()) {
             return false;
-        }
+        };
 
         if ($age < self::MIN_AGE) {
             return false;
         }
 
-        if (! $this->isInLimit($module, $cart->getOrderTotal())) {
+        if (!$this->isInLimit($module, $cart->getOrderTotal())) {
             return false;
         }
 
@@ -396,22 +386,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return true;
-    }
-
-    /**
-     * Returns deviceIdentToken for ratepayscript
-     *
-     * @param string $merchantAccountId
-     * @return string
-     * @since 1.0.0
-     */
-    public function createDeviceIdent($merchantAccountId)
-    {
-        $timestamp = microtime();
-        $customerId = $merchantAccountId;
-        $deviceIdentToken = md5($customerId . "_" . $timestamp);
-
-        return $deviceIdentToken;
     }
 
     /**
@@ -428,12 +402,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $currency = \Context::getContext()->currency;
 
         $minimum = $currencyConverter->convertToCurrency(
-            $module->getConfigValue($this->type, 'amount_min'),
+            $this->configuration->getField('amount_min'),
             $currency->iso_code
         );
 
         $maximum = $currencyConverter->convertToCurrency(
-            $module->getConfigValue($this->type, 'amount_max'),
+            $this->configuration->getField('amount_max'),
             $currency->iso_code
         );
 
@@ -455,7 +429,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function isValidAddress($module, $shipping, $billing)
     {
-        $isSame = $module->getConfigValue($this->type, 'billingshipping_same');
+        $isSame = $this->configuration->getField('billingshipping_same');
         if ($isSame && $shipping->id != $billing->id) {
             $fields = array(
                 'country',
@@ -500,7 +474,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function getAllowedCountries($module, $type)
     {
-        $val = $module->getConfigValue($this->type, $type. '_countries');
+        $val = $this->configuration->getField($type . '_countries');
         if (!\Tools::strlen($val)) {
             return array();
         }
@@ -522,7 +496,8 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     private function getAllowedCurrencies($module)
     {
-        $val = $module->getConfigValue($this->type, 'allowed_currencies');
+        $val = $this->configuration->getField('allowed_currencies');
+
         if (!\Tools::strlen($val)) {
             return array();
         }
@@ -533,5 +508,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         }
 
         return $currencies;
+    }
+
+    protected function getFormTemplateData()
+    {
+        return array(
+          'device_identification' => DeviceIdentificationHelper::generateFingerprint()
+        );
     }
 }

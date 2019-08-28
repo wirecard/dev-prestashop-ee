@@ -33,7 +33,6 @@
  * @license GPLv3
  */
 
-use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
@@ -46,8 +45,9 @@ use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentMasterpass;
-use WirecardEE\Prestashop\Models\PaymentUnionPayInternational;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 
 define('IS_CORE', false);
 
@@ -59,6 +59,30 @@ define('IS_CORE', false);
  */
 class WirecardPaymentGateway extends PaymentModule
 {
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const NAME = 'wirecardpaymentgateway';
+
+    /**
+     * @var string
+     * @since 2.0.0
+     */
+    const VERSION = '2.0.0';
+
+    /**
+     * @var string
+     * @since 2.0.0
+     */
+    const SHOP_NAME = 'Prestashop';
+
+    /**
+     * @var string
+     * @since 2.0.0
+     */
+    const EXTENSION_HEADER_PLUGIN_NAME = 'prestashop-ee+Wirecard';
+
     /**
      * Payment fields for configuration
      *
@@ -81,11 +105,12 @@ class WirecardPaymentGateway extends PaymentModule
     public function __construct()
     {
         require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
-            DIRECTORY_SEPARATOR.'autoload.php');
+                     DIRECTORY_SEPARATOR.'autoload.php');
 
-        $this->name = 'wirecardpaymentgateway';
+        $this->name = self::NAME;
+        $this->version = self::VERSION;
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.0';
+        $this->version = '2.1.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
@@ -194,6 +219,10 @@ class WirecardPaymentGateway extends PaymentModule
                 $translated_string : $tab->name[1];
         }
         $tab->module = $this->name;
+        $tab->icon = 'payment';
+        // Show on Sell part of menu
+        $tab->id_parent = 2;
+        $tab->parent_class_name = 'SELL';
         $tab->add();
 
         $key = $this->l('heading_title_support');
@@ -237,8 +266,9 @@ class WirecardPaymentGateway extends PaymentModule
     public function uninstallTabs()
     {
         $tabs = array('WirecardTransactions','WirecardSupport', 'WirecardAjax');
+        $tabRepository = $this->get('prestashop.core.admin.tab.repository');
         foreach ($tabs as $tab) {
-            $id_tab = (int)Tab::getIdFromClassName($tab);
+            $id_tab = $tabRepository->findOneIdByClassName($tab);
             if ($id_tab) {
                 $tab = new Tab($id_tab);
                 $tab->delete();
@@ -255,10 +285,12 @@ class WirecardPaymentGateway extends PaymentModule
     public function getPaymentFields()
     {
         $payments = array();
-        /** @var Payment $payment */
+
+        /** @var \WirecardEE\Prestashop\Models\Payment $payment */
         foreach ($this->getPayments() as $payment) {
             array_push($payments, $payment->getFormFields());
         }
+
         return $payments;
     }
 
@@ -332,14 +364,12 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $params = array();
         foreach ($this->config as $group) {
+            $shopConfigService = new ShopConfigurationService($group['tab']);
             foreach ($group['fields'] as $f) {
                 if ('hidden' == $f['type']) {
                     continue;
                 }
-                $f['param_name'] = $this->buildParamName(
-                    $group['tab'],
-                    $f['name']
-                );
+                $f['param_name'] = $shopConfigService->getFieldName($f['name']);
                 $params[] = $f;
             }
         }
@@ -351,89 +381,33 @@ class WirecardPaymentGateway extends PaymentModule
      * Payment options hook
      *
      * @param $params
-     * @return bool|void
+     * @return array|bool
      * @since 1.0.0
      */
     public function hookPaymentOptions($params)
     {
         if (!$this->active) {
-            return;
+            return false;
         }
 
         $result = array();
-        /** @var Payment $paymentMethod */
+
+        /** @var \WirecardEE\Prestashop\Models\Payment $paymentMethod */
         foreach ($this->getPayments() as $paymentMethod) {
-            if (! $this->getConfigValue($paymentMethod->getType(), 'enabled')) {
+            $shopConfigService = new ShopConfigurationService($paymentMethod::TYPE);
+
+            if ($shopConfigService->getField('enabled') == false) {
                 continue;
             }
 
-            if (! $paymentMethod->isAvailable($this, $params['cart'])) {
+            if (!$paymentMethod->isAvailable($this, $params['cart'])) {
                 continue;
             }
 
-            $paymentData = array(
-                'paymentType' => $paymentMethod->getType(),
-            );
-            if ('invoice' == $paymentMethod->getType()) {
-                /** @var PaymentGuaranteedInvoiceRatepay $paymentMethod */
-                $this->createRatepayScript($paymentMethod);
-            }
-            $payment = new PaymentOption();
-            $payment
-                ->setModuleName('wd-' . $paymentMethod->getType())
-                ->setCallToActionText($this->l($this->getConfigValue($paymentMethod->getType(), 'title')))
-                ->setAction($this->context->link->getModuleLink($this->name, 'payment', $paymentData, true));
-
-            if ($paymentMethod->getTemplateData()) {
-                $this->context->smarty->assign($paymentMethod->getTemplateData());
-            }
-
-            if ($paymentMethod->getAdditionalInformationTemplate()) {
-                $payment->setAdditionalInformation($this->fetch(
-                    'module:' . $paymentMethod->getAdditionalInformationTemplate() . '.tpl'
-                ));
-            }
-
-            $payment->setLogo(
-                Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/paymenttypes/'
-                    . $paymentMethod->getType() . '.png')
-            );
-            $result[] = $payment;
+            $result[] = $paymentMethod->toPaymentOption();
         }
 
-        //Implement action validation before payment
         return count($result) ? $result : false;
-    }
-
-    /**
-     * Create ratepay script and device ident
-     *
-     * @param PaymentGuaranteedInvoiceRatepay $paymentMethod
-     * @since 1.0.0
-     */
-    public function createRatepayScript($paymentMethod)
-    {
-        $merchantAccount = $this->getConfigValue('invoice', 'merchant_account_id');
-        $deviceIdent = $paymentMethod->createDeviceIdent($merchantAccount);
-
-        if (!isset($this->context->cookie->wirecardDeviceIdent)) {
-            $this->context->cookie->wirecardDeviceIdent = $deviceIdent;
-        }
-
-        $this->context->smarty->assign(array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent));
-
-        try {
-            echo $this->context->smarty->fetch(_PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-                'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-                'ratepayscript.tpl');
-        } catch (SmartyException $e) {
-        } catch (Exception $e) {
-        }
-
-        $paymentMethod->setAdditionalInformationTemplate(
-            'invoice',
-            array('deviceIdent' => $this->context->cookie->wirecardDeviceIdent)
-        );
     }
 
     /**
@@ -447,48 +421,11 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $payments = $this->getPayments();
 
-        if ('ratepay-invoice' == $paymentType) {
-            $paymentType = 'invoice';
-        }
         if (array_key_exists($paymentType, $payments)) {
             return $payments[$paymentType];
         }
 
         return false;
-    }
-
-    /**
-     * Build prefix for configuration entries
-     *
-     * @param $name
-     * @param $field
-     *
-     * @return string
-     * @since 1.0.0
-     */
-    public function buildParamName($name, $field)
-    {
-        return sprintf(
-            'WIRECARD_PAYMENT_GATEWAY_%s_%s',
-            Tools::strtoupper($name),
-            Tools::strtoupper($field)
-        );
-    }
-
-    /**
-     * Get Configuration value for specific field
-     *
-     * @param $name
-     * @param $field
-     * @return mixed
-     * @since 1.0.0
-     */
-    public function getConfigValue($name, $field)
-    {
-        if ('sofortbanking' == $name) {
-            $name = 'Sofort';
-        }
-        return Configuration::get($this->buildParamName($name, $field));
     }
 
     /**
@@ -612,17 +549,17 @@ class WirecardPaymentGateway extends PaymentModule
     private function getPayments()
     {
         $payments = array(
-            'creditcard' => new PaymentCreditCard($this),
-            'paypal' => new PaymentPaypal($this),
-            'sepadirectdebit' => new PaymentSepaDirectDebit($this),
-            'sepacredittransfer' => new PaymentSepaCreditTransfer($this),
-            'sofortbanking' => new PaymentSofort($this),
-            'ideal' => new PaymentIdeal($this),
-            'invoice' => new PaymentGuaranteedInvoiceRatepay($this),
-            'p24' => new PaymentPtwentyfour($this),
-            'poipia' => new PaymentPoiPia($this),
-            'masterpass' => new PaymentMasterpass($this),
-            'alipay-xborder' => new PaymentAlipayCrossborder($this)
+            PaymentCreditCard::TYPE => new PaymentCreditCard(),
+            PaymentPaypal::TYPE => new PaymentPaypal(),
+            PaymentSepaDirectDebit::TYPE => new PaymentSepaDirectDebit(),
+            PaymentSepaCreditTransfer::TYPE => new PaymentSepaCreditTransfer(),
+            PaymentSofort::TYPE => new PaymentSofort(),
+            PaymentIdeal::TYPE => new PaymentIdeal(),
+            PaymentGuaranteedInvoiceRatepay::TYPE => new PaymentGuaranteedInvoiceRatepay(),
+            PaymentPtwentyfour::TYPE => new PaymentPtwentyfour(),
+            PaymentPoiPia::TYPE => new PaymentPoiPia(),
+            PaymentMasterpass::TYPE => new PaymentMasterpass(),
+            PaymentAlipayCrossborder::TYPE => new PaymentAlipayCrossborder()
         );
 
         return $payments;
@@ -656,8 +593,10 @@ class WirecardPaymentGateway extends PaymentModule
      */
     protected function isUrlConfigurationValid()
     {
-        $baseUrl = $this->getConfigValue('creditcard', 'base_url');
-        $wppUrl = $this->getConfigValue('creditcard', 'wpp_url');
+        $shopConfigService = new ShopConfigurationService(CreditCardTransaction::NAME);
+
+        $baseUrl = $shopConfigService->getField('base_url');
+        $wppUrl = $shopConfigService->getField('wpp_url');
 
         return UrlConfigurationChecker::isUrlConfigurationValid($baseUrl, $wppUrl);
     }
@@ -722,12 +661,13 @@ class WirecardPaymentGateway extends PaymentModule
         foreach ($this->config as $value) {
             $tabname = $value['tab'];
             $tabs[$tabname] = $tabname;
+            $shopConfigService = new ShopConfigurationService($tabname);
             foreach ($value['fields'] as $f) {
                 if ('hidden' == $f['type']) {
                     continue;
                 }
                 $elem = array(
-                    'name' => $this->buildParamName($tabname, $f['name']),
+                    'name' => $shopConfigService->getFieldName($f['name']),
                     'label' => isset($f['label'])?$this->l($f['label']):'',
                     'tab' => $tabname,
                     'type' => $f['type'],
@@ -823,7 +763,7 @@ class WirecardPaymentGateway extends PaymentModule
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'btnSubmit';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
         $helper->tpl_vars = array(
@@ -844,10 +784,11 @@ class WirecardPaymentGateway extends PaymentModule
     private function setDefaults()
     {
         foreach ($this->config as $config) {
+            $name = $config['tab'];
+            $shopConfigService = new ShopConfigurationService($name);
             foreach ($config['fields'] as $field) {
                 if (array_key_exists('default', $field)) {
-                    $name = $config['tab'];
-                    $configParam = $this->buildParamName($name, $field['name']);
+                    $configParam = $shopConfigService->getFieldName($field['name']);
                     $defValue = $field['default'];
                     if (is_array($defValue)) {
                         $defValue = Tools::jsonEncode($defValue);
@@ -872,12 +813,13 @@ class WirecardPaymentGateway extends PaymentModule
     private function deleteConfig()
     {
         foreach ($this->config as $config) {
+            $name = $config['tab'];
+            $shopConfigService = new ShopConfigurationService($name);
             foreach ($config['fields'] as $field) {
-                $name = $config['tab'];
-                $fieldname = $this->buildParamName($name, $field['name']);
-                $value = Configuration::get($fieldname);
+                $fieldName = $shopConfigService->getFieldName($field['name']);
+                $value = Configuration::get($fieldName);
                 if (isset($value)) {
-                    if (!Configuration::deleteByName($fieldname)) {
+                    if (!Configuration::deleteByName($fieldName)) {
                         return false;
                     }
                 }
@@ -919,29 +861,29 @@ class WirecardPaymentGateway extends PaymentModule
     private function getColumnDefsTable($name)
     {
         $defs = array( 'tx' =>
-            array(
-                "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
-                "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
-                "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
-                "order_id" => array( "INT(10)", "NULL" ),
-                "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
-                "ordernumber" => array( "VARCHAR(32)", "NULL" ),
-                "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
-                "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
-                "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
-                "amount" => array( "FLOAT", "NOT NULL" ),
-                "currency" => array( "VARCHAR(3)", "NOT NULL" ),
-                "response" => array( "TEXT", "NULL" ),
-                "created" => array( "DATETIME", "NOT NULL" ),
-                "modified" => array( "DATETIME", "NULL" ),
-            ),
-            'cc' => array(
-                "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
-                "user_id" => array( "INT(10)", "NOT NULL" ),
-                "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
-                "address_id" => array( "INT(10)", "NULL" ),
-                "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
-            ) );
+                           array(
+                               "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                               "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
+                               "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
+                               "order_id" => array( "INT(10)", "NULL" ),
+                               "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
+                               "ordernumber" => array( "VARCHAR(32)", "NULL" ),
+                               "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
+                               "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
+                               "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
+                               "amount" => array( "FLOAT", "NOT NULL" ),
+                               "currency" => array( "VARCHAR(3)", "NOT NULL" ),
+                               "response" => array( "TEXT", "NULL" ),
+                               "created" => array( "DATETIME", "NOT NULL" ),
+                               "modified" => array( "DATETIME", "NULL" ),
+                           ),
+                       'cc' => array(
+                           "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                           "user_id" => array( "INT(10)", "NOT NULL" ),
+                           "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
+                           "address_id" => array( "INT(10)", "NULL" ),
+                           "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
+                       ) );
 
         return $defs[$name];
     }
@@ -995,25 +937,41 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function hookActionFrontControllerSetMedia()
     {
+        $creditCardConfig = new ShopConfigurationService(PaymentCreditCard::TYPE);
+        $wppUrl = $creditCardConfig->getField('wpp_url');
+
         $link = new Link;
+        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
+        $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
+
+        Media::addJsDef(
+            array(
+                'configProviderURL' => $ajaxLink,
+                'ccVaultURL' => $ccVaultLink,
+                'cartId' => $this->context->cart->id,
+            )
+        );
+
+        $this->context->controller->registerStylesheet(
+            'wd-css',
+            'modules/' . $this->name . '/views/css/app.css'
+        );
+
+        $this->context->controller->registerJavascript(
+            'wd-wpp',
+            $wppUrl . '/loader/paymentPage.js',
+            array('server' => 'remote', 'position' => 'top', 'priority' => 1)
+        );
+
         foreach ($this->getPayments() as $paymentMethod) {
-            if ($paymentMethod->getLoadJs()) {
-                $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
-                $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
-                $ajaxSepaUrl = $link->getModuleLink('wirecardpaymentgateway', 'sepadirectdebit');
-                Media::addJsDef(
-                    array(
-                        'configProviderURL' => $ajaxLink,
-                        'ccVaultURL' => $ccVaultLink,
-                        'ajaxsepaurl' => $ajaxSepaUrl,
-                        'cartId' => $this->context->cart->id,
-                    )
-                );
-                $this->context->controller->addJS(
-                    _PS_MODULE_DIR_ . $this->name . DIRECTORY_SEPARATOR . 'views'
-                    . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $paymentMethod->getType() . '.js'
-                );
+            if (!$paymentMethod->getLoadJs()) {
+                continue;
             }
+
+            $this->context->controller->registerJavaScript(
+                'wd-js-' . $paymentMethod->getType(),
+                'modules/' . $this->name . '/views/js/' . $paymentMethod->getType() . '.js'
+            );
         }
 
         return true;
@@ -1048,6 +1006,16 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Hook for registering new functions to smarty
+     *
+     * @since 1.3.4
+     */
+    public function hookActionDispatcher()
+    {
+        $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
+    }
+
+    /**
      * Return the translation for a string given a language iso code 'en' 'fr' ..
      *
      * @param string $iso_lang language iso code
@@ -1074,16 +1042,6 @@ class WirecardPaymentGateway extends PaymentModule
         } else {
             return $key;
         }
-    }
-
-    /**
-     * Hook for registering new functions to smarty
-     *
-     * @since 1.3.4
-     */
-    public function hookActionDispatcher()
-    {
-        $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
     }
 
     /**
@@ -1121,31 +1079,7 @@ class WirecardPaymentGateway extends PaymentModule
             $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $basename);
         }
 
-        return $translation;
-    }
-
-    /**
-     * Overwritten translation function, uses the modules translation function with fallback language functionality
-     *
-     * @param string $key translation key
-     * @param string|bool $specific filename of the translation key
-     * @param string|null $locale not used!
-     *
-     * @return string translation
-     * @since 1.3.4
-     */
-    public function l($key, $specific = false, $locale = null)
-    {
-        if (!$specific) {
-            $specific = $this->name;
-        }
-
-        $translation = parent::l($key, $specific);
-        if ($translation === $key) {
-            $translation = WirecardPaymentGateway::getTranslationForLanguage('en', $key, $specific);
-        }
-
-        return $translation;
+        return html_entity_decode($translation);
     }
 
     /**

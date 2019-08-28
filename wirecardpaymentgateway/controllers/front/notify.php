@@ -33,19 +33,24 @@
  * @license GPLv3
  */
 
-use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\Exception\MalformedResponseException;
-use WirecardEE\Prestashop\Models\Transaction;
-use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use Wirecard\PaymentSdk\BackendService;
+use WirecardEE\Prestashop\Classes\Engine\NotificationResponse;
+use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotificationFactory;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
 {
+    /** @var WirecardLogger  */
+    public $logger;
 
-    /** @var \Wirecard\PaymentSdk\BackendService */
-    protected $backendService;
+    /**
+     * WirecardPaymentGatewayNotifyModuleFrontController constructor.
+     * @since 2.1.0
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->logger = new WirecardLogger();
+    }
 
     /**
      * Process redirects and responses
@@ -54,158 +59,62 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontContr
      */
     public function postProcess()
     {
-        $logger = new WirecardLogger();
-        $paymentType = Tools::getValue('payment_type');
-        $cartId = Tools::getValue('id_cart');
-        $payment = $this->module->getPaymentFromType($paymentType);
-        $config = $payment->createPaymentConfig($this->module);
-        $notification = Tools::file_get_contents('php://input');
+        $notification = \Tools::file_get_contents('php://input');
+
         try {
-            $this->backendService = new BackendService($config, $logger);
-            $result = $this->backendService->handleNotification($notification);
-            if ($result instanceof SuccessResponse && $result->getTransactionType() != 'check-payer-response') {
-                $this->processSuccess($result, $cartId);
-            } elseif ($result instanceof FailureResponse) {
-                $errors = "";
-                foreach ($result->getStatusCollection()->getIterator() as $item) {
-                    $errors .= $item->getDescription() . "<br>";
-                }
-                $logger->error($errors);
-                $this->processFailure($result, $cartId);
-            }
-        } catch (\InvalidArgumentException $exception) {
-            $this->errors = 'Invalid Argument: ' . $exception->getMessage();
-            $logger->error($exception->getMessage());
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        } catch (MalformedResponseException $exception) {
-            $this->errors = 'Malformed Response: ' . $exception->getMessage();
-            $logger->error($exception->getMessage());
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        } catch (Exception $exception) {
-            $this->errors = $exception->getMessage();
-            $logger->error($exception->getMessage());
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        }
-        $this->errors = 'Something went wrong during the payment process.';
-        $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-    }
+            $order = $this->getOrder();
 
-    /**
-     * Create/Update order and handle notification
-     *
-     * @param SuccessResponse $response
-     * @param string $cartId
-     * @since 1.0.0
-     */
-    private function processSuccess($response, $cartId)
-    {
-        //@TODO temporary fix till refactoring of the return and notify
-        sleep(3);
-        $orderId = Order::getOrderByCartId((int)($cartId));
-        if ('masterpass' == $response->getPaymentMethod() && (
-            \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_DEBIT == $response->getTransactionType() ||
-            \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION == $response->getTransactionType())) {
-            return;
-        }
+            $engine_processing = new NotificationResponse();
+            $processed_notify = $engine_processing->process($notification);
 
-        $order = new Order($orderId);
-        $cart = new Cart((int)($cartId));
-        $orderState = $this->backendService->getOrderState($response->getTransactionType());
-
-        $order->setCurrentState($this->getPrestaOrderStateId($orderState));
-        $this->changePaymentStatus($order->reference, $response->getTransactionId(), $orderState);
-        $currency = new Currency($cart->id_currency);
-
-        //@TODO translate the open close
-        $transactionState = 'open';
-        if ($this->backendService->isFinal($response->getTransactionType())) {
-            $transactionState = 'closed';
-        }
-
-        $transaction = Transaction::create(
-            $orderId,
-            $cartId,
-            $cart->getOrderTotal(true),
-            $currency->iso_code,
-            $response,
-            $transactionState,
-            $order->reference
-        );
-
-        if (! $transaction) {
-            $logger = new WirecardLogger();
-            $logger->error('Transaction could not be saved in transaction table');
-        }
-
-        $customer = new Customer($cart->id_customer);
-        Tools::redirect('index.php?controller=order-confirmation&id_cart='
-            .$cart->id.'&id_module='
-            .$this->module->id.'&id_order='
-            .$this->module->currentOrder.'&key='
-            .$customer->secure_key);
-    }
-
-    /**
-     * Update order for failure response
-     *
-     * @param FailureResponse $response
-     * @param string $orderId
-     * @since 1.0.0
-     */
-    private function processFailure($response, $cartId)
-    {
-        if ($cartId) {
-            $orderId = Order::getOrderByCartId((int)($cartId));
-            $order = new Order($orderId);
-            $order->setCurrentState('PS_OS_ERROR');
-            $orderPayments = OrderPayment::getByOrderReference($order->reference);
-            if (!empty($orderPayments)) {
-                $orderPayments[0]->transaction_id = $response->getTransactionId();
-                $orderPayments[0]->save();
-            }
+            $notify_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
+            $payment_processing = $notify_factory->getPaymentProcessing();
+            $payment_processing->process();
+        } catch (\Exception $exception) {
+            $this->logger->error(
+                'Error in class:'. __CLASS__ .
+                ' method:' . __METHOD__ .
+                ' exception: ' . $exception->getMessage()
+            );
         }
     }
 
     /**
-     * Get prestashop specific order state
-     *
-     * @param string $orderState
-     * @return integer
-     * @since 1.0.0
+     * @return Order
+     * @throws \Exception
+     * @since 2.1.0
      */
-    private function getPrestaOrderStateId($orderState)
+    private function getOrder()
     {
-        switch ($orderState) {
-            case BackendService::TYPE_AUTHORIZED:
-                return Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
-            case BackendService::TYPE_CANCELLED:
-                return _PS_OS_CANCELED_;
-            case BackendService::TYPE_REFUNDED:
-                return _PS_OS_REFUND_;
-            case BackendService::TYPE_PROCESSING:
-                return _PS_OS_PAYMENT_;
+        $order_id = \Tools::getValue('id_order');
+        if (\Tools::getValue('payment_type') === 'creditcard') {
+            $order_id = $this->getOrderFromCart();
         }
+
+        return new \Order((int) $order_id);
     }
 
     /**
-     * Change payment state of an order
-     *
-     * @param string $reference
-     * @param string $transactionId
-     * @param int $orderState
-     * @since 1.0.0
+     * @param int $tick
+     * @return int
+     * @throws \Exception
+     * @since 2.1.0
      */
-    private function changePaymentStatus($reference, $transactionId, $orderState)
+    private function getOrderFromCart($tick = 1)
     {
-        $orderPayments = OrderPayment::getByOrderReference($reference);
-        if ($orderState != _PS_OS_CANCELED_&& !empty($orderPayments)) {
-            if (count($orderPayments) > 1) {
-                $orderPayments[0]->delete();
-                $orderPayments[count($orderPayments) - 1]->transaction_id = $transactionId;
-                $orderPayments[count($orderPayments) - 1]->save();
-            }
-        } else {
-            $orderPayments[0]->delete();
+        $cart_id = \Tools::getValue('id_cart');
+        if ($tick > 30) {
+            throw new \Exception('Order with cart id '. $cart_id .' was not mappable');
         }
+
+        /** @var false|int $order_id */
+        $order_id = \Order::getIdByCartId($cart_id);
+
+        if ($order_id) {
+            return $order_id;
+        }
+
+        sleep(1);
+        return $this->getOrderFromCart();
     }
 }

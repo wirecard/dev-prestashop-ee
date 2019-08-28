@@ -31,6 +31,7 @@
 * @license GPLv3
 *}
 
+<form id="payment-form" action="{$action_link}" method="POST">
 <div id="payment-processing-gateway-ideal-form">
     <div class="form-group row">
         <label class="form-control-label required">{lFallback s='bank_label' mod='wirecardpaymentgateway'}</label>
@@ -41,3 +42,4 @@
         </select>
     </div>
 </div>
+</form>

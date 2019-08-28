@@ -71,8 +71,8 @@ matrix:
     - PRESTASHOP_RELEASE_VERSION=1
     before_install: skip
     install:
-    - |
-      export PRESTASHOP_VERSION=$(awk "NR==$PRESTASHOP_RELEASE_VERSION {print; exit}" ${PRESTASHOP_RELEASES_FILE})
+    - export PRESTASHOP_VERSION=$(awk "NR==$PRESTASHOP_RELEASE_VERSION {print; exit}" ${PRESTASHOP_RELEASES_FILE})
+    - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
@@ -99,18 +99,6 @@ matrix:
   - <<: *acceptance-test
     env:
     - GATEWAY=API-WDCEE-TEST
-    - PRESTASHOP_RELEASE_VERSION=3
-  - <<: *acceptance-test
-    env:
-    - GATEWAY=NOVA
-    - PRESTASHOP_RELEASE_VERSION=1
-  - <<: *acceptance-test
-    env:
-    - GATEWAY=NOVA
-    - PRESTASHOP_RELEASE_VERSION=2
-  - <<: *acceptance-test
-    env:
-    - GATEWAY=NOVA
     - PRESTASHOP_RELEASE_VERSION=3
 
   - stage: deploy
@@ -149,6 +137,8 @@ matrix:
       - cd $TMPDIR && travis_retry bundle install
       - bin/rake trigger_build
 
+before_install:
+  - travis_retry composer global require hirak/prestissimo
 install:
   - travis_retry composer require --dev $COMPOSER_ARGS
   - travis_retry composer install $COMPOSER_ARGS
