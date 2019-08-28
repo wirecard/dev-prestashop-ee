@@ -83,21 +83,17 @@ final class Success implements ProcessablePaymentNotification
         $this->notification = $notification;
         $this->order_service = new OrderService($order);
         $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
-
-        $payment_type = $this->notification->getPaymentMethod();
-        $shop_config = new ShopConfigurationService($payment_type);
-        $config = (new PaymentConfigurationFactory($shop_config))->createConfig();
-
-        $this->backend_service = new BackendService($config, new WirecardLogger());
+        $this->order_manager = new OrderManager();
     }
 
     /**
+     * @throws \Exception
      * @since 2.1.0
      */
     public function process()
     {
         if (!OrderManager::isIgnorable($this->notification)) {
-            $order_state = $this->getPrestaShopOrderState();
+            $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
             $this->order->setCurrentState($order_state);
             $this->order->save();
 
@@ -113,65 +109,9 @@ final class Success implements ProcessablePaymentNotification
                 $amount->getValue(),
                 $amount->getCurrency(),
                 $this->notification,
-                $this->getTransactionState(),
+                $this->order_manager->getTransactionState($this->notification),
                 $this->order->reference
             );
         }
-    }
-
-    /**
-     * @return int
-     * @throws \Exception
-     * @since 2.1.0
-     */
-    private function getPrestaShopOrderState()
-    {
-        $order_state = $this->getOrderState();
-        return $this->orderStateToPrestaShopOrderState($order_state);
-    }
-
-    /**
-     * @return string
-     * @since 2.1.0
-     */
-    private function getOrderState()
-    {
-        return $this->backend_service->getOrderState($this->notification->getTransactionType());
-    }
-
-    /**
-     * @param string $order_state
-     * @return mixed
-     * @throws \Exception
-     * @since 2.1.0
-     */
-    private function orderStateToPrestaShopOrderState($order_state)
-    {
-        switch ($order_state) {
-            case BackendService::TYPE_AUTHORIZED:
-                return \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
-            case BackendService::TYPE_CANCELLED:
-                return _PS_OS_CANCELED_;
-            case BackendService::TYPE_REFUNDED:
-                return _PS_OS_REFUND_;
-            case BackendService::TYPE_PROCESSING:
-                return _PS_OS_PAYMENT_;
-            case BackendService::TYPE_PENDING:
-                return __PS_OS_PENDING_;
-            default:
-                throw new \Exception('Order state not mappable');
-        }
-    }
-
-    /**
-     * @return string
-     * @since 2.1.0
-     */
-    private function getTransactionState()
-    {
-        if ($this->backend_service->isFinal($this->notification->getTransactionType())) {
-            return 'close';
-        }
-        return 'open';
     }
 }

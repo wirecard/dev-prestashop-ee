@@ -35,7 +35,10 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Wirecard\PaymentSdk\BackendService;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
@@ -177,5 +180,59 @@ class OrderManager
         return $notification->getPaymentMethod() === 'masterpass' &&
                ($notification->getTransactionType() === 'debit' ||
                 $notification->getTransactionType() === 'authorization');
+    }
+
+    /**
+     * @param SuccessResponse $notification
+     * @return mixed
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    public function orderStateToPrestaShopOrderState($notification)
+    {
+        $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
+        $order_state = $backend_service->getOrderState($notification->getTransactionType());
+
+        switch ($order_state) {
+            case BackendService::TYPE_AUTHORIZED:
+                return \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
+            case BackendService::TYPE_CANCELLED:
+                return _PS_OS_CANCELED_;
+            case BackendService::TYPE_REFUNDED:
+                return _PS_OS_REFUND_;
+            case BackendService::TYPE_PROCESSING:
+                return _PS_OS_PAYMENT_;
+            case BackendService::TYPE_PENDING:
+                return __PS_OS_PENDING_;
+            default:
+                throw new \Exception('Order state not mappable');
+        }
+    }
+
+    /**
+     * @param SuccessResponse $notification
+     * @return string
+     * @since 2.1.0
+     */
+    public function getTransactionState($notification)
+    {
+        $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
+
+        if ($backend_service->isFinal($notification->getTransactionType())) {
+            return 'close';
+        }
+        return 'open';
+    }
+
+    /**
+     * @param SuccessResponse $notification
+     * @return \Wirecard\PaymentSdk\Config\Config
+     * @since 2.1.0
+     */
+    private function getConfig($notification)
+    {
+        $payment_type = $notification->getPaymentMethod();
+        $shop_config = new ShopConfigurationService($payment_type);
+        return (new PaymentConfigurationFactory($shop_config))->createConfig();
     }
 }
