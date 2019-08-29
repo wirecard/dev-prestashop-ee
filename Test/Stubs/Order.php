@@ -65,25 +65,49 @@ class Order
         return [
             0 => [
                 'id_order' => 1,
-                'date_add' => '2019-01-01T00:00:00Z'
+                'valid' => 1,
+                'date_add' => '2018-01-01T08:00:00Z'
             ],
             1 => [
-                'id_order' => 50,
-                'date_add' => '2019-01-01T00:00:00Z'
+                'id_order' => 2,
+                'valid' => 1,
+                'date_add' => '2019-01-01T11:00:00Z'
+            ],
+            2 => [
+                'id_order' => 3,
+                'valid' => 1,
+                'date_add' => '2019-03-02T12:00:00Z'
+            ],
+            3 => [
+                'id_order' => 4,
+                'valid' => 1,
+                'date_add' => '2019-04-01T00:00:00Z'
+            ],
+            4 => [
+                'id_order' => 5,
+                'valid' => 1,
+                'date_add' => '2019-04-02T00:00:00Z'
+            ],
+            5 => [
+                'id_order' => 6,
+                'valid' => 0,
+                'date_add' => '2019-04-02T00:00:00Z'
             ]
         ];
     }
 
     public function getProducts()
     {
-        return [0 => ['id_product'        => 1,
-                      'cart_quantity'     => 1,
-                      'total_wt'          => 2,
-                      'name'              => 'Product 1',
-                      'total'             => 100,
-                      'description_short' => 'short desc',
-                      'reference'         => 'reference'
-        ]
+        return [
+            0 => [
+                'id_product'        => 1,
+                'cart_quantity'     => 1,
+                'total_wt'          => 2,
+                'name'              => 'Product 1',
+                'total'             => 100,
+                'description_short' => 'short desc',
+                'reference'         => 'reference'
+            ]
         ];
     }
 }

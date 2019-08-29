@@ -33,25 +33,7 @@
  * @license GPLv3
  */
 
-class DbQuery
+class ThreeDSBuilderTest extends \PHPUnit_Framework_TestCase
 {
-    public $return = true;
 
-    public function from($table)
-    {
-        return $this;
-    }
-
-    public function where($where)
-    {
-        if ('token = "123-456-789-123"' === $where) {
-            $this->return = false;
-        }
-        return $this;
-    }
-
-    public function orderBy($field)
-    {
-        return $this;
-    }
 }

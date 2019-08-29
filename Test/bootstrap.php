@@ -62,6 +62,7 @@ require __DIR__ . '/Stubs/Smarty.php';
 require __DIR__ . '/Stubs/Media.php';
 require __DIR__ . '/Stubs/PaymentOption.php';
 require __DIR__ . '/Stubs/Cart.php';
+require __DIR__ . '/Stubs/Product.php';
 require __DIR__ . '/Stubs/Customer.php';
 require __DIR__ . '/Stubs/Address.php';
 require __DIR__ . '/Stubs/Country.php';
@@ -77,3 +78,8 @@ require __DIR__ . '/Stubs/DbQuery.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';
+
+function pSQL($string)
+{
+    return $string;
+};

@@ -160,6 +160,9 @@ class Customer
             $this->email = 'max.mustermann@email.com';
             $this->firstname = 'Max';
             $this->lastname = 'Mustermann';
+            $this->date_add = '2019-06-03 09:49:57';
+            $this->date_upd = '2019-06-09 19:09:27';
+            $this->last_passwd_gen = '2019-08-09 10:59:01';
         }
     }
 
@@ -168,7 +171,7 @@ class Customer
     }
 
     public static function getStats(){
-        return array('last_visit' => null);
+        return array('last_visit' => '2019-08-04 02:37:40');
     }
 
 }

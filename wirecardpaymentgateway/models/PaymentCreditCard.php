@@ -196,9 +196,18 @@ class PaymentCreditCard extends Payment
                     'default' => ChallengeInd::NO_PREFERENCE,
                     'label'   => $this->l('requestor_challenge'),
                     'options' => array(
-                        array('key' => ChallengeInd::NO_PREFERENCE, 'value' => $this->l('config_challenge_no_preference')),
-                        array('key' => ChallengeInd::NO_CHALLENGE, 'value' => $this->l('config_challenge_no_challenge')),
-                        array('key' => ChallengeInd::CHALLENGE_THREED, 'value' => $this->l('config_challenge_challenge_threed'))
+                        array(
+                            'key'   => ChallengeInd::NO_PREFERENCE,
+                            'value' => $this->l('config_challenge_no_preference')
+                        ),
+                        array(
+                            'key'   => ChallengeInd::NO_CHALLENGE,
+                            'value' => $this->l('config_challenge_no_challenge')
+                        ),
+                        array(
+                            'key'   => ChallengeInd::CHALLENGE_THREED,
+                            'value' => $this->l('config_challenge_challenge_threed')
+                        )
                     ),
                 ),
                 array(

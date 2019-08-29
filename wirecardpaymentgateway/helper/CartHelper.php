@@ -61,6 +61,14 @@ class CartHelper
     }
 
     /**
+     * @param $cart
+     */
+    public function setCart($cart)
+    {
+        $this->cart = $cart;
+    }
+
+    /**
      * Check if one item in
      * @param \Cart $cart
      * @return string
@@ -75,13 +83,11 @@ class CartHelper
         $orders = \Order::getCustomerOrders($this->cart->id_customer);
         $cartProducts = $this->cart->getProducts();
         $cartProductIds = array();
-        /* @var \Product $product */
         foreach ($cartProducts as $product) {
             $cartProductIds[] = $product['id_product'];
         }
-        /* @var Order $order */
         foreach ($orders as $order) {
-            $orderClass= new \Order($order['id_order']);
+            $orderClass = new \Order($order['id_order']);
             $orderProducts = $orderClass->getProducts();
             foreach ($orderProducts as $orderProduct) {
                 if (in_array($orderProduct['id_product'], $cartProductIds)) {
