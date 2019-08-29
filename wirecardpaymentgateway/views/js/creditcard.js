@@ -30,7 +30,7 @@
 
 // Declaring global variables for ESLint and allowing console.error statements
 /* global cartId, WPP, configProviderURL, ccVaultURL */
-/* eslint no-console: [0, {allow: ["error"]}] */
+/* eslint no-console: ["error", {allow: ["error"]}] */
 
 var cardToken = null;
 var form = null;
