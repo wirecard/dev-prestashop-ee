@@ -35,14 +35,10 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification;
 
-use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 
-use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -63,9 +59,6 @@ final class Success implements ProcessablePaymentNotification
 
     /** @var \WirecardPaymentGateway */
     private $module;
-
-    /** @var BackendService */
-    private $backend_service;
 
     /** @var OrderManager */
     private $order_manager;
