@@ -121,7 +121,7 @@ $(document).ready(
                 type: "GET",
                 dataType: 'json',
                 success: function (response) {
-                    renderForm(JSON.parse(response));
+                    renderForm(response);
                 },
                 error: function (response) {
                     console.log(response);
