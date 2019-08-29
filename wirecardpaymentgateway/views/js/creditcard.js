@@ -28,14 +28,15 @@
  * Please do not use the plugin if you do not agree to these terms of use!
  */
 
-var token = null;
+// Declaring global variables for ESLint and allowing console.error statements
+/* global cartId, WPP, configProviderURL, ccVaultURL */
+/* eslint no-console: [{allow: ["error"]}] */
+
+var cardToken = null;
 var form = null;
 var orderNumber = null;
 var paymentMethod = null;
-var wrappingDiv = null;
-var paymentNameMap = {
-    "creditcard": "credit-card"
-};
+var wrappingDiv = "payment-processing-gateway-credit-card-form";
 
 function processAjaxUrl(url, params)
 {
@@ -54,7 +55,6 @@ $(document).ready(
     function () {
         $(document).on("click", "input[name='payment-option']", function () {
             paymentMethod = $(this).data("module-name").replace("wd-", "");
-            wrappingDiv = "payment-processing-gateway-" + paymentNameMap[paymentMethod] + "-form";
 
             if ($("#" + wrappingDiv).children().length > 0) {
                 return;
@@ -82,7 +82,7 @@ $(document).ready(
 
         function placeOrder(e)
         {
-            if (token === null) {
+            if (cardToken === null) {
                 e.preventDefault();
                 WPP.seamlessSubmit(
                     {
@@ -116,11 +116,7 @@ $(document).ready(
                 url: configProviderURL,
                 data: {
                     action: "getSeamlessConfig",
-                    /**
-                     * The eslint warnings are disabled here as we are still
-                     * retaining compatibility with an older version of JavaScript
-                     */
-                    "cartId": cartId //eslint-disable-line no-undef, object-shorthand
+                    "cartId": cartId
                 },
                 type: "GET",
                 dataType: "json",
@@ -128,7 +124,7 @@ $(document).ready(
                     renderForm(JSON.parse(response));
                 },
                 error: function (response) {
-                    console.log(response);
+                    console.error(response);
                 }
             });
         }
@@ -177,10 +173,10 @@ $(document).ready(
         {
             for (var field in response) {
                 if (!response.hasOwnProperty(field)) {
-                    return
+                    return;
                 }
 
-                var value = response[field];
+                var value = response[field.toString()];
 
                 jQuery("<input>")
                     .attr({
@@ -191,7 +187,7 @@ $(document).ready(
                     .appendTo(form);
             }
 
-            if (response.masked_account_number !== undefined) {
+            if (response.hasOwnProperty('masked_account_number')) {
                 jQuery("<input>")
                     .attr({
                         type: "hidden",
@@ -208,15 +204,15 @@ $(document).ready(
 
         function formSubmitSuccessHandler(response)
         {
-            token = response.token_id;
+            cardToken = response.token_id;
 
-            if (response.masked_account_number !== undefined && $("#wirecard-store-card").is(":checked")) {
+            if (response.hasOwnProperty('masked_account_number')&& $("#wirecard-store-card").is(":checked")) {
                 var params = [{
                     index: "action",
                     data: "addcard"
                 }, {
                     index: "tokenid",
-                    data: token
+                    data: cardToken
                 }, {
                     index: "maskedpan",
                     data: response.masked_account_number
@@ -239,7 +235,7 @@ $(document).ready(
             table.empty();
 
             for (var row in response) {
-                var card = response[row];
+                var card = response[row.toString()];
                 var tr = "<tr>";
                 tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
                 tr += "<td><button class='btn btn-success' data-tokenid='" + card.token + "'><b>+</b></button>";
@@ -268,13 +264,13 @@ $(document).ready(
             });
 
             table.find(".btn-success").bind("click", function () {
-                token = $(this).data("tokenid");
+                cardToken = $(this).data("tokenid");
 
                 $(".js-payment-option-form form").append(
                     jQuery("<input>")
                         .attr({
                             type: "hidden",
-                            value: token,
+                            value: cardToken,
                             name: "token_id"
                         })
                 );
