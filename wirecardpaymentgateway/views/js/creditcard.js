@@ -38,153 +38,35 @@ var orderNumber = null;
 var paymentMethod = null;
 var wrappingDiv = "payment-processing-gateway-credit-card-form";
 
-function processAjaxUrl(url, params)
-{
-    var querySign = "?";
-    if (url.includes("?")) {
-        querySign = "&";
-    }
-    params.forEach(function (param) {
-        url += querySign + param.index + "=" + param.data;
-        querySign = "&";
-    });
-    return url;
-}
-
 $(document).ready(
     function () {
-        $(document).on("click", "input[name='payment-option']", function () {
-            paymentMethod = $(this).data("module-name").replace("wd-", "");
-
-            if ($("#" + wrappingDiv).children().length > 0) {
-                return;
+        function processAjaxUrl(url, params)
+        {
+            var querySign = "?";
+            if (url.includes("?")) {
+                querySign = "&";
             }
-
-            getRequestData();
-        });
-
-        $(document).on("submit", "#payment-form", function (e) {
-            form = $(this);
-            placeOrder(e);
-        });
-
-        $("#new-card").on("click", function () {
-            getRequestData();
-            $("#new-card").hide();
-            $("#new-card-text").hide();
-            $("#stored-card").show();
-            $("#wirecard-vault").show();
-        });
-
-        $("#wirecard-ccvault-modal").on("show.bs.modal", function () {
-            getStoredCards();
-        });
-
-        function placeOrder(e)
-        {
-            if (cardToken === null) {
-                e.preventDefault();
-                WPP.seamlessSubmit(
-                    {
-                        onSuccess: formSubmitSuccessHandler,
-                        onError: logCallback,
-                        wrappingDivId: wrappingDiv
-                    }
-                );
-            }
-        }
-
-        function getStoredCards()
-        {
-            var params = [{
-                index: "action",
-                data: "liststoredcards"
-            }];
-            $.ajax({
-                url: processAjaxUrl(ccVaultURL, params),
-                type: "GET",
-                dataType: "json",
-                success: function (response) {
-                    buildWcdStoredCardView(response);
-                }
+            params.forEach(function (param) {
+                url += querySign + param.index + "=" + param.data;
+                querySign = "&";
             });
-        }
-
-        function getRequestData()
-        {
-            $.ajax({
-                url: configProviderURL,
-                data: {
-                    action: "getSeamlessConfig",
-                    "cartId": cartId
-                },
-                type: "GET",
-                dataType: "json",
-                success: function (response) {
-                    renderForm(JSON.parse(response));
-                },
-                error: function (response) {
-                    console.error(response);
-                }
-            });
-        }
-
-        function renderForm(config)
-        {
-            // This is always the order id
-            orderNumber = config.field_value_1;
-
-            //Show card spinner if is hidden
-            $("#card-spinner").show();
-
-            // Since we already generated an order, add the new order id to every payment method.
-            $(".js-payment-option-form form").append(
-                jQuery("<input>")
-                    .attr({
-                        type: "hidden",
-                        value: orderNumber,
-                        name: "order_number"
-                    })
-            );
-
-            WPP.seamlessRender({
-                requestData: config,
-                wrappingDivId: wrappingDiv,
-                onSuccess: resizeIframe,
-                onError: logCallback
-            });
-        }
-
-        function resizeIframe()
-        {
-            $("#card-spinner").hide();
-            $("#stored-card").removeAttr("disabled");
-            $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
-        }
-
-        function logCallback(response)
-        {
-            jQuery(document).off("submit", "#payment-form");
-
-            formHandler(response, form);
+            return url;
         }
 
         function formHandler(response, form)
         {
             for (var field in response) {
-                if (!response.hasOwnProperty(field)) {
-                    return;
+                if (response.hasOwnProperty(field)) {
+                    var value = response[field.toString()];
+
+                    jQuery("<input>")
+                        .attr({
+                            type: "hidden",
+                            value: value,
+                            name: field
+                        })
+                        .appendTo(form);
                 }
-
-                var value = response[field.toString()];
-
-                jQuery("<input>")
-                    .attr({
-                        type: "hidden",
-                        value: value,
-                        name: field
-                    })
-                    .appendTo(form);
             }
 
             if (response.hasOwnProperty("masked_account_number")) {
@@ -227,6 +109,34 @@ $(document).ready(
             }
         }
 
+        function logCallback(response)
+        {
+            jQuery(document).off("submit", "#payment-form");
+
+            formHandler(response, form);
+        }
+
+        function placeOrder(e)
+        {
+            if (cardToken === null) {
+                e.preventDefault();
+                WPP.seamlessSubmit(
+                    {
+                        onSuccess: formSubmitSuccessHandler,
+                        onError: logCallback,
+                        wrappingDivId: wrappingDiv
+                    }
+                );
+            }
+        }
+
+        function resizeIframe()
+        {
+            $("#card-spinner").hide();
+            $("#stored-card").removeAttr("disabled");
+            $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
+        }
+
         function buildWcdStoredCardView(response)
         {
             var table = $("#wirecard-ccvault-modal .modal-body table");
@@ -235,13 +145,15 @@ $(document).ready(
             table.empty();
 
             for (var row in response) {
-                var card = response[row.toString()];
-                var tr = "<tr>";
-                tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
-                tr += "<td><button class='btn btn-success' data-tokenid='" + card.token + "'><b>+</b></button>";
-                tr += " <button class='btn btn-danger' data-cardid=''" + card.cc_id + "'><b>-</b></button></td>";
-                tr += "</tr>";
-                table.append(tr);
+                if (response.hasOwnProperty(row)) {
+                    var card = response[row.toString()];
+                    var tr = "<tr>";
+                    tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
+                    tr += "<td><button class='btn btn-success' data-tokenid='" + card.token + "'><b>+</b></button>";
+                    tr += " <button class='btn btn-danger' data-cardid=''" + card.cc_id + "'><b>-</b></button></td>";
+                    tr += "</tr>";
+                    table.append(tr);
+                }
             }
 
             table.find(".btn-danger").bind("click", function () {
@@ -283,6 +195,94 @@ $(document).ready(
                 $("#new-card").show();
             });
         }
+
+        function getStoredCards()
+        {
+            var params = [{
+                index: "action",
+                data: "liststoredcards"
+            }];
+            $.ajax({
+                url: processAjaxUrl(ccVaultURL, params),
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    buildWcdStoredCardView(response);
+                }
+            });
+        }
+
+        function renderForm(config)
+        {
+            // This is always the order id
+            orderNumber = config.field_value_1;
+
+            //Show card spinner if is hidden
+            $("#card-spinner").show();
+
+            // Since we already generated an order, add the new order id to every payment method.
+            $(".js-payment-option-form form").append(
+                jQuery("<input>")
+                    .attr({
+                        type: "hidden",
+                        value: orderNumber,
+                        name: "order_number"
+                    })
+            );
+
+            WPP.seamlessRender({
+                requestData: config,
+                wrappingDivId: wrappingDiv,
+                onSuccess: resizeIframe,
+                onError: logCallback
+            });
+        }
+
+        function getRequestData()
+        {
+            $.ajax({
+                url: configProviderURL,
+                data: {
+                    action: "getSeamlessConfig",
+                    "cartId": cartId
+                },
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    renderForm(JSON.parse(response));
+                },
+                error: function (response) {
+                    console.error(response);
+                }
+            });
+        }
+
+        $(document).on("click", "input[name='payment-option']", function () {
+            paymentMethod = $(this).data("module-name").replace("wd-", "");
+
+            if ($("#" + wrappingDiv).children().length > 0) {
+                return;
+            }
+
+            getRequestData();
+        });
+
+        $(document).on("submit", "#payment-form", function (e) {
+            form = $(this);
+            placeOrder(e);
+        });
+
+        $("#new-card").on("click", function () {
+            getRequestData();
+            $("#new-card").hide();
+            $("#new-card-text").hide();
+            $("#stored-card").show();
+            $("#wirecard-vault").show();
+        });
+
+        $("#wirecard-ccvault-modal").on("show.bs.modal", function () {
+            getStoredCards();
+        });
     }
 );
 
