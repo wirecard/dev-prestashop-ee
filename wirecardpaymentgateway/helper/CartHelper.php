@@ -72,7 +72,7 @@ class CartHelper
     public function isReorderedItems()
     {
         // All orders from customer
-        $orders = Order::getCustomerOrders($this->cart->id_customer);
+        $orders = \Order::getCustomerOrders($this->cart->id_customer);
         $cartProducts = $this->cart->getProducts();
         $cartProductIds = array();
         /* @var \Product $product */
