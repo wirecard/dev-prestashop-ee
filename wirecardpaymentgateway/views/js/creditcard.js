@@ -30,7 +30,7 @@
 
 // Declaring global variables for ESLint and allowing console.error statements
 /* global cartId, WPP, configProviderURL, ccVaultURL */
-/* eslint no-console: [{allow: ["error"]}] */
+/* eslint no-console: [0, {allow: ["error"]}] */
 
 var cardToken = null;
 var form = null;
@@ -187,7 +187,7 @@ $(document).ready(
                     .appendTo(form);
             }
 
-            if (response.hasOwnProperty('masked_account_number')) {
+            if (response.hasOwnProperty("masked_account_number")) {
                 jQuery("<input>")
                     .attr({
                         type: "hidden",
@@ -206,7 +206,7 @@ $(document).ready(
         {
             cardToken = response.token_id;
 
-            if (response.hasOwnProperty('masked_account_number')&& $("#wirecard-store-card").is(":checked")) {
+            if (response.hasOwnProperty("masked_account_number")&& $("#wirecard-store-card").is(":checked")) {
                 var params = [{
                     index: "action",
                     data: "addcard"
