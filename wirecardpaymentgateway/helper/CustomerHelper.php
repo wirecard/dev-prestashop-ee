@@ -186,15 +186,27 @@ class CustomerHelper
      */
     private function countOrders($pastDate)
     {
-        $count = 0;
-        $orders = Order::getCustomerOrders($this->customer->id);
-        foreach ($orders as $order) {
-            $orderDate = $this->convertToDateTime($order['date_add']);
-            if (($orderDate > $pastDate) && $order['valid']) {
-                $count++;
-            }
+        $customer_id = (int)$this->customer->id;
+        $pastDate = $pastDate->format(DateTime::ISO8601);
+        $valid_states = [
+            (int)\Configuration::get('PS_OS_PAYMENT'),
+            (int)\Configuration::get('PS_OS_PREPARATION'),
+            (int)\Configuration::get('PS_OS_CANCELED'),
+            (int)\Configuration::get('PS_OS_REFUND'),
+            (int)\Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION),
+        ];
+        //id_order, current_state, valid, id_customer, total_paid, date_add
+        $sql = "SELECT COUNT(*) AS count
+                FROM ps_orders
+                WHERE valid=1 AND current_state IN (".implode(',', $valid_states).") AND date_add >= '$pastDate' AND date_add < NOW() AND id_customer=$customer_id";
+
+        $res = \Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
+        if (!$res) {
+            return 0;
         }
-        return $count;
+
+        return $res['count'];
     }
 
 
