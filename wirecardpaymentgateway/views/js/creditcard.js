@@ -109,6 +109,11 @@ $(document).ready(
             }
         }
 
+        function formSubmitErrorHandler()
+        {
+            getRequestData();
+        }
+
         function logCallback(response)
         {
             jQuery(document).off("submit", "#payment-form");
@@ -123,10 +128,19 @@ $(document).ready(
                 WPP.seamlessSubmit(
                     {
                         onSuccess: formSubmitSuccessHandler,
-                        onError: logCallback,
+                        onError: formSubmitErrorHandler,
                         wrappingDivId: wrappingDiv
                     }
                 );
+            }
+        }
+
+        function enableCheckoutButtonIfPermitted()
+        {
+            var checkmarkWasChecked = $("#conditions-to-approve input[type=checkbox]").prop("checked");
+
+            if (checkmarkWasChecked) {
+                $("#payment-confirmation button").removeAttr("disabled");
             }
         }
 
@@ -134,6 +148,9 @@ $(document).ready(
         {
             $("#card-spinner").hide();
             $("#stored-card").removeAttr("disabled");
+
+            enableCheckoutButtonIfPermitted();
+
             $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
         }
 
