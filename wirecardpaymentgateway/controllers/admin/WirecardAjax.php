@@ -42,6 +42,7 @@ use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Symfony\Component\HttpFoundation\Response;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * Class WirecardAjaxController
@@ -113,7 +114,7 @@ class WirecardAjaxController extends ModuleAdminController
     private function validatePaymentMethod($base_url, $http_user, $http_pass, $wpp_url, $method)
     {
         $status = $this->validateBaseUrl($base_url) && $this->validateCredentials($base_url, $http_user, $http_pass);
-        if ($method == 'creditcard' && $status) {
+        if ($method == PaymentCreditCard::TYPE && $status) {
             $status = $this->validateBaseUrl($wpp_url);
             if (!UrlConfigurationChecker::isUrlConfigurationValid($base_url, $wpp_url)) {
                 throw new \Exception($this->l('warning_credit_card_url_mismatch'));
@@ -135,8 +136,8 @@ class WirecardAjaxController extends ModuleAdminController
     private function validateCredentials($base_url, $http_user, $http_pass)
     {
         $config = new Config($base_url, $http_user, $http_pass);
-        $transactionService = new TransactionService($config, new Logger());
-        return $transactionService->checkCredentials();
+        $transaction_service = new TransactionService($config, new Logger());
+        return $transaction_service->checkCredentials();
     }
 
     /**
