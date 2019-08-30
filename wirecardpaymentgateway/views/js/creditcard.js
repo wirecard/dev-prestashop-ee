@@ -40,19 +40,6 @@ var wrappingDiv = "payment-processing-gateway-credit-card-form";
 
 $(document).ready(
     function () {
-        function processAjaxUrl(url, params)
-        {
-            var querySign = "?";
-            if (url.includes("?")) {
-                querySign = "&";
-            }
-            params.forEach(function (param) {
-                url += querySign + param.index + "=" + param.data;
-                querySign = "&";
-            });
-            return url;
-        }
-
         function formHandler(response, form)
         {
             for (var field in response) {
@@ -82,6 +69,92 @@ $(document).ready(
             if (form !== null) {
                 form.submit();
             }
+        }
+
+        function logCallback(response)
+        {
+            jQuery(document).off("submit", "#payment-form");
+
+            formHandler(response, form);
+        }
+
+        function processAjaxUrl(url, params)
+        {
+            var querySign = "?";
+            if (url.includes("?")) {
+                querySign = "&";
+            }
+            params.forEach(function (param) {
+                url += querySign + param.index + "=" + param.data;
+                querySign = "&";
+            });
+            return url;
+        }
+
+
+        function enableCheckoutButtonIfPermitted()
+        {
+            var checkmarkWasChecked = $("#conditions-to-approve input[type=checkbox]").prop("checked");
+
+            if (checkmarkWasChecked) {
+                $("#payment-confirmation button").removeAttr("disabled");
+            }
+        }
+
+        function resizeIframe()
+        {
+            $("#card-spinner").hide();
+            $("#stored-card").removeAttr("disabled");
+
+            enableCheckoutButtonIfPermitted();
+
+            $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
+        }
+
+
+        function renderForm(config)
+        {
+            // This is always the order id
+            orderNumber = config.field_value_1;
+
+            //Show card spinner if is hidden
+            $("#card-spinner").show();
+
+            // Since we already generated an order, add the new order id to every payment method.
+            $(".js-payment-option-form form").append(
+                jQuery("<input>")
+                    .attr({
+                        type: "hidden",
+                        value: orderNumber,
+                        name: "order_number"
+                    })
+            );
+
+            WPP.seamlessRender({
+                requestData: config,
+                wrappingDivId: wrappingDiv,
+                onSuccess: resizeIframe,
+                onError: logCallback
+            });
+        }
+
+        function getRequestData()
+        {
+            $.ajax({
+                url: configProviderURL,
+                data: {
+                    action: "getSeamlessConfig",
+                    "cartId": cartId
+                },
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    renderForm(JSON.parse(response));
+                },
+                error: function (response) {
+                    console.error(response);
+                }
+            });
         }
 
         function formSubmitSuccessHandler(response)
@@ -114,13 +187,6 @@ $(document).ready(
             getRequestData();
         }
 
-        function logCallback(response)
-        {
-            jQuery(document).off("submit", "#payment-form");
-
-            formHandler(response, form);
-        }
-
         function placeOrder(e)
         {
             if (cardToken === null) {
@@ -133,25 +199,6 @@ $(document).ready(
                     }
                 );
             }
-        }
-
-        function enableCheckoutButtonIfPermitted()
-        {
-            var checkmarkWasChecked = $("#conditions-to-approve input[type=checkbox]").prop("checked");
-
-            if (checkmarkWasChecked) {
-                $("#payment-confirmation button").removeAttr("disabled");
-            }
-        }
-
-        function resizeIframe()
-        {
-            $("#card-spinner").hide();
-            $("#stored-card").removeAttr("disabled");
-
-            enableCheckoutButtonIfPermitted();
-
-            $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
         }
 
         function buildWcdStoredCardView(response)
@@ -225,51 +272,6 @@ $(document).ready(
                 dataType: "json",
                 success: function (response) {
                     buildWcdStoredCardView(response);
-                }
-            });
-        }
-
-        function renderForm(config)
-        {
-            // This is always the order id
-            orderNumber = config.field_value_1;
-
-            //Show card spinner if is hidden
-            $("#card-spinner").show();
-
-            // Since we already generated an order, add the new order id to every payment method.
-            $(".js-payment-option-form form").append(
-                jQuery("<input>")
-                    .attr({
-                        type: "hidden",
-                        value: orderNumber,
-                        name: "order_number"
-                    })
-            );
-
-            WPP.seamlessRender({
-                requestData: config,
-                wrappingDivId: wrappingDiv,
-                onSuccess: resizeIframe,
-                onError: logCallback
-            });
-        }
-
-        function getRequestData()
-        {
-            $.ajax({
-                url: configProviderURL,
-                data: {
-                    action: "getSeamlessConfig",
-                    "cartId": cartId
-                },
-                type: "GET",
-                dataType: "json",
-                success: function (response) {
-                    renderForm(JSON.parse(response));
-                },
-                error: function (response) {
-                    console.error(response);
                 }
             });
         }
