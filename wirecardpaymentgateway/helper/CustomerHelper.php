@@ -198,7 +198,8 @@ class CustomerHelper
         //id_order, current_state, valid, id_customer, total_paid, date_add
         $sql = "SELECT COUNT(*) AS count
                 FROM ps_orders
-                WHERE valid=1 AND current_state IN (".implode(',', $valid_states).") AND date_add >= '$pastDate' AND date_add < NOW() AND id_customer=$customer_id";
+                WHERE valid=1 AND current_state IN (".implode(',', $valid_states).")
+                              AND date_add >= '$pastDate' AND date_add < NOW() AND id_customer=$customer_id";
 
         $res = \Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
 
