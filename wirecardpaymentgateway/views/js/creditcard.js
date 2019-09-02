@@ -189,7 +189,7 @@ $(document).ready(
 
         function placeOrder(e)
         {
-            if (cardToken === null) {
+            if (cardToken === null && paymentMethod === 'creditcard') {
                 e.preventDefault();
                 WPP.seamlessSubmit(
                     {
