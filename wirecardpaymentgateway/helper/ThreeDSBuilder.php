@@ -85,7 +85,8 @@ class ThreeDSBuilder
 
         $accountInfo = $this->getAccountInfo($customer, $cart);
         $accountHolder->setAccountInfo($accountInfo);
-        $accountHolder->setCrmId($this->getMerchantCrmId($customer));
+        $crmId = $this->getMerchantCrmId($customer);
+        $accountHolder->setCrmId($crmId);
         $transaction->setAccountHolder($accountHolder);
 
         $riskInfo = $this->getRiskInfo($customer, $cart);
