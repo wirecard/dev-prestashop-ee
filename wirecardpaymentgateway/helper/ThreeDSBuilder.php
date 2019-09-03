@@ -56,11 +56,6 @@ class ThreeDSBuilder
     private $customerHelper;
 
     /**
-     * @var CartHelper $cartHelper
-     */
-    private $cartHelper;
-
-    /**
      * ThreeDSBuilder constructor.
      */
     public function __construct()
@@ -88,14 +83,12 @@ class ThreeDSBuilder
             $customer->lastname
         );
 
-        $this->cartHelper = new CartHelper($cart);
-
         $accountInfo = $this->getAccountInfo($customer, $cart);
         $accountHolder->setAccountInfo($accountInfo);
         $accountHolder->setCrmId($this->getMerchantCrmId($customer));
         $transaction->setAccountHolder($accountHolder);
 
-        $riskInfo = $this->getRiskInfo($customer);
+        $riskInfo = $this->getRiskInfo($customer, $cart);
         $transaction->setRiskInfo($riskInfo);
         $transaction->setIsoTransactionType(IsoTransactionType::GOODS_SERVICE_PURCHASE);
         return $transaction;
@@ -150,18 +143,22 @@ class ThreeDSBuilder
     /**
      * Get risk info.
      * @param \Customer $customer
+     * @param \Cart $cart
      * @return RiskInfo
      *
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      * @since 2.2.0
      */
-    private function getRiskInfo($customer)
+    private function getRiskInfo($customer, $cart)
     {
         $riskInfo = new RiskInfo();
+        $cartHelper = new CartHelper($cart);
         $riskInfo->setDeliveryEmailAddress($customer->email);
         if (!$customer->isGuest()) {
-            $riskInfo->setReorderItems($this->cartHelper->isReorderedItems());
+            $riskInfo->setReorderItems($cartHelper->isReorderedItems());
         }
-        $riskInfo->setAvailability($this->cartHelper->checkAvailability());
+        $riskInfo->setAvailability($cartHelper->checkAvailability());
         return $riskInfo;
     }
 }
