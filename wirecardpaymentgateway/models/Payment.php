@@ -44,7 +44,7 @@ use Wirecard\PaymentSdk\Config\Config;
  *
  * @since 1.0.0
  */
-class Payment
+abstract class Payment
 {
     /**
      * @var array
@@ -264,10 +264,7 @@ class Payment
      * @return null
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
-    {
-        return null;
-    }
+    abstract public function createTransaction($module, $cart, $values, $orderId);
 
     /**
      * Set a template to display additional information
