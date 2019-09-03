@@ -81,22 +81,27 @@ matrix:
     - bash .bin/upload-logs-and-notify.sh fail
 
   - <<: *acceptance-test
+    if: type = cron
     env:
     - GATEWAY=API-TEST
     - PRESTASHOP_RELEASE_VERSION=2
   - <<: *acceptance-test
+    if: type = cron
     env:
     - GATEWAY=API-TEST
     - PRESTASHOP_RELEASE_VERSION=3
   - <<: *acceptance-test
+    if: type = cron
     env:
     - GATEWAY=API-WDCEE-TEST
     - PRESTASHOP_RELEASE_VERSION=1
   - <<: *acceptance-test
+    if: type = cron
     env:
     - GATEWAY=API-WDCEE-TEST
     - PRESTASHOP_RELEASE_VERSION=2
   - <<: *acceptance-test
+    if: type = cron
     env:
     - GATEWAY=API-WDCEE-TEST
     - PRESTASHOP_RELEASE_VERSION=3
