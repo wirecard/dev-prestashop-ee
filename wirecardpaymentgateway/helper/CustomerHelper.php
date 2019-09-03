@@ -73,6 +73,12 @@ class CustomerHelper
     private $tokenId;
 
     /**
+     * @var array
+     * @since 2.3.0
+     */
+    private $validOrderStates;
+
+    /**
      * CustomerHelper constructor.
      * @param \Customer $customer
      * @param int $orderId
@@ -83,10 +89,17 @@ class CustomerHelper
      */
     public function __construct($customer, $orderId, $challengeInd, $tokenId)
     {
-        $this->customer      = $customer;
-        $this->currentOrder = $orderId;
-        $this->challengeInd = $challengeInd;
-        $this->tokenId      = $tokenId;
+        $this->customer         = $customer;
+        $this->currentOrder     = $orderId;
+        $this->challengeInd     = $challengeInd;
+        $this->tokenId          = $tokenId;
+        $this->validOrderStates = [
+            (int)\Configuration::get('PS_OS_PAYMENT'),
+            (int)\Configuration::get('PS_OS_PREPARATION'),
+            (int)\Configuration::get('PS_OS_CANCELED'),
+            (int)\Configuration::get('PS_OS_REFUND'),
+            (int)\Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION),
+        ];
     }
 
     /**
@@ -142,7 +155,7 @@ class CustomerHelper
     }
 
     /**
-     * Get Customers date of account update
+     * Get Customers date of password change
      * @return DateTime
      *
      * @since 2.2.0
@@ -188,17 +201,10 @@ class CustomerHelper
     {
         $customer_id = (int)$this->customer->id;
         $pastDate = $pastDate->format(DateTime::ISO8601);
-        $valid_states = [
-            (int)\Configuration::get('PS_OS_PAYMENT'),
-            (int)\Configuration::get('PS_OS_PREPARATION'),
-            (int)\Configuration::get('PS_OS_CANCELED'),
-            (int)\Configuration::get('PS_OS_REFUND'),
-            (int)\Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION),
-        ];
-        //id_order, current_state, valid, id_customer, total_paid, date_add
+
         $sql = "SELECT COUNT(*) AS count
                 FROM ps_orders
-                WHERE valid=1 AND current_state IN (".implode(',', $valid_states).")
+                WHERE valid=1 AND current_state IN (".implode(',', $this->validOrderStates).")
                               AND date_add >= '$pastDate' AND date_add < NOW() AND id_customer=$customer_id";
 
         $res = \Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
@@ -237,10 +243,10 @@ class CustomerHelper
     private function convertToDateTime($time)
     {
         try {
-            $dateAdd = new DateTime($time);
+            $date = new DateTime($time);
         } catch (\Exception $e) {
-            $dateAdd = null;
+            $date = null;
         }
-        return $dateAdd;
+        return $date;
     }
 }
