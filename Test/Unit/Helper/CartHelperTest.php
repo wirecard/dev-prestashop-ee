@@ -39,31 +39,24 @@ use WirecardEE\Prestashop\Helper\CartHelper;
  */
 class CartHelperTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var \Cart $cart
-     */
-    private $cart;
-    /**
-     * @var CartHelper $cartHelper
-     */
-    private $cartHelper;
 
-    public function setUp()
+    private function newCartHelper()
     {
-        $this->cart = new \Cart(123);
-        $this->cartHelper = new CartHelper($this->cart);
+        $cart = new \Cart(123);
+        return new CartHelper($cart);
     }
 
     public function testIsReorderedItemsTrue()
     {
-        $actual = $this->cartHelper->isReorderedItems();
+        $actual = $this->newCartHelper()->isReorderedItems();
         $this->assertEquals(RiskInfoReorder::REORDERED, $actual);
     }
 
     public function testIsReorderedItemsFalse()
     {
-        $cart = new Cart();
-        $cart->setProducts([
+        $cartHelper = $this->newCartHelper();
+
+        $cartHelper->getCart()->setProducts([
                 0 => [
                     'id_product'        => 3,
                     'cart_quantity'     => 1,
@@ -74,21 +67,20 @@ class CartHelperTest extends \PHPUnit_Framework_TestCase
                     'reference'         => 'reference'
                 ]
             ]);
-        $this->cartHelper->setCart($cart);
-        $actual = $this->cartHelper->isReorderedItems();
+        $actual = $cartHelper->isReorderedItems();
         $this->assertEquals(RiskInfoReorder::FIRST_TIME_ORDERED, $actual);
     }
 
     public function testCheckAvailabilityAvailableNow()
     {
-        $actual = $this->cartHelper->checkAvailability();
+        $actual = $this->newCartHelper()->checkAvailability();
         $this->assertEquals(RiskInfoAvailability::MERCHANDISE_AVAILABLE, $actual);
     }
 
     public function testCheckAvailabilityAvailableInFuture()
     {
-        $cart = new Cart();
-        $cart->setProducts([
+        $cartHelper = $this->newCartHelper();
+        $cartHelper->getCart()->setProducts([
                 0 => [
                     'id_product'        => 3,
                     'cart_quantity'     => 2,
@@ -99,8 +91,7 @@ class CartHelperTest extends \PHPUnit_Framework_TestCase
                     'reference'         => 'reference'
                 ]
             ]);
-        $this->cartHelper->setCart($cart);
-        $actual = $this->cartHelper->checkAvailability();
+        $actual = $cartHelper->checkAvailability();
         $this->assertEquals(RiskInfoAvailability::FUTURE_AVAILABILITY, $actual);
     }
 }

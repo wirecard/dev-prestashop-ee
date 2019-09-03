@@ -54,6 +54,8 @@ class CartHelper
     /**
      * CartHelper constructor.
      * @param \Cart $cart
+     *
+     * @since 2.3.0
      */
     public function __construct(\Cart $cart)
     {
@@ -62,10 +64,13 @@ class CartHelper
 
     /**
      * @param $cart
+     * @return \Cart
+     *
+     * @since 2.3.0
      */
-    public function setCart($cart)
+    public function getCart()
     {
-        $this->cart = $cart;
+        return $this->cart;
     }
 
     /**
