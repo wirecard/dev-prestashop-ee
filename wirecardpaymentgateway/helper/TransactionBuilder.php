@@ -247,7 +247,8 @@ class TransactionBuilder
      */
     private function addThreeDsFields()
     {
-        $challengeInd = $this->module->getConfigValue($this->paymentType, 'requestor_challenge');
+        $configService = new ShopConfigurationService($this->paymentType);
+        $challengeInd = $configService->getField('requestor_challenge');
         $this->transaction = $this->threeDsBuilder->getThreeDsTransaction(
             $this->cart,
             $this->orderId,

@@ -33,6 +33,13 @@
  * @license GPLv3
  */
 
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
+    DIRECTORY_SEPARATOR.'wirecard'.DIRECTORY_SEPARATOR.'payment-sdk-php'.
+    DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Constant/ChallengeInd.php');
+
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'helper'
+    .DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'ShopConfigurationService.php');
+
 use Wirecard\PaymentSdk\Constant\ChallengeInd;
 
 if (!defined('_PS_VERSION_')) {
@@ -48,7 +55,8 @@ if (!defined('_PS_VERSION_')) {
 function upgrade_module_2_2_0($module)
 {
     // Set new parameter requestor_challenge
-    $requestorChallengeParam = $module->buildParamName('creditcard', 'requestor_challenge');
+    $configService = new \WirecardEE\Prestashop\Helper\Service\ShopConfigurationService('creditcard');
+    $requestorChallengeParam = $configService->getFieldName('requestor_challenge');
     Configuration::updateGlobalValue($requestorChallengeParam, ChallengeInd::NO_PREFERENCE);
 
     // add new fields date_add and date_last_used in wirecard_payment_gateway_cc
