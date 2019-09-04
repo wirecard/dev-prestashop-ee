@@ -118,6 +118,9 @@ class Configuration
                 break;
             case 'WIRECARD_OS_AUTHORIZATION':
                 return 0;
+            case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_REQUESTOR_CHALLENGE':
+                return '02';
+
             default:
                 return $param;
         }
