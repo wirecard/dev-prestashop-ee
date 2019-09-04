@@ -56,8 +56,8 @@ function upgrade_module_2_2_0($module)
 {
     // Set new parameter requestor_challenge
     $configService = new \WirecardEE\Prestashop\Helper\Service\ShopConfigurationService('creditcard');
-    $requestorChallengeParam = $configService->getFieldName('requestor_challenge');
-    Configuration::updateGlobalValue($requestorChallengeParam, ChallengeInd::NO_PREFERENCE);
+    $requestorChallenge = $configService->getFieldName('requestor_challenge');
+    Configuration::updateGlobalValue($requestorChallenge, ChallengeInd::NO_PREFERENCE);
 
     // add new fields date_add and date_last_used in wirecard_payment_gateway_cc
     $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_cc`';

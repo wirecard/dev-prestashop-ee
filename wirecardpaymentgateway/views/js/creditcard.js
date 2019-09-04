@@ -111,25 +111,6 @@ $(document).ready(
             $("#" + wrappingDiv + " > iframe").height($(window).width() < 992 ? 410 : 390);
         }
 
-        function getRequestData()
-        {
-            $.ajax({
-                url: configProviderURL,
-                data: {
-                    action: 'getSeamlessConfig',
-                    'cartId': cartId
-                },
-                type: "GET",
-                dataType: 'json',
-                success: function (response) {
-                    renderForm(response);
-                },
-                error: function (response) {
-                    console.log(response);
-                }
-            });
-        }
-
         function renderForm(config)
         {
             // This is always the order id
@@ -153,6 +134,24 @@ $(document).ready(
                 wrappingDivId: wrappingDiv,
                 onSuccess: resizeIframe,
                 onError: logCallback
+            });
+        }
+        function getRequestData()
+        {
+            $.ajax({
+                url: configProviderURL,
+                data: {
+                    action: "getSeamlessConfig",
+                    "cartId": cartId,
+                },
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    renderForm(response);
+                },
+                error: function (response) {
+                    //console.log(response);
+                }
             });
         }
 

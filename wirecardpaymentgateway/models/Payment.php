@@ -326,9 +326,8 @@ abstract class Payment extends PaymentOption
     {
         if (isset($this->templateData)) {
             return $this->templateData;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -376,17 +375,5 @@ abstract class Payment extends PaymentOption
         $paymentOption->setForm($this->getFormTemplateWithData());
 
         return $paymentOption;
-    }
-
-    /**
-     * Returns the lower case class name of the child class
-     *
-     * @return string
-     * @since 1.3.4
-     */
-    private function getClassNameLower()
-    {
-        $class = get_class($this);
-        return \Tools::strtolower(\Tools::substr($class, strrpos($class, '\\') + 1));
     }
 }
