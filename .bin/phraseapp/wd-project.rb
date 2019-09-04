@@ -36,6 +36,7 @@ class WdProject
   def has_key_changes?
     source_keys = TranslationBuilder.get_all_keys
     translated_keys = TranslationBuilder.get_translated_keys(@translations_path)
+    changed_keys = translated_keys - source_keys
 
     @log.info("Number of unique keys in source: #{source_keys.length}")
     @log.info("Number of keys on PhraseApp: #{translated_keys.length}")
@@ -50,6 +51,7 @@ class WdProject
 
     if has_key_changes || source_keys.length != translated_keys.length
       @log.warn('Changes to translatable keys have been detected in the working tree.'.yellow.bright)
+      @log.warn("Changed keys: #{changed_keys.inspect}".yellow.bright)
       return true
     end
 
