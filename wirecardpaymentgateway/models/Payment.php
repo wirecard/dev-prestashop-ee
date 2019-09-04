@@ -132,9 +132,12 @@ abstract class Payment extends PaymentOption
     public function __construct()
     {
         $context = \Context::getContext();
-        $logoPath = \Media::getMediaPath(
-            _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME . '/views/img/paymenttypes/' . static::TYPE . '.png'
-        );
+
+        $potentialPath = _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME
+                         . '/views/img/paymenttypes/' . static::TYPE . '.png';
+
+        $logoPath = file_exists($potentialPath) ? \Media::getMediaPath($potentialPath) : '';
+
         $this->action_link = $context->link->getModuleLink(
             \WirecardPaymentGateway::NAME,
             'payment',

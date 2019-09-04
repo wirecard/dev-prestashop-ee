@@ -40,6 +40,8 @@ use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\ModuleHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Models\PaymentPoiPia;
 
 /**
  * Class Success
@@ -69,6 +71,9 @@ final class Success implements ProcessablePaymentResponse
     /** @var ContextService  */
     private $context_service;
 
+    /** @var ShopConfigurationService */
+    private $configuration_service;
+
     /**
      * SuccessResponseProcessing constructor.
      *
@@ -85,6 +90,7 @@ final class Success implements ProcessablePaymentResponse
         $this->customer = new \Customer((int) $this->cart->id_customer);
         $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
         $this->context_service = new ContextService(\Context::getContext());
+        $this->configuration_service = new ShopConfigurationService(PaymentPoiPia::TYPE);
     }
 
     /**
@@ -100,7 +106,7 @@ final class Success implements ProcessablePaymentResponse
         }
 
         if ($this->response->getPaymentMethod() === 'wiretransfer' &&
-            $this->module->getConfigValue('poipia', 'payment_type') === 'pia') {
+            $this->configuration_service->getField('payment_type') === 'pia') {
             $this->context_service->setPiaCookie($this->response);
         }
 
