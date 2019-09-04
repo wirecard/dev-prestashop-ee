@@ -49,6 +49,8 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 
+define('IS_CORE', false);
+
 /**
  * Class WirecardPaymentGateway
  *
@@ -494,7 +496,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->context->smarty->assign(array(
             'shopversion' => _PS_VERSION_,
             'pluginversion' => $this->version,
-            'integration' => IS_CORE ? 'EE_Core' : 'EE',
+            'integration' => 'EE',
         ));
 
         return $this->display(__FILE__, 'infos.tpl');
