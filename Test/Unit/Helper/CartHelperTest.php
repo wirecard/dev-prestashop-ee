@@ -84,7 +84,7 @@ class CartHelperTest extends \PHPUnit_Framework_TestCase
         $cartHelper->getCart()->setProducts([
                 0 => [
                     'id_product'        => 3,
-                    'cart_quantity'     => 2,
+                    'cart_quantity'     => 0,
                     'total_wt'          => 2,
                     'name'              => 'Product 3',
                     'total'             => 100,
@@ -92,6 +92,9 @@ class CartHelperTest extends \PHPUnit_Framework_TestCase
                     'reference'         => 'reference'
                 ]
             ]);
+
+        fwrite(STDERR, print_r($cartHelper->getCart(), true));
+
         $actual = $cartHelper->checkAvailability();
         $this->assertEquals(RiskInfoAvailability::FUTURE_AVAILABILITY, $actual);
     }
