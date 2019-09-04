@@ -28,8 +28,8 @@
     "upload-coverage": "codacycoverage clover build/coverage/xml",
     "cs-check": "phpcs",
     "cs-fix": "phpcbf",
-    "test": "phpunit --colors=always",
-    "test-coverage": "phpunit --coverage-clover build/coverage/xml"
+    "test": "phpunit --exclude-group ignore --colors=always",
+    "test-coverage": "phpunit --exclude-group ignore --coverage-clover build/coverage/xml"
   },
   "autoload": {
     "psr-4": {

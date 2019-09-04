@@ -110,14 +110,4 @@ class CustomerHelperTest extends \PHPUnit_Framework_TestCase
         $actual = $this->customerHelper->getShippingAddressFirstUse(1);
         $this->assertEquals(new DateTime('2019-08-09 10:59:01'), $actual);
     }
-
-    public function testGetSuccessfulOrdersLastSixMonths()
-    {
-        $actual = $this->customerHelper->getSuccessfulOrdersLastSixMonths();
-        $this->assertEquals(3, $actual);
-    }
-
-    public function testgetCardCreationDate()
-    {
-    }
 }
