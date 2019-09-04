@@ -38,7 +38,6 @@ namespace WirecardEE\Prestashop\Classes\Response;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\ModuleHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
@@ -90,7 +89,7 @@ final class Success implements ProcessablePaymentResponse
         $this->customer = new \Customer((int) $this->cart->id_customer);
         $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
         $this->context_service = new ContextService(\Context::getContext());
-        $this->configuration_service = new ShopConfigurationService(PaymentPoiPia::TYPE);
+        $this->configuration_service = new ShopConfigurationService('wiretransfer');
     }
 
     /**
