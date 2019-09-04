@@ -212,7 +212,7 @@ class PaymentIdeal extends Payment
      * @return array
      * @since 1.0.0
      */
-    protected function getFormTemplateData()
+    public function getFormTemplateData()
     {
         return array(
             'banks' => array(

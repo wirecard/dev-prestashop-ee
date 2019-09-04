@@ -510,7 +510,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         return $currencies;
     }
 
-    protected function getFormTemplateData()
+    public function getFormTemplateData()
     {
         return array(
           'device_identification' => DeviceIdentificationHelper::generateFingerprint()

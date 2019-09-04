@@ -351,7 +351,7 @@ class PaymentCreditCard extends Payment
      * @since 2.1.0 Change method name and use new configuration
      * @since 1.0.0
      */
-    protected function getFormTemplateData()
+    public function getFormTemplateData()
     {
         $ccVaultEnabled = $this->configuration->getField('ccvault_enabled');
 
