@@ -39,4 +39,8 @@ class Smarty
     {
         return $string;
     }
+
+    public function fetch($template) {
+        return $template;
+    }
 }

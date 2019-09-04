@@ -50,19 +50,29 @@ use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 class PaymentIdeal extends Payment
 {
     /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TYPE = IdealTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.1.0
+     */
+    const TRANSLATION_FILE = "paymentideal";
+
+    /**
      * PaymentiDEAL constructor.
      *
      * @since 1.0.0
      */
-    public function __construct($module)
+    public function __construct()
     {
-        parent::__construct($module);
+        parent::__construct();
 
-        $this->type = 'ideal';
+        $this->type = self::TYPE;
         $this->name = 'Wirecard iDEAL';
         $this->formFields = $this->createFormFields();
-        $this->setAdditionalInformationTemplate($this->type, $this->setTemplateData());
-        $this->setLoadJs(true);
 
         $this->refund  = array('debit');
     }
@@ -163,29 +173,6 @@ class PaymentIdeal extends Payment
     }
 
     /**
-     * Create config for iDEAL transactions
-     *
-     * @param \WirecardPaymentGateway $paymentModule
-     * @return \Wirecard\PaymentSdk\Config\Config
-     * @since 1.0.0
-     */
-    public function createPaymentConfig($paymentModule)
-    {
-        $baseUrl  = $paymentModule->getConfigValue($this->type, 'base_url');
-        $httpUser = $paymentModule->getConfigValue($this->type, 'http_user');
-        $httpPass = $paymentModule->getConfigValue($this->type, 'http_pass');
-
-        $merchantAccountId = $paymentModule->getConfigValue($this->type, 'merchant_account_id');
-        $secret = $paymentModule->getConfigValue($this->type, 'secret');
-
-        $config = $this->createConfig($baseUrl, $httpUser, $httpPass);
-        $paymentConfig = new PaymentMethodConfig(IdealTransaction::NAME, $merchantAccountId, $secret);
-        $config->add($paymentConfig);
-
-        return $config;
-    }
-
-    /**
      * Create ideal transaction
      *
      * @param \WirecardPaymentGateway $module
@@ -215,7 +202,7 @@ class PaymentIdeal extends Payment
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepaCreditTransfer($module);
+        $sepa = new PaymentSepaCreditTransfer();
         return $sepa->createRefundTransaction($transactionData, $module);
     }
 
@@ -225,19 +212,21 @@ class PaymentIdeal extends Payment
      * @return array
      * @since 1.0.0
      */
-    private function setTemplateData()
+    protected function getFormTemplateData()
     {
-        return array('banks' => array(
-            array('key' => IdealBic::ABNANL2A, 'label' => 'ABN Amro Bank'),
-            array('key' => IdealBic::ASNBNL21, 'label' => 'ASN Bank'),
-            array('key' => IdealBic::BUNQNL2A, 'label' => 'bunq'),
-            array('key' => IdealBic::INGBNL2A, 'label' => 'ING'),
-            array('key' => IdealBic::KNABNL2H, 'label' => 'Knab'),
-            array('key' => IdealBic::RABONL2U, 'label' => 'Rabobank'),
-            array('key' => IdealBic::RGGINL21, 'label' => 'Regio Bank'),
-            array('key' => IdealBic::SNSBNL2A, 'label' => 'SNS Bank'),
-            array('key' => IdealBic::TRIONL2U, 'label' => 'Triodos Bank'),
-            array('key' => IdealBic::FVLBNL22, 'label' => 'Van Lanschot Bankiers')
-        ));
+        return array(
+            'banks' => array(
+                array('key' => IdealBic::ABNANL2A, 'label' => 'ABN Amro Bank'),
+                array('key' => IdealBic::ASNBNL21, 'label' => 'ASN Bank'),
+                array('key' => IdealBic::BUNQNL2A, 'label' => 'bunq'),
+                array('key' => IdealBic::INGBNL2A, 'label' => 'ING'),
+                array('key' => IdealBic::KNABNL2H, 'label' => 'Knab'),
+                array('key' => IdealBic::RABONL2U, 'label' => 'Rabobank'),
+                array('key' => IdealBic::RGGINL21, 'label' => 'Regio Bank'),
+                array('key' => IdealBic::SNSBNL2A, 'label' => 'SNS Bank'),
+                array('key' => IdealBic::TRIONL2U, 'label' => 'Triodos Bank'),
+                array('key' => IdealBic::FVLBNL22, 'label' => 'Van Lanschot Bankiers')
+            )
+        );
     }
 }

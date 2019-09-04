@@ -49,6 +49,7 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->gateway = new \WirecardPaymentGateway();
+        $this->gateway->context->controller = new Controller();
     }
 
     public function testConfiguration()
@@ -110,15 +111,6 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
         $actual = $this->gateway->getPaymentFromType('invalidpayment');
 
         $this->assertFalse($actual);
-    }
-
-    public function testGetConfigValue()
-    {
-        $actual = $this->gateway->getConfigValue('paypal', 'title');
-
-        $expected = 'WIRECARD_PAYMENT_GATEWAY_PAYPAL_TITLE';
-
-        $this->assertEquals($expected, $actual);
     }
 
     public function testRedirectUrl()

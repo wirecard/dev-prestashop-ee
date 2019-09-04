@@ -40,6 +40,7 @@ use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\Entity\Redirect;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\Payment;
 
 class TransactionBuilder
@@ -80,6 +81,9 @@ class TransactionBuilder
     /** @var CurrencyHelper */
     private $currencyHelper;
 
+    /** @var ShopConfigurationService */
+    private $shopConfigService;
+
     /**
      * TransactionBuilder constructor.
      * @param \WirecardPaymentGateway $module
@@ -93,6 +97,7 @@ class TransactionBuilder
         $this->module = $module;
         $this->context = $context;
         $this->paymentType = $paymentType;
+        $this->shopConfigService = new ShopConfigurationService($paymentType);
         $this->cart = new \Cart((int) $cartId);
         $this->currency = new \Currency($this->cart->id_currency);
         $this->customFields = new CustomFieldCollection();
@@ -213,7 +218,7 @@ class TransactionBuilder
      */
     private function addBasket()
     {
-        if ($this->module->getConfigValue($this->paymentType, 'shopping_basket')) {
+        if ($this->shopConfigService->getField('shopping_basket')) {
             $this->transaction->setBasket(
                 $this->additionalInformationBuilder->createBasket(
                     $this->cart,
@@ -231,7 +236,7 @@ class TransactionBuilder
      */
     private function addDescriptor()
     {
-        if ($this->module->getConfigValue($this->paymentType, 'descriptor')) {
+        if ($this->shopConfigService->getField('descriptor')) {
             $this->transaction->setDescriptor($this->additionalInformationBuilder->createDescriptor($this->orderId));
         }
     }
@@ -259,7 +264,7 @@ class TransactionBuilder
      */
     private function addAdditionalInformation()
     {
-        if ($this->module->getConfigValue($this->paymentType, 'send_additional')) {
+        if ($this->shopConfigService->getField('send_additional')) {
             $firstName = null;
             $lastName = null;
 

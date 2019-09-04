@@ -54,7 +54,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
     public function displayAjaxGetSeamlessConfig()
     {
         $cartId = Tools::getValue('cartId');
-        $payment =  new PaymentCreditCard($this->module);
+        $payment = new PaymentCreditCard();
 
         try {
             $requestData = $payment->getRequestData($this->module, $this->context, $cartId);

@@ -41,43 +41,17 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     private $paymentModule;
 
-    private $config;
-
     private $transactionData;
 
     public function setUp()
     {
-        $this->config =
-            array(
-            'base_url'=>'base_url',
-            'wpp_url'=>'wpp_url',
-            'payment_action' => 'authorization',
-            'http_user' => 'http_user',
-            'http_pass' => 'http_pass',
-            'merchant_account_id' => 'merchant_account_id',
-            'secret'=> 'secret',
-            'three_d_merchant_account_id'=>'three_d_merchant_account_id',
-            'three_d_secret'=> 'three_d_secret',
-            'send_additional'=> true,
-            'ssl_max_limit' =>  50.0,
-            'three_d_min_limit' => 150.0,
-            'shopping_basket' => true,
-            'descriptor' => true,
-            'requestor_challenge' => '02'
-            );
-
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->setMethods(['getConfigValue', 'createRedirectUrl', 'createNotificationUrl'])
             ->getMock();
+        $this->paymentModule->version = \WirecardPaymentGateway::VERSION;
 
-        $this->paymentModule->expects($this->any())->method('getConfigValue')
-            ->will($this->returnCallback(function ($payment, $key) {
-                return $this->config[$key];
-            }));
-        $this->paymentModule->version = '9.9.9';
-
-        $this->payment = new PaymentCreditCard($this->paymentModule);
+        $this->payment = new PaymentCreditCard();
 
         $this->transactionData = new stdClass();
         $this->transactionData->transaction_id = 'my_secret_id';
@@ -101,26 +75,8 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($actual));
     }
 
-    public function testCreatePaymentConfig()
-    {
-        $actual = $this->payment->createPaymentConfig($this->paymentModule);
-
-        $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
-        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
-
-        $expectedPaymentConfig = new \Wirecard\PaymentSdk\Config\CreditCardConfig('merchant_account_id', 'secret');
-        $expectedPaymentConfig->setThreeDCredentials('three_d_merchant_account_id', 'three_d_secret');
-        $expectedPaymentConfig->addSslMaxLimit(new \Wirecard\PaymentSdk\Entity\Amount(50, 'EUR'));
-        $expectedPaymentConfig->addThreeDMinLimit(new \Wirecard\PaymentSdk\Entity\Amount(150, 'EUR'));
-        $expected->add($expectedPaymentConfig);
-
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testCreateTransaction()
     {
-
         /** @var Wirecard\PaymentSdk\Transaction\Transaction $actual */
         $actual = $this->payment->createTransaction(
             $this->paymentModule,
@@ -142,20 +98,19 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
         $expected = array(
             'transaction_type' => 'authorization',
-            'merchant_account_id' => 'merchant_account_id',
+            'merchant_account_id' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
             'requested_amount' => 20,
             'requested_amount_currency' => 'EUR',
             'locale' => 'en',
             'payment_method' => 'creditcard',
             'attempt_three_d' => false,
             'ip_address' => '127.0.0.1',
+            'descriptor' => 'PSSHOPNAM123',
             'field_name_1' => 'paysdk_cartId',
             'field_value_1' => 123,
             'shop_system_name' => EXPECTED_SHOP_NAME,
             'shop_system_version' => _PS_VERSION_,
             'plugin_name' => EXPECTED_PLUGIN_NAME,
-            'plugin_version' => EXPECTED_PLUGIN_VERSION,
-            'descriptor' => 'PSSHOPNAM123',
             'date_of_birth' => '01-01-1980',
             'city' => null,
             'country' => null,
@@ -183,6 +138,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'risk_info_delivery_mail'     => 'max.mustermann@email.com',
             'risk_info_reorder_items'     => '02',
             'risk_info_availability'     => '01'
+            'plugin_version' => \WirecardPaymentGateway::VERSION,
         );
 
         $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));
