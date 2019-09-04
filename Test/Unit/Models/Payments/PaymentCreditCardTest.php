@@ -137,7 +137,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
             'orderItems1.taxRate'         => -4900,
             'risk_info_delivery_mail'     => 'max.mustermann@email.com',
             'risk_info_reorder_items'     => '02',
-            'risk_info_availability'     => '01'
+            'risk_info_availability'     => '01',
             'plugin_version' => \WirecardPaymentGateway::VERSION,
         );
 
