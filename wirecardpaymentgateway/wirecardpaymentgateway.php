@@ -49,8 +49,6 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 
-define('IS_CORE', false);
-
 /**
  * Class WirecardPaymentGateway
  *
@@ -113,7 +111,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->version = '2.1.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.5.2');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.6.0');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
@@ -131,9 +129,10 @@ class WirecardPaymentGateway extends PaymentModule
 
         parent::__construct();
 
-        $this->displayName = $this->l('module_display_name');
-        $this->description = $this->l('module_description');
-        $this->confirmUninstall = $this->l('confirm_uninstall');
+        $lang = $this->context->language;
+        $this->displayName = $this->getTranslationForLanguage($lang->iso_code, 'module_display_name', $this->name);
+        $this->description = $this->getTranslationForLanguage($lang->iso_code, 'module_description', $this->name);
+        $this->confirmUninstall = $this->getTranslationForLanguage($lang->iso_code, 'confirm_uninstall', $this->name);
 
         $this->config = $this->getPaymentFields();
     }
@@ -1030,7 +1029,7 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $file = dirname(__FILE__).'/translations/'.$iso_lang.'.php';
         if (!file_exists($file)) {
-            return $key;
+            $file = dirname(__FILE__).'/translations/en.php';
         }
 
         global $_MODULE;
