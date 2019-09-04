@@ -55,6 +55,7 @@ class CartHelperTest extends \PHPUnit_Framework_TestCase
     public function testIsReorderedItemsFalse()
     {
         $cartHelper = $this->newCartHelper();
+        $cartHelper->getCart()->id = null;
 
         $cartHelper->getCart()->setProducts([
                 0 => [
