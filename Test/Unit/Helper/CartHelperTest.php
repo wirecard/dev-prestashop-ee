@@ -40,21 +40,21 @@ use WirecardEE\Prestashop\Helper\CartHelper;
 class CartHelperTest extends \PHPUnit_Framework_TestCase
 {
 
-    private function newCartHelper()
+    private function newCartHelper($id)
     {
-        $cart = new \Cart(123);
+        $cart = new \Cart($id);
         return new CartHelper($cart);
     }
 
     public function testIsReorderedItemsTrue()
     {
-        $actual = $this->newCartHelper()->isReorderedItems();
+        $actual = $this->newCartHelper(123)->isReorderedItems();
         $this->assertEquals(RiskInfoReorder::REORDERED, $actual);
     }
 
     public function testIsReorderedItemsFalse()
     {
-        $cartHelper = $this->newCartHelper();
+        $cartHelper = $this->newCartHelper(123);
         $cartHelper->getCart()->id = null;
 
         $cartHelper->getCart()->setProducts([
@@ -74,13 +74,13 @@ class CartHelperTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckAvailabilityAvailableNow()
     {
-        $actual = $this->newCartHelper()->checkAvailability();
+        $actual = $this->newCartHelper(123)->checkAvailability();
         $this->assertEquals(RiskInfoAvailability::MERCHANDISE_AVAILABLE, $actual);
     }
 
     public function testCheckAvailabilityAvailableInFuture()
     {
-        $cartHelper = $this->newCartHelper();
+        $cartHelper = $this->newCartHelper(122);
         $cartHelper->getCart()->setProducts([
                 0 => [
                     'id_product'        => 3,
