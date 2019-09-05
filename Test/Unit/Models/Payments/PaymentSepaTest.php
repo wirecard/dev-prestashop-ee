@@ -58,7 +58,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->paymentModule->version = EXPECTED_PLUGIN_VERSION;
+        $this->paymentModule->version = \WirecardPaymentGateway::VERSION;
 
         $this->payment = new PaymentSepaDirectDebit($this->paymentModule);
     }
@@ -78,28 +78,8 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($actual));
     }
 
-    public function testCreatePaymentConfig()
-    {
-        for ($i = 0; $i <= 5; $i++) {
-            $this->paymentModule->expects($this->at($i))->method('getConfigValue')->willReturn($this->config[$i]);
-        }
-        $actual = $this->payment->createPaymentConfig($this->paymentModule);
-
-        $expected = new \Wirecard\PaymentSdk\Config\Config('base_url', 'http_user', 'http_pass');
-        $expected->setShopInfo(EXPECTED_SHOP_NAME, _PS_VERSION_);
-        $expected->setPluginInfo(EXPECTED_PLUGIN_NAME, $this->paymentModule->version);
-
-        $expectedPaymentConfig = new SepaConfig(SepaDirectDebitTransaction::NAME, 'merchant_account_id', 'secret');
-        $expectedPaymentConfig->setCreditorId('creditor_id');
-        $expected->add($expectedPaymentConfig);
-
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testCreateTransaction()
     {
-        $this->paymentModule->method('getConfigValue')->willReturn(true);
-        $this->paymentModule->expects($this->at(0))->method('getConfigValue')->willReturn(1);
         $values = array(
             'sepaFirstName' => 'Max',
             'sepaLastName' => 'Mustermann',
@@ -115,7 +95,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
 
     public function testSepaMandate()
     {
-        $acual = '-id-' . strtotime(date('Y-m-d H:i:s'));
-        $this->assertEquals($acual, $this->payment->generateMandateId($this->paymentModule, 'id'));
+        $expected = 'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_CREDITOR_ID-id-' . strtotime(date('Y-m-d H:i:s'));
+        $this->assertEquals($expected, $this->payment->generateMandateId($this->paymentModule, 'id'));
     }
 }

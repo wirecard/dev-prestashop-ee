@@ -43,7 +43,7 @@ class Tab
     {
     }
 
-    public static function getIdFromClassName()
+    public static function findOneIdByClassName()
     {
     }
 }
