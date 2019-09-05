@@ -92,67 +92,6 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-    /**
-     * @throws Exception
-     * @todo enable test when we have a proper story for database testing
-     * @group ignore
-     */
-    public function testGetRequestData()
-    {
-        $context = new Context();
-
-        $expected = array(
-            'transaction_type' => 'authorization',
-            'merchant_account_id' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
-            'requested_amount' => 20,
-            'requested_amount_currency' => 'EUR',
-            'locale' => 'en',
-            'payment_method' => 'creditcard',
-            'attempt_three_d' => false,
-            'ip_address' => '127.0.0.1',
-            'descriptor' => 'PSSHOPNAM123',
-            'field_name_1' => 'paysdk_cartId',
-            'field_value_1' => 123,
-            'shop_system_name' => EXPECTED_SHOP_NAME,
-            'shop_system_version' => _PS_VERSION_,
-            'plugin_name' => EXPECTED_PLUGIN_NAME,
-            'date_of_birth' => '01-01-1980',
-            'city' => null,
-            'country' => null,
-            'shipping_city' => null,
-            'shipping_country' => null,
-            'order_number' => 123,
-            'consumer_id' => 1,
-            'email'=>'max.mustermann@email.com',
-            'authentication_method' => '02',
-            'authentication_timestamp' => '2019-08-04T02:37:40Z',
-            'challenge_indicator' => '02',
-            'account_creation_date' => '2019-06-03',
-            'account_update_date' => '2019-06-09',
-            'account_password_change_date' => '2019-08-09',
-            'shipping_address_first_use' => '2019-08-09',
-            'purchases_last_six_months' => 3,
-            'merchant_crm_id' => '',
-            'card_creation_date' => date('Y-m-d'),
-            'orderItems1.name'            => 'Product 1',
-            'orderItems1.quantity'        => 1,
-            'orderItems1.amount.value'    => 2,
-            'orderItems1.amount.currency' => 'EUR',
-            'orderItems1.articleNumber'   => 'reference',
-            'orderItems1.taxRate'         => -4900,
-            'risk_info_delivery_mail'     => 'max.mustermann@email.com',
-            'risk_info_reorder_items'     => '02',
-            'risk_info_availability'     => '01',
-            'plugin_version' => \WirecardPaymentGateway::VERSION,
-        );
-
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));
-        //unset the generated request id as it is different every time
-        unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
-
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testCreateCancelTransaction()
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\CreditCardTransaction();
