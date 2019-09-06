@@ -69,7 +69,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.0.0';
+    const VERSION = '2.2.0';
 
     /**
      * @var string
@@ -110,7 +110,6 @@ class WirecardPaymentGateway extends PaymentModule
         $this->name = self::NAME;
         $this->version = self::VERSION;
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.0';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.6.0');
@@ -862,29 +861,31 @@ class WirecardPaymentGateway extends PaymentModule
     private function getColumnDefsTable($name)
     {
         $defs = array( 'tx' =>
-                           array(
-                               "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
-                               "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
-                               "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
-                               "order_id" => array( "INT(10)", "NULL" ),
-                               "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
-                               "ordernumber" => array( "VARCHAR(32)", "NULL" ),
-                               "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
-                               "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
-                               "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
-                               "amount" => array( "FLOAT", "NOT NULL" ),
-                               "currency" => array( "VARCHAR(3)", "NOT NULL" ),
-                               "response" => array( "TEXT", "NULL" ),
-                               "created" => array( "DATETIME", "NOT NULL" ),
-                               "modified" => array( "DATETIME", "NULL" ),
-                           ),
-                       'cc' => array(
-                           "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
-                           "user_id" => array( "INT(10)", "NOT NULL" ),
-                           "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
-                           "address_id" => array( "INT(10)", "NULL" ),
-                           "masked_pan" => array( "VARCHAR(30)", "NOT NULL" )
-                       ) );
+            array(
+                "tx_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                "transaction_id" => array( "VARCHAR(36)", "NOT NULL" ),
+                "parent_transaction_id" => array( "VARCHAR(36)", "NULL" ),
+                "order_id" => array( "INT(10)", "NULL" ),
+                "cart_id" => array( "INT(10) UNSIGNED", "NOT NULL" ),
+                "ordernumber" => array( "VARCHAR(32)", "NULL" ),
+                "paymentmethod" => array( "VARCHAR(32)", "NOT NULL" ),
+                "transaction_type" => array( "VARCHAR(32)", "NOT NULL" ),
+                "transaction_state" => array( "VARCHAR(32)", "NOT NULL" ),
+                "amount" => array( "FLOAT", "NOT NULL" ),
+                "currency" => array( "VARCHAR(3)", "NOT NULL" ),
+                "response" => array( "TEXT", "NULL" ),
+                "created" => array( "DATETIME", "NOT NULL" ),
+                "modified" => array( "DATETIME", "NULL" ),
+            ),
+            'cc' => array(
+                "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
+                "user_id" => array( "INT(10)", "NOT NULL" ),
+                "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
+                "address_id" => array( "INT(10)", "NULL" ),
+                "masked_pan" => array( "VARCHAR(30)", "NOT NULL" ),
+                "date_add" => array("DATETIME", "NULL"),
+                "date_last_used" => array("DATETIME", "NULL")
+            ) );
 
         return $defs[$name];
     }

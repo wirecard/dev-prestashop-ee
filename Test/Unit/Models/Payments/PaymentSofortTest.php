@@ -97,6 +97,7 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
     {
         $actual = new \Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction();
         $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
+        $accountHolder->setEmail('max.mustermann@email.com');
         $accountHolder->setDateOfBirth(new \DateTime('01-01-1980'));
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
         $actual->setAccountHolder($accountHolder);

@@ -37,6 +37,7 @@ const _PS_MODULE_DIR_ = './';
 const _PS_PRICE_COMPUTE_PRECISION_ = 2;
 const _DB_PREFIX_ = 'Prefix_';
 const _MYSQL_ENGINE_ = 'mysql';
+const _PS_USE_SQL_SLAVE_ = 'slave';
 
 const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 const EXPECTED_SHOP_NAME = 'Prestashop';
@@ -62,6 +63,7 @@ require __DIR__ . '/Stubs/Smarty.php';
 require __DIR__ . '/Stubs/Media.php';
 require __DIR__ . '/Stubs/PaymentOption.php';
 require __DIR__ . '/Stubs/Cart.php';
+require __DIR__ . '/Stubs/Product.php';
 require __DIR__ . '/Stubs/Customer.php';
 require __DIR__ . '/Stubs/Address.php';
 require __DIR__ . '/Stubs/Country.php';
@@ -78,3 +80,8 @@ require __DIR__ . '/Stubs/DbQuery.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';
+
+function pSQL($string)
+{
+    return $string;
+};

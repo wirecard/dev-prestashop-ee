@@ -41,30 +41,10 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
     private $paymentModule;
 
-    private $config;
-
     private $transactionData;
 
     public function setUp()
     {
-        $this->config = array(
-            'base_url',
-            'base_url',
-            'http_user',
-            'http_pass',
-            'merchant_account_id',
-            'secret',
-            'three_d_merchant_account_id',
-            'three_d_merchant_account_id',
-            'three_d_secret',
-            50,
-            50,
-            50,
-            150,
-            150,
-            150
-        );
-
         $this->paymentModule = $this->getMockBuilder(\WirecardPaymentGateway::class)
             ->disableOriginalConstructor()
             ->setMethods(['getConfigValue', 'createRedirectUrl', 'createNotificationUrl'])
@@ -110,35 +90,6 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
 
         $expected = 'creditcard';
         $this->assertEquals($expected, $actual::NAME);
-    }
-
-    public function testGetRequestData()
-    {
-        $context = new Context();
-
-        $expected = array(
-            'transaction_type' => 'authorization',
-            'merchant_account_id' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
-            'requested_amount' => 20,
-            'requested_amount_currency' => 'EUR',
-            'locale' => 'en',
-            'payment_method' => 'creditcard',
-            'attempt_three_d' => false,
-            'ip_address' => '127.0.0.1',
-            'descriptor' => 'PSSHOPNAM123',
-            'field_name_1' => 'paysdk_cartId',
-            'field_value_1' => 102,
-            'shop_system_name' => EXPECTED_SHOP_NAME,
-            'shop_system_version' => _PS_VERSION_,
-            'plugin_name' => EXPECTED_PLUGIN_NAME,
-            'plugin_version' => \WirecardPaymentGateway::VERSION,
-        );
-
-        $actual = (array) json_decode($this->payment->getRequestData($this->paymentModule, $context, 123));
-        //unset the generated request id as it is different every time
-        unset($actual['request_id'], $actual['request_signature'], $actual['request_time_stamp']);
-
-        $this->assertEquals($expected, $actual);
     }
 
     public function testCreateCancelTransaction()

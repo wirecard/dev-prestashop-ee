@@ -35,6 +35,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\Converter\WppVTwoConverter;
+use Wirecard\PaymentSdk\Constant\ChallengeInd;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use Wirecard\PaymentSdk\Config\CreditCardConfig;
@@ -200,6 +201,26 @@ class PaymentCreditCard extends Payment
                     ),
                 ),
                 array(
+                    'name' => 'requestor_challenge',
+                    'type'    => 'select',
+                    'default' => ChallengeInd::NO_PREFERENCE,
+                    'label'   => $this->l('config_challenge_indicator'),
+                    'options' => array(
+                        array(
+                            'key'   => ChallengeInd::NO_PREFERENCE,
+                            'value' => $this->l('config_challenge_no_preference')
+                        ),
+                        array(
+                            'key'   => ChallengeInd::NO_CHALLENGE,
+                            'value' => $this->l('config_challenge_no_challenge')
+                        ),
+                        array(
+                            'key'   => ChallengeInd::CHALLENGE_THREED,
+                            'value' => $this->l('config_challenge_challenge_threed')
+                        )
+                    ),
+                ),
+                array(
                     'name' => 'descriptor',
                     'label'   => $this->l('config_descriptor'),
                     'type'    => 'onoff',
@@ -257,7 +278,6 @@ class PaymentCreditCard extends Payment
         // Set unique cartId as orderId to avoid order creation before payment
         $transactionBuilder->setOrderId($cartId);
         $transaction = $transactionBuilder->buildTransaction();
-
         return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
     }
 

@@ -38,7 +38,6 @@ namespace WirecardEE\Prestashop\Classes\Response;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
 
@@ -72,7 +71,7 @@ final class Success implements ProcessablePaymentResponse
 
     /** @var ShopConfigurationService */
     private $configuration_service;
-
+  
     /**
      * SuccessResponseProcessing constructor.
      *

@@ -60,7 +60,8 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
             $requestData = $payment->getRequestData($this->module, $this->context, $cartId);
 
             header('Content-Type: application/json; charset=utf8');
-            die(Tools::jsonEncode($requestData));
+            echo $requestData;
+            exit();
         } catch (\Exception $exception) {
             die(Tools::jsonEncode(null));
         }

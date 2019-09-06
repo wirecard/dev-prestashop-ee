@@ -3,8 +3,8 @@
 global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_2bf596c7158df8d7b10e2318ace1297c'] = '測試失敗，請檢查您的認證。';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = 'Attention: Please check your credentials within the URL setting fields. You might have configured/combined a productive account with a test account.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = '商戶組態已成功通過測試。';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = 'Attention: Please check your credentials within the URL setting fields. You might have configured/combined a productive account with a test account.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_c2fb8155114a173b41a33639e58fb5b7'] = '提交支援請求';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_66a375d1669793eb4a2c0a2cb3a4202b'] = '您的電郵地址';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_9b1ef1976b69fb0212b8ed98e58d2f32'] = '您的訊息';
@@ -57,6 +57,10 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_77de2a7d1e366bd4
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_b39c8900735997fa7293592e32228950'] = '付款動作';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_1711df867832a3dd696b5c0adab76f2e'] = 'Authorization';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_824bc4edae9cb93f0dd8aac3597e36d8'] = 'Purchase';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_e91cf3ad3feafd69d6b1b794cd6792f3'] = 'Challenge Indicator';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_b95378406a91414a4c1e285c4ea1debd'] = 'No preference';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_396d3ebb402e24b2c96874027976829b'] = 'No challenge requested';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_865a6e1328fcf307682e4488d32359fe'] = 'Challenge requested';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_3ea9eb5a6ed433246bc75c7016ac89bc'] = '描述元';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_36245276e84306a410a410785ac986b3'] = '傳送額外資訊';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_52a9f0f1be1795bbb80faeb35b0d9f57'] = '啟用經常性付款';

@@ -35,6 +35,8 @@
 
 class DbQuery
 {
+    public $return = true;
+
     public function from($table)
     {
         return $this;
@@ -42,6 +44,9 @@ class DbQuery
 
     public function where($where)
     {
+        if ('token = "123-456-789-123"' === $where) {
+            $this->return = false;
+        }
         return $this;
     }
 

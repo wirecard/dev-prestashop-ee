@@ -33,23 +33,35 @@
  * @license GPLv3
  */
 
-class OrderState
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
+    DIRECTORY_SEPARATOR.'wirecard'.DIRECTORY_SEPARATOR.'payment-sdk-php'.
+    DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Constant/ChallengeInd.php');
+
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'helper'
+    .DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'ShopConfigurationService.php');
+
+use Wirecard\PaymentSdk\Constant\ChallengeInd;
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+/**
+ * Upgrade script v2.2.0
+ * @param WirecardPaymentGateway $module
+ * @return bool
+ * @since 2.2.0
+ */
+function upgrade_module_2_2_0($module)
 {
-    const FLAG_NO_HIDDEN = 1;  /* 00001 */
-    const FLAG_LOGABLE = 2;  /* 00010 */
-    const FLAG_DELIVERY = 4;  /* 00100 */
-    const FLAG_SHIPPED = 8;  /* 01000 */
-    const FLAG_PAID = 16; /* 10000 */
+    // Set new parameter requestor_challenge
+    $configService = new \WirecardEE\Prestashop\Helper\Service\ShopConfigurationService('creditcard');
+    $requestorChallenge = $configService->getFieldName('requestor_challenge');
+    Configuration::updateGlobalValue($requestorChallenge, ChallengeInd::NO_PREFERENCE);
 
-    public $id;
-
-    public static function getOrderStates($id)
-    {
-        return array(array('id_order_state' => 'id', 'name' => 'name'));
-    }
-
-    public static function add()
-    {
-        return;
-    }
+    // add new fields date_add and date_last_used in wirecard_payment_gateway_cc
+    $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_cc`';
+    $return = $module->executeSql("ALTER TABLE $table ADD `date_add` DATETIME NULL AFTER `masked_pan`");
+    $return &= $module->executeSql("ALTER TABLE $table ADD `date_last_used` DATETIME NULL AFTER `date_add`");
+    return $return;
 }

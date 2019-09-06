@@ -37,6 +37,8 @@ class Db
 {
     protected static $instance;
 
+    private $return;
+
     public function __construct()
     {
     }
@@ -60,12 +62,31 @@ class Db
         return $query;
     }
 
-    public static function getRow()
+    public static function getRow($query)
+    {
+        return $query->return;
+    }
+
+    public static function delete()
     {
         return true;
     }
 
-    public static function delete()
+
+    /**
+     * Executes an UPDATE query.
+     *
+     * @param string $table Table name without prefix
+     * @param array $data Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
+     * @param string $where WHERE condition
+     * @param int $limit
+     * @param bool $null_values If we want to use NULL values instead of empty quotes
+     * @param bool $use_cache
+     * @param bool $add_prefix Add or not _DB_PREFIX_ before table name
+     *
+     * @return bool
+     */
+    public function update($table, $data, $where = '', $limit = 0, $null_values = false, $use_cache = true, $add_prefix = true)
     {
         return true;
     }
