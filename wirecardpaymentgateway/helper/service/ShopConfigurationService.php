@@ -61,7 +61,7 @@ class ShopConfigurationService
      * @string 2.1.0
      */
     const FALLBACK_NAMES = [
-        RatepayInvoiceTransaction::NAME => 'invoice',
+        RatepayInvoiceTransaction::PAYMENT_NAME => 'invoice',
         PoiPiaTransaction::NAME => 'poipia',
         SepaCreditTransferTransaction::NAME => 'sepacredittransfer',
         SofortTransaction::NAME => 'sofort',

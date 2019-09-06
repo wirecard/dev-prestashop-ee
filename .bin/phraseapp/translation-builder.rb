@@ -76,6 +76,10 @@ class TranslationBuilder
   def self.get_keys_for_php_file(file_path)
     file = File.open(file_path, 'r:utf-8')
     translation_keys = file.read.scan(/->l\(\'(.*)\'\)/).uniq
+
+    file.rewind
+    translation_keys += file.read.scan(/->getTranslationForLanguage\(\$lang->iso\_code, \'(.*)\', \$this->name\)/).uniq
+
     file.close
 
     translation_keys

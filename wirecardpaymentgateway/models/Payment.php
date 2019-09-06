@@ -132,9 +132,10 @@ abstract class Payment extends PaymentOption
     public function __construct()
     {
         $context = \Context::getContext();
-        $logoPath = \Media::getMediaPath(
-            _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME . '/views/img/paymenttypes/' . static::TYPE . '.png'
-        );
+        $potentialPath = _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME
+                         . '/views/img/paymenttypes/' . static::TYPE . '.png';
+        $logoPath = file_exists($potentialPath) ? \Media::getMediaPath($potentialPath) : '';
+      
         $this->action_link = $context->link->getModuleLink(
             \WirecardPaymentGateway::NAME,
             'payment',
@@ -202,19 +203,12 @@ abstract class Payment extends PaymentOption
     }
 
     /**
-     * Create Default Transaction
+     * Get the template data required for rendering the payment method form
      *
      * @return array
      * @since 1.0.0
      */
-    abstract public function createTransaction($module, $cart, $values, $orderId);
-
-    /**
-     * Get the template data required for rendering the payment method form
-     *
-     * @since 1.0.0
-     */
-    public function getFormTemplateData()
+    protected function getFormTemplateData()
     {
         return array();
     }
@@ -243,6 +237,29 @@ abstract class Payment extends PaymentOption
         } catch (\SmartyException $e) {
             return false;
         }
+    }
+
+    /**
+     * Check if js should be loaded
+     *
+     * @return bool
+     * @since 1.0.0
+     */
+    public function getLoadJs()
+    {
+        return isset($this->loadJs) ? $this->loadJs : false;
+    }
+
+
+    /**
+     * Set loadJs
+     *
+     * @param bool $load
+     * @since 1.0.0
+     */
+    public function setLoadJs($load)
+    {
+        $this->loadJs = $load;
     }
 
     /**
@@ -317,20 +334,6 @@ abstract class Payment extends PaymentOption
     }
 
     /**
-     * Get the template data back
-     *
-     * @return bool|array
-     * @since 1.0.0
-     */
-    public function getTemplateData()
-    {
-        if (isset($this->templateData)) {
-            return $this->templateData;
-        }
-        return false;
-    }
-
-    /**
      * Check if payment is available for specific cart content default true
      *
      * @param \WirecardPaymentGateway $module
@@ -376,4 +379,15 @@ abstract class Payment extends PaymentOption
 
         return $paymentOption;
     }
+
+    /**
+     * Create Default Transaction
+     *
+     * @param \WirecardPaymentGateway $module
+     * @param \Cart $cart
+     * @param array $values
+     * @param int $orderId
+     * @since 1.0.0
+     */
+    abstract public function createTransaction($module, $cart, $values, $orderId);
 }

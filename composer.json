@@ -12,6 +12,7 @@
     "guzzlehttp/psr7": ">=1.4.2",
     "wirecard/base-url-matcher": "1.0.0",
     "wirecard/io-converter": "^1.0",
+    "monolog/monolog": "^1.0",
     "ext-json": "*"
   },
   "require-dev": {

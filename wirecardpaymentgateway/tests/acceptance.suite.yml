@@ -10,7 +10,14 @@ modules:
     - WebDriver:
         url: 'http://localhost:8080'
         browser: chrome # 'chrome' or 'firefox'
+    - \Helper\DbHelper
     - \Helper\Acceptance
+    - Asserts
+    - Db:
+        dsn: 'mysql:host=localhost:3307;dbname=prestashop'
+        user: 'root'
+        password: 'supersecret'
+        waitlock: 10
 
 
 env:

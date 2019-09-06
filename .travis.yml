@@ -131,6 +131,7 @@ matrix:
       github_token: ${GITHUB_TOKEN}
       api_key: ${GITHUB_TOKEN}
       file: wirecardpaymentgateway.zip
+      name: "${REPO_NAME} ${TRAVIS_TAG}"
       body: "${RELEASE_NOTES}"
       skip_cleanup: true
       on:

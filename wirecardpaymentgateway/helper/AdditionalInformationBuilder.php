@@ -92,7 +92,7 @@ class AdditionalInformationBuilder
                 $taxAmount = $grossAmount - $netAmount;
                 $taxRate = round($taxAmount / $grossAmount * 100, self::TAX_RATE_PRECISION);
 
-                $amount = $this->currencyHelper->getAmount(
+                $amount = $this->currencyHelper->getConvertedAmount(
                     $grossAmount,
                     $currency
                 );

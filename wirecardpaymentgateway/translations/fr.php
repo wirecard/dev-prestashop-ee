@@ -3,8 +3,8 @@
 global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_2bf596c7158df8d7b10e2318ace1297c'] = 'Le test a échoué, vérifiez vos informations d’identification.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = 'Le test de la configuration du marchand a été effectué avec succès.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = 'Attention: Veuillez vérifier vos données de configuration dans les champs de saisie de l\'URL. Vous avez peut-être combiné un compte réel avec un compte d\'essai.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = 'Le test de la configuration du marchand a été effectué avec succès.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_c2fb8155114a173b41a33639e58fb5b7'] = 'Envoyer une demande de support';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_66a375d1669793eb4a2c0a2cb3a4202b'] = 'Votre adresse e-mail';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_9b1ef1976b69fb0212b8ed98e58d2f32'] = 'Votre message';

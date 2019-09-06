@@ -56,7 +56,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @var string
      * @since 2.1.0
      */
-    const TYPE = RatepayInvoiceTransaction::NAME;
+    const TYPE = RatepayInvoiceTransaction::PAYMENT_NAME;
 
     /**
      * @var string
@@ -510,7 +510,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         return $currencies;
     }
 
-    public function getFormTemplateData()
+    protected function getFormTemplateData()
     {
         return array(
           'device_identification' => DeviceIdentificationHelper::generateFingerprint()

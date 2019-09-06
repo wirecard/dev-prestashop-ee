@@ -268,7 +268,7 @@ class PaymentSepaDirectDebit extends Payment
      * @return array
      * @since 1.3.0
      */
-    public function getFormTemplateData()
+    protected function getFormTemplateData()
     {
         return array(
             'creditorName'      => $this->configuration->getField('creditor_name'),
