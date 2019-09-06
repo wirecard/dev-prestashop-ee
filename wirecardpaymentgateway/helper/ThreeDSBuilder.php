@@ -176,7 +176,7 @@ class ThreeDSBuilder
             $riskInfo->setReorderItems($cartHelper->isReorderedItems());
         }
         $riskInfo->setAvailability($cartHelper->checkAvailability());
-        if(!$stockManagement) {
+        if (!$stockManagement) {
             $riskInfo->setAvailability(RiskInfoAvailability::MERCHANDISE_AVAILABLE);
         }
         return $riskInfo;

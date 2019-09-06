@@ -212,7 +212,7 @@ class AdditionalInformationBuilder
      * @return AccountHolder
      * @since 1.3.4
      */
-    public function createCreditCardAccountHolder($cart, $firstName, $lastName, $type='billing')
+    public function createCreditCardAccountHolder($cart, $firstName, $lastName, $type = 'billing')
     {
         $customer = new \Customer($cart->id_customer);
         $address_id = $type === 'billing' ? $cart->id_address_invoice : $cart->id_address_delivery;
@@ -225,7 +225,7 @@ class AdditionalInformationBuilder
             $accountHolder->setFirstName($firstName);
         }
         $accountHolder->setLastName($lastName);
-        if(\Tools::strlen($address->phone)) {
+        if (\Tools::strlen($address->phone)) {
             $accountHolder->setPhone($address->phone);
         }
         if (\Tools::strlen($address->phone_mobile)) {
