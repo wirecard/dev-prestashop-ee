@@ -212,21 +212,24 @@ class AdditionalInformationBuilder
      * @return AccountHolder
      * @since 1.3.4
      */
-    public function createCreditCardAccountHolder($cart, $firstName, $lastName)
+    public function createCreditCardAccountHolder($cart, $firstName, $lastName, $type='billing')
     {
         $customer = new \Customer($cart->id_customer);
-        $billingAddress = new \Address($cart->id_address_invoice);
+        $address_id = $type === 'billing' ? $cart->id_address_invoice : $cart->id_address_delivery;
+        $address = new \Address($address_id);
         $accountHolder = new AccountHolder();
 
-        $accountHolder->setAddress($this->createAddressData($billingAddress, 'billing'));
+        $accountHolder->setAddress($this->createAddressData($address, $type));
         $accountHolder->setEmail($customer->email);
         if ($firstName) {
             $accountHolder->setFirstName($firstName);
         }
         $accountHolder->setLastName($lastName);
-        $accountHolder->setPhone($billingAddress->phone);
-        if (\Tools::strlen($billingAddress->phone_mobile)) {
-            $accountHolder->setMobilePhone($billingAddress->phone_mobile);
+        if(\Tools::strlen($address->phone)) {
+            $accountHolder->setPhone($address->phone);
+        }
+        if (\Tools::strlen($address->phone_mobile)) {
+            $accountHolder->setMobilePhone($address->phone_mobile);
         }
         if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
             $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));

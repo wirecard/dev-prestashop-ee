@@ -36,11 +36,14 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use Customer;
+use Wirecard\PaymentSdk\Constant\RiskInfoAvailability;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\Constant\AuthMethod;
 use Wirecard\PaymentSdk\Entity\AccountInfo;
 use Wirecard\PaymentSdk\Entity\RiskInfo;
 use Wirecard\PaymentSdk\Constant\IsoTransactionType;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 class ThreeDSBuilder
 {
@@ -83,13 +86,25 @@ class ThreeDSBuilder
             $customer->lastname
         );
 
+        $shippingAccountHolder = $this->additionalInformationBuilder->createCreditCardAccountHolder(
+            $cart,
+            $customer->firstname,
+            $customer->lastname,
+            'shipping'
+        );
+        $shippingAccountHolder->setPhone(null);
+
         $accountInfo = $this->getAccountInfo($customer, $cart);
         $accountHolder->setAccountInfo($accountInfo);
         $crmId = $this->getMerchantCrmId($customer);
         $accountHolder->setCrmId($crmId);
         $transaction->setAccountHolder($accountHolder);
 
-        $riskInfo = $this->getRiskInfo($customer, $cart);
+        $transaction->setShipping($shippingAccountHolder);
+        $transaction->setDescriptor($this->additionalInformationBuilder->createDescriptor($orderId));
+
+        $stockManagement = \Configuration::get('PS_STOCK_MANAGEMENT');
+        $riskInfo = $this->getRiskInfo($customer, $cart, $stockManagement);
         $transaction->setRiskInfo($riskInfo);
         $transaction->setIsoTransactionType(IsoTransactionType::GOODS_SERVICE_PURCHASE);
         return $transaction;
@@ -110,7 +125,9 @@ class ThreeDSBuilder
         if (!$customer->isGuest()) {
             $accountInfo->setAuthMethod(AuthMethod::USER_CHECKOUT);
             $accountInfo->setAuthTimestamp($this->customerHelper->getAccountLastLogin());
-            $accountInfo->setChallengeInd($this->customerHelper->getChallengeIndicator());
+            $configurationService = new ShopConfigurationService(PaymentCreditCard::TYPE);
+            $indicator = $configurationService->getField('requestor_challenge');
+            $accountInfo->setChallengeInd($indicator);
             $accountInfo->setCreationDate($this->customerHelper->getAccountCreationDate());
             $accountInfo->setUpdateDate($this->customerHelper->getAccountUpdateDate());
             $accountInfo->setPassChangeDate($this->customerHelper->getAccountPassChangeDate());
@@ -151,7 +168,7 @@ class ThreeDSBuilder
      * @throws \PrestaShopException
      * @since 2.2.0
      */
-    private function getRiskInfo($customer, $cart)
+    private function getRiskInfo($customer, $cart, $stockManagement)
     {
         $riskInfo = new RiskInfo();
         $cartHelper = new CartHelper($cart);
@@ -160,6 +177,9 @@ class ThreeDSBuilder
             $riskInfo->setReorderItems($cartHelper->isReorderedItems());
         }
         $riskInfo->setAvailability($cartHelper->checkAvailability());
+        if(!$stockManagement) {
+            $riskInfo->setAvailability(RiskInfoAvailability::MERCHANDISE_AVAILABLE);
+        }
         return $riskInfo;
     }
 }
