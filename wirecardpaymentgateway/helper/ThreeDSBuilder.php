@@ -101,7 +101,6 @@ class ThreeDSBuilder
         $transaction->setAccountHolder($accountHolder);
 
         $transaction->setShipping($shippingAccountHolder);
-        $transaction->setDescriptor($this->additionalInformationBuilder->createDescriptor($orderId));
 
         $stockManagement = \Configuration::get('PS_STOCK_MANAGEMENT');
         $riskInfo = $this->getRiskInfo($customer, $cart, $stockManagement);
@@ -122,12 +121,12 @@ class ThreeDSBuilder
         // Add specific AccountInfo data for authenticated user
         $accountInfo->setAuthMethod(AuthMethod::GUEST_CHECKOUT);
         $accountInfo->setAuthTimestamp();
+        $configurationService = new ShopConfigurationService(PaymentCreditCard::TYPE);
+        $indicator = $configurationService->getField('requestor_challenge');
+        $accountInfo->setChallengeInd($indicator);
         if (!$customer->isGuest()) {
             $accountInfo->setAuthMethod(AuthMethod::USER_CHECKOUT);
             $accountInfo->setAuthTimestamp($this->customerHelper->getAccountLastLogin());
-            $configurationService = new ShopConfigurationService(PaymentCreditCard::TYPE);
-            $indicator = $configurationService->getField('requestor_challenge');
-            $accountInfo->setChallengeInd($indicator);
             $accountInfo->setCreationDate($this->customerHelper->getAccountCreationDate());
             $accountInfo->setUpdateDate($this->customerHelper->getAccountUpdateDate());
             $accountInfo->setPassChangeDate($this->customerHelper->getAccountPassChangeDate());
