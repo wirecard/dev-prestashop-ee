@@ -35,7 +35,6 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use Wirecard\PaymentSdk\Constant\RiskInfoAvailability;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\Constant\AuthMethod;
 use Wirecard\PaymentSdk\Entity\AccountInfo;
@@ -44,6 +43,10 @@ use Wirecard\PaymentSdk\Constant\IsoTransactionType;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
+/**
+ * Class ThreeDSBuilder
+ * @package WirecardEE\Prestashop\Helper
+ */
 class ThreeDSBuilder
 {
 
@@ -100,8 +103,7 @@ class ThreeDSBuilder
         $transaction->setAccountHolder($accountHolder);
         $transaction->setShipping($shipping);
 
-        $stockManagement = \Configuration::get('PS_STOCK_MANAGEMENT');
-        $riskInfo = $this->getRiskInfo($customer, $cart, $stockManagement);
+        $riskInfo = $this->getRiskInfo($customer, $cart);
         $transaction->setRiskInfo($riskInfo);
         $transaction->setIsoTransactionType(IsoTransactionType::GOODS_SERVICE_PURCHASE);
         return $transaction;
@@ -158,27 +160,17 @@ class ThreeDSBuilder
 
     /**
      * Get risk info.
+     *
      * @param \Customer $customer
      * @param \Cart $cart
-     * @param bool $stockManagement
      * @return RiskInfo
-     *
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
+
      * @since 2.2.0
      */
-    private function getRiskInfo($customer, $cart, $stockManagement)
+    private function getRiskInfo($customer, $cart)
     {
-        $riskInfo = new RiskInfo();
-        $cartHelper = new CartHelper($cart);
-        $riskInfo->setDeliveryEmailAddress($customer->email);
-        if (!$customer->isGuest()) {
-            $riskInfo->setReorderItems($cartHelper->isReorderedItems());
-        }
-        $riskInfo->setAvailability($cartHelper->checkAvailability());
-        if (!$stockManagement) {
-            $riskInfo->setAvailability(RiskInfoAvailability::MERCHANDISE_AVAILABLE);
-        }
-        return $riskInfo;
+        $riskInfoHelper = new RiskInfoHelper($customer, $cart);
+
+        return $riskInfoHelper->buildRiskInfo();
     }
 }
