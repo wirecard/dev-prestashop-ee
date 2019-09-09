@@ -633,7 +633,11 @@ class WirecardPaymentGateway extends PaymentModule
             'form' => array(
                 'tabs' => $tabs,
                 'legend' => array(
-                    'title' => $this->getTranslationForLanguage($lang->iso_code, 'payment_method_settings', $this->name),
+                    'title' => $this->getTranslationForLanguage(
+                        $lang->iso_code,
+                        'payment_method_settings',
+                        $this->name
+                    ),
                     'icon' => 'icon-cogs'
                 ),
                 'input' => $inputFields,

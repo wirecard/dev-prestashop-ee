@@ -207,8 +207,7 @@ class AdditionalInformationBuilder
             $accountHolder->setMobilePhone($address->phone_mobile);
         }
 
-        if (
-            isset($customer->birthday) &&
+        if (isset($customer->birthday) &&
             $customer->birthday !== '0000-00-00' &&
             $type === 'billing'
         ) {
