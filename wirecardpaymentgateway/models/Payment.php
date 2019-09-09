@@ -263,29 +263,6 @@ abstract class Payment extends PaymentOption
     }
 
     /**
-     * Check if js should be loaded
-     *
-     * @return bool
-     * @since 1.0.0
-     */
-    public function getLoadJs()
-    {
-        return isset($this->loadJs) ? $this->loadJs : false;
-    }
-
-
-    /**
-     * Set loadJs
-     *
-     * @param bool $load
-     * @since 1.0.0
-     */
-    public function setLoadJs($load)
-    {
-        $this->loadJs = $load;
-    }
-
-    /**
      * Check if payment method can use capture
      *
      * @param string $type

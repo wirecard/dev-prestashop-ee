@@ -50,6 +50,7 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
     /**
      * Generate Credit Card config
      * @since 1.0.0
+     * @SuppressWarnings(PHPMD.ExitExpression)
      */
     public function displayAjaxGetSeamlessConfig()
     {

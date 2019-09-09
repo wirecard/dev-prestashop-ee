@@ -35,7 +35,6 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use Customer;
 use Wirecard\PaymentSdk\Constant\RiskInfoAvailability;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\Constant\AuthMethod;
@@ -48,7 +47,7 @@ use WirecardEE\Prestashop\Models\PaymentCreditCard;
 class ThreeDSBuilder
 {
 
-    /*
+    /**
      * @var AdditionalInformationBuilder
      */
     private $additionalInformationBuilder;
@@ -76,8 +75,8 @@ class ThreeDSBuilder
      */
     public function getThreeDsTransaction($cart, $orderId, $transaction, $challengeInd)
     {
-        $customer = new Customer($cart->id_customer);
         $tokenId = \Tools::getValue('token_id');
+        $customer = new \Customer($cart->id_customer);
         $this->customerHelper = new CustomerHelper($customer, $orderId, $challengeInd, $tokenId);
 
         $accountHolder = $this->additionalInformationBuilder->createCreditCardAccountHolder(
@@ -86,21 +85,20 @@ class ThreeDSBuilder
             $customer->lastname
         );
 
-        $shippingAccountHolder = $this->additionalInformationBuilder->createCreditCardAccountHolder(
+        $shipping = $this->additionalInformationBuilder->createCreditCardAccountHolder(
             $cart,
             $customer->firstname,
             $customer->lastname,
             'shipping'
         );
-        $shippingAccountHolder->setPhone(null);
+        $shipping->setPhone(null);
 
         $accountInfo = $this->getAccountInfo($customer, $cart);
         $accountHolder->setAccountInfo($accountInfo);
         $crmId = $this->getMerchantCrmId($customer);
         $accountHolder->setCrmId($crmId);
         $transaction->setAccountHolder($accountHolder);
-
-        $transaction->setShipping($shippingAccountHolder);
+        $transaction->setShipping($shipping);
 
         $stockManagement = \Configuration::get('PS_STOCK_MANAGEMENT');
         $riskInfo = $this->getRiskInfo($customer, $cart, $stockManagement);
@@ -110,21 +108,22 @@ class ThreeDSBuilder
     }
 
     /**
-     * @param \PrestaShop\PrestaShop\Adapter\Entity\Customer $customer
+     * @param \Customer $customer
      * @param \Cart $cart
      * @return AccountInfo
      * @since 2.2.0
      */
     private function getAccountInfo($customer, $cart)
     {
-        $accountInfo = new AccountInfo();
-        // Add specific AccountInfo data for authenticated user
-        $accountInfo->setAuthMethod(AuthMethod::GUEST_CHECKOUT);
-        $accountInfo->setAuthTimestamp();
         $configurationService = new ShopConfigurationService(PaymentCreditCard::TYPE);
         $indicator = $configurationService->getField('requestor_challenge');
+
+        $accountInfo = new AccountInfo();
+        $accountInfo->setAuthMethod(AuthMethod::GUEST_CHECKOUT);
+        $accountInfo->setAuthTimestamp();
         $accountInfo->setChallengeInd($indicator);
         if (!$customer->isGuest()) {
+            // Add specific AccountInfo data for authenticated user
             $accountInfo->setAuthMethod(AuthMethod::USER_CHECKOUT);
             $accountInfo->setAuthTimestamp($this->customerHelper->getAccountLastLogin());
             $accountInfo->setCreationDate($this->customerHelper->getAccountCreationDate());
@@ -143,7 +142,7 @@ class ThreeDSBuilder
 
     /**
      * Get merchant crm id from user id
-     * @param Customer $customer
+     * @param \Customer $customer
      * @return null|string
      *
      * @since 2.2.0
@@ -161,6 +160,7 @@ class ThreeDSBuilder
      * Get risk info.
      * @param \Customer $customer
      * @param \Cart $cart
+     * @param bool $stockManagement
      * @return RiskInfo
      *
      * @throws \PrestaShopDatabaseException
