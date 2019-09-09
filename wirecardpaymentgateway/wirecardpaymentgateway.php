@@ -627,17 +627,18 @@ class WirecardPaymentGateway extends PaymentModule
         $tempFields = $this->createInputFields($radioType, $radioOptions);
         $inputFields = $tempFields['inputFields'];
         $tabs = $tempFields['tabs'];
+        $lang = $this->context->language;
 
         $fields = array(
             'form' => array(
                 'tabs' => $tabs,
                 'legend' => array(
-                    'title' => $this->l('payment_method_settings'),
+                    'title' => $this->getTranslationForLanguage($lang->iso_code, 'payment_method_settings', $this->name),
                     'icon' => 'icon-cogs'
                 ),
                 'input' => $inputFields,
                 'submit' => array(
-                    'title' => $this->l('text_save')
+                    'title' => $this->getTranslationForLanguage($lang->iso_code, 'text_save', $this->name),
                 )
             ),
         );

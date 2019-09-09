@@ -39,7 +39,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\PaymentPoiPia;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class Success

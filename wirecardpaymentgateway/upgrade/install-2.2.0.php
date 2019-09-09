@@ -41,6 +41,7 @@ require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'helpe
     .DIRECTORY_SEPARATOR.'service'.DIRECTORY_SEPARATOR.'ShopConfigurationService.php');
 
 use Wirecard\PaymentSdk\Constant\ChallengeInd;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -55,7 +56,7 @@ if (!defined('_PS_VERSION_')) {
 function upgrade_module_2_2_0($module)
 {
     // Set new parameter requestor_challenge
-    $configService = new \WirecardEE\Prestashop\Helper\Service\ShopConfigurationService('creditcard');
+    $configService = new ShopConfigurationService('creditcard');
     $requestorChallenge = $configService->getFieldName('requestor_challenge');
     Configuration::updateGlobalValue($requestorChallenge, ChallengeInd::NO_PREFERENCE);
 

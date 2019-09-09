@@ -82,17 +82,17 @@ class ThreeDSBuilder
         $customer = new \Customer($cart->id_customer);
         $this->customerHelper = new CustomerHelper($customer, $orderId, $challengeInd, $tokenId);
 
-        $accountHolder = $this->additionalInformationBuilder->createCreditCardAccountHolder(
+        $accountHolder = $this->additionalInformationBuilder->createAccountHolder(
             $cart,
             $customer->firstname,
             $customer->lastname
         );
 
-        $shipping = $this->additionalInformationBuilder->createCreditCardAccountHolder(
+        $shipping = $this->additionalInformationBuilder->createAccountHolder(
             $cart,
+            'shipping',
             $customer->firstname,
-            $customer->lastname,
-            'shipping'
+            $customer->lastname
         );
         $shipping->setPhone(null);
 

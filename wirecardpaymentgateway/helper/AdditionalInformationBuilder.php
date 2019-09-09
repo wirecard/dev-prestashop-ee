@@ -41,6 +41,7 @@ use Wirecard\PaymentSdk\Entity\Address;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * Class AdditionalInformation
@@ -92,7 +93,7 @@ class AdditionalInformationBuilder
                 $taxAmount = $grossAmount - $netAmount;
                 $taxRate = round($taxAmount / $grossAmount * 100, self::TAX_RATE_PRECISION);
 
-                $amount = $this->currencyHelper->getConvertedAmount(
+                $amount = $this->currencyHelper->getAmount(
                     $grossAmount,
                     $currency
                 );
@@ -160,16 +161,10 @@ class AdditionalInformationBuilder
         $firstName = null,
         $lastName = null
     ) {
-        $transaction->setDescriptor($this->createDescriptor($id));
-
-        if ($lastName) {
-            $transaction->setAccountHolder($this->createCreditCardAccountHolder($cart, $firstName, $lastName));
-        } else {
-            $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing'));
-        }
+        $transaction->setAccountHolder($this->createAccountHolder($cart, 'billing', $firstName, $lastName));
 
         $transaction->setShipping($this->createAccountHolder($cart, 'shipping'));
-        $transaction->setOrderNumber($id);
+        $transaction->setOrderNumber('RBR-090919-' . $id);
         $transaction->setBasket($this->createBasket($cart, $transaction, $currency));
         $transaction->setIpAddress($this->getConsumerIpAddress());
         $transaction->setConsumerId($cart->id_customer);
@@ -182,56 +177,41 @@ class AdditionalInformationBuilder
      *
      * @param \Cart $cart
      * @param string $type
+     * @param string|null $firstName
+     * @param string|null $lastName
      * @return AccountHolder
      * @since 1.0.0
      */
-    public function createAccountHolder($cart, $type)
+    public function createAccountHolder($cart, $type, $firstName = null, $lastName = null)
     {
         $customer = new \Customer($cart->id_customer);
-        $addressId = ('shipping' == $type) ? $cart->id_address_delivery : $cart->id_address_invoice;
+        $addressId = ('shipping' === $type)
+            ? $cart->id_address_delivery
+            : $cart->id_address_invoice;
+
         $address = new \Address($addressId);
+        $customerFirstName = $firstName ?: $address->firstname;
+        $customerLastName = $lastName ?: $address->lastname;
+
         $accountHolder = new AccountHolder();
         $accountHolder->setAddress($this->createAddressData($address, $type));
         $accountHolder->setEmail($customer->email);
-        $accountHolder->setFirstName($address->firstname);
-        $accountHolder->setLastName($address->lastname);
-        $accountHolder->setPhone($address->phone);
-        $accountHolder->setMobilePhone($address->phone_mobile);
-        if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
-            $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
-        }
-        return $accountHolder;
-    }
+        $accountHolder->setFirstName($customerFirstName);
+        $accountHolder->setLastName($customerLastName);
 
-    /**
-     * Create accountholder for creditcard transaction
-     *
-     * @param \Cart $cart
-     * @param string $firstName
-     * @param string $lastName
-     * @return AccountHolder
-     * @since 1.3.4
-     */
-    public function createCreditCardAccountHolder($cart, $firstName, $lastName, $type = 'billing')
-    {
-        $customer = new \Customer($cart->id_customer);
-        $address_id = $type === 'billing' ? $cart->id_address_invoice : $cart->id_address_delivery;
-        $address = new \Address($address_id);
-        $accountHolder = new AccountHolder();
-
-        $accountHolder->setAddress($this->createAddressData($address, $type));
-        $accountHolder->setEmail($customer->email);
-        if ($firstName) {
-            $accountHolder->setFirstName($firstName);
-        }
-        $accountHolder->setLastName($lastName);
         if (\Tools::strlen($address->phone)) {
             $accountHolder->setPhone($address->phone);
         }
+
         if (\Tools::strlen($address->phone_mobile)) {
             $accountHolder->setMobilePhone($address->phone_mobile);
         }
-        if (isset($customer->birthday) && $customer->birthday !== '0000-00-00') {
+
+        if (
+            isset($customer->birthday) &&
+            $customer->birthday !== '0000-00-00' &&
+            $type === 'billing'
+        ) {
             $accountHolder->setDateOfBirth(new \DateTime($customer->birthday));
         }
 

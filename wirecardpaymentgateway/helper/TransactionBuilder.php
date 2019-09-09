@@ -42,6 +42,7 @@ use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\Payment;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 class TransactionBuilder
 {
@@ -144,7 +145,11 @@ class TransactionBuilder
         $this->addBasket();
         $this->addDescriptor();
         $this->addAdditionalInformation();
-        $this->addThreeDsFields();
+
+        if ($payment::TYPE == PaymentCreditCard::TYPE) {
+            $this->addThreeDsFields();
+        }
+
         return $this->transaction;
     }
 
