@@ -132,12 +132,10 @@ abstract class Payment extends PaymentOption
     public function __construct()
     {
         $context = \Context::getContext();
-
         $potentialPath = _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME
                          . '/views/img/paymenttypes/' . static::TYPE . '.png';
-
         $logoPath = file_exists($potentialPath) ? \Media::getMediaPath($potentialPath) : '';
-
+      
         $this->action_link = $context->link->getModuleLink(
             \WirecardPaymentGateway::NAME,
             'payment',
@@ -153,7 +151,6 @@ abstract class Payment extends PaymentOption
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->l($this->configuration->getField('title')));
-        //$this->setForm($this->getFormTemplateWithData());
 
         //Default back-end operation possibilities
         $this->cancel = array('authorization');

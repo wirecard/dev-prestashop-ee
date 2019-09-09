@@ -3,8 +3,8 @@
 global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_2bf596c7158df8d7b10e2318ace1297c'] = 'Test fehlgeschlagen. Überprüfen Sie Ihre Zugangsdaten.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = 'Achtung: Bitte überprüfen Sie Ihre Konfigurationsdaten in den URL-Eingabefeldern. Möglicherweise haben Sie ein Produktivkonto mit einem Testkonto kombiniert.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = 'Die Konfigurationseinstellungen wurden erfolgreich getestet.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = 'Achtung: Bitte überprüfen Sie Ihre Konfigurationsdaten in den URL-Eingabefeldern. Möglicherweise haben Sie ein Produktivkonto mit einem Testkonto kombiniert.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_c2fb8155114a173b41a33639e58fb5b7'] = 'Supportanfrage senden';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_66a375d1669793eb4a2c0a2cb3a4202b'] = 'Ihre E-Mail-Adresse';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_9b1ef1976b69fb0212b8ed98e58d2f32'] = 'Ihre Nachricht';
@@ -57,6 +57,10 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_77de2a7d1e366bd4
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_b39c8900735997fa7293592e32228950'] = 'Zahlungsaktion';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_1711df867832a3dd696b5c0adab76f2e'] = 'Genehmigung';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_824bc4edae9cb93f0dd8aac3597e36d8'] = 'Direktbuchung';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_e91cf3ad3feafd69d6b1b794cd6792f3'] = 'Challenge Indicator';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_b95378406a91414a4c1e285c4ea1debd'] = 'No preference';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_396d3ebb402e24b2c96874027976829b'] = 'No challenge requested';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_865a6e1328fcf307682e4488d32359fe'] = 'Challenge requested';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Deskriptor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_36245276e84306a410a410785ac986b3'] = 'Zusätzliche Informationen mitsenden';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_52a9f0f1be1795bbb80faeb35b0d9f57'] = 'One-Click-Checkout aktivieren';

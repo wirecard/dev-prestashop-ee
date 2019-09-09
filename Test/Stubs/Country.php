@@ -10,4 +10,8 @@ class Country
             array( 'iso_code' => 'AT', 'name' => 'Austria')
         );
     }
+
+    public function __construct($countryId)
+    {
+    }
 }

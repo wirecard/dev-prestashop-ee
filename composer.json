@@ -7,7 +7,7 @@
   "require": {
     "php": ">=5.6",
     "symfony/options-resolver": "^3",
-    "wirecard/payment-sdk-php": "3.7.1",
+    "wirecard/payment-sdk-php": "3.8.0",
     "php-http/guzzle5-adapter": ">=1.0.1",
     "guzzlehttp/psr7": ">=1.4.2",
     "wirecard/base-url-matcher": "1.0.0",
@@ -29,8 +29,8 @@
     "upload-coverage": "codacycoverage clover build/coverage/xml",
     "cs-check": "phpcs",
     "cs-fix": "phpcbf",
-    "test": "phpunit --colors=always",
-    "test-coverage": "phpunit --coverage-clover build/coverage/xml"
+    "test": "phpunit --exclude-group ignore --colors=always",
+    "test-coverage": "phpunit --exclude-group ignore --coverage-clover build/coverage/xml"
   },
   "autoload": {
     "psr-4": {

@@ -99,6 +99,7 @@ class CreditCardVault
         $existing = $this->getCard($token);
 
         if ($existing) {
+            $this->updateCardLastUsed($token);
             return $existing["cc_id"];
         }
 
@@ -107,7 +108,9 @@ class CreditCardVault
                 'masked_pan' => pSQL($maskedPan),
                 'token' => pSQL($token),
                 'user_id' => (int)$this->userId,
-                'address_id' => (int)$addressId
+                'address_id' => (int)$addressId,
+                'date_add' => date('Y-m-d H:i:s'),
+                'date_last_used' => date('Y-m-d H:i:s')
             ));
         } catch (\PrestaShopDatabaseException $e) {
             $this->logger->error(__METHOD__ . $e->getMessage());
@@ -151,5 +154,18 @@ class CreditCardVault
         $db = \Db::getInstance();
 
         return $db->delete($this->table, 'cc_id = ' . (int)$id . ' AND user_id = ' . (int)$this->userId);
+    }
+
+    /**
+     * Update card last used date
+     * @param string $token
+     * @return bool
+     *
+     * @since 2.2.0
+     */
+    public function updateCardLastUsed($token)
+    {
+        $db = \Db::getInstance();
+        return $db->update($this->table, ['date_last_used' => date('Y-m-d H:i:s')], 'token=' . $token);
     }
 }

@@ -103,6 +103,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
         $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
         $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
         $accountHolder->setDateOfBirth(new \DateTime('01-01-1980'));
+        $accountHolder->setEmail('max.mustermann@email.com');
 
         $expected->setAccountHolder($accountHolder);
         $expected->setParentTransactionId('my_secret_id');
