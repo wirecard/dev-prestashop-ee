@@ -10,7 +10,8 @@ use Wirecard\PaymentSdk\Entity\RiskInfo;
  * @package WirecardEE\Prestashop\Helper
  * @since 2.2.0
  */
-class RiskInfoHelper {
+class RiskInfoHelper
+{
     const STOCK_MANAGEMENT = 'PS_STOCK_MANAGEMENT';
 
     /**
@@ -51,7 +52,8 @@ class RiskInfoHelper {
      * @return RiskInfo
      * @since 2.2.0
      */
-    public function buildRiskInfo() {
+    public function buildRiskInfo()
+    {
         $riskInfo = new RiskInfo();
         $cartHelper = new CartHelper($this->cart);
         $riskInfo->setDeliveryEmailAddress($this->customer->email);
