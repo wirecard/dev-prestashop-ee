@@ -96,7 +96,7 @@ class ThreeDSBuilder
         );
         $shipping->setPhone(null);
 
-        $accountInfo = $this->getAccountInfo($customer, $cart);
+        $accountInfo = $this->getAccountInfo($customer, $cart, $challengeInd);
         $accountHolder->setAccountInfo($accountInfo);
         $crmId = $this->getMerchantCrmId($customer);
         $accountHolder->setCrmId($crmId);
@@ -112,14 +112,12 @@ class ThreeDSBuilder
     /**
      * @param \Customer $customer
      * @param \Cart $cart
+     * @param $indicator
      * @return AccountInfo
      * @since 2.2.0
      */
-    private function getAccountInfo($customer, $cart)
+    private function getAccountInfo($customer, $cart, $indicator)
     {
-        $configurationService = new ShopConfigurationService(PaymentCreditCard::TYPE);
-        $indicator = $configurationService->getField('requestor_challenge');
-
         $accountInfo = new AccountInfo();
         $accountInfo->setAuthMethod(AuthMethod::GUEST_CHECKOUT);
         $accountInfo->setAuthTimestamp();
