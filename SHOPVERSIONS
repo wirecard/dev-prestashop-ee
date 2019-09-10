@@ -1,5 +1,14 @@
 [
   {
+    "release": "2.2.1",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.6.0",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Remove static order number"
+    ]
+  },
+  {
     "release": "2.2.0",
     "shopsystem": "PrestaShop",
     "tested": "1.7.6.0",
