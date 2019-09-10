@@ -39,6 +39,7 @@ use \WirecardEE\Prestashop\Helper\TranslationHelper;
  * @property WirecardPaymentGateway module
  *
  * @since 1.1.0
+ * @SuppressWarnings(PHPMD.ExitExpression)
  */
 class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
