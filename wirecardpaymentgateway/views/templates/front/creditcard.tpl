@@ -51,14 +51,14 @@
     </div>
 </div>
     <p>
-        <button disabled id="stored-card" class="btn btn-primary" data-toggle="modal"
+        <button disabled type="button" id="stored-card" class="btn btn-primary" data-toggle="modal"
                 data-target="#wirecard-ccvault-modal">{lFallback s='vault_use_existing_text' mod='wirecardpaymentgateway'}</button>
     </p>
     <p id="new-card-text"
        style="display: none">{lFallback s='selected_creditcard_info' mod='wirecardpaymentgateway'}
     </p>
     <p>
-        <button id="new-card" style="display: none"
+        <button type="button" id="new-card" style="display: none"
                 class="btn btn-primary">{lFallback s='vault_use_new_text' mod='wirecardpaymentgateway'}</button>
     </p>
 {/if}

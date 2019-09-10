@@ -32,8 +32,8 @@
  * @license   GPLv3
  */
 
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use \WirecardEE\Prestashop\Models\CreditCardVault;
+use \WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * @property WirecardPaymentGateway module
@@ -42,6 +42,14 @@ use \WirecardEE\Prestashop\Models\CreditCardVault;
  */
 class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
+    use TranslationHelper;
+
+    /**
+     * @var string
+     * @since 2.3.0
+     */
+    const TRANSLATION_FILE = "creditcard";
+
     /**
      * @var CreditCardVault $vaultModel
      */
@@ -62,7 +70,13 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     public function displayAjaxListStoredCards()
     {
         header('Content-Type: application/json; charset=utf8');
-        die(\Tools::jsonEncode($this->vaultModel->getUserCards($this->context->cart->id_address_invoice)));
+        die(\Tools::jsonEncode([
+            'cards' => $this->vaultModel->getUserCards($this->context->cart->id_address_invoice),
+            'strings' => [
+                'use' => $this->l('vault_use_card_text'),
+                'delete' => $this->l('vault_delete_card_text')
+            ]
+        ]));
     }
 
     /**
