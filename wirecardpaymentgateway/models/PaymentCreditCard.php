@@ -396,7 +396,8 @@ class PaymentCreditCard extends Payment
      * @return string
      * @since 2.2.2
      */
-    protected function removeSuffix($string, $cutOffPoint = '-') {
+    protected function removeSuffix($string, $cutOffPoint = '-')
+    {
         $trimmed = mb_substr($string, 0, mb_strpos($string, $cutOffPoint));
 
         return mb_strlen($trimmed) > 0
