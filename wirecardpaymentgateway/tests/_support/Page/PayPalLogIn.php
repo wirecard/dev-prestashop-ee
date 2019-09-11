@@ -27,53 +27,53 @@
  *
  * By installing the plugin into the shop system the customer agrees to these terms of use.
  * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
  */
 
-namespace Helper;
+namespace Page;
 
-// here you can define custom actions
-// all public methods declared in helper class will be available in $I
+use Facebook\WebDriver\Exception\TimeOutException;
 
-use Codeception\Lib\Generator\PageObject;
+class PayPalLogIn extends Base {
 
-class Acceptance extends \Codeception\Module
-{
+	/**
+	 * @var string
+	 * @since 2.2.1
+	 */
+	public $URL = 'checkout';
 
+	/**
+	 * @var array
+	 * @since 2.2.1
+	 */
+	public $elements = array(
+		'Email' => "//*[@id='email']",
+		'Password' => "//*[@id='password']",
+		'Next' => "//*[@id='btnNext']",
+		'Log In' => "//*[@id='btnLogin']"
+	);
 
-    /**
-     * Method getDataFromDataFile
-     * @param string $fileName
-     * @return string
-     *
-     * @since 1.3.4
-     */
-    public static function getDataFromDataFile($fileName)
-    {
-        // decode the JSON feed
-        $json_data = json_decode(file_get_contents($fileName));
-        if (! $json_data) {
-            $error = error_get_last();
-            echo 'Failed to get customer data from tests/_data/PaymentMethodData.json. Error was: ' . $error['message'];
-        } else {
-            return $json_data;
-        }
-    }
-
-    /**
-     * Method fillFieldsWithData
-     *
-     * @param string $dataType
-     * @param PageObject $page
-     *
-     * @since 2.0.1
-     */
-    public static function fillFieldsWithData($dataType, $page)
-    {
-        ((strpos($dataType, 'Customer') !== false)? $page->fillCustomerDetails():
-            (strpos($dataType, 'Credit Card')? $page->fillCreditCardDetails():$page->fillBillingDetails()));
-    }
+	/**
+	 * Method performPaypalLogin
+	 *
+	 * @since   2.2.1
+	 */
+	public function performPaypalLogin() 
+	{
+		$I = $this->tester;
+		$data_field_values = $I->getDataFromDataFile( 'tests/_data/PaymentMethodData.json' );
+		$I->waitForElementVisible( $this->getElement( 'Email' ) );
+		$I->fillField($this->getElement( 'Email' ), $data_field_values->paypal->user_name);
+		try 
+		{
+			$I->waitForElementVisible( $this->getElement( 'Password' ) );
+		} 
+		catch ( TimeOutException $e ) {
+			$I->waitForElementVisible( $this->getElement( 'Next' ) );
+			$I->click( $this->getElement( 'Next' ) );
+		}
+		$I->waitForElementVisible( $this->getElement( 'Password' ) );
+		$I->fillField( $this->getElement( 'Password' ), $data_field_values->paypal->password );
+		$I->waitForElementVisible( $this->getElement( 'Log In' ) );
+		$I->click( $this->getElement( 'Log In' ) );
+	}
 }

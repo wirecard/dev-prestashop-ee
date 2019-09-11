@@ -30,9 +30,7 @@ class DbHelper extends \Codeception\Module
     {
         $dbh = $this->getModule('Db')->dbh;
         $query = "select %s from %s";
-
         $query = sprintf($query, $column, $table);
-        print_r($query);
         $this->debugSection('Query', $query);
         $sth = $dbh->prepare($query);
         $sth->execute();

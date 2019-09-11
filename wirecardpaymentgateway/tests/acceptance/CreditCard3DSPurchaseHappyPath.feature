@@ -4,13 +4,14 @@ Feature: CreditCard3DSPurchaseHappyPath
   And to see that transaction was successful
 
   Background:
-    Given I prepare checkout "3DS"
+    Given I activate "creditcard" payment action "pay" in configuration
+    And I prepare credit card checkout "3DS"
     And I am on "Checkout" page
     And I fill fields with "Customer Data"
     When I check "I agree to the terms and conditions and the privacy policy"
     And I click "Next"
     And I fill fields with "Billing Data"
-    Then I see "Wirecard Credit Card"
+    Then I select "Wirecard Credit Card"
 
   @env ui_test @ui_test
   Scenario: purchase
@@ -22,3 +23,4 @@ Feature: CreditCard3DSPurchaseHappyPath
     And I click "Continue"
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
+    And I see "creditcard" "purchase" in transaction table

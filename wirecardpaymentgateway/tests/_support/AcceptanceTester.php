@@ -54,6 +54,8 @@ use Helper\PhpBrowserAPITest;
 use Page\Base;
 use Page\Cart as CartPage;
 use Page\Checkout as CheckoutPage;
+use Page\PayPalLogIn as PayPalLogInPage;
+use Page\PayPalReview as PayPalReviewPage;
 use Page\Product as ProductPage;
 use Page\Shop as ShopPage;
 use Page\OrderReceived as OrderReceivedPage;
@@ -72,16 +74,28 @@ class AcceptanceTester extends \Codeception\Actor
 
     /**
      * @var array
-     * @since 2.0.1
+     * @since 2.2.1
      */
     private $mappedPaymentActions = [
-        'config' => [
-            'reserve' => 'reserve',
-            'pay' => 'pay',
+        'creditcard' => [
+            'config' => [
+                'reserve' => 'reserve',
+                'pay' => 'pay',
+            ],
+            'tx_table' => [
+                'authorization' => 'authorization',
+                'purchase' => 'purchase'
+            ]
         ],
-        'tx_table' => [
-            'authorization' => 'authorization',
-            'purchase' => 'purchase'
+        'paypal' => [
+            'config' => [
+                'reserve' => 'reserve',
+                'pay' => 'pay',
+            ],
+            'tx_table' => [
+                'authorization' => 'authorization',
+                'debit' => 'debit'
+            ]
         ]
     ];
 
@@ -110,8 +124,16 @@ class AcceptanceTester extends \Codeception\Actor
                 $page = new VerifiedPage($this);
                 break;
             case 'Order Received':
-                $this->wait(7);
+                $this->wait(10);
                 $page = new OrderReceivedPage($this);
+                break;
+            case 'Pay Pal Log In':
+                $this->wait( 10 );
+                $page = new PayPalLogInPage( $this );
+                break;
+            case 'Pay Pal Review':
+                $this->wait( 20 );
+                $page = new PayPalReviewPage( $this );
                 break;
             default:
                 $page = null;
@@ -196,10 +218,24 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * @Given I prepare checkout :type
-     * @since 2.0.1
+     * @Given I prepare credit card checkout :type
+     * @since 2.2.1
      */
-    public function iPrepareCheckout($type)
+    public function iPrepareCreditCardCheckout($type)
+    {
+        $this->prepareGenericCheckout($type);
+    }
+
+    /**
+     * @Given I prepare checkout
+     * @since 2.2.1
+     */
+    public function iPrepareCheckout()
+    {
+        $this->prepareGenericCheckout();
+    }
+
+    private function prepareGenericCheckout($type='')
     {
         $this->iAmOnPage('Product');
         $this->fillField($this->currentPage->getElement('Quantity'), '5');
@@ -221,31 +257,54 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
-     * @Given I activate payment action :paymentAction in configuration
+     * @Given I login to Paypal
+     * @since 2.2.1
+     */
+    public function iLoginToPaypal()
+    {
+        $this->currentPage->performPaypalLogin();
+    }
+
+    /**
+     * @Given I select :paymentMethod
+     * @since 2.2.1
+     */
+    public function selectPaymentMethod($paymentMethod)
+    {
+        $this->currentPage->performPaymentMethodSelection($paymentMethod);
+    }
+
+    /**
+     * @Given I activate :card payment action :paymentAction in configuration
+     * @param string $card
      * @param string $paymentAction
      * @since 2.0.1
      */
-    public function iActivatePaymentActionInConfiguration($paymentAction)
+    public function iActivatePaymentActionInConfiguration($card, $paymentAction)
     {
         $this->updateInDatabase(
             'ps_configuration',
-            ['value' => $this->mappedPaymentActions['config'][$paymentAction]],
-            ['name' => 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_PAYMENT_ACTION']
+            ['value' => $this->mappedPaymentActions[$card]['config'][$paymentAction]],
+            ['name' => 'WIRECARD_PAYMENT_GATEWAY_'.strtoupper($card).'_PAYMENT_ACTION']
         );
     }
+
     /**
-     * @Then I see :paymentAction in transaction table
+     * @Then I see :card :paymentAction in transaction table
+     * @param string $card
      * @param string $paymentAction
      * @since 2.0.1
      */
-    public function iSeeInTransactionTable($paymentAction)
+    public function iSeeInTransactionTable($card, $paymentAction)
     {
+        # wait for transaction to appear in transaction table
+        $this->wait(10);
         $this->seeInDatabase(
             'ps_wirecard_payment_gateway_tx',
-            ['transaction_type' => $this->mappedPaymentActions['tx_table'][$paymentAction]]
+            ['transaction_type' => $this->mappedPaymentActions[$card]['tx_table'][$paymentAction]]
         );
         //check that last transaction in the table is the one under test
         $transactionTypes = $this->getColumnFromDatabaseNoCriteria('ps_wirecard_payment_gateway_tx', 'transaction_type');
-        $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions['tx_table'][$paymentAction]);
+        $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions[$card]['tx_table'][$paymentAction]);
     }
 }

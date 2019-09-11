@@ -42,3 +42,12 @@ docker exec --env PRESTASHOP_DB_PASSWORD=${PRESTASHOP_DB_PASSWORD} \
             --env PRESTASHOP_DB_NAME=${PRESTASHOP_DB_NAME} \
             --env GATEWAY=${GATEWAY} \
             ${PRESTASHOP_CONTAINER_NAME} bash -c "cd /var/www/html/_data && php configure_payment_method_db.php creditcard reserve"
+
+#configure enable payment method settings
+for paymentMethod in $(jq -r 'keys | .[]' wirecardpaymentgateway/tests/_data/PaymentMethodData.json); do
+    docker exec --env PRESTASHOP_DB_PASSWORD=${PRESTASHOP_DB_PASSWORD} \
+                --env PRESTASHOP_DB_SERVER=${PRESTASHOP_DB_SERVER} \
+                --env PRESTASHOP_DB_NAME=${PRESTASHOP_DB_NAME} \
+                --env GATEWAY=${GATEWAY} \
+                ${PRESTASHOP_CONTAINER_NAME} bash -c "cd /var/www/html/_data && php configure_payment_method_db.php '$paymentMethod' pay"
+done

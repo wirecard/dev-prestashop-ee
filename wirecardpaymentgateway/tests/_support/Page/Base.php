@@ -112,6 +112,7 @@ class Base
 
     /**
      * Method checkBox
+     *
      * @param string $box
      * @since 1.3.4
      */
@@ -128,5 +129,26 @@ class Base
     public function fillCustomerDetails()
     {
         ;
+    }
+
+    /**
+     * Method performPaypalLogin
+     *
+     * @since   2.2.1
+     */
+    public function performPaypalLogin()
+    {
+        ;
+    }
+
+    /**
+     * Method performPaymentMethodSelection
+     *
+     * @param string $paymentMethod
+     * @since   2.2.1
+     */
+    public function performPaymentMethodSelection($paymentMethod)
+    {
+        $this->tester->selectOption($paymentMethod, $paymentMethod);
     }
 }
