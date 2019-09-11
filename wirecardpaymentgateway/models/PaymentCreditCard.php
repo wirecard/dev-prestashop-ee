@@ -373,8 +373,8 @@ class PaymentCreditCard extends Payment
     protected function getSupportedLangCode($context)
     {
         $converter = new WppVTwoConverter();
-        $isoCode = $this->stringSuffixToUpperCase(
-            $context->language->language_code
+        $isoCode = $this->removeSuffix(
+            mb_strtolower($context->language->language_code)
         );
 
         try {
@@ -389,23 +389,18 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Explode a string using the needle
-     * Convert last element to uppercase
-     * Implode string using the needle
+     * Removes the suffix of strings after a certain cut off point.
      *
-     * @param $string
-     * @param string $needle
+     * @param string $string
+     * @param string $cutOffPoint
      * @return string
-     *
-     * @since 2.0.0
+     * @since 2.2.2
      */
-    protected function stringSuffixToUpperCase($string, $needle = '-')
-    {
-        $explodedString       = explode($needle, $string);
-        $lastElement          = end($explodedString);
-        $key                  = key($explodedString);
-        $explodedString[$key] = mb_strtoupper($lastElement);
+    protected function removeSuffix($string, $cutOffPoint = '-') {
+        $trimmed = mb_substr($string, 0, mb_strpos($string, $cutOffPoint));
 
-        return implode($needle, $explodedString);
+        return mb_strlen($trimmed) > 0
+            ? $trimmed
+            : $string;
     }
 }
