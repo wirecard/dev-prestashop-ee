@@ -8,14 +8,6 @@
       "last_name": "test",
       "card_number": "4012000300001003",
       "cvv": "003",
-      "valid_until" : "0123",
-      "lastname": "test",
-      "firstname": "test",
-      "country": "Austria",
-      "street_address": "test",
-      "town": "Graz",
-      "post_code": "8010",
-      "phone": "123456",
-      "email_address": "test@example.com"
+      "valid_until" : "0123"
   }
 }
