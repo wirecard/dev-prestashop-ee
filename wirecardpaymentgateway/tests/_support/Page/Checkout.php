@@ -65,8 +65,8 @@ class Checkout extends Base
         'Phone' => "//*[@name='phone']",
         'Continue2' => "//*[@name='confirm-addresses']",
         'Continue3' => "//*[@name='confirmDeliveryOption']",
-        'Wirecard Credit Card' => '//*[@name="payment-option"]',
-        'Wirecard PayPal' => '//*[@name="payment-option"]',
+        'Wirecard Credit Card' => "//input[@type='radio'][contains(@data-module-name, 'wd-creditcard')]",
+        'Wirecard PayPal' => "//input[@type='radio'][contains(@data-module-name, 'wd-paypal')]",
         'Place order' => "//*[@id='place_order']",
 
         'Credit Card First Name' => "//*[@id='pp-cc-first-name']",
@@ -90,14 +90,14 @@ class Checkout extends Base
     public function fillCustomerDetails()
     {
         $I = $this->tester;
-        $data_field_values = $I->getDataFromDataFile('tests/_data/PaymentMethodData.json');
+        $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
         $I->selectOption($this->getElement('Social title'), '1');
         $I->waitForElementVisible($this->getElement('First Name'));
-        $I->fillField($this->getElement('First Name'), $data_field_values->creditcard->firstname);
+        $I->fillField($this->getElement('First Name'), $data_field_values->first_name);
         $I->waitForElementVisible($this->getElement('Last Name'));
-        $I->fillField($this->getElement('Last Name'), $data_field_values->creditcard->lastname);
+        $I->fillField($this->getElement('Last Name'), $data_field_values->last_name);
         $I->waitForElementVisible($this->getElement('Email'));
-        $I->fillField($this->getElement('Email'), $data_field_values->creditcard->email_address);
+        $I->fillField($this->getElement('Email'), $data_field_values->email_address);
     }
 
     /**
@@ -118,18 +118,6 @@ class Checkout extends Base
     }
 
     /**
-     * Method performPaymentMethodSelection
-     *
-     * @param $paymentMethod
-     * @since 2.2.1
-     */
-    public function performPaymentMethodSelection($paymentMethod)
-    {
-        $I = $this->tester;
-        $I->selectOption($this->getElement($paymentMethod), $paymentMethod);
-    }
-
-    /**
      * Method fillBillingDetails
      *
      * @since 2.0.1
@@ -137,15 +125,15 @@ class Checkout extends Base
     public function fillBillingDetails()
     {
         $I = $this->tester;
-        $data_field_values = $I->getDataFromDataFile('tests/_data/PaymentMethodData.json');
+        $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
         $I->waitForElementVisible($this->getElement('Address'));
-        $I->fillField($this->getElement('Address'), $data_field_values->creditcard->street_address);
+        $I->fillField($this->getElement('Address'), $data_field_values->street_address);
         $I->waitForElementVisible($this->getElement('City'));
-        $I->fillField($this->getElement('City'), $data_field_values->creditcard->town);
+        $I->fillField($this->getElement('City'), $data_field_values->town);
         $I->waitForElementVisible($this->getElement('Zip/Postal Code'));
-        $I->fillField($this->getElement('Zip/Postal Code'), $data_field_values->creditcard->post_code);
+        $I->fillField($this->getElement('Zip/Postal Code'), $data_field_values->post_code);
         $I->waitForElementVisible($this->getElement('Phone'));
-        $I->fillField($this->getElement('Phone'), $data_field_values->creditcard->phone);
+        $I->fillField($this->getElement('Phone'), $data_field_values->phone);
         $I->waitForElementVisible($this->getElement('Continue2'));
         $I->click($this->getElement('Continue2'));
 

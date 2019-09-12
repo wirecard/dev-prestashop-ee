@@ -267,44 +267,45 @@ class AcceptanceTester extends \Codeception\Actor
 
     /**
      * @Given I select :paymentMethod
+     * @param string $paymentMethod
      * @since 2.2.1
      */
     public function selectPaymentMethod($paymentMethod)
     {
-        $this->currentPage->performPaymentMethodSelection($paymentMethod);
+        $this->selectOption($this->currentPage->getElement($paymentMethod), $paymentMethod);
     }
 
     /**
-     * @Given I activate :card payment action :paymentAction in configuration
-     * @param string $card
+     * @Given I activate :paymentMethod payment action :paymentAction in configuration
+     * @param string $paymentMethod
      * @param string $paymentAction
      * @since 2.0.1
      */
-    public function iActivatePaymentActionInConfiguration($card, $paymentAction)
+    public function iActivatePaymentActionInConfiguration($paymentMethod, $paymentAction)
     {
         $this->updateInDatabase(
             'ps_configuration',
-            ['value' => $this->mappedPaymentActions[$card]['config'][$paymentAction]],
-            ['name' => 'WIRECARD_PAYMENT_GATEWAY_'.strtoupper($card).'_PAYMENT_ACTION']
+            ['value' => $this->mappedPaymentActions[$paymentMethod]['config'][$paymentAction]],
+            ['name' => 'WIRECARD_PAYMENT_GATEWAY_'.strtoupper($paymentMethod).'_PAYMENT_ACTION']
         );
     }
 
     /**
-     * @Then I see :card :paymentAction in transaction table
-     * @param string $card
+     * @Then I see :paymentMethod :paymentAction in transaction table
+     * @param string $paymentMethod
      * @param string $paymentAction
      * @since 2.0.1
      */
-    public function iSeeInTransactionTable($card, $paymentAction)
+    public function iSeeInTransactionTable($paymentMethod, $paymentAction)
     {
         # wait for transaction to appear in transaction table
         $this->wait(10);
         $this->seeInDatabase(
             'ps_wirecard_payment_gateway_tx',
-            ['transaction_type' => $this->mappedPaymentActions[$card]['tx_table'][$paymentAction]]
+            ['transaction_type' => $this->mappedPaymentActions[$paymentMethod]['tx_table'][$paymentAction]]
         );
         //check that last transaction in the table is the one under test
         $transactionTypes = $this->getColumnFromDatabaseNoCriteria('ps_wirecard_payment_gateway_tx', 'transaction_type');
-        $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions[$card]['tx_table'][$paymentAction]);
+        $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions[$paymentMethod]['tx_table'][$paymentAction]);
     }
 }

@@ -140,15 +140,4 @@ class Base
     {
         ;
     }
-
-    /**
-     * Method performPaymentMethodSelection
-     *
-     * @param string $paymentMethod
-     * @since   2.2.1
-     */
-    public function performPaymentMethodSelection($paymentMethod)
-    {
-        $this->tester->selectOption($paymentMethod, $paymentMethod);
-    }
 }
