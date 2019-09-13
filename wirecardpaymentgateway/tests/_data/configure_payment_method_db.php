@@ -65,17 +65,31 @@ $defaultConfig = [
         'send_additional' => '1',
         'cc_vault_enabled' => '0',
     ],
+    'paypal' => [
+        'base_url' => 'https://api-test.wirecard.com',
+        'http_user' => '70000-APITEST-AP',
+        'http_pass' => 'qD2wzQ_hrc!8',
+        'merchant_account_id' => '2a0e9351-24ed-4110-9a1b-fd0fee6bec26',
+        'secret' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+
+        'enabled' => '1',
+        'title' => 'Wirecard PayPal',
+        'descriptor' => '0',
+        'payment_action' => 'pay',
+        'send_additional' => '0',
+    ]
 ];
 
 $supportedPaymentActionsPerPaymentMethod = [
-    'creditcard' => ['reserve', 'pay']
+    'creditcard' => ['reserve', 'pay'],
+    'paypal'     => ['reserve', 'pay']
 ];
 
 // main script - read payment method from command line, build the config and write it into database
 if (count($argv) < 3) {
-    $supportedPaymentMethods = implode("\n  ", array_keys($GLOBALS['defaultConfig']));
+    $supportedPaymentMethods = implode("\n  ", array_keys( $defaultConfig));
     $supportedPaymentActions = '';
-    foreach ($GLOBALS['defaultConfig'] as $key => $value) {
+    foreach ($defaultConfig as $key => $value) {
         $supportedPaymentActions .= $supportedPaymentActions . "\n  "
             . $key . ': ' . implode(",  ", $supportedPaymentActionsPerPaymentMethod[$key]);
     }
@@ -120,10 +134,12 @@ updatePrestashopEeDbConfig($dbConfig, $paymentMethod);
 
 function buildConfigByPaymentMethod($paymentMethod, $paymentAction, $gateway)
 {
-    if (!array_key_exists($paymentMethod, $GLOBALS['defaultConfig'])) {
+    global $defaultConfig;
+
+    if (!array_key_exists($paymentMethod, $defaultConfig)) {
         return null;
     }
-    $config = $GLOBALS['defaultConfig'][$paymentMethod];
+    $config = $defaultConfig[$paymentMethod];
 
     $config['payment_action'] = $paymentAction;
     $jsonFile = GATEWAY_CONFIG_PATH . DIRECTORY_SEPARATOR . $paymentMethod . '.json';

@@ -53,7 +53,6 @@ class Checkout extends Base
      * @var array
      * @since 1.3.4
      */
-//*[@id="customer-form"]/section/div[1]/div[1]/label[1]/span/input
 
     public $elements = array(
         'Social title' => "//*[@name='id_gender']",
@@ -66,7 +65,9 @@ class Checkout extends Base
         'Phone' => "//*[@name='phone']",
         'Continue2' => "//*[@name='confirm-addresses']",
         'Continue3' => "//*[@name='confirmDeliveryOption']",
-        'Wirecard Credit Card' => '//*[@name="payment-option"]',
+        'Wirecard Credit Card' => "//input[@type='radio'][contains(@data-module-name, 'wd-creditcard')]",
+        'Wirecard PayPal' => "//input[@type='radio'][contains(@data-module-name, 'wd-paypal')]",
+        'Place order' => "//*[@id='place_order']",
 
         'Credit Card First Name' => "//*[@id='pp-cc-first-name']",
         'Credit Card Last Name' => "//*[@id='pp-cc-last-name']",
@@ -147,16 +148,15 @@ class Checkout extends Base
     public function fillCreditCardDetails()
     {
         $I = $this->tester;
-        $data_field_values = $I->getDataFromDataFile('tests/_data/CardData.json');
-        $I->selectOption($this->getElement('Wirecard Credit Card'), 'Wirecard Credit Card');
+        $data_field_values = $I->getDataFromDataFile('tests/_data/PaymentMethodData.json');
 
         $this->switchFrame();
         $I->waitForElementVisible($this->getElement('Credit Card Last Name'));
-        $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->first_name);
-        $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->last_name);
-        $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->card_number);
-        $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->cvv);
-        $I->fillField($this->getElement('Credit Card Valid until'), $data_field_values->valid_until);
+        $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->creditcard->first_name);
+        $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->creditcard->last_name);
+        $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->creditcard->card_number);
+        $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->creditcard->cvv);
+        $I->fillField($this->getElement('Credit Card Valid until'), $data_field_values->creditcard->valid_until);
         $I->switchToIFrame();
     }
 

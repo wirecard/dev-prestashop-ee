@@ -112,6 +112,7 @@ class Base
 
     /**
      * Method checkBox
+     *
      * @param string $box
      * @since 1.3.4
      */
@@ -126,6 +127,16 @@ class Base
      * @since 2.0.1
      */
     public function fillCustomerDetails()
+    {
+        ;
+    }
+
+    /**
+     * Method performPaypalLogin
+     *
+     * @since   2.2.1
+     */
+    public function performPaypalLogin()
     {
         ;
     }
