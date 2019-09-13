@@ -6,4 +6,4 @@ git config --global user.email "wirecard@travis-ci.org"
 
 git add  ${PRESTASHOP_RELEASES_FILE}
 git commit -m "[skip ci] Update latest shop releases"
-git push --quiet https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG} HEAD:TPWDCEE-4732-paypal
+git push --quiet https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG} HEAD:master
