@@ -48,7 +48,6 @@ use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 define('IS_CORE', false);
 
@@ -60,8 +59,6 @@ define('IS_CORE', false);
  */
 class WirecardPaymentGateway extends PaymentModule
 {
-    use TranslationHelper;
-
     /**
      * @var string
      * @since 2.1.0
@@ -206,7 +203,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function installTabs()
     {
-        $key = $this->getTranslatedString('heading_title_transaction_details');
+        $key = $this->l('heading_title_transaction_details');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardTransactions';
@@ -228,7 +225,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->parent_class_name = 'SELL';
         $tab->add();
 
-        $key = $this->getTranslatedString('heading_title_support');
+        $key = $this->l('heading_title_support');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardSupport';
@@ -246,7 +243,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->module = $this->name;
         $tab->add();
 
-        $key = $this->getTranslatedString('heading_title_ajax');
+        $key = $this->l('heading_title_ajax');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardAjax';
@@ -310,7 +307,7 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         if (!$this->isUrlConfigurationValid()) {
-            $this->html .= $this->displayError($this->getTranslatedString('warning_credit_card_url_mismatch'));
+            $this->html .= $this->displayError($this->l('warning_credit_card_url_mismatch'));
         }
 
         $this->context->smarty->assign(
@@ -585,7 +582,7 @@ class WirecardPaymentGateway extends PaymentModule
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
-        $this->html .= $this->displayConfirmation($this->getTranslatedString('settings_updated'));
+        $this->html .= $this->displayConfirmation($this->l('settings_updated'));
     }
 
     /**
@@ -618,12 +615,12 @@ class WirecardPaymentGateway extends PaymentModule
             array(
                 'id' => 'active_on',
                 'value' => 1,
-                'label' => $this->getTranslatedString('text_enabled')
+                'label' => $this->l('text_enabled')
             ),
             array(
                 'id' => 'active_off',
                 'value' => 0,
-                'label' => $this->getTranslatedString('text_disabled')
+                'label' => $this->l('text_disabled')
             )
         );
 
@@ -673,7 +670,7 @@ class WirecardPaymentGateway extends PaymentModule
                 }
                 $elem = array(
                     'name' => $shopConfigService->getFieldName($f['name']),
-                    'label' => isset($f['label'])?$this->getTranslatedString($f['label']):'',
+                    'label' => isset($f['label'])?$this->l($f['label']):'',
                     'tab' => $tabname,
                     'type' => $f['type'],
                     'required' => isset($f['required']) && $f['required']

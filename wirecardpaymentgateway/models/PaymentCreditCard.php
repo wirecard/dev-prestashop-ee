@@ -106,86 +106,86 @@ class PaymentCreditCard extends Payment
             'fields' => array(
                 array(
                     'name' => 'enabled',
-                    'label' => $this->getTranslatedString('text_enable'),
+                    'label' => $this->l('text_enable'),
                     'type' => 'onoff',
-                    'doc' => $this->getTranslatedString('enable_heading_title_creditcard'),
+                    'doc' => $this->l('enable_heading_title_creditcard'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
-                    'label' => $this->getTranslatedString('config_title'),
+                    'label' => $this->l('config_title'),
                     'type' => 'text',
-                    'default' => $this->getTranslatedString('heading_title_creditcard'),
+                    'default' => $this->l('heading_title_creditcard'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => $this->getTranslatedString('config_merchant_account_id'),
+                    'label'   => $this->l('config_merchant_account_id'),
                     'type'    => 'text',
                     'default' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => $this->getTranslatedString('config_merchant_secret'),
+                    'label'   => $this->l('config_merchant_secret'),
                     'type'    => 'text',
                     'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'three_d_merchant_account_id',
-                    'label'    => $this->getTranslatedString('three_d_merchant_account_id'),
+                    'label'    => $this->l('three_d_merchant_account_id'),
                     'type'     => 'text',
                     'default'  => '508b8896-b37d-4614-845c-26bf8bf2c948',
                     'required' => true,
                 ),
                 array(
                     'name' => 'three_d_secret',
-                    'label'       => $this->getTranslatedString('config_three_d_merchant_secret'),
+                    'label'       => $this->l('config_three_d_merchant_secret'),
                     'type'        => 'text',
                     'default'     => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
                     'required' => true,
                 ),
                 array(
                     'name' => 'ssl_max_limit',
-                    'label'       => $this->getTranslatedString('config_ssl_max_limit'),
+                    'label'       => $this->l('config_ssl_max_limit'),
                     'type'        => 'text',
                     'default'     => '300.0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'three_d_min_limit',
-                    'label'       => $this->getTranslatedString('config_three_d_min_limit'),
+                    'label'       => $this->l('config_three_d_min_limit'),
                     'type'        => 'text',
                     'default'     => '100.0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => $this->getTranslatedString('config_base_url'),
+                    'label'       => $this->l('config_base_url'),
                     'type'        => 'text',
-                    'doc' => $this->getTranslatedString('config_base_url_desc'),
+                    'doc' => $this->l('config_base_url_desc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name'        => 'wpp_url',
-                    'label'       => $this->getTranslatedString('config_wpp_url'),
+                    'label'       => $this->l('config_wpp_url'),
                     'type'        => 'text',
-                    'doc'         => $this->getTranslatedString('config_wpp_url_desc'),
+                    'doc'         => $this->l('config_wpp_url_desc'),
                     'default'     => 'https://wpp-test.wirecard.com',
                     'required'    => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => $this->getTranslatedString('config_http_user'),
+                    'label'   => $this->l('config_http_user'),
                     'type'    => 'text',
                     'default' => '70000-APITEST-AP',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => $this->getTranslatedString('config_http_password'),
+                    'label'   => $this->l('config_http_password'),
                     'type'    => 'text',
                     'default' => 'qD2wzQ_hrc!8',
                     'required' => true,
@@ -194,47 +194,47 @@ class PaymentCreditCard extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'pay',
-                    'label'   => $this->getTranslatedString('config_payment_action'),
+                    'label'   => $this->l('config_payment_action'),
                     'options' => array(
-                        array('key' => 'reserve', 'value' => $this->getTranslatedString('text_payment_action_reserve')),
-                        array('key' => 'pay', 'value' => $this->getTranslatedString('text_payment_action_pay')),
+                        array('key' => 'reserve', 'value' => $this->l('text_payment_action_reserve')),
+                        array('key' => 'pay', 'value' => $this->l('text_payment_action_pay')),
                     ),
                 ),
                 array(
                     'name' => 'requestor_challenge',
                     'type'    => 'select',
                     'default' => ChallengeInd::NO_PREFERENCE,
-                    'label'   => $this->getTranslatedString('config_challenge_indicator'),
+                    'label'   => $this->l('config_challenge_indicator'),
                     'options' => array(
                         array(
                             'key'   => ChallengeInd::NO_PREFERENCE,
-                            'value' => $this->getTranslatedString('config_challenge_no_preference')
+                            'value' => $this->l('config_challenge_no_preference')
                         ),
                         array(
                             'key'   => ChallengeInd::NO_CHALLENGE,
-                            'value' => $this->getTranslatedString('config_challenge_no_challenge')
+                            'value' => $this->l('config_challenge_no_challenge')
                         ),
                         array(
                             'key'   => ChallengeInd::CHALLENGE_THREED,
-                            'value' => $this->getTranslatedString('config_challenge_challenge_threed')
+                            'value' => $this->l('config_challenge_challenge_threed')
                         )
                     ),
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => $this->getTranslatedString('config_descriptor'),
+                    'label'   => $this->l('config_descriptor'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => $this->getTranslatedString('config_additional_info'),
+                    'label'   => $this->l('config_additional_info'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
                 array(
                     'name' => 'ccvault_enabled',
-                    'label'=> $this->getTranslatedString('enable_vault'),
+                    'label'=> $this->l('enable_vault'),
                     'type' => 'onoff',
                     'default' => 0
                 ),
@@ -242,7 +242,7 @@ class PaymentCreditCard extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => $this->getTranslatedString('test_config'),
+                    'buttonText' => $this->l('test_config'),
                     'id' => 'creditcardConfig',
                     'method' => 'creditcard',
                     'send' => array(

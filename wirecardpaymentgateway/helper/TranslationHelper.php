@@ -48,7 +48,7 @@ trait TranslationHelper
      *
      * @SuppressWarnings(PHPMD.ShortMethodName)
      */
-    protected function getTranslatedString($key, $specific = false)
+    protected function l($key, $specific = false)
     {
         if (!$specific && defined("static::TRANSLATION_FILE")) {
             $specific = static::TRANSLATION_FILE;
