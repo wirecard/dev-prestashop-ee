@@ -86,49 +86,49 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $this->fields_list = array(
             'tx_id' => array(
-                'title' => $this->l('panel_transaction'),
+                'title' => $this->getTranslatedString('panel_transaction'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
             'transaction_id' => array(
-                'title' => $this->l('panel_transcation_id'),
+                'title' => $this->getTranslatedString('panel_transcation_id'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
             'parent_transaction_id' => array(
-                'title' => $this->l('panel_parent_transaction_id'),
+                'title' => $this->getTranslatedString('panel_parent_transaction_id'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
             ),
             'amount' => array(
-                'title' => $this->l('panel_amount'),
+                'title' => $this->getTranslatedString('panel_amount'),
                 'align' => 'text-right',
                 'class' => 'fixed-width-xs',
                 'type' => 'price',
             ),
             'currency' => array(
-                'title' => $this->l('panel_currency'),
+                'title' => $this->getTranslatedString('panel_currency'),
                 'class' => 'fixed-width-xs',
                 'align' => 'text-right',
             ),
             'ordernumber' => array(
-                'title' => $this->l('panel_order_number'),
+                'title' => $this->getTranslatedString('panel_order_number'),
                 'class' => 'fixed-width-lg',
             ),
             'cart_id' => array(
-                'title' => $this->l('panel_cart_number'),
+                'title' => $this->getTranslatedString('panel_cart_number'),
                 'class' => 'fixed-width-lg',
             ),
             'paymentmethod' => array(
-                'title' => $this->l('panel_payment_method'),
+                'title' => $this->getTranslatedString('panel_payment_method'),
                 'class' => 'fixed-width-lg',
             ),
             'transaction_type' => array(
-                'title' => $this->l('transactionType'),
+                'title' => $this->getTranslatedString('transactionType'),
                 'class' => 'fixed-width-xs',
             ),
             'transaction_state' => array(
-                'title' => $this->l('transactionState'),
+                'title' => $this->getTranslatedString('transactionState'),
                 'class' => 'fixed-width-xs',
             ),
 
@@ -147,7 +147,7 @@ class WirecardTransactionsController extends ModuleAdminController
     public function renderView()
     {
         if (!\Validate::isLoadedObject($this->object)) {
-            $this->errors[] = \Tools::displayError($this->l('error_no_transaction'));
+            $this->errors[] = \Tools::displayError($this->getTranslatedString('error_no_transaction'));
         }
 
         $transaction = $this->object;
@@ -200,7 +200,7 @@ class WirecardTransactionsController extends ModuleAdminController
         if (\Tools::getValue('action') && \Tools::getValue('tx')) {
             $transaction = $this->createTransaction(\Tools::getValue('tx'));
             if (!Validate::isLoadedObject($transaction)) {
-                $this->errors[] = Tools::displayError($this->l('error_no_transaction'));
+                $this->errors[] = Tools::displayError($this->getTranslatedString('error_no_transaction'));
             }
 
             $this->handleTransaction($transaction, \Tools::getValue('action'));
@@ -282,7 +282,7 @@ class WirecardTransactionsController extends ModuleAdminController
                 $this->errors[] = $errors;
             }
         } else {
-            $this->errors[] = \Tools::displayError($this->l('transaction_payment_not_found_error'));
+            $this->errors[] = \Tools::displayError($this->getTranslatedString('transaction_payment_not_found_error'));
         }
         return parent::postProcess();
     }

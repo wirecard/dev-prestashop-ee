@@ -80,7 +80,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $this->executeTransaction($transaction, $operation, $config, $cart, $orderId);
         } catch (\Exception $exception) {
             $this->errors = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            $this->processFailure($orderId);
         }
     }
 
@@ -142,7 +142,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $this->handleTransactionResponse($response, $orderId);
         } catch (Exception $exception) {
             $this->errors = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            $this->processFailure($orderId);
         }
     }
 
@@ -166,7 +166,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontCont
             $this->handleTransactionResponse($response, $orderId);
         } catch (Exception $exception) {
             $this->errors = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            $this->processFailure($orderId);
         }
     }
 

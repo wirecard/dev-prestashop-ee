@@ -150,7 +150,7 @@ abstract class Payment extends PaymentOption
         $this->setAction($this->action_link);
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
-        $this->setCallToActionText($this->l($this->configuration->getField('title')));
+        $this->setCallToActionText($this->getTranslatedString($this->configuration->getField('title')));
 
         //Default back-end operation possibilities
         $this->cancel = array('authorization');
