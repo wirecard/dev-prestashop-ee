@@ -151,186 +151,33 @@ class WirecardTransactionsController extends ModuleAdminController
             $this->errors[] = \Tools::displayError($this->l('error_no_transaction'));
         }
 
-        $transaction = $this->object;
-        /** @var \WirecardEE\Prestashop\Models\Payment $payment */
+        $transaction = $this->mapTransactionDataToArray();
         $payment = PaymentProvider::getPayment($transaction->paymentmethod);
-        $response_data = json_decode($transaction->response);
-        // Smarty assign
+
+        // These variables are available in the Smarty context
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
-            'transaction_id' => $transaction->transaction_id,
             'payment_method' => $payment->getName(),
-            'transaction_type' => $transaction->transaction_type,
-            'status' => $transaction->transaction_state,
-            'amount' => $transaction->amount,
-            'currency' => $transaction->currency,
-            'response_data' => $response_data,
-            'canCancel' => $payment->canCancel($transaction->transaction_type),
-            'canCapture' => $payment->canCapture($transaction->transaction_type),
-            'canRefund' => $payment->canRefund($transaction->transaction_type),
-            'cancelLink' => $this->context->link->getAdminLink(
-                'WirecardTransactions',
-                true,
-                array(),
-                array('action' => 'cancel', 'tx' => $transaction->tx_id)
-            ),
-            'captureLink' => $this->context->link->getAdminLink(
-                'WirecardTransactions',
-                true,
-                array(),
-                array('action' => 'capture', 'tx' => $transaction->tx_id)
-            ),
-            'refundLink' => $this->context->link->getAdminLink(
-                'WirecardTransactions',
-                true,
-                array(),
-                array('action' => 'refund', 'tx' => $transaction->tx_id)
-            ),
-            'backButton' => $this->context->link->getAdminLink('WirecardTransactions', true)
+            'transaction' => $transaction,
         );
 
         return parent::renderView();
     }
 
-    /**
-     * Process the submit according to the action
-     * @since 1.0.0
-     */
     public function postProcess()
     {
-        if (\Tools::getValue('action') && \Tools::getValue('tx')) {
-            $transaction = $this->createTransaction(\Tools::getValue('tx'));
-            if (!Validate::isLoadedObject($transaction)) {
-                $this->errors[] = Tools::displayError($this->l('error_no_transaction'));
-            }
 
-            $this->handleTransaction($transaction, \Tools::getValue('action'));
-        }
-
-        parent::postProcess();
     }
 
-    /**
-     * Capture/Cancel/Refund Transaction
-     *
-     * @param $transactionData
-     * @param string $operation
-     * @since 1.0.0
-     * @return mixed
-     */
-    public function handleTransaction($transactionData, $operation)
+    protected function mapTransactionDataToArray()
     {
-        $paymentType = $transactionData->paymentmethod;
-
-        if ($paymentType == 'creditcard') {
-            $paymentType = $this->checkPaymentName($transactionData->order_id);
-        }
-        /** @var Payment $payment */
-        $payment = PaymentProvider::getPayment($paymentType);
-        if ($payment) {
-            $shopConfigService = new ShopConfigurationService($paymentType);
-            $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
-            $operation = $this->getOperation($paymentType, $operation);
-            switch ($operation) {
-                case Operation::REFUND:
-                    $transaction = $payment->createRefundTransaction($transactionData, $this->module);
-                    if (in_array($paymentType, array('ideal', 'sofortbanking', 'sepadirectdebit'))) {
-                        $shopConfigService = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
-                        $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
-                        $operation = Operation::CREDIT;
-                    }
-                    if ($paymentType == 'ratepay-invoice') {
-                        $operation = Operation::CANCEL;
-                    }
-                    break;
-                case Operation::CANCEL:
-                    $transaction = $payment->createCancelTransaction($transactionData);
-                    break;
-                case Operation::PAY:
-                    $transaction = $payment->createPayTransaction($transactionData);
-                    break;
-            }
-            $transactionService = new TransactionService($config, new WirecardLogger());
-            try {
-                /** @var $response \Wirecard\PaymentSdk\Response\Response */
-                $response = $transactionService->process($transaction, $operation);
-            } catch (\Exception $exception) {
-                $logger = new WirecardLogger();
-                $logger->error(__METHOD__ . ':' . $exception->getMessage());
-                $this->errors[] = Tools::displayError($exception->getMessage());
-            }
-
-            if ($response instanceof SuccessResponse) {
-                $db = \Db::getInstance();
-                $where = 'transaction_id = "' . pSQL($transactionData->transaction_id) . '"';
-                $db->update('wirecard_payment_gateway_tx', array(
-                    'transaction_state' => 'closed'
-                ), $where);
-
-                $url = $this->context->link->getAdminLink(
-                    'WirecardTransactions',
-                    true,
-                    array(),
-                    array('tx_id' => $transactionData->tx_id)
-                ). '&viewwirecard_payment_gateway_tx';
-                Tools::redirectAdmin($url);
-            } elseif ($response instanceof FailureResponse) {
-                $errors = '';
-                foreach ($response->getStatusCollection()->getIterator() as $item) {
-                    /** @var Status $item */
-                    $errors .= $item->getDescription() . "<br>\n";
-                }
-                $this->errors[] = $errors;
-            }
-        } else {
-            $this->errors[] = \Tools::displayError($this->l('transaction_payment_not_found_error'));
-        }
-        return parent::postProcess();
-    }
-
-    /**
-     * @param int $txId
-     * @return Transaction
-     */
-    private function createTransaction($txId)
-    {
-        return new Transaction($txId);
-    }
-
-    /**
-     * @param $paymentType
-     * @param $operation
-     * @return string
-     */
-    private function getOperation($paymentType, $operation)
-    {
-        if ($operation == 'capture') {
-            return Operation::PAY;
-        }
-
-        if (in_array($paymentType, array(
-                    'paypal',
-                    'alipay-xborder',
-                    'p24',
-                    'masterpass'
-                    ))
-            && $operation == 'refund') {
-            return Operation::CANCEL;
-        }
-
-        return $operation;
-    }
-
-    private function checkPaymentName($orderId)
-    {
-        $order = new Order($orderId);
-        $masterpassConfig = new ShopConfigurationService(PaymentMasterpass::TYPE);
-
-        switch ($order->payment) {
-            case $masterpassConfig->getField('title'):
-                return 'masterpass';
-            default:
-                return 'creditcard';
-        }
+        return array(
+            'id'        => $this->object->transaction_id,
+            'type'      => $this->object->transaction_type,
+            'status'    => $this->object->transaction_state,
+            'amount'    => $this->object->amount,
+            'currency'  => $this->object->currency,
+            'response'  => json_decode($this->object->response),
+        );
     }
 }

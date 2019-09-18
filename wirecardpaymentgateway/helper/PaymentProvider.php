@@ -2,6 +2,7 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
@@ -14,7 +15,18 @@ use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
 use WirecardEE\Prestashop\Models\PaymentSofort;
 
+/**
+ * Class PaymentProvider
+ * @package WirecardEE\Prestashop\Helper
+ * @since 2.4.0
+ */
 class PaymentProvider {
+    /**
+     * Get all available payment models
+     *
+     * @return array
+     * @since 2.4.0
+     */
     public static function getPayments()
     {
         return array(
@@ -32,6 +44,13 @@ class PaymentProvider {
         );
     }
 
+    /**
+     * Get a specific payment model by type
+     *
+     * @param string $type
+     * @return Payment
+     * @since 2.4.0
+     */
     public static function getPayment($type)
     {
         $payments = self::getPayments();
