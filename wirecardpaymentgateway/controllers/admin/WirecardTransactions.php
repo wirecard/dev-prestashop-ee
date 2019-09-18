@@ -33,6 +33,7 @@
  * @license GPLv3
  */
 
+use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
@@ -152,7 +153,7 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $transaction = $this->object;
         /** @var \WirecardEE\Prestashop\Models\Payment $payment */
-        $payment = $this->module->getPaymentFromType($transaction->paymentmethod);
+        $payment = PaymentProvider::getPayment($transaction->paymentmethod);
         $response_data = json_decode($transaction->response);
         // Smarty assign
         $this->tpl_view_vars = array(
@@ -225,7 +226,7 @@ class WirecardTransactionsController extends ModuleAdminController
             $paymentType = $this->checkPaymentName($transactionData->order_id);
         }
         /** @var Payment $payment */
-        $payment = $this->module->getPaymentFromType($paymentType);
+        $payment = PaymentProvider::getPayment($paymentType);
         if ($payment) {
             $shopConfigService = new ShopConfigurationService($paymentType);
             $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();

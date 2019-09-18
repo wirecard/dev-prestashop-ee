@@ -367,4 +367,9 @@ abstract class Payment extends PaymentOption
      * @since 1.0.0
      */
     abstract public function createTransaction($module, $cart, $values, $orderId);
+
+    /**
+     * @return mixed
+     */
+    abstract public function getTransactionInstance();
 }

@@ -216,4 +216,15 @@ class PaymentPoiPia extends Payment
 
         return $transaction;
     }
+
+    /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return PoiPiaTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new PoiPiaTransaction();
+    }
 }

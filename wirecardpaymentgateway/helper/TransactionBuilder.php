@@ -38,6 +38,7 @@ namespace WirecardEE\Prestashop\Helper;
 use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\Entity\Redirect;
+use WirecardEE\Prestashop\Helper\PaymentProvider;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
@@ -128,7 +129,7 @@ class TransactionBuilder
     public function buildTransaction()
     {
         /** @var Payment $payment */
-        $payment = $this->module->getPaymentFromType($this->paymentType);
+        $payment = PaymentProvider::getPayment($this->paymentType);
 
         /** @var Transaction $transaction */
         $this->transaction = $payment->createTransaction(

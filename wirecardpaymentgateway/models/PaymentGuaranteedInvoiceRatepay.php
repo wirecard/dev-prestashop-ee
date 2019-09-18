@@ -342,6 +342,17 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return RatepayInvoiceTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new RatepayInvoiceTransaction();
+    }
+
+    /**
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @return bool

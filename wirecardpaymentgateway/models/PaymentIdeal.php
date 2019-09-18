@@ -207,6 +207,17 @@ class PaymentIdeal extends Payment
     }
 
     /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return IdealTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new IdealTransaction();
+    }
+
+    /**
      * Returns all supported banks from iDEAL
      *
      * @return array

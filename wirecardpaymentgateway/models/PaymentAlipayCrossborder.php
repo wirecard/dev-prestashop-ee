@@ -206,4 +206,15 @@ class PaymentAlipayCrossborder extends Payment
 
         return $transaction;
     }
+
+    /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return AlipayCrossborderTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new AlipayCrossborderTransaction();
+    }
 }

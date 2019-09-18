@@ -97,22 +97,6 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($actual);
     }
 
-    public function testGetPaymentFromType()
-    {
-        $actual = $this->gateway->getPaymentFromType('paypal');
-
-        $expected = PaymentPaypal::class;
-
-        $this->assertInstanceOf($expected, $actual);
-    }
-
-    public function testGetPaymentFromTypeInvalid()
-    {
-        $actual = $this->gateway->getPaymentFromType('invalidpayment');
-
-        $this->assertFalse($actual);
-    }
-
     public function testRedirectUrl()
     {
         $actual = $this->gateway->createRedirectUrl('1', 'paypal', 'success', '102');

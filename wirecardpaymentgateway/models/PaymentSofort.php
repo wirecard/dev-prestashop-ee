@@ -203,4 +203,15 @@ class PaymentSofort extends Payment
         $sepa = new PaymentSepaCreditTransfer();
         return $sepa->createRefundTransaction($transactionData, $module);
     }
+
+    /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return SofortTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new SofortTransaction();
+    }
 }

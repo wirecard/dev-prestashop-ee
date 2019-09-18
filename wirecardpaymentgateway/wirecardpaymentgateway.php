@@ -33,23 +33,12 @@
  * @license GPLv3
  */
 
+use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Models\PaymentIdeal;
-use WirecardEE\Prestashop\Models\PaymentPaypal;
-use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
-use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
-use WirecardEE\Prestashop\Models\PaymentSofort;
-use WirecardEE\Prestashop\Models\PaymentPoiPia;
-use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
-use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
-use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-
-define('IS_CORE', false);
 
 /**
  * Class WirecardPaymentGateway
@@ -287,7 +276,7 @@ class WirecardPaymentGateway extends PaymentModule
         $payments = array();
 
         /** @var \WirecardEE\Prestashop\Models\Payment $payment */
-        foreach ($this->getPayments() as $payment) {
+        foreach (PaymentProvider::getPayments() as $payment) {
             array_push($payments, $payment->getFormFields());
         }
 
@@ -393,7 +382,7 @@ class WirecardPaymentGateway extends PaymentModule
         $result = array();
 
         /** @var \WirecardEE\Prestashop\Models\Payment $paymentMethod */
-        foreach ($this->getPayments() as $paymentMethod) {
+        foreach (PaymentProvider::getPayments() as $paymentMethod) {
             $shopConfigService = new ShopConfigurationService($paymentMethod::TYPE);
 
             if ($shopConfigService->getField('enabled') == false) {
@@ -408,24 +397,6 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return count($result) ? $result : false;
-    }
-
-    /**
-     * Get payment class from payment type
-     *
-     * @param $paymentType
-     * @return bool|Payment
-     * @since 1.0.0
-     */
-    public function getPaymentFromType($paymentType)
-    {
-        $payments = $this->getPayments();
-
-        if (array_key_exists($paymentType, $payments)) {
-            return $payments[$paymentType];
-        }
-
-        return false;
     }
 
     /**
@@ -538,31 +509,6 @@ class WirecardPaymentGateway extends PaymentModule
             );
         }
         return $ret;
-    }
-
-    /**
-     * Basic array of payment models
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    private function getPayments()
-    {
-        $payments = array(
-            PaymentCreditCard::TYPE => new PaymentCreditCard(),
-            PaymentPaypal::TYPE => new PaymentPaypal(),
-            PaymentSepaDirectDebit::TYPE => new PaymentSepaDirectDebit(),
-            PaymentSepaCreditTransfer::TYPE => new PaymentSepaCreditTransfer(),
-            PaymentSofort::TYPE => new PaymentSofort(),
-            PaymentIdeal::TYPE => new PaymentIdeal(),
-            PaymentGuaranteedInvoiceRatepay::TYPE => new PaymentGuaranteedInvoiceRatepay(),
-            PaymentPtwentyfour::TYPE => new PaymentPtwentyfour(),
-            PaymentPoiPia::TYPE => new PaymentPoiPia(),
-            PaymentMasterpass::TYPE => new PaymentMasterpass(),
-            PaymentAlipayCrossborder::TYPE => new PaymentAlipayCrossborder()
-        );
-
-        return $payments;
     }
 
     /**
@@ -967,7 +913,7 @@ class WirecardPaymentGateway extends PaymentModule
             array('server' => 'remote', 'position' => 'top', 'priority' => 1)
         );
 
-        foreach ($this->getPayments() as $paymentMethod) {
+        foreach (PaymentProvider::getPayments() as $paymentMethod) {
             if (!$paymentMethod->getLoadJs()) {
                 continue;
             }

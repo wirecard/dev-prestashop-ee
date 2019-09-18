@@ -199,6 +199,17 @@ class PaymentSepaCreditTransfer extends Payment
     }
 
     /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return SepaCreditTransferTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new SepaCreditTransferTransaction();
+    }
+
+    /**
      * Generate the mandate id for SEPA
      *
      * @param int $orderId

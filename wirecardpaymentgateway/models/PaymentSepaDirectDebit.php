@@ -34,6 +34,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
 use Wirecard\PaymentSdk\Entity\AccountHolder;
@@ -253,13 +254,24 @@ class PaymentSepaDirectDebit extends Payment
      * Create refund SepaDirectDebitTransaction
      *
      * @param Transaction $transactionData
-     * @return SepaDirectDebitTransaction
+     * @return SepaCreditTransferTransaction
      * @since 1.3.0
      */
     public function createRefundTransaction($transactionData, $module)
     {
-        $sepa = new PaymentSepaCreditTransfer($module);
+        $sepa = new PaymentSepaCreditTransfer();
         return $sepa->createRefundTransaction($transactionData, $module);
+    }
+
+    /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return SepaDirectDebitTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new SepaDirectDebitTransaction();
     }
 
     /**

@@ -345,6 +345,17 @@ class PaymentCreditCard extends Payment
     }
 
     /**
+     * Get a clean transaction instance for this payment type.
+     *
+     * @return CreditCardTransaction
+     * @since 2.3.0
+     */
+    public function getTransactionInstance()
+    {
+        return new CreditCardTransaction();
+    }
+
+    /**
      * Set required variables for template
      *
      * @return array
