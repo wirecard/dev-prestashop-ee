@@ -389,19 +389,19 @@ class PaymentCreditCard extends Payment
     }
 
     /**
-     * Removes the suffix of strings after a certain cut off point.
+     * Removes the suffix of ISO codes after a certain cut off point.
      *
-     * @param string $string
+     * @param string $isoCode
      * @param string $cutOffPoint
      * @return string
      * @since 2.2.2
      */
-    protected function removeSuffix($string, $cutOffPoint = '-')
+    protected function removeSuffix($isoCode, $cutOffPoint = '-')
     {
-        $trimmed = mb_substr($string, 0, mb_strpos($string, $cutOffPoint));
+        $trimmed = mb_substr($isoCode, 0, mb_strpos($isoCode, $cutOffPoint));
 
         return mb_strlen($trimmed) > 0
             ? $trimmed
-            : $string;
+            : $isoCode;
     }
 }
