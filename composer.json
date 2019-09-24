@@ -44,6 +44,8 @@
     }
   },
   "config": {
-    "vendor-dir": "wirecardpaymentgateway/vendor"
+    "vendor-dir": "wirecardpaymentgateway/vendor",
+    "preferred-install": "dist",
+    "prepend-autoloader": false
   }
 }
