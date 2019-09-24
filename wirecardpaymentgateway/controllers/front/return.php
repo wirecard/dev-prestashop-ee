@@ -37,6 +37,7 @@ use WirecardEE\Prestashop\Classes\Engine\ReturnResponse;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Response\Cancel;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
 
 /**
  * Class WirecardPaymentGatewayReturnModuleFrontController
@@ -46,7 +47,7 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  *
  * @since 1.0.0
  */
-class WirecardPaymentGatewayReturnModuleFrontController extends ModuleFrontController
+class WirecardPaymentGatewayReturnModuleFrontController extends WirecardFrontController
 {
     const CANCEL_PAYMENT_STATE = 'cancel';
 
