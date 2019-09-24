@@ -33,6 +33,9 @@
  * @license GPLv3
  */
 
+require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
+    DIRECTORY_SEPARATOR.'autoload.php');
+
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
@@ -49,6 +52,7 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+
 
 define('IS_CORE', false);
 
@@ -107,9 +111,6 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function __construct()
     {
-        require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
-                     DIRECTORY_SEPARATOR.'autoload.php');
-
         $this->name = self::NAME;
         $this->version = self::VERSION;
         $this->tab = 'payments_gateways';
