@@ -36,14 +36,16 @@ namespace WirecardEE\Prestashop\Classes\Controller;
  * @package WirecardEE\Prestashop\Classes\Controller
  * @since 2.2.2
  */
-class WirecardFrontController extends \ModuleFrontController {
+class WirecardFrontController extends \ModuleFrontController
+{
     /**
      * Returns null, since we use our own rendering path
      *
      * @return null
      * @since 2.2.2
      */
-    public function display() {
+    public function display()
+    {
         return null;
     }
 }
