@@ -34,12 +34,12 @@
 
 use \WirecardEE\Prestashop\Models\CreditCardVault;
 use \WirecardEE\Prestashop\Helper\TranslationHelper;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @property WirecardPaymentGateway module
  *
  * @since 1.1.0
- * @SuppressWarnings(PHPMD.ExitExpression)
  */
 class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
@@ -78,10 +78,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             ]
         ];
 
-        $encodedData = \Tools::jsonEncode($data);
-
-        header('Content-Type: application/json; charset=utf8');
-        die($encodedData);
+        $response = new JsonResponse($data);
+        $response->send();
     }
 
     /**
