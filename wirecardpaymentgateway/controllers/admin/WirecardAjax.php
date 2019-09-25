@@ -86,12 +86,12 @@ class WirecardAjaxController extends ModuleAdminController
         $http_pass = Tools::getValue($shop_config->getFieldName('http_pass'));
 
         $status = 'error';
-        $message = $this->l('error_credentials');
+        $message = $this->getTranslatedString('error_credentials');
 
         try {
             if ($this->validatePaymentMethod($base_url, $http_user, $http_pass, $wpp_url, $method)) {
                 $status = 'ok';
-                $message = $this->l('success_credentials');
+                $message = $this->getTranslatedString('success_credentials');
             }
         } catch (\Exception $exception) {
             $message = $exception->getMessage();
@@ -117,7 +117,7 @@ class WirecardAjaxController extends ModuleAdminController
         if ($method == PaymentCreditCard::TYPE && $status) {
             $status = $this->validateBaseUrl($wpp_url);
             if (!UrlConfigurationChecker::isUrlConfigurationValid($base_url, $wpp_url)) {
-                throw new \Exception($this->l('warning_credit_card_url_mismatch'));
+                throw new \Exception($this->getTranslatedString('warning_credit_card_url_mismatch'));
             }
         }
 
