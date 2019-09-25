@@ -33,18 +33,12 @@
  * @license GPLv3
  */
 
+use Wirecard\PaymentSdk\BackendService;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Models\Transaction;
-use WirecardEE\Prestashop\Models\Payment;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Transaction\Operation;
-use WirecardEE\Prestashop\Models\PaymentMasterpass;
-use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class WirecardTransactions
@@ -63,7 +57,7 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $this->bootstrap = true;
         $this->table = 'wirecard_payment_gateway_tx';
-        $this->className = '\WirecardEE\Prestashop\Models\Transaction';
+        $this->className = Transaction::class;
         $this->lang = false;
         $this->addRowAction('view');
         $this->explicitSelect = true;
@@ -147,17 +141,17 @@ class WirecardTransactionsController extends ModuleAdminController
      */
     public function renderView()
     {
-        if (!\Validate::isLoadedObject($this->object)) {
-            $this->errors[] = \Tools::displayError($this->l('error_no_transaction'));
-        }
-
-        $transaction = $this->mapTransactionDataToArray();
-        $payment = PaymentProvider::getPayment($transaction->paymentmethod);
+        $transaction = $this->mapTransactionDataToArray($this->object);
+        $shop_config_service = new ShopConfigurationService($transaction['payment_method']);
+        $payment_model = PaymentProvider::getPayment($transaction['payment_method']);
+        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+        $backend_service = new BackendService($payment_config, new WirecardLogger());
 
         // These variables are available in the Smarty context
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
-            'payment_method' => $payment->getName(),
+            'payment_method' => $payment_model->getName(),
+            'possible_operations' => $backend_service->retrieveBackendOperations(),
             'transaction' => $transaction,
         );
 
@@ -166,18 +160,37 @@ class WirecardTransactionsController extends ModuleAdminController
 
     public function postProcess()
     {
+        $operation = \Tools::getValue('action');
+        $transaction_id = \Tools::getValue('tx');
 
+        if ($operation && $transaction_id) {
+            $transaction_data = new Transaction();
+            $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
+            $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
+
+            $payment_model = PaymentProvider::getPayment($parent_transaction['payment_method']);
+            $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+            $backend_service = new BackendService($payment_config, new WirecardLogger());
+
+            $transaction = $payment_model->getTransactionInstance();
+            $response = $backend_service->process($transaction, $operation);
+        }
     }
 
-    protected function mapTransactionDataToArray()
+    protected function mapTransactionDataToArray($data)
     {
+        if (!Validate::isLoadedObject($data)) {
+            $this->errors[] = Tools::displayError($this->l('error_no_transaction'));
+        }
+
         return array(
-            'id'        => $this->object->transaction_id,
-            'type'      => $this->object->transaction_type,
-            'status'    => $this->object->transaction_state,
-            'amount'    => $this->object->amount,
-            'currency'  => $this->object->currency,
-            'response'  => json_decode($this->object->response),
+            'id'             => $data->transaction_id,
+            'type'           => $data->transaction_type,
+            'status'         => $data->transaction_state,
+            'amount'         => $data->amount,
+            'currency'       => $data->currency,
+            'response'       => json_decode($data->response),
+            'payment_method' => $data->paymentmethod,
         );
     }
 }
