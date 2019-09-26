@@ -161,8 +161,8 @@
                     <div class="w-100" style="text-align: left;">
                         <input type="checkbox" id="sepaCheck">&nbsp;<label for="sepaCheck">{lFallback s='sepa_text_6' mod='wirecardpaymentgateway'}</label>
                     </div>
-                    <button class="btn btn-primary" id="sepaCancelButton">{lFallback s='cancel' mod='wirecardpaymentgateway'}</button>
-                    <button class="btn btn-primary disabled" id="sepaConfirmButton">{lFallback s='text_confirm' mod='wirecardpaymentgateway'}</button>
+                    <button type="button" class="btn btn-primary" id="sepaCancelButton">{lFallback s='cancel' mod='wirecardpaymentgateway'}</button>
+                    <button type="button" class="btn btn-primary disabled" id="sepaConfirmButton">{lFallback s='text_confirm' mod='wirecardpaymentgateway'}</button>
                 </div>
             </div>
         </div>
