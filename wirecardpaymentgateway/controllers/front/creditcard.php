@@ -73,8 +73,8 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $data = [
             'cards' => $this->vaultModel->getUserCards($this->context->cart->id_address_invoice),
             'strings' => [
-                'use' => $this->l('vault_use_card_text'),
-                'delete' => $this->l('vault_delete_card_text')
+                'use' => $this->getTranslatedString('vault_use_card_text'),
+                'delete' => $this->getTranslatedString('vault_delete_card_text')
             ]
         ];
 
