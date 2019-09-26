@@ -33,6 +33,7 @@
  */
 
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @property WirecardPaymentGateway module
@@ -50,7 +51,6 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
     /**
      * Generate Credit Card config
      * @since 1.0.0
-     * @SuppressWarnings(PHPMD.ExitExpression)
      */
     public function displayAjaxGetSeamlessConfig()
     {
@@ -59,12 +59,11 @@ class WirecardPaymentGatewayConfigProviderModuleFrontController extends ModuleFr
 
         try {
             $requestData = $payment->getRequestData($this->module, $this->context, $cartId);
-
-            header('Content-Type: application/json; charset=utf8');
-            echo $requestData;
-            exit();
+            $response = JsonResponse::fromJsonString($requestData);
         } catch (\Exception $exception) {
-            die(Tools::jsonEncode(null));
+            $response = new JsonResponse(null);
         }
+
+        $response->send();
     }
 }

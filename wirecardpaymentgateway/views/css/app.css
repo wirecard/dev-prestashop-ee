@@ -37,6 +37,14 @@
     white-space: normal;
 }
 
+.wd-card-row td {
+    vertical-align: middle;
+}
+
+.wd-card-row button {
+    margin-left: 4px;
+}
+
 /*
 The MIT License (MIT)
 Copyright (c) 2014 Luke Haas

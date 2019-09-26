@@ -208,14 +208,19 @@ $(document).ready(
             table.find(".btn-success").unbind("click");
             table.empty();
 
-            for (var row in response) {
-                if (response.hasOwnProperty(row)) {
-                    var card = response[row.toString()];
-                    var tr = "<tr>";
+            for (var row in response.cards) {
+                if (response.cards.hasOwnProperty(row)) {
+                    var card = response.cards[row.toString()];
+                    var tr = "<tr class='wd-card-row'>";
                     tr += "<td><label for='ccVaultId'>" + card.masked_pan + "</label></td>";
-                    tr += "<td><button class='btn btn-success' data-tokenid='" + card.token + "'><b>+</b></button>";
-                    tr += " <button class='btn btn-danger' data-cardid=''" + card.cc_id + "'><b>-</b></button></td>";
-                    tr += "</tr>";
+                    tr += "<td align='right'>";
+                    tr += "<button type='button' class='btn btn-success' data-tokenid='" + card.token + "'>";
+                    tr += "<b>" + response.strings.use + "</b>";
+                    tr += "</button>";
+                    tr += "<button type='button' class='btn btn-danger' data-cardid='" + card.cc_id + "'>";
+                    tr += "<b>" + response.strings.delete + "</b>";
+                    tr += "</button>";
+                    tr += "</td></tr>";
                     table.append(tr);
                 }
             }
