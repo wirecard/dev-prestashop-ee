@@ -13,7 +13,8 @@
     "wirecard/base-url-matcher": "1.0.0",
     "wirecard/io-converter": "^1.0",
     "monolog/monolog": "^1.0",
-    "ext-json": "*"
+    "ext-json": "*",
+    "symfony/http-foundation": "^3"
   },
   "require-dev": {
     "phpunit/phpunit": "5.7.27",
@@ -44,6 +45,8 @@
     }
   },
   "config": {
-    "vendor-dir": "wirecardpaymentgateway/vendor"
+    "vendor-dir": "wirecardpaymentgateway/vendor",
+    "preferred-install": "dist",
+    "prepend-autoloader": false
   }
 }

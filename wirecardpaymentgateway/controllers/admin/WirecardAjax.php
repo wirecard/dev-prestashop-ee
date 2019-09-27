@@ -1,36 +1,10 @@
 <?php
 /**
- * Shop System Plugins - Terms of Use
- *
- * The plugins offered are provided free of charge by Wirecard AG and are explicitly not part
- * of the Wirecard AG range of products and services.
- *
- * They have been tested and approved for full functionality in the standard configuration
- * (status on delivery) of the corresponding shop system. They are under General Public
- * License version 3 (GPLv3) and can be used, developed and passed on to third parties under
- * the same terms.
- *
- * However, Wirecard AG does not provide any guarantee or accept any liability for any errors
- * occurring when used in an enhanced, customized shop system configuration.
- *
- * Operation in an enhanced, customized configuration is at your own risk and requires a
- * comprehensive test phase by the user of the plugin.
- *
- * Customers use the plugins at their own risk. Wirecard AG does not guarantee their full
- * functionality neither does Wirecard AG assume liability for any disadvantages related to
- * the use of the plugins. Additionally, Wirecard AG does not guarantee the full functionality
- * for customized shop systems or installed plugins of other vendors of plugins within the same
- * shop system.
- *
- * Customers are responsible for testing the plugin's functionality before starting productive
- * operation.
- *
- * By installing the plugin into the shop system the customer agrees to these terms of use.
- * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * Shop System Extensions:
+ * - Terms of Use can be found at:
+ * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
+ * - License can be found under:
+ * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
 require dirname(__FILE__) . '/../../vendor/autoload.php';
@@ -86,12 +60,12 @@ class WirecardAjaxController extends ModuleAdminController
         $http_pass = Tools::getValue($shop_config->getFieldName('http_pass'));
 
         $status = 'error';
-        $message = $this->l('error_credentials');
+        $message = $this->getTranslatedString('error_credentials');
 
         try {
             if ($this->validatePaymentMethod($base_url, $http_user, $http_pass, $wpp_url, $method)) {
                 $status = 'ok';
-                $message = $this->l('success_credentials');
+                $message = $this->getTranslatedString('success_credentials');
             }
         } catch (\Exception $exception) {
             $message = $exception->getMessage();
@@ -117,7 +91,7 @@ class WirecardAjaxController extends ModuleAdminController
         if ($method == PaymentCreditCard::TYPE && $status) {
             $status = $this->validateBaseUrl($wpp_url);
             if (!UrlConfigurationChecker::isUrlConfigurationValid($base_url, $wpp_url)) {
-                throw new \Exception($this->l('warning_credit_card_url_mismatch'));
+                throw new \Exception($this->getTranslatedString('warning_credit_card_url_mismatch'));
             }
         }
 

@@ -1,37 +1,16 @@
 <?php
 /**
- * Shop System Plugins - Terms of Use
- *
- * The plugins offered are provided free of charge by Wirecard AG and are explicitly not part
- * of the Wirecard AG range of products and services.
- *
- * They have been tested and approved for full functionality in the standard configuration
- * (status on delivery) of the corresponding shop system. They are under General Public
- * License version 3 (GPLv3) and can be used, developed and passed on to third parties under
- * the same terms.
- *
- * However, Wirecard AG does not provide any guarantee or accept any liability for any errors
- * occurring when used in an enhanced, customized shop system configuration.
- *
- * Operation in an enhanced, customized configuration is at your own risk and requires a
- * comprehensive test phase by the user of the plugin.
- *
- * Customers use the plugins at their own risk. Wirecard AG does not guarantee their full
- * functionality neither does Wirecard AG assume liability for any disadvantages related to
- * the use of the plugins. Additionally, Wirecard AG does not guarantee the full functionality
- * for customized shop systems or installed plugins of other vendors of plugins within the same
- * shop system.
- *
- * Customers are responsible for testing the plugin's functionality before starting productive
- * operation.
- *
- * By installing the plugin into the shop system the customer agrees to these terms of use.
- * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * Shop System Extensions:
+ * - Terms of Use can be found at:
+ * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
+ * - License can be found under:
+ * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
+
+$autoloadPath = __DIR__ . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+}
 
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
@@ -48,6 +27,7 @@ use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 define('IS_CORE', false);
 
@@ -59,6 +39,8 @@ define('IS_CORE', false);
  */
 class WirecardPaymentGateway extends PaymentModule
 {
+    use TranslationHelper;
+
     /**
      * @var string
      * @since 2.1.0
@@ -69,7 +51,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.2.1';
+    const VERSION = '2.3.0';
 
     /**
      * @var string
@@ -104,9 +86,6 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function __construct()
     {
-        require_once(_PS_MODULE_DIR_.'wirecardpaymentgateway'.DIRECTORY_SEPARATOR.'vendor'.
-                     DIRECTORY_SEPARATOR.'autoload.php');
-
         $this->name = self::NAME;
         $this->version = self::VERSION;
         $this->tab = 'payments_gateways';
@@ -203,7 +182,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function installTabs()
     {
-        $key = $this->l('heading_title_transaction_details');
+        $key = $this->getTranslatedString('heading_title_transaction_details');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardTransactions';
@@ -225,7 +204,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->parent_class_name = 'SELL';
         $tab->add();
 
-        $key = $this->l('heading_title_support');
+        $key = $this->getTranslatedString('heading_title_support');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardSupport';
@@ -243,7 +222,7 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->module = $this->name;
         $tab->add();
 
-        $key = $this->l('heading_title_ajax');
+        $key = $this->getTranslatedString('heading_title_ajax');
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'WirecardAjax';
@@ -307,7 +286,7 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         if (!$this->isUrlConfigurationValid()) {
-            $this->html .= $this->displayError($this->l('warning_credit_card_url_mismatch'));
+            $this->html .= $this->displayError($this->getTranslatedString('warning_credit_card_url_mismatch'));
         }
 
         $this->context->smarty->assign(
@@ -582,7 +561,7 @@ class WirecardPaymentGateway extends PaymentModule
                 Configuration::updateValue($parameter['param_name'], $val);
             }
         }
-        $this->html .= $this->displayConfirmation($this->l('settings_updated'));
+        $this->html .= $this->displayConfirmation($this->getTranslatedString('settings_updated'));
     }
 
     /**
@@ -615,12 +594,12 @@ class WirecardPaymentGateway extends PaymentModule
             array(
                 'id' => 'active_on',
                 'value' => 1,
-                'label' => $this->l('text_enabled')
+                'label' => $this->getTranslatedString('text_enabled')
             ),
             array(
                 'id' => 'active_off',
                 'value' => 0,
-                'label' => $this->l('text_disabled')
+                'label' => $this->getTranslatedString('text_disabled')
             )
         );
 
@@ -670,7 +649,7 @@ class WirecardPaymentGateway extends PaymentModule
                 }
                 $elem = array(
                     'name' => $shopConfigService->getFieldName($f['name']),
-                    'label' => isset($f['label'])?$this->l($f['label']):'',
+                    'label' => isset($f['label'])?$this->getTranslatedString($f['label']):'',
                     'tab' => $tabname,
                     'type' => $f['type'],
                     'required' => isset($f['required']) && $f['required']
