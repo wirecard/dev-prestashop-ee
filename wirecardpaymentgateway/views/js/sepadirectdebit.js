@@ -23,6 +23,7 @@ $(document).ready(function () {
     function close()
     {
         $("#sepaMandateModal").modal("hide");
+        $("#payment-confirmation button").removeAttr("disabled");
     }
 
     function displayPopup()

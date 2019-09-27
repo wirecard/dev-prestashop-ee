@@ -14,6 +14,7 @@ use WirecardEE\Prestashop\Helper\TransactionBuilder;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
+use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -23,7 +24,7 @@ use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
  *
  * @since 1.0.0
  */
-class WirecardPaymentGatewayPaymentModuleFrontController extends ModuleFrontController
+class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontController
 {
     /** @var TransactionBuilder */
     private $transactionBuilder;

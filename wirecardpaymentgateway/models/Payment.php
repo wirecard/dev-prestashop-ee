@@ -201,6 +201,10 @@ abstract class Payment extends PaymentOption
                 [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', static::TYPE  . ".tpl"]
             );
 
+            if (!file_exists($templatePath)) {
+                return false;
+            }
+
             $context = \Context::getContext();
             $context->smarty->assign(array_merge(
                 $this->getFormTemplateData(),

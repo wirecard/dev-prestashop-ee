@@ -10,8 +10,9 @@
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Classes\Engine\NotificationResponse;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotificationFactory;
+use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
 
-class WirecardPaymentGatewayNotifyModuleFrontController extends ModuleFrontController
+class WirecardPaymentGatewayNotifyModuleFrontController extends WirecardFrontController
 {
     /** @var WirecardLogger  */
     public $logger;
