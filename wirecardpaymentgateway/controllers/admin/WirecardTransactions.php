@@ -116,33 +116,39 @@ class WirecardTransactionsController extends ModuleAdminController
      */
     public function renderView()
     {
-        $transaction = $this->mapTransactionDataToArray($this->object);
-        $shop_config_service = new ShopConfigurationService($transaction['payment_method']);
-        $payment_model = PaymentProvider::getPayment($transaction['payment_method']);
-        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-        $backend_service = new BackendService($payment_config, new WirecardLogger());
+        try {
+            $transaction_data = $this->mapTransactionDataToArray($this->object);
+            $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
+            $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
+            $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+            $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-        $gateway_transaction = $payment_model->getTransactionInstance();
-        $gateway_transaction->setParentTransactionId($transaction['id']);
+            $transaction = $payment_model->getTransactionInstance();
+            $transaction->setParentTransactionId($transaction_data['id']);
 
-        $operations = [];
-        $possible_operations = $backend_service->retrieveBackendOperations($gateway_transaction, true);
-        foreach (array_keys($possible_operations) as $operation) {
-            $operations[] = [
-                'action' => $operation,
-                'text' => $this->getTranslatedString("text_{$operation}_transaction"),
-            ];
+            $operations = [];
+            $possible_operations = (array)$backend_service->retrieveBackendOperations($transaction, true);
+            if ($possible_operations !== false ) {
+                foreach (array_keys($possible_operations) as $operation) {
+                    $operations[] = [
+                        'action' => $operation,
+                        'text' => $this->getTranslatedString("text_{$operation}_transaction"),
+                    ];
+                }
+            }
+
+            // These variables are available in the Smarty context
+            $this->tpl_view_vars = array(
+                'current_index' => self::$currentIndex,
+                'payment_method' => $payment_model->getName(),
+                'possible_operations' => $operations,
+                'transaction' => $transaction_data,
+            );
+
+            return parent::renderView();
+        } catch(\Throwable $e) {
+            echo $e->getMessage() . " :: " . get_class($e);
         }
-
-        // These variables are available in the Smarty context
-        $this->tpl_view_vars = array(
-            'current_index' => self::$currentIndex,
-            'payment_method' => $payment_model->getName(),
-            'possible_operations' => $operations,
-            'transaction' => $transaction,
-        );
-
-        return parent::renderView();
     }
 
     /**
@@ -156,6 +162,10 @@ class WirecardTransactionsController extends ModuleAdminController
         $operation = \Tools::getValue('operation');
         $transaction_id = \Tools::getValue('transaction');
 
+        if (!$operation || !$transaction_id) {
+            return;
+        }
+
         $transaction_data = new Transaction($transaction_id);
         $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
         $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
@@ -165,11 +175,20 @@ class WirecardTransactionsController extends ModuleAdminController
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
         $transaction = $payment_model->getTransactionInstance();
-        $transaction->setParentTransactionId($transaction_id);
+        $transaction->setParentTransactionId($parent_transaction['id']);
 
         try {
             $response = $backend_service->process($transaction, $operation);
-            var_dump($response);
+
+            // @TODO: This should delegate to new processing.
+            \Tools::redirectAdmin(
+                $this->context->link->getAdminLink(
+                    'WirecardTransactions',
+                    true,
+                    array(),
+                    array('tx_id' => $parent_transaction['tx'])
+                ). '&viewwirecard_payment_gateway_tx'
+            );
         } catch(\Exception $e) {
             echo $e->getMessage() . " :: " . get_class($e);
         }
@@ -189,6 +208,7 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         return array(
+            'tx'             => $data->tx_id,
             'id'             => $data->transaction_id,
             'type'           => $data->transaction_type,
             'status'         => $data->transaction_state,

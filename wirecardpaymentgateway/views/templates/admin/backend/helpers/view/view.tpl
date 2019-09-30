@@ -29,7 +29,7 @@
             <br>
             {if $transaction.status == 'open'}
                 <form method="post" class="post-processing">
-                    <input type="hidden" name="transaction" value="{$transaction.id}" />
+                    <input type="hidden" name="transaction" value="{$transaction.tx}" />
 
                     {foreach from=$possible_operations key=key item=item}
                         <button type="submit" name="operation" value="{$item.action}" class="btn btn-primary pointer">{$item.text}</button>
