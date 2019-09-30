@@ -17,10 +17,17 @@ use WirecardEE\Prestashop\Models\PaymentSofort;
 
 /**
  * Class PaymentProvider
+ *
+ * Note that this class suppresses the coupling warning as it pulls in
+ * a large number of dependencies by necessity. The class itself is however not
+ * complex.
+ *
  * @package WirecardEE\Prestashop\Helper
  * @since 2.4.0
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class PaymentProvider {
+class PaymentProvider
+{
     /**
      * Get all available payment models
      *

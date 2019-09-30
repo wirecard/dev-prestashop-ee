@@ -122,14 +122,15 @@ class WirecardTransactionsController extends ModuleAdminController
         $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-        $gatewayTransaction = $payment_model->getTransactionInstance();
-        $gatewayTransaction->setParentTransactionId($transaction['id']);
+        $gateway_transaction = $payment_model->getTransactionInstance();
+        $gateway_transaction->setParentTransactionId($transaction['id']);
 
-        $possible_operations = [];
-        foreach ($backend_service->retrieveBackendOperations($gatewayTransaction, true) as $key => $value) {
-            $possible_operations[] = [
-                'action' => $key,
-                'text' => $this->getTranslatedString("text_{$key}_transaction"),
+        $operations = [];
+        $possible_operations = $backend_service->retrieveBackendOperations($gateway_transaction, true);
+        foreach (array_keys($possible_operations) as $operation) {
+            $operations[] = [
+                'action' => $operation,
+                'text' => $this->getTranslatedString("text_{$operation}_transaction"),
             ];
         }
 
@@ -137,7 +138,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
             'payment_method' => $payment_model->getName(),
-            'possible_operations' => $possible_operations,
+            'possible_operations' => $operations,
             'transaction' => $transaction,
         );
 
@@ -155,24 +156,21 @@ class WirecardTransactionsController extends ModuleAdminController
         $operation = \Tools::getValue('operation');
         $transaction_id = \Tools::getValue('transaction');
 
-        if ($operation && $transaction_id) {
-            try {
-                $transaction_data = new Transaction($transaction_id);
-                $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
-                $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
+        $transaction_data = new Transaction($transaction_id);
+        $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
+        $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
 
-                $payment_model = PaymentProvider::getPayment($parent_transaction['payment_method']);
-                $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-                $backend_service = new BackendService($payment_config, new WirecardLogger());
+        $payment_model = PaymentProvider::getPayment($parent_transaction['payment_method']);
+        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+        $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-                $transaction = $payment_model->getTransactionInstance();
-                $response = $backend_service->process($transaction, $operation);
+        $transaction = $payment_model->getTransactionInstance();
 
-                var_dump($response);
-                die();
-            } catch(\Exception $e) {
-                die($e->getMessage() . " :: " . get_class($e));
-            }
+        try {
+            $response = $backend_service->process($transaction, $operation);
+            var_dump($response);
+        } catch(\Exception $e) {
+            echo $e->getMessage() . " :: " . get_class($e);
         }
     }
 
