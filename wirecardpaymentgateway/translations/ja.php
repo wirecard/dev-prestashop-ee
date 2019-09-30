@@ -25,6 +25,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_ced02f721e522
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_4621508b093588359d89d15019b0c713'] = '取引の状態';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_3bd56bbf8734eb9b2d39537bbbf92cdd'] = 'トランザクションが見つかりません';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_801af80081d36bd4abbc956818f28de9'] = 'No valid payment for this transaction found.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_024c0eb2f6a44bd14a71b780cc114723'] = 'Use card';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_3fcc1446b74b3c855555d4331bb7f53f'] = 'カードの削除';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Enable';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7c98f6003387a22f8930e088861ac1d1'] = 'Wirecard Alipay Cross-border を有効にする';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2433374a7348266aa2a46eab61a2fc5b'] = 'タイトル';
@@ -202,9 +204,6 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_ca223103c3b51750b19e
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_77de2a7d1e366bd416e2a9e186e9f268'] = 'HTTP パスワード';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_36245276e84306a410a410785ac986b3'] = '追加情報を送信する';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_7daacf9143e60bd1d97b926e8d0754d6'] = 'テスト構成';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a5ffbe10bf416c7db8773f0ed801a022'] = 'Wirecard決済ゲートウェイ';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_62e5cde27ad49944de104bbe346fd8e8'] = 'PrestaShop Wirecard決済ゲートウェイ・ショップモジュール';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_fec1fd6c6e6d2422514a8107cc9784c1'] = '本当にアンインストールしますか？';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Transaksi Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = 'サポート';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
@@ -212,6 +211,9 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_adf26da509e
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_abfa4ee8f05fae13b8954098fca4f0f4'] = '設定が更新されました。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f9e92a0727609b56780f28afa11da702'] = '有効';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_9963e13ca603bfe6f09af5673b058eb7'] = '無効';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_a5ffbe10bf416c7db8773f0ed801a022'] = 'Wirecard決済ゲートウェイ';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_62e5cde27ad49944de104bbe346fd8e8'] = 'PrestaShop Wirecard決済ゲートウェイ・ショップモジュール';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_fec1fd6c6e6d2422514a8107cc9784c1'] = '本当にアンインストールしますか？';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_68d1cb0fc728634d779fa66727f49dac'] = 'Payment method settings';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_363ddc2d1e8476ebc0d9c0eb6b69878e'] = '保存する';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_c01d298d870c928aef65a36ed62c30ea'] = '取引明細';

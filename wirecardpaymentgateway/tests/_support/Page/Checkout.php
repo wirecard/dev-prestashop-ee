@@ -1,36 +1,10 @@
 <?php
 /**
- * Shop System Plugins - Terms of Use
- *
- * The plugins offered are provided free of charge by Wirecard AG and are explicitly not part
- * of the Wirecard AG range of products and services.
- *
- * They have been tested and approved for full functionality in the standard configuration
- * (status on delivery) of the corresponding shop system. They are under General Public
- * License version 3 (GPLv3) and can be used, developed and passed on to third parties under
- * the same terms.
- *
- * However, Wirecard AG does not provide any guarantee or accept any liability for any errors
- * occurring when used in an enhanced, customized shop system configuration.
- *
- * Operation in an enhanced, customized configuration is at your own risk and requires a
- * comprehensive test phase by the user of the plugin.
- *
- * Customers use the plugins at their own risk. Wirecard AG does not guarantee their full
- * functionality neither does Wirecard AG assume liability for any disadvantages related to
- * the use of the plugins. Additionally, Wirecard AG does not guarantee the full functionality
- * for customized shop systems or installed plugins of other vendors of plugins within the same
- * shop system.
- *
- * Customers are responsible for testing the plugin's functionality before starting productive
- * operation.
- *
- * By installing the plugin into the shop system the customer agrees to these terms of use.
- * Please do not use the plugin if you do not agree to these terms of use!
- *
- * @author Wirecard AG
- * @copyright Wirecard AG
- * @license GPLv3
+ * Shop System Extensions:
+ * - Terms of Use can be found at:
+ * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
+ * - License can be found under:
+ * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
 namespace Page;
@@ -53,7 +27,6 @@ class Checkout extends Base
      * @var array
      * @since 1.3.4
      */
-//*[@id="customer-form"]/section/div[1]/div[1]/label[1]/span/input
 
     public $elements = array(
         'Social title' => "//*[@name='id_gender']",
@@ -66,7 +39,9 @@ class Checkout extends Base
         'Phone' => "//*[@name='phone']",
         'Continue2' => "//*[@name='confirm-addresses']",
         'Continue3' => "//*[@name='confirmDeliveryOption']",
-        'Wirecard Credit Card' => '//*[@name="payment-option"]',
+        'Wirecard Credit Card' => "//input[@type='radio'][contains(@data-module-name, 'wd-creditcard')]",
+        'Wirecard PayPal' => "//input[@type='radio'][contains(@data-module-name, 'wd-paypal')]",
+        'Place order' => "//*[@id='place_order']",
 
         'Credit Card First Name' => "//*[@id='pp-cc-first-name']",
         'Credit Card Last Name' => "//*[@id='pp-cc-last-name']",
@@ -147,16 +122,15 @@ class Checkout extends Base
     public function fillCreditCardDetails()
     {
         $I = $this->tester;
-        $data_field_values = $I->getDataFromDataFile('tests/_data/CardData.json');
-        $I->selectOption($this->getElement('Wirecard Credit Card'), 'Wirecard Credit Card');
+        $data_field_values = $I->getDataFromDataFile('tests/_data/PaymentMethodData.json');
 
         $this->switchFrame();
         $I->waitForElementVisible($this->getElement('Credit Card Last Name'));
-        $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->first_name);
-        $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->last_name);
-        $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->card_number);
-        $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->cvv);
-        $I->fillField($this->getElement('Credit Card Valid until'), $data_field_values->valid_until);
+        $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->creditcard->first_name);
+        $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->creditcard->last_name);
+        $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->creditcard->card_number);
+        $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->creditcard->cvv);
+        $I->fillField($this->getElement('Credit Card Valid until'), $data_field_values->creditcard->valid_until);
         $I->switchToIFrame();
     }
 

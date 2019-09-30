@@ -1,17 +1,17 @@
 Feature: CreditCard3DSWppv2AuthorizationHappyPath
   As a guest  user
-  I want to make a authorization with a Credit Card 3DS
+  I want to make an authorization with a Credit Card 3DS
   And to see that authorization was successful
 
   Background:
-    Given I activate payment action "reserve" in configuration
-    And I prepare checkout "3DS"
+    Given I activate "creditcard" payment action "reserve" in configuration
+    And I prepare credit card checkout "3DS"
     And I am on "Checkout" page
     And I fill fields with "Customer Data"
     When I check "I agree to the terms and conditions and the privacy policy"
     And I click "Next"
     And I fill fields with "Billing Data"
-    Then I see "Wirecard Credit Card"
+    Then I select "Wirecard Credit Card"
 
   @env ui_test @ui_test
   Scenario: authorize
@@ -23,4 +23,4 @@ Feature: CreditCard3DSWppv2AuthorizationHappyPath
     And I click "Continue"
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
-    And I see "authorization" in transaction table
+    And I see "creditcard" "authorization" in transaction table

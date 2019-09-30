@@ -1,5 +1,26 @@
 [
   {
+    "release": "2.3.0",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.6.0",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Improve wording for one-click checkout.",
+      "Fix test button not working in non-English languages",
+      "Fix failed credit card payments behaving unexpectedly",
+      "Fix SEPA Direct Debit payments trying to render non-existent template"
+    ]
+  },
+  {
+    "release": "2.2.1",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.6.0",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Remove static order number"
+    ]
+  },
+  {
     "release": "2.2.0",
     "shopsystem": "PrestaShop",
     "tested": "1.7.6.0",

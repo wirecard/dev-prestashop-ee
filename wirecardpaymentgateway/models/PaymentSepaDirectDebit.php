@@ -1,35 +1,10 @@
 <?php
 /**
- * Shop System Plugins - Terms of Use
- *
- * The plugins offered are provided free of charge by Wirecard AG and are explicitly not part
- * of the Wirecard AG range of products and services.
- *
- * They have been tested and approved for full functionality in the standard configuration
- * (status on delivery) of the corresponding shop system. They are under General Public
- * License version 3 (GPLv3) and can be used, developed and passed on to third parties under
- * the same terms.
- *
- * However, Wirecard AG does not provide any guarantee or accept any liability for any errors
- * occurring when used in an enhanced, customized shop system configuration.
- *
- * Operation in an enhanced, customized configuration is at your own risk and requires a
- * comprehensive test phase by the user of the plugin.
- *
- * Customers use the plugins at their own risk. Wirecard AG does not guarantee their full
- * functionality neither does Wirecard AG assume liability for any disadvantages related to
- * the use of the plugins. Additionally, Wirecard AG does not guarantee the full functionality
- * for customized shop systems or installed plugins of other vendors of plugins within the same
- * shop system.
- *
- * Customers are responsible for testing the plugin's functionality before starting productive
- * operation.
- *
- * By installing the plugin into the shop system the customer agrees to these terms of use.
- * Please do not use the plugin if you do not agree to these terms of use!
- * @author    WirecardCEE
- * @copyright WirecardCEE
- * @license   GPLv3
+ * Shop System Extensions:
+ * - Terms of Use can be found at:
+ * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
+ * - License can be found under:
+ * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
 namespace WirecardEE\Prestashop\Models;
@@ -93,80 +68,80 @@ class PaymentSepaDirectDebit extends Payment
             'fields' => array(
                 array(
                     'name' => 'enabled',
-                    'label' => $this->l('text_enable'),
+                    'label' => $this->getTranslatedString('text_enable'),
                     'type' => 'onoff',
-                    'doc' => $this->l('enable_heading_title_sepadd'),
+                    'doc' => $this->getTranslatedString('enable_heading_title_sepadd'),
                     'default' => 0,
                 ),
                 array(
                     'name' => 'title',
-                    'label' => $this->l('config_title'),
+                    'label' => $this->getTranslatedString('config_title'),
                     'type' => 'text',
-                    'default' => $this->l('heading_title_sepadd'),
+                    'default' => $this->getTranslatedString('heading_title_sepadd'),
                     'required' => true,
                 ),
                 array(
                     'name' => 'merchant_account_id',
-                    'label'   => $this->l('config_merchant_account_id'),
+                    'label'   => $this->getTranslatedString('config_merchant_account_id'),
                     'type'    => 'text',
                     'default' => '933ad170-88f0-4c3d-a862-cff315ecfbc0',
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
-                    'label'   => $this->l('config_merchant_secret'),
+                    'label'   => $this->getTranslatedString('config_merchant_secret'),
                     'type'    => 'text',
                     'default' => '5caf2ed9-5f79-4e65-98cb-0b70d6f569aa',
                     'required' => true,
                 ),
                 array(
                     'name' => 'base_url',
-                    'label'       => $this->l('config_base_url'),
+                    'label'       => $this->getTranslatedString('config_base_url'),
                     'type'        => 'text',
-                    'doc' => $this->l('config_base_url_desc'),
+                    'doc' => $this->getTranslatedString('config_base_url_desc'),
                     'default'     => 'https://api-test.wirecard.com',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
-                    'label'   => $this->l('config_http_user'),
+                    'label'   => $this->getTranslatedString('config_http_user'),
                     'type'    => 'text',
                     'default' => '16390-testing',
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
-                    'label'   => $this->l('config_http_password'),
+                    'label'   => $this->getTranslatedString('config_http_password'),
                     'type'    => 'text',
                     'default' => '3!3013=D3fD8X7',
                     'required' => true,
                 ),
                 array(
                     'name' => 'creditor_id',
-                    'label'   => $this->l('config_creditor_id'),
+                    'label'   => $this->getTranslatedString('config_creditor_id'),
                     'type'    => 'text',
                     'default' => 'DE98ZZZ09999999999',
                     'required' => true,
                 ),
                 array(
                     'name' => 'creditor_name',
-                    'label'   => $this->l('config_creditor_name'),
+                    'label'   => $this->getTranslatedString('config_creditor_name'),
                     'type'    => 'text',
                     'default' => '',
                     'required' => false,
                 ),
                 array(
                     'name' => 'creditor_city',
-                    'label'   => $this->l('config_creditor_city'),
+                    'label'   => $this->getTranslatedString('config_creditor_city'),
                     'type'    => 'text',
                     'default' => '',
                     'required' => false,
                 ),
                 array(
                     'name' => 'sepadirectdebit_textextra',
-                    'label'   => $this->l('config_mandate_text'),
+                    'label'   => $this->getTranslatedString('config_mandate_text'),
                     'type'    => 'textarea',
-                    'doc'     => $this->l('config_mandate_text_desc'),
+                    'doc'     => $this->getTranslatedString('config_mandate_text_desc'),
                     'default' => '',
                     'required' => false,
                 ),
@@ -174,27 +149,27 @@ class PaymentSepaDirectDebit extends Payment
                     'name' => 'payment_action',
                     'type'    => 'select',
                     'default' => 'authorization',
-                    'label'   => $this->l('config_payment_action'),
+                    'label'   => $this->getTranslatedString('config_payment_action'),
                     'options' => array(
-                        array('key' => 'reserve', 'value' => $this->l('text_payment_action_reserve')),
-                        array('key' => 'pay', 'value' => $this->l('text_payment_action_pay')),
+                        array('key' => 'reserve', 'value' => $this->getTranslatedString('text_payment_action_reserve')),
+                        array('key' => 'pay', 'value' => $this->getTranslatedString('text_payment_action_pay')),
                     ),
                 ),
                 array(
                     'name' => 'descriptor',
-                    'label'   => $this->l('config_descriptor'),
+                    'label'   => $this->getTranslatedString('config_descriptor'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
                 array(
                     'name' => 'send_additional',
-                    'label'   => $this->l('config_additional_info'),
+                    'label'   => $this->getTranslatedString('config_additional_info'),
                     'type'    => 'onoff',
                     'default' => 1,
                 ),
                 array(
                     'name' => 'enable_bic',
-                    'label'   => $this->l('config_enable_bic'),
+                    'label'   => $this->getTranslatedString('config_enable_bic'),
                     'type'    => 'onoff',
                     'default' => 0,
                 ),
@@ -202,7 +177,7 @@ class PaymentSepaDirectDebit extends Payment
                     'name' => 'test_credentials',
                     'type' => 'linkbutton',
                     'required' => false,
-                    'buttonText' => $this->l('test_config'),
+                    'buttonText' => $this->getTranslatedString('test_config'),
                     'id' => 'SepaDirectDebitConfig',
                     'method' => 'sepadirectdebit',
                     'send' => array(

@@ -1,7 +1,7 @@
 <?php
 /**
- * Shop System Plugins:
- * - Terms of Use can be found under:
+ * Shop System Extensions:
+ * - Terms of Use can be found at:
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
@@ -30,9 +30,7 @@ class DbHelper extends \Codeception\Module
     {
         $dbh = $this->getModule('Db')->dbh;
         $query = "select %s from %s";
-
         $query = sprintf($query, $column, $table);
-        print_r($query);
         $this->debugSection('Query', $query);
         $sth = $dbh->prepare($query);
         $sth->execute();
