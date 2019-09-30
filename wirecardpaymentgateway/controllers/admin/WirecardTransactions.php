@@ -165,6 +165,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
         $transaction = $payment_model->getTransactionInstance();
+        $transaction->setParentTransactionId($transaction_id);
 
         try {
             $response = $backend_service->process($transaction, $operation);
