@@ -17,29 +17,25 @@
             <h3>
                 {$payment_method|escape:'htmlall':'UTF-8'} {lFallback s='payment_suffix' mod='wirecardpaymentgateway'}
             </h3>
-            <div><b>{$transaction.type|escape:'htmlall':'UTF-8'}</b> |
-                {if $transaction.status == 'closed'}
-                    <b class="badge" style="color: white; background-color: red">{$transaction.status|escape:'htmlall':'UTF-8'}</b>
-                {else}
-                    <b class="badge" style="color: white; background-color: green">{$transaction.status|escape:'htmlall':'UTF-8'}</b>
-                {/if}
+            <div>
+                <b>
+                    {$transaction.type|escape:'htmlall':'UTF-8'}
+                </b>
+                |
+                <b class="badge" style="color: white; background-color: {$transaction.badge}">
+                    {$transaction.status|escape:'htmlall':'UTF-8'}
+                </b>
             </div>
-            {*<br>*}
-            {*<div class="wc-order-data-row">*}
-                {*<a href="{$backButton|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{lFallback s='back_button' mod='wirecardpaymentgateway'}</a>*}
-                {*{if $status != 'closed' and $canCancel }*}
-                    {*<a href="{$cancelLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{lFallback s='text_cancel_transaction' mod='wirecardpaymentgateway'}</a>*}
-                {*{/if}*}
-                {*{if $status != 'closed' and $canCapture }*}
-                    {*<a href="{$captureLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{lFallback s='text_capture_transaction' mod='wirecardpaymentgateway'}</a>*}
-                {*{/if}*}
-                {*{if $status != 'closed' and $canRefund }*}
-                    {*<a href="{$refundLink|escape:'htmlall':'UTF-8'}" class='mx-1 btn btn-primary  pointer'>{lFallback s='text_refund_transaction' mod='wirecardpaymentgateway'}</a>*}
-                {*{/if}*}
-                {*{if $status == 'closed' }*}
-                    {*<p class='add-items'>{lFallback s='no_post_processing_operations' mod='wirecardpaymentgateway'}</p>*}
-                {*{/if}*}
-            {*</div>*}
+            <br>
+            {if $transaction.status == 'open'}
+                <form method="post" class="post-processing">
+                    <input type="hidden" name="transaction" value="{$transaction.id}" />
+
+                    {foreach from=$possible_operations key=key item=item}
+                        <button type="submit" name="operation" value="{$item.action}" class="btn btn-primary pointer">{$item.text}</button>
+                    {/foreach}
+                </form>
+            {/if}
             <hr>
             <h3>{lFallback s='text_response_data' mod='wirecardpaymentgateway'}</h3>
             <div class="order_data_column_container table table-striped">

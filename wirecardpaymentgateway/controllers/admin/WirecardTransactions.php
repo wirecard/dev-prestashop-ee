@@ -111,6 +111,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * Render detail transaction view
      *
      * @return mixed
+     * @since 2.4.0 Major refactoring and simplification
      * @since 1.0.0
      */
     public function renderView()
@@ -121,36 +122,67 @@ class WirecardTransactionsController extends ModuleAdminController
         $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
+        $gatewayTransaction = $payment_model->getTransactionInstance();
+        $gatewayTransaction->setParentTransactionId($transaction['id']);
+
+        $possible_operations = [];
+        foreach ($backend_service->retrieveBackendOperations($gatewayTransaction, true) as $key => $value) {
+            $possible_operations[] = [
+                'action' => $key,
+                'text' => $this->getTranslatedString("text_{$key}_transaction"),
+            ];
+        }
+
         // These variables are available in the Smarty context
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
             'payment_method' => $payment_model->getName(),
-            'possible_operations' => $backend_service->retrieveBackendOperations(),
+            'possible_operations' => $possible_operations,
             'transaction' => $transaction,
         );
 
         return parent::renderView();
     }
 
+    /**
+     * THIS IS WORK IN PROGRESS.
+     * DO NOT REVIEW AT THIS STAGE.
+     *
+     * @TODO Implement proper process workflow
+     */
     public function postProcess()
     {
-        $operation = \Tools::getValue('action');
-        $transaction_id = \Tools::getValue('tx');
+        $operation = \Tools::getValue('operation');
+        $transaction_id = \Tools::getValue('transaction');
 
         if ($operation && $transaction_id) {
-            $transaction_data = new Transaction();
-            $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
-            $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
+            try {
+                $transaction_data = new Transaction($transaction_id);
+                $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
+                $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
 
-            $payment_model = PaymentProvider::getPayment($parent_transaction['payment_method']);
-            $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-            $backend_service = new BackendService($payment_config, new WirecardLogger());
+                $payment_model = PaymentProvider::getPayment($parent_transaction['payment_method']);
+                $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+                $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-            $transaction = $payment_model->getTransactionInstance();
-            $response = $backend_service->process($transaction, $operation);
+                $transaction = $payment_model->getTransactionInstance();
+                $response = $backend_service->process($transaction, $operation);
+
+                var_dump($response);
+                die();
+            } catch(\Exception $e) {
+                die($e->getMessage() . " :: " . get_class($e));
+            }
         }
     }
 
+    /**
+     * Maps the database columns into an easily digestible array.
+     *
+     * @param $data
+     * @return array
+     * @since 2.4.0
+     */
     protected function mapTransactionDataToArray($data)
     {
         if (!Validate::isLoadedObject($data)) {
@@ -165,6 +197,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'currency'       => $data->currency,
             'response'       => json_decode($data->response),
             'payment_method' => $data->paymentmethod,
+            'badge'          => $data->transaction_state === 'open' ? 'green' : 'red',
         );
     }
 }

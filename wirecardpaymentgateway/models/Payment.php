@@ -347,7 +347,7 @@ abstract class Payment extends PaymentOption
     abstract public function createTransaction($module, $cart, $values, $orderId);
 
     /**
-     * @return mixed
+     * @return \Wirecard\PaymentSdk\Transaction\Transaction
      */
     abstract public function getTransactionInstance();
 }
