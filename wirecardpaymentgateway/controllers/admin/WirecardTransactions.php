@@ -125,23 +125,13 @@ class WirecardTransactionsController extends ModuleAdminController
 
             $transaction = $payment_model->getTransactionInstance();
             $transaction->setParentTransactionId($transaction_data['id']);
-
-            $operations = [];
             $possible_operations = (array)$backend_service->retrieveBackendOperations($transaction, true);
-            if ($possible_operations !== false) {
-                foreach (array_keys($possible_operations) as $operation) {
-                    $operations[] = [
-                        'action' => $operation,
-                        'text' => $this->getTranslatedString("text_{$operation}_transaction"),
-                    ];
-                }
-            }
 
             // These variables are available in the Smarty context
             $this->tpl_view_vars = array(
                 'current_index' => self::$currentIndex,
                 'payment_method' => $payment_model->getName(),
-                'possible_operations' => $operations,
+                'possible_operations' => $this->formatOperations($possible_operations),
                 'transaction' => $transaction_data,
             );
 
@@ -218,5 +208,31 @@ class WirecardTransactionsController extends ModuleAdminController
             'payment_method' => $data->paymentmethod,
             'badge'          => $data->transaction_state === 'open' ? 'green' : 'red',
         );
+    }
+
+    /**
+     * Formats the post-processing operations for use in the template.
+     *
+     * @param $possible_operations
+     * @return array
+     * @since 2.4.0
+     */
+    protected function formatOperations($possible_operations)
+    {
+        $operations = [];
+
+        // No operations are possible for this transaction.
+        if ($possible_operations === false) {
+            return $operations;
+        }
+
+        foreach (array_keys($possible_operations) as $operation) {
+            $operations[] = [
+                'action' => $operation,
+                'text' => $this->getTranslatedString("text_{$operation}_transaction"),
+            ];
+        }
+
+        return $operations;
     }
 }
