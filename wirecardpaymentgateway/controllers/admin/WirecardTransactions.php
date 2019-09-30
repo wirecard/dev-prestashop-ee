@@ -128,7 +128,7 @@ class WirecardTransactionsController extends ModuleAdminController
 
             $operations = [];
             $possible_operations = (array)$backend_service->retrieveBackendOperations($transaction, true);
-            if ($possible_operations !== false ) {
+            if ($possible_operations !== false) {
                 foreach (array_keys($possible_operations) as $operation) {
                     $operations[] = [
                         'action' => $operation,
@@ -146,7 +146,7 @@ class WirecardTransactionsController extends ModuleAdminController
             );
 
             return parent::renderView();
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             echo $e->getMessage() . " :: " . get_class($e);
         }
     }
@@ -178,7 +178,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $transaction->setParentTransactionId($parent_transaction['id']);
 
         try {
-            $response = $backend_service->process($transaction, $operation);
+            $backend_service->process($transaction, $operation);
 
             // @TODO: This should delegate to new processing.
             \Tools::redirectAdmin(
@@ -189,7 +189,7 @@ class WirecardTransactionsController extends ModuleAdminController
                     array('tx_id' => $parent_transaction['tx'])
                 ). '&viewwirecard_payment_gateway_tx'
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             echo $e->getMessage() . " :: " . get_class($e);
         }
     }
