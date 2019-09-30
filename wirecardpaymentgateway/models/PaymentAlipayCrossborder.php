@@ -47,8 +47,6 @@ class PaymentAlipayCrossborder extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard Alipay Crossborder';
         $this->formFields = $this->createFormFields();
-
-        $this->refund  = array( 'debit');
     }
 
     /**

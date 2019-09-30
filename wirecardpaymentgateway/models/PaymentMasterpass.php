@@ -48,10 +48,6 @@ class PaymentMasterpass extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard Masterpass';
         $this->formFields = $this->createFormFields();
-
-        $this->cancel = array('authorization');
-        $this->capture = array('authorization');
-        $this->refund = array('debit');
     }
 
     /**

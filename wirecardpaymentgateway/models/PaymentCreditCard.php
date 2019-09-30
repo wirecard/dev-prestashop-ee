@@ -42,7 +42,7 @@ class PaymentCreditCard extends Payment
     /** @var CreditCardTransaction */
     protected $transaction;
 
-    /** @var Logger $logger */
+    /** @var WirecardLogger $logger */
     protected $logger;
 
     /**
@@ -62,10 +62,6 @@ class PaymentCreditCard extends Payment
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
-
-        $this->cancel  = array('authorization');
-        $this->capture = array('authorization');
-        $this->refund  = array('purchase', 'capture-authorization');
     }
 
     /**

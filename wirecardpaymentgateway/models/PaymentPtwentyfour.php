@@ -47,8 +47,6 @@ class PaymentPtwentyfour extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard Przelewy24';
         $this->formFields = $this->createFormFields();
-
-        $this->refund  = array('debit');
     }
 
     /**

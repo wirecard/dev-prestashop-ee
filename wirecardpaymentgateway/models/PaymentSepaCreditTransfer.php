@@ -47,10 +47,6 @@ class PaymentSepaCreditTransfer extends Payment
         $this->name = 'Wirecard SEPA Credit Transfer';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
-
-        $this->cancel  = array('pending-debit');
-        $this->capture = array('authorization');
-        $this->refund  = array('debit');
     }
 
     /**

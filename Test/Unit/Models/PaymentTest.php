@@ -42,15 +42,6 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testTransactionTypes()
-    {
-        $actual = $this->payment->getTransactionTypes();
-
-        $expected =  array('authorization','capture');
-
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testFormFields()
     {
         $actual = $this->payment->getFormFields();

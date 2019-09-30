@@ -55,10 +55,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
 
-        $this->cancel  = array( 'authorization' );
-        $this->capture = array( 'authorization' );
-        $this->refund  = array( 'capture-authorization' );
-
         $this->currencyHelper = new CurrencyHelper();
     }
 

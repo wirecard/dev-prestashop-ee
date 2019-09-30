@@ -49,10 +49,6 @@ class PaymentSepaDirectDebit extends Payment
         $this->name = 'Wirecard SEPA Direct Debit';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
-
-        $this->cancel  = array('pending-debit');
-        $this->capture = array('authorization');
-        $this->refund  = array('debit');
     }
 
     /**

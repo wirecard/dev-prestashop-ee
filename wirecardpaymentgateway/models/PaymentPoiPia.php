@@ -47,8 +47,6 @@ class PaymentPoiPia extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard Payment on Invoice / Payment in Advance';
         $this->formFields = $this->createFormFields();
-
-        $this->cancel  = array('authorization');
     }
 
     /**

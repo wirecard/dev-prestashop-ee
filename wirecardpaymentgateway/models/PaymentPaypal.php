@@ -47,10 +47,6 @@ class PaymentPaypal extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard PayPal';
         $this->formFields = $this->createFormFields();
-
-        $this->cancel  = array( 'authorization' );
-        $this->capture = array( 'authorization' );
-        $this->refund  = array( 'debit', 'capture-authorization' );
     }
 
     /**

@@ -56,31 +56,7 @@ abstract class Payment extends PaymentOption
      * @var array
      * @since 1.0.0
      */
-    protected $transactionTypes;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
     protected $formFields;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $cancel;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $refund;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $capture;
 
     /**
      * @var bool
@@ -125,11 +101,6 @@ abstract class Payment extends PaymentOption
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->getTranslatedString($this->configuration->getField('title')));
-
-        //Default back-end operation possibilities
-        $this->cancel = array('authorization');
-        $this->refund = array('capture-authorization');
-        $this->capture = array('authorization');
     }
 
     /**
@@ -152,17 +123,6 @@ abstract class Payment extends PaymentOption
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * Get transaction types
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    public function getTransactionTypes()
-    {
-        return $this->transactionTypes;
     }
 
     /**
@@ -238,54 +198,6 @@ abstract class Payment extends PaymentOption
     public function setLoadJs($load)
     {
         $this->loadJs = $load;
-    }
-
-    /**
-     * Check if payment method can use capture
-     *
-     * @param string $type
-     * @return bool
-     * @since 1.0.0
-     */
-    public function canCapture($type)
-    {
-        if ($this->capture && in_array($type, $this->capture)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if payment method can use cancel
-     *
-     * @param string $type
-     * @return boolean
-     * @since 1.0.0
-     */
-    public function canCancel($type)
-    {
-        if ($this->cancel && in_array($type, $this->cancel)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if payment method can use refund
-     *
-     * @param string $type
-     * @return boolean
-     * @since 1.0.0
-     */
-    public function canRefund($type)
-    {
-        if ($this->refund && in_array($type, $this->refund)) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
