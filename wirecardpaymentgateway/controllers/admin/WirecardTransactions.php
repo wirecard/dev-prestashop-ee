@@ -13,6 +13,8 @@ use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 
 /**
  * Class WirecardTransactions
@@ -22,7 +24,7 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 class WirecardTransactionsController extends ModuleAdminController
 {
-    use \WirecardEE\Prestashop\Helper\TranslationHelper;
+    use TranslationHelper;
 
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
@@ -46,62 +48,14 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->_defaultOrderWay = 'DESC';
         $this->_use_found_rows = true;
 
-        $statuses = OrderState::getOrderStates((int)$this->context->language->id);
-        foreach ($statuses as $status) {
-            $this->statuses_array[$status['id_order_state']] = $status['name'];
-        }
+//        $statuses = OrderState::getOrderStates((int)$this->context->language->id);
+//        foreach ($statuses as $status) {
+//            $this->statuses_array[$status['id_order_state']] = $status['name'];
+//        }
+//        $this->translator = $this->module->getTranslator();
 
-        $this->translator = $this->module->getTranslator();
 
-        $this->fields_list = array(
-            'tx_id' => array(
-                'title' => $this->getTranslatedString('panel_transaction'),
-                'align' => 'text-center',
-                'class' => 'fixed-width-xs'
-            ),
-            'transaction_id' => array(
-                'title' => $this->getTranslatedString('panel_transcation_id'),
-                'align' => 'text-center',
-                'class' => 'fixed-width-xs'
-            ),
-            'parent_transaction_id' => array(
-                'title' => $this->getTranslatedString('panel_parent_transaction_id'),
-                'align' => 'text-center',
-                'class' => 'fixed-width-xs'
-            ),
-            'amount' => array(
-                'title' => $this->getTranslatedString('panel_amount'),
-                'align' => 'text-right',
-                'class' => 'fixed-width-xs',
-                'type' => 'price',
-            ),
-            'currency' => array(
-                'title' => $this->getTranslatedString('panel_currency'),
-                'class' => 'fixed-width-xs',
-                'align' => 'text-right',
-            ),
-            'ordernumber' => array(
-                'title' => $this->getTranslatedString('panel_order_number'),
-                'class' => 'fixed-width-lg',
-            ),
-            'cart_id' => array(
-                'title' => $this->getTranslatedString('panel_cart_number'),
-                'class' => 'fixed-width-lg',
-            ),
-            'paymentmethod' => array(
-                'title' => $this->getTranslatedString('panel_payment_method'),
-                'class' => 'fixed-width-lg',
-            ),
-            'transaction_type' => array(
-                'title' => $this->getTranslatedString('transactionType'),
-                'class' => 'fixed-width-xs',
-            ),
-            'transaction_state' => array(
-                'title' => $this->getTranslatedString('transactionState'),
-                'class' => 'fixed-width-xs',
-            ),
-
-        );
+        $this->fields_list = (new Transaction())->getFieldList();
 
         parent::__construct();
         $this->tpl_folder = 'backend/';
@@ -168,17 +122,12 @@ class WirecardTransactionsController extends ModuleAdminController
         $transaction->setParentTransactionId($parent_transaction['id']);
 
         try {
-            $backend_service->process($transaction, $operation);
+            $response = $backend_service->process($transaction, $operation);
+            $orders = \Order::getByReference($parent_transaction['order']);
 
-            // @TODO: This should delegate to new processing.
-            \Tools::redirectAdmin(
-                $this->context->link->getAdminLink(
-                    'WirecardTransactions',
-                    true,
-                    array(),
-                    array('tx_id' => $parent_transaction['tx'])
-                ). '&viewwirecard_payment_gateway_tx'
-            );
+            $response_factory = new ProcessablePaymentResponseFactory($response, $orders->getFirst(), ProcessablePaymentResponseFactory::PROCESS_BACKEND);
+            $processing_strategy = $response_factory->getResponseProcessing();
+            $processing_strategy->process();
         } catch (\Exception $e) {
             echo $e->getMessage() . " :: " . get_class($e);
         }
@@ -206,6 +155,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'currency'       => $data->currency,
             'response'       => json_decode($data->response),
             'payment_method' => $data->paymentmethod,
+            'order'          => $data->ordernumber,
             'badge'          => $data->transaction_state === 'open' ? 'green' : 'red',
         );
     }

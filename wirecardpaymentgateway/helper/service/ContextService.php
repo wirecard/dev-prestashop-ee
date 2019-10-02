@@ -75,6 +75,15 @@ class ContextService
     }
 
     /**
+     * @param array $confirmations
+     * @since 2.4.0
+     */
+    public function setConfirmations($confirmations)
+    {
+        $this->context->controller->confirmations = $confirmations;
+    }
+
+    /**
      * @param SuccessResponse $response
      * @since 2.1.0
      */
@@ -86,5 +95,22 @@ class ContextService
         $this->context->cookie->__set('pia-iban', $data['merchant-bank-account.0.iban']);
         $this->context->cookie->__set('pia-bic', $data['merchant-bank-account.0.bic']);
         $this->context->cookie->__set('pia-reference-id', $data['provider-transaction-reference-id']);
+    }
+
+    /**
+     * Returns the link for a specific transaction detail page
+     *
+     * @param $transaction_id
+     * @return string
+     */
+    public function getTransactionDetailLink($transaction_id) {
+        $adminLink = $this->context->link->getAdminLink(
+            'WirecardTransactions',
+            true,
+            [],
+            ['tx_id' => $transaction_id, "viewwirecard_payment_gateway_tx" => ""]
+        );
+
+        return $adminLink;
     }
 }

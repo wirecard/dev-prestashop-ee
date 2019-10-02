@@ -56,7 +56,13 @@ class WirecardPaymentGatewayReturnModuleFrontController extends WirecardFrontCon
                 $response = $this->processRawResponse($response);
             }
 
-            $response_factory = new ProcessablePaymentResponseFactory($response, $order, $payment_state);
+            $response_factory = new ProcessablePaymentResponseFactory(
+                $response,
+                $order,
+                ProcessablePaymentResponseFactory::PROCESS_RESPONSE,
+                $payment_state
+            );
+
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
         } catch (\Exception $exception) {

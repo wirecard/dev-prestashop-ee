@@ -193,7 +193,7 @@ class OrderManager
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
 
         if ($backend_service->isFinal($notification->getTransactionType())) {
-            return 'close';
+            return 'closed';
         }
         return 'open';
     }

@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Response\Response;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Basic Transaction class
@@ -20,6 +21,11 @@ use Wirecard\PaymentSdk\Response\Response;
  */
 class Transaction extends \ObjectModel
 {
+    use TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = "wirecardtransactions";
+
     public $tx_id;
 
     public $transaction_id;
@@ -135,5 +141,58 @@ class Transaction extends \ObjectModel
         $query->from('wirecard_payment_gateway_tx')->where('transaction_id = ' . (int)$transactionId);
 
         return \Db::getInstance()->getRow($query);
+    }
+
+    public function getFieldList()
+    {
+        return array(
+            'tx_id' => array(
+                'title' => $this->getTranslatedString('panel_transaction'),
+                'align' => 'text-center',
+                'class' => 'fixed-width-xs'
+            ),
+            'transaction_id' => array(
+                'title' => $this->getTranslatedString('panel_transcation_id'),
+                'align' => 'text-center',
+                'class' => 'fixed-width-xs'
+            ),
+            'parent_transaction_id' => array(
+                'title' => $this->getTranslatedString('panel_parent_transaction_id'),
+                'align' => 'text-center',
+                'class' => 'fixed-width-xs'
+            ),
+            'amount' => array(
+                'title' => $this->getTranslatedString('panel_amount'),
+                'align' => 'text-right',
+                'class' => 'fixed-width-xs',
+                'type' => 'price',
+            ),
+            'currency' => array(
+                'title' => $this->getTranslatedString('panel_currency'),
+                'class' => 'fixed-width-xs',
+                'align' => 'text-right',
+            ),
+            'ordernumber' => array(
+                'title' => $this->getTranslatedString('panel_order_number'),
+                'class' => 'fixed-width-lg',
+            ),
+            'cart_id' => array(
+                'title' => $this->getTranslatedString('panel_cart_number'),
+                'class' => 'fixed-width-lg',
+            ),
+            'paymentmethod' => array(
+                'title' => $this->getTranslatedString('panel_payment_method'),
+                'class' => 'fixed-width-lg',
+            ),
+            'transaction_type' => array(
+                'title' => $this->getTranslatedString('transactionType'),
+                'class' => 'fixed-width-xs',
+            ),
+            'transaction_state' => array(
+                'title' => $this->getTranslatedString('transactionState'),
+                'class' => 'fixed-width-xs',
+            ),
+
+        );
     }
 }
