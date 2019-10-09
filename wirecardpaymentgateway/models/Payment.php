@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
@@ -250,16 +251,15 @@ abstract class Payment extends PaymentOption
     /**
      * Create Default Transaction
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
-     * @param array $values
-     * @param int $orderId
+     * @param string $operation
      * @since 1.0.0
      */
-    abstract public function createTransaction($module, $cart, $values, $orderId);
+    abstract public function createTransaction($operation = null);
 
     /**
+     * @param string $operation
      * @return \Wirecard\PaymentSdk\Transaction\Transaction
+     * @since 2.4.0
      */
-    abstract public function getTransactionInstance();
+    abstract public function getTransactionInstance($operation = null);
 }

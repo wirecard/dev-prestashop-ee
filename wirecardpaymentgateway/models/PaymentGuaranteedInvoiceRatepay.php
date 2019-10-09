@@ -215,71 +215,25 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return null|RatepayInvoiceTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
+        $context = \Context::getContext();
+        $cart = $context->cart;
         $ident = '';
-        if (isset($module->context->cookie->wirecardDeviceIdent)) {
-            $ident = $module->context->cookie->wirecardDeviceIdent;
-            unset($module->context->cookie->wcsConsumerDeviceId);
+
+        if (isset($context->cookie->wirecardDeviceIdent)) {
+            $ident = $context->cookie->wirecardDeviceIdent;
+            unset($context->cookie->wcsConsumerDeviceId);
         }
-        $transaction = new RatepayInvoiceTransaction();
+
+        $transaction = $this->getTransactionInstance($operation);
 
         $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setOrderNumber($cart->id);
+
         $device = new Device();
         $transaction->setDevice($device->setFingerPrint($ident));
-
-        return $transaction;
-    }
-
-    /**
-     * Create cancel transaction
-     *
-     * @param Transaction $transactionData
-     * @return RatepayInvoiceTransaction
-     * @since 1.0.0
-     */
-    public function createCancelTransaction($transactionData)
-    {
-        $cart = new \Cart($transactionData->cart_id);
-        $currency = $transactionData->currency;
-
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(
-            $this->currencyHelper->getAmount(
-                $cart->getOrderTotal(),
-                $currency
-            )
-        );
-
-        return $transaction;
-    }
-
-    /**
-     * Create pay transaction
-     *
-     * @param Transaction $transactionData
-     * @return RatepayInvoiceTransaction
-     * @since 1.0.0
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $cart = new \Cart($transactionData->cart_id);
-        $currency = $transactionData->currency;
-
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        $additionalHelper = new AdditionalInformationBuilder();
-        $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
-        $transaction->setAmount(
-            $this->currencyHelper->getAmount(
-                $cart->getOrderTotal(),
-                $currency
-            )
-        );
 
         return $transaction;
     }
@@ -325,6 +279,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
+     * @throws \Exception
      * @return bool
      * @since 1.0.0
      */

@@ -15,6 +15,7 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\TransactionManager;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Class Success
@@ -23,6 +24,11 @@ use WirecardEE\Prestashop\Helper\TransactionManager;
  */
 final class Success implements ProcessablePaymentResponse
 {
+    use TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = 'success';
+
     /** @var \Order  */
     private $order;
 
@@ -81,41 +87,38 @@ final class Success implements ProcessablePaymentResponse
      */
     public function process()
     {
-        try {
-            if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-                $this->order->save();
+        if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+            $this->order->save();
 
-                $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
-            }
-
-            if ($this->process_type === ProcessablePaymentResponseFactory::PROCESS_BACKEND) {
-                $transaction_id = \Tools::getValue('tx_id');
-
-                $this->transaction_manager->markTransactionClosed($transaction_id);
-                $this->context_service->setConfirmations(['Post-processing operation was successful']);
-
-                \Tools::redirectAdmin(
-                    $this->context_service->getTransactionDetailLink($transaction_id)
-                );
-
-                return;
-            }
-
-            if ($this->response->getPaymentMethod() === 'wiretransfer' &&
-                $this->configuration_service->getField('payment_type') === 'pia') {
-                $this->context_service->setPiaCookie($this->response);
-            }
-
-            \Tools::redirect(
-                'index.php?controller=order-confirmation&id_cart='
-                .$this->cart->id.'&id_module='
-                .$this->module->id.'&id_order='
-                .$this->order->id.'&key='
-                .$this->customer->secure_key
-            );
-        } catch (\Throwable $e) {
-            echo $e->getMessage() . " :: " . get_class($e);
+            $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
         }
+
+        if ($this->process_type === ProcessablePaymentResponseFactory::PROCESS_BACKEND) {
+            $this->processBackend();
+            return;
+        }
+
+        if ($this->response->getPaymentMethod() === 'wiretransfer' &&
+            $this->configuration_service->getField('payment_type') === 'pia') {
+            $this->context_service->setPiaCookie($this->response);
+        }
+
+        \Tools::redirect(
+            'index.php?controller=order-confirmation&id_cart='
+            .$this->cart->id.'&id_module='
+            .$this->module->id.'&id_order='
+            .$this->order->id.'&key='
+            .$this->customer->secure_key
+        );
+    }
+
+    protected function processBackend() {
+        $transaction_id = \Tools::getValue('tx_id');
+
+        $this->transaction_manager->markTransactionClosed($transaction_id);
+        $this->context_service->setConfirmations(
+            $this->getTranslatedString('success_new_transaction')
+        );
     }
 }

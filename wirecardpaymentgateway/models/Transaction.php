@@ -24,7 +24,7 @@ class Transaction extends \ObjectModel
     use TranslationHelper;
 
     /** @var string */
-    const TRANSLATION_FILE = "wirecardtransactions";
+    const TRANSLATION_FILE = "transaction";
 
     public $tx_id;
 

@@ -131,67 +131,20 @@ class PaymentSepaCreditTransfer extends Payment
         );
     }
 
-    /**
-     * Create sepa transaction
-     *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
-     * @param array $values
-     * @param int $orderId
-     * @return null|SepaCreditTransferTransaction
-     * @since 1.0.0
-     */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $transaction = new SepaCreditTransferTransaction();
-        return $transaction;
-    }
-
-    /**
-     * Create refund SepaCreditTransferTransaction
-     *
-     * @param Transaction $transactionData
-     * @return SepaCreditTransferTransaction
-     * @since 1.0.0
-     */
-    public function createRefundTransaction($transactionData, $module)
-    {
-        $transaction = new SepaCreditTransferTransaction();
-
-        $additionalInformation = new AdditionalInformationBuilder();
-        $cart = new \Cart($transactionData->cart_id);
-        $transaction->setAccountHolder($additionalInformation->createAccountHolder(
-            $cart,
-            'billing'
-        ));
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $transaction;
+        return $this->getTransactionInstance($operation);
     }
 
     /**
      * Get a clean transaction instance for this payment type.
      *
+     * @param $operation
      * @return SepaCreditTransferTransaction
-     * @since 2.3.0
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function getTransactionInstance($operation = null)
     {
         return new SepaCreditTransferTransaction();
-    }
-
-    /**
-     * Generate the mandate id for SEPA
-     *
-     * @param int $orderId
-     * @return string
-     * @since 1.0.0
-     */
-    public function generateMandateId($paymentModule, $orderId)
-    {
-        $paymentConfiguration = new ShopConfigurationService(static::TYPE);
-
-        return $paymentConfiguration->getField('creditor_id') . '-' . $orderId
-            . '-' . strtotime(date('Y-m-d H:i:s'));
     }
 }

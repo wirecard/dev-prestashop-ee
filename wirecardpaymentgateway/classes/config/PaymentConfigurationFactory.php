@@ -14,6 +14,10 @@ use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Models\PaymentIdeal;
+use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
+use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
+use WirecardEE\Prestashop\Models\PaymentSofort;
 
 /**
  * Class PaymentConfigurationFactory
@@ -23,12 +27,23 @@ use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
  */
 class PaymentConfigurationFactory
 {
+    const SEPA_CREDIT_TYPES = [
+        PaymentIdeal::TYPE,
+        PaymentSepaDirectDebit::TYPE,
+        PaymentSofort::TYPE
+    ];
 
     /**
      * @var ShopConfigurationService
      * @since 2.1.0
      */
     protected $configService;
+
+    /**
+     * @var boolean
+     * @since 2.4.0
+     */
+    protected $requiresSepaCredit;
 
     /**
      * PaymentConfigurationFactory constructor.
@@ -39,6 +54,10 @@ class PaymentConfigurationFactory
     public function __construct(ShopConfigurationService $configService)
     {
         $this->configService = $configService;
+        $this->requiresSepaCredit = in_array(
+            $this->configService->getType(),
+            self::SEPA_CREDIT_TYPES
+        );
     }
 
     /**
@@ -74,6 +93,8 @@ class PaymentConfigurationFactory
             $configFactory->createConfig()
         );
 
+        $sdkConfiguration = $this->addOptionalSepaConfiguration($sdkConfiguration);
+
         return $sdkConfiguration;
     }
 
@@ -94,5 +115,28 @@ class PaymentConfigurationFactory
             default:
                 return GenericConfigurationFactory::class;
         }
+    }
+
+    /**
+     * Adds a SEPA Credit Transfer configuration for those payments
+     * that use it for refunds
+     *
+     * @param Config $sdkConfiguration
+     * @return Config
+     */
+    private function addOptionalSepaConfiguration($sdkConfiguration)
+    {
+        if (!$this->requiresSepaCredit) {
+            return $sdkConfiguration;
+        }
+
+        $sepaCreditConfigService = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
+        $sepaCreditConfigFactory = new SepaConfigurationFactory($sepaCreditConfigService);
+
+        $sdkConfiguration->add(
+            $sepaCreditConfigFactory->createConfig()
+        );
+
+        return $sdkConfiguration;
     }
 }

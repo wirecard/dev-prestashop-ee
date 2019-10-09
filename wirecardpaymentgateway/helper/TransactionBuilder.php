@@ -62,19 +62,16 @@ class TransactionBuilder
 
     /**
      * TransactionBuilder constructor.
-     * @param \WirecardPaymentGateway $module
-     * @param \Context $context
-     * @param int $cartId
      * @param string $paymentType
      * @since 2.0.0
      */
-    public function __construct($module, $context, $cartId, $paymentType)
+    public function __construct($paymentType)
     {
-        $this->module = $module;
-        $this->context = $context;
+        $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
+        $this->context = \Context::getContext();
+        $this->cart = $this->context->cart;
         $this->paymentType = $paymentType;
         $this->shopConfigService = new ShopConfigurationService($paymentType);
-        $this->cart = new \Cart((int) $cartId);
         $this->currency = new \Currency($this->cart->id_currency);
         $this->customFields = new CustomFieldCollection();
         $this->additionalInformationBuilder = new AdditionalInformationBuilder();
@@ -106,12 +103,7 @@ class TransactionBuilder
         $payment = PaymentProvider::getPayment($this->paymentType);
 
         /** @var Transaction $transaction */
-        $this->transaction = $payment->createTransaction(
-            $this->module,
-            $this->cart,
-            \Tools::getAllValues(),
-            $this->orderId
-        );
+        $this->transaction = $payment->createTransaction();
 
         $this->addAmount();
         $this->addRedirects();

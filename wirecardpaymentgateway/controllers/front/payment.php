@@ -15,6 +15,7 @@ use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
+use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -45,8 +46,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
 
         $operation = $shopConfigService->getField('payment_action');
         $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
-
-        $this->transactionBuilder = new TransactionBuilder($this->module, $this->context, $cart->id, $paymentType);
+        $this->transactionBuilder = new TransactionBuilder($paymentType);
         // Create order and get orderId
         $orderId = $this->determineFinalOrderId();
 
@@ -54,7 +54,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
             $transaction = $this->transactionBuilder->buildTransaction();
             $this->executeTransaction($transaction, $operation, $config, $cart, $orderId);
         } catch (\Exception $exception) {
-            $this->errors = $exception->getMessage();
+            $this->errors[] = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
     }
@@ -116,7 +116,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
             $response = $transactionService->process($transaction, $operation);
             $this->handleTransactionResponse($response, $orderId);
         } catch (Exception $exception) {
-            $this->errors = $exception->getMessage();
+            $this->errors[] = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
     }
@@ -140,7 +140,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
             $response = $transactionService->processJsResponse($data, $redirectUrl);
             $this->handleTransactionResponse($response, $orderId);
         } catch (Exception $exception) {
-            $this->errors = $exception->getMessage();
+            $this->errors[] = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
     }
