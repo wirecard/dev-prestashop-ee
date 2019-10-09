@@ -188,7 +188,8 @@ class WirecardTransactionsController extends ModuleAdminController
      * @param object $data
      * @since 2.4.0
      */
-    protected function validateTransaction($data) {
+    protected function validateTransaction($data)
+    {
         if (!Validate::isLoadedObject($data)) {
             $this->errors[] = \Tools::displayError(
                 $this->getTranslatedString('error_no_transaction')

@@ -113,7 +113,8 @@ final class Success implements ProcessablePaymentResponse
         );
     }
 
-    protected function processBackend() {
+    protected function processBackend()
+    {
         $transaction_id = \Tools::getValue('tx_id');
 
         $this->transaction_manager->markTransactionClosed($transaction_id);

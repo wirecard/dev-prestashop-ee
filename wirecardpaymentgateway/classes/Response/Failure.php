@@ -76,7 +76,8 @@ final class Failure implements ProcessablePaymentResponse
         $this->context_service->redirectWithError($errors, 'order');
     }
 
-    private function processBackend() {
+    private function processBackend()
+    {
         $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
         $this->context_service->setErrors(
             \Tools::displayError(
