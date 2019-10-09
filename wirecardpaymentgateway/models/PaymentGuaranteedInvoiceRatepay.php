@@ -239,39 +239,13 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * Create refund transaction
-     *
-     * @param Transaction $transactionData
-     * @return RatepayInvoiceTransaction
-     * @since 1.0.0
-     */
-    public function createRefundTransaction($transactionData, $module)
-    {
-        $cart = new \Cart($transactionData->cart_id);
-        $currency = $transactionData->currency;
-
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        $additionalHelper = new AdditionalInformationBuilder();
-        $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
-        $transaction->setAmount(
-            $this->currencyHelper->getAmount(
-                $cart->getOrderTotal(),
-                $currency
-            )
-        );
-
-        return $transaction;
-    }
-
-    /**
      * Get a clean transaction instance for this payment type.
      *
+     * @param string $operation
      * @return RatepayInvoiceTransaction
-     * @since 2.3.0
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function getTransactionInstance($operation = null)
     {
         return new RatepayInvoiceTransaction();
     }
