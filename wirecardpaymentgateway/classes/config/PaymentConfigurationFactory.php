@@ -130,11 +130,11 @@ class PaymentConfigurationFactory
             return $sdkConfiguration;
         }
 
-        $sepaCreditConfigService = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
-        $sepaCreditConfigFactory = new SepaConfigurationFactory($sepaCreditConfigService);
+        $sepaConfigService = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
+        $sepaConfigFactory = new SepaConfigurationFactory($sepaConfigService);
 
         $sdkConfiguration->add(
-            $sepaCreditConfigFactory->createConfig()
+            $sepaConfigFactory->createConfig()
         );
 
         return $sdkConfiguration;
