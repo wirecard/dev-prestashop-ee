@@ -49,7 +49,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $this->transactionBuilder = new TransactionBuilder($paymentType);
         // Create order and get orderId
         $orderId = $this->determineFinalOrderId();
-
+        
         try {
             $transaction = $this->transactionBuilder->buildTransaction();
             $this->executeTransaction($transaction, $operation, $config, $cart, $orderId);

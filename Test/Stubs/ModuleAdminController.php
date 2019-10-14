@@ -23,10 +23,11 @@ class ModuleAdminController extends Controller
 
         $this->object = new stdClass();
         $this->object->paymentmethod = 'creditcard';
-        $this->object->response = '{key: value}';
+        $this->object->ordernumber = 'ABCDEFG';
+        $this->object->response = '{"key": "value"}';
         $this->object->transaction_id = '12l3j123kjg12kj3g123';
         $this->object->transaction_type = 'authorization';
-        $this->object->transaction_state = 'success';
+        $this->object->transaction_state = 'open';
         $this->object->amount = '20';
         $this->object->currency = 'EUR';
         $this->object->tx_id = '11';

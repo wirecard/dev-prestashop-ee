@@ -9,6 +9,10 @@
 
 require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/admin/WirecardTransactions.php';
 
+use Mockery as m;
+use Wirecard\PaymentSdk\BackendService;
+use Wirecard\PaymentSdk\Transaction\Operation;
+
 class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
 {
     public $transactions;
@@ -25,24 +29,35 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
 
     public function testRenderView()
     {
+        $backendServiceMock = m::mock('overload:' . BackendService::class);
+        $backendServiceMock->shouldReceive('retrieveBackendOperations')
+            ->andReturn([
+                Operation::PAY => "Pay"
+            ]);
+
         $this->transactions->renderView();
         $expected = array(
             'current_index' => '1',
-            'transaction_id' => '12l3j123kjg12kj3g123',
             'payment_method' => 'Wirecard Credit Card',
-            'transaction_type' => 'authorization',
-            'status' => 'success',
-            'amount' => '20',
-            'currency' => 'EUR',
-            'response_data' => null,
-            'canCancel' => true,
-            'canCapture' => true,
-            'canRefund' => false,
-            'cancelLink' => 'WirecardTransactions',
-            'captureLink' => 'WirecardTransactions',
-            'refundLink' => 'WirecardTransactions',
-            'backButton' => 'WirecardTransactions'
-
+            'possible_operations' => array(
+                array(
+                    'action' => 'pay',
+                    'name' => 'Capture transaction'
+                )
+            ),
+            'transaction' => array(
+                'tx' => 11,
+                'id' => '12l3j123kjg12kj3g123',
+                'type' => 'authorization',
+                'status' => 'open',
+                'amount' => '20',
+                'currency' => 'EUR',
+                'response' => array('key' => 'value'),
+                'payment_method' => 'creditcard',
+                'order' => 'ABCDEFG',
+                'badge' => 'green'
+            ),
+            'back_link' => 'WirecardTransactions'
         );
 
         $this->assertEquals($expected, $this->transactions->tpl_view_vars);

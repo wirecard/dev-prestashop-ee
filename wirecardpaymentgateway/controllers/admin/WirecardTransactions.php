@@ -174,7 +174,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'status'         => $data->transaction_state,
             'amount'         => $data->amount,
             'currency'       => $data->currency,
-            'response'       => json_decode($data->response),
+            'response'       => json_decode($data->response, true),
             'payment_method' => $data->paymentmethod,
             'order'          => $data->ordernumber,
             'badge'          => $data->transaction_state === 'open' ? 'green' : 'red',

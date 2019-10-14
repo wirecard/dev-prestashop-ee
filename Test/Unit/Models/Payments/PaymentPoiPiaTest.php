@@ -62,12 +62,4 @@ class PaymentPoiPiaTest extends PHPUnit_Framework_TestCase
         $expected = 'wiretransfer';
         $this->assertEquals($expected, $actual::NAME);
     }
-
-    public function testCreateCancelTransaction()
-    {
-        $actual = new \Wirecard\PaymentSdk\Transaction\PoiPiaTransaction();
-        $actual->setParentTransactionId('my_secret_id');
-
-        $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
-    }
 }
