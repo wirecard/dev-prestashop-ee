@@ -33,5 +33,15 @@ bash .bin/start-shopsystem.sh
 
 composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
 
+# find out test group to be run
+if [[ $GIT_BRANCH =~ "${PATCH_RELEASE}" ]]; then
+   TEST_GROUP="${PATCH_RELEASE}"
+elif [[ $GIT_BRANCH =~ "${MINOR_RELEASE}" ]]; then
+   TEST_GROUP="${MINOR_RELEASE}"
+# run all tests in nothing else specified
+else
+   TEST_GROUP="${MAJOR_RELEASE}"
+fi
+
 #run tests
-cd wirecardpaymentgateway && vendor/bin/codecept run acceptance --env ui_test -g ui_test --html --xml
+cd wirecardpaymentgateway && vendor/bin/codecept run acceptance --env ui_test -g ${TEST_GROUP} --html --xml
