@@ -33,8 +33,14 @@ bash .bin/start-shopsystem.sh
 
 composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
 
+export GIT_BRANCH=${TRAVIS_BRANCH}
+
+# if tests triggered by PR, use different Travis variable to get branch name
+if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then
+    export $GIT_BRANCH="${TRAVIS_PULL_REQUEST_BRANCH}"
+
 # find out test group to be run
-if [[ $GIT_BRANCH =~ "${PATCH_RELEASE}" ]]; then
+if [[ $TRAVIS_BRANCH =~ "${PATCH_RELEASE}" ]]; then
    TEST_GROUP="${PATCH_RELEASE}"
 elif [[ $GIT_BRANCH =~ "${MINOR_RELEASE}" ]]; then
    TEST_GROUP="${MINOR_RELEASE}"

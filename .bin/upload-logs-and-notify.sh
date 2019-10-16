@@ -44,19 +44,6 @@ if [ ! -d "${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}" ]; then
     mkdir ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
 fi
 
-#export PRESTASHOP_CURRENT_VERSION=${PRESTASHOP_VERSION}
-#export PROJECT_FOLDER="prestashop-ee-${PRESTASHOP_CURRENT_VERSION}"
-#GATEWAY_FOLDER=${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}
-#DATE_FOLDER=${GATEWAY_FOLDER}/${TODAY}
-#
-#if [ ! -d "${GATEWAY_FOLDER}" ]; then
-#mkdir -p ${GATEWAY_FOLDER}
-#fi
-#
-#if [ ! -d "${DATE_FOLDER}" ]; then
-#mkdir ${DATE_FOLDER}
-#fi
-
 #copy report files
 cp wirecardpaymentgateway/tests/_output/*.html ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
 cp wirecardpaymentgateway/tests/_output/*.xml ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
