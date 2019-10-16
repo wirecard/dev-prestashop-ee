@@ -101,10 +101,10 @@ class AcceptanceTester extends ActorExtendedWithWrappers
                 $page = new OrderReceivedPage($this);
                 break;
             case 'Pay Pal Log In':
-                $page = new PayPalLogInPage( $this );
+                $page = new PayPalLogInPage($this);
                 break;
             case 'Pay Pal Review':
-                $page = new PayPalReviewPage( $this );
+                $page = new PayPalReviewPage($this);
                 break;
             default:
                 $page = null;
@@ -156,7 +156,6 @@ class AcceptanceTester extends ActorExtendedWithWrappers
         $this->currentPage = $this->selectPage($page);
         $this->amOnPage($this->currentPage->getURL());
         $this->waitUntilPageLoaded();
-
     }
 
     /**
@@ -224,10 +223,10 @@ class AcceptanceTester extends ActorExtendedWithWrappers
      */
     public function iPrepareCheckout()
     {
-        $this->prepareGenericCheckout();
+        $this->prepareGenericCheckout('Non3DS');
     }
 
-    private function prepareGenericCheckout($type='')
+    private function prepareGenericCheckout($type = '')
     {
         $this->iAmOnPage('Product');
         $this->preparedFillField($this->currentPage->getElement('Quantity'), '5');

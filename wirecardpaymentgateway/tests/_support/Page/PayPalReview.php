@@ -9,19 +9,20 @@
 
 namespace Page;
 
-class PayPalReview extends Base {
+class PayPalReview extends Base
+{
 
-	/**
-	 * @var string
-	 * @since 2.2.1
-	 */
-	public $URL = 'review';
+    /**
+     * @var string
+     * @since 2.2.1
+     */
+    public $URL = 'review';
 
-	/**
-	 * @var array
-	 * @since 2.2.1
-	 */
-	public $elements = array(
-		'Pay Now' => "//*[@id='confirmButtonTop']"
-	);
+    /**
+     * @var array
+     * @since 2.2.1
+     */
+    public $elements = array(
+        'Pay Now' => "//*[@id='confirmButtonTop']"
+    );
 }
