@@ -223,16 +223,16 @@ class AcceptanceTester extends ActorExtendedWithWrappers
      */
     public function iPrepareCheckout()
     {
-        $this->prepareGenericCheckout('Non3DS');
+        $this->prepareGenericCheckout();
     }
 
     private function prepareGenericCheckout($type = '')
     {
         $this->iAmOnPage('Product');
-        $this->preparedFillField($this->currentPage->getElement('Quantity'), '5');
+        $this->preparedFillField($this->currentPage->getElement('Quantity'), '1');
 
-        if (strpos($type, 'Non3DS') !== false) {
-            $this->preparedFillField($this->currentPage->getElement('Quantity'), '1');
+        if ($type == '3DS') {
+            $this->preparedFillField($this->currentPage->getElement('Quantity'), '5');
         }
         $this->preparedClick($this->currentPage->getElement('Add to cart'));
         $this->waitForText('Product successfully added to your shopping cart');
