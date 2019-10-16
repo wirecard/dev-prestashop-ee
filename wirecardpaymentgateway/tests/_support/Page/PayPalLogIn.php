@@ -27,7 +27,8 @@ class PayPalLogIn extends Base {
 		'Email' => "//*[@id='email']",
 		'Password' => "//*[@id='password']",
 		'Next' => "//*[@id='btnNext']",
-		'Log In' => "//*[@id='btnLogin']"
+		'Log In' => "//*[@id='btnLogin']",
+        'Turn On One Touch' => "Turn On One Touch"
 	);
 
 	/**
@@ -53,5 +54,10 @@ class PayPalLogIn extends Base {
 		$I->fillField( $this->getElement( 'Password' ), $data_field_values->paypal->password );
 		$I->waitForElementVisible( $this->getElement( 'Log In' ) );
 		$I->click( $this->getElement( 'Log In' ) );
+        $I->wait(10);
+        if (strpos($I->grabFromCurrentUrl(),"sighin?intent=checkout") != '') {
+            //$I->waitForElementVisible( $this->getElement( 'Turn On One Touch' ) );
+            $I->click( $this->getElement( 'Turn On One Touch' ) );
+        }
 	}
 }
