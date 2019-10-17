@@ -299,4 +299,14 @@ class AcceptanceTester extends ActorExtendedWithWrappers
         $transactionTypes = $this->getColumnFromDatabaseNoCriteria('ps_wirecard_payment_gateway_tx', 'transaction_type');
         $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions[$paymentMethod]['tx_table'][$paymentAction]);
     }
+
+    /**
+     * @When I pay with PayPal
+     * @since 2.3.0
+     */
+    public function iPayWithPayPal()
+    {
+        $this->currentPage->performPaypalPayment();
+    }
+
 }
