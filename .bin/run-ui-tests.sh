@@ -41,7 +41,7 @@ if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then
 fi
 
 # find out test group to be run
-if [[ $TRAVIS_BRANCH =~ "${PATCH_RELEASE}" ]]; then
+if [[ $GIT_BRANCH =~ "${PATCH_RELEASE}" ]]; then
    TEST_GROUP="${PATCH_RELEASE}"
 elif [[ $GIT_BRANCH =~ "${MINOR_RELEASE}" ]]; then
    TEST_GROUP="${MINOR_RELEASE}"

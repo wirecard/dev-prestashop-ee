@@ -21,7 +21,6 @@ Feature: PayPalPurchaseHappyPath
     And I login to Paypal
     When I am redirected to "Pay Pal Review" page
     And I pay with PayPal
-#    And I click "Pay Now"
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
     And I see "paypal" "debit" in transaction table
