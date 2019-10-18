@@ -11,8 +11,6 @@ namespace Wirecard\ElasticEngine\tests\_support;
 
 class ActorExtendedWithWrappers extends \Codeception\Actor
 {
-//    use _generated\ExtendedActorActions;
-
     /**
      * Method preparedFillField
      * @param string $field
