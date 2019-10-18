@@ -14,6 +14,7 @@ env:
 
 matrix:
   allow_failures:
+  - stage: phraseapp-check-if-in-sync
   - stage: acceptance-test
     env:
     - GATEWAY=API-TEST
