@@ -229,6 +229,29 @@ class WirecardPaymentGateway extends PaymentModule
         $tab->module = $this->name;
         $tab->id_parent = -1;
         $tab->add();
+
+        $this->addTab('heading_title_general_settings', 'WirecardGeneralSettings', $this->name);
+    }
+
+    protected function addTab($key, $class_name, $module_name, $is_active = 1)
+    {
+        $key = $this->getTranslatedString($key);
+        $tab = new Tab();
+        $tab->active = $is_active;
+        $tab->class_name = $class_name;
+        $tab->name = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $translated_string = $this->getTranslationForLanguage(
+                $lang['iso_code'],
+                $key,
+                $module_name
+            );
+
+            $tab->name[$lang['id_lang']] = ($translated_string !== $key) ?
+                $translated_string : $key;
+        }
+        $tab->module = $module_name;
+        $tab->add();
     }
 
     public function uninstallTabs()

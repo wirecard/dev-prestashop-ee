@@ -20,6 +20,9 @@
     <a class="btn btn-default" id="WirecardShopPluginInformation" target=_blank href="https://github.com/wirecard/prestashop-ee/wiki/Terms-of-Use">
         {lFallback s='terms_of_use' mod='wirecardpaymentgateway'}
     </a>
+    <a class="btn btn-default" id="WirecardGeneralSettings" href="{$link->getAdminLink('WirecardGeneralSettings')|escape:'html':'UTF-8'}">
+        {lFallback s='general_settings' mod='wirecardpaymentgateway'}
+    </a>
 </div>
 <!-- livezilla.net PLACE SOMEWHERE IN BODY -->
 <script type="text/javascript" id="936f87cd4ce16e1e60bea40b45b0596a" src="https://provusgroup.com/livezilla/script.php?id=936f87cd4ce16e1e60bea40b45b0596a"></script>
