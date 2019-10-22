@@ -116,7 +116,8 @@ class WirecardTransactionsController extends ModuleAdminController
             return;
         }
 
-        $transaction_data = new Transaction($transaction_id);
+
+        /*$transaction_data = new Transaction($transaction_id);
         $this->validateTransaction($transaction_data);
 
         $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
@@ -128,9 +129,23 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $transaction = $payment_model->createTransaction($operation);
 
-        $transaction->setParentTransactionId($parent_transaction['id']);
+        $transaction->setParentTransactionId($parent_transaction['id']);*/
+
+        $transaction_data = new Transaction($transaction_id);
+        $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
+
+        $postProcessingTransactionBuilder = new \WirecardEE\Prestashop\Classes\Transaction\PostProcessingTransactionBuilder(
+            PaymentProvider::getPayment($parent_transaction['payment_method']),
+            $transaction_data
+        );
+        $transaction = $postProcessingTransactionBuilder->build();
+        var_dump($transaction);die();
 
         try {
+            $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
+            $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+            $backend_service = new BackendService($payment_config, new WirecardLogger());
+
             $response = $backend_service->process($transaction, $operation);
             $orders = \Order::getByReference($parent_transaction['order']);
 
