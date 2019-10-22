@@ -46,17 +46,24 @@ class WirecardPaymentGatewayReturnModuleFrontController extends WirecardFrontCon
     public function postProcess()
     {
         $response = \Tools::getAllValues();
-        $order_id = \Tools::getValue('id_order');
+        $cart_id = \Tools::getValue('id_cart');
         $payment_state = \Tools::getValue('payment_state');
 
         try {
+            $order_id = \Order::getIdByCartId($cart_id);
             $order = new Order((int) $order_id);
 
             if ($payment_state !== Cancel::CANCEL_PAYMENT_STATE) {
                 $response = $this->processRawResponse($response);
             }
 
-            $response_factory = new ProcessablePaymentResponseFactory($response, $order, $payment_state);
+            $response_factory = new ProcessablePaymentResponseFactory(
+                $response,
+                $order,
+                ProcessablePaymentResponseFactory::PROCESS_RESPONSE,
+                $payment_state
+            );
+
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
         } catch (\Exception $exception) {

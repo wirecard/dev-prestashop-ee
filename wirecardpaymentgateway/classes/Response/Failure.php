@@ -22,29 +22,34 @@ use WirecardEE\Prestashop\Helper\OrderManager;
  */
 final class Failure implements ProcessablePaymentResponse
 {
-    /** @var \Order  */
+    /** @var \Order */
     private $order;
 
-    /** @var FailureResponse  */
+    /** @var FailureResponse */
     private $response;
 
-    /** @var ContextService  */
+    /** @var ContextService */
     private $context_service;
 
-    /** @var OrderService  */
+    /** @var OrderService */
     private $order_service;
+
+    /** @var string */
+    private $process_type;
 
     /**
      * FailureResponseProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $response
+     * @param string $process_type
      * @since 2.1.0
      */
-    public function __construct($order, $response)
+    public function __construct($order, $response, $process_type)
     {
         $this->order = $order;
         $this->response = $response;
+        $this->process_type = $process_type;
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
     }
@@ -59,11 +64,26 @@ final class Failure implements ProcessablePaymentResponse
             $this->order->save();
         }
 
+        if ($this->process_type === ProcessablePaymentResponseFactory::PROCESS_BACKEND) {
+            $this->processBackend();
+            return;
+        }
+
         $cart_clone = $this->order_service->getNewCartDuplicate();
         $this->context_service->setCart($cart_clone);
 
         $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
         $this->context_service->redirectWithError($errors, 'order');
+    }
+
+    private function processBackend()
+    {
+        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+        $this->context_service->setErrors(
+            \Tools::displayError(
+                join('<br>', $errors)
+            )
+        );
     }
 
     /**

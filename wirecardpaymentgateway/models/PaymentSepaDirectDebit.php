@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use Wirecard\PaymentSdk\Config\SepaConfig;
@@ -196,9 +197,13 @@ class PaymentSepaDirectDebit extends Payment
      * @return null|SepaDirectDebitTransaction
      * @since 1.3.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $transaction = new SepaDirectDebitTransaction();
+        $values = \Tools::getAllValues();
+        $context = \Context::getContext();
+        $orderId = \Order::getIdByCartId($context->cart->id);
+
+        $transaction = $this->createTransactionInstance($operation);
 
         if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
             $account_holder = new AccountHolder();
@@ -214,7 +219,7 @@ class PaymentSepaDirectDebit extends Payment
                 }
             }
 
-            $mandate = new Mandate($this->generateMandateId($module, $orderId));
+            $mandate = new Mandate($this->generateMandateId($orderId));
             $transaction->setMandate($mandate);
         }
 
@@ -222,26 +227,18 @@ class PaymentSepaDirectDebit extends Payment
     }
 
     /**
-     * Create refund SepaDirectDebitTransaction
-     *
-     * @param Transaction $transactionData
-     * @return SepaCreditTransferTransaction
-     * @since 1.3.0
-     */
-    public function createRefundTransaction($transactionData, $module)
-    {
-        $sepa = new PaymentSepaCreditTransfer();
-        return $sepa->createRefundTransaction($transactionData, $module);
-    }
-
-    /**
      * Get a clean transaction instance for this payment type.
      *
-     * @return SepaDirectDebitTransaction
-     * @since 2.3.0
+     * @param string $operation
+     * @return SepaDirectDebitTransaction|SepaCreditTransferTransaction
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function createTransactionInstance($operation = null)
     {
+        if (Operation::CREDIT === $operation) {
+            return new SepaCreditTransferTransaction();
+        }
+
         return new SepaDirectDebitTransaction();
     }
 
@@ -270,7 +267,7 @@ class PaymentSepaDirectDebit extends Payment
      * @return string
      * @since 1.3.0
      */
-    public function generateMandateId($paymentModule, $orderId)
+    public function generateMandateId($orderId)
     {
         return $this->configuration->getField('creditor_id') . '-' . $orderId
             . '-' . strtotime(date('Y-m-d H:i:s'));

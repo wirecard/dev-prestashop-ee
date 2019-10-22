@@ -8,11 +8,17 @@
  */
 
 use Wirecard\PaymentSdk\BackendService;
+use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
+use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 
 /**
  * Class WirecardTransactions
@@ -22,10 +28,13 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 class WirecardTransactionsController extends ModuleAdminController
 {
-    use \WirecardEE\Prestashop\Helper\TranslationHelper;
+    use TranslationHelper;
 
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
+
+    /** @var ContextService */
+    protected $context_service;
 
     public function __construct()
     {
@@ -38,6 +47,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->allow_export = true;
         $this->deleted = false;
         $this->context = Context::getContext();
+        $this->context_service = new ContextService($this->context);
         $this->identifier = 'tx_id';
 
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
@@ -46,62 +56,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->_defaultOrderWay = 'DESC';
         $this->_use_found_rows = true;
 
-        $statuses = OrderState::getOrderStates((int)$this->context->language->id);
-        foreach ($statuses as $status) {
-            $this->statuses_array[$status['id_order_state']] = $status['name'];
-        }
-
-        $this->translator = $this->module->getTranslator();
-
-        $this->fields_list = array(
-            'tx_id' => array(
-                'title' => $this->getTranslatedString('panel_transaction'),
-                'align' => 'text-center',
-                'class' => 'fixed-width-xs'
-            ),
-            'transaction_id' => array(
-                'title' => $this->getTranslatedString('panel_transcation_id'),
-                'align' => 'text-center',
-                'class' => 'fixed-width-xs'
-            ),
-            'parent_transaction_id' => array(
-                'title' => $this->getTranslatedString('panel_parent_transaction_id'),
-                'align' => 'text-center',
-                'class' => 'fixed-width-xs'
-            ),
-            'amount' => array(
-                'title' => $this->getTranslatedString('panel_amount'),
-                'align' => 'text-right',
-                'class' => 'fixed-width-xs',
-                'type' => 'price',
-            ),
-            'currency' => array(
-                'title' => $this->getTranslatedString('panel_currency'),
-                'class' => 'fixed-width-xs',
-                'align' => 'text-right',
-            ),
-            'ordernumber' => array(
-                'title' => $this->getTranslatedString('panel_order_number'),
-                'class' => 'fixed-width-lg',
-            ),
-            'cart_id' => array(
-                'title' => $this->getTranslatedString('panel_cart_number'),
-                'class' => 'fixed-width-lg',
-            ),
-            'paymentmethod' => array(
-                'title' => $this->getTranslatedString('panel_payment_method'),
-                'class' => 'fixed-width-lg',
-            ),
-            'transaction_type' => array(
-                'title' => $this->getTranslatedString('transactionType'),
-                'class' => 'fixed-width-xs',
-            ),
-            'transaction_state' => array(
-                'title' => $this->getTranslatedString('transactionState'),
-                'class' => 'fixed-width-xs',
-            ),
-
-        );
+        $this->fields_list = (new Transaction())->getFieldList();
 
         parent::__construct();
         $this->tpl_folder = 'backend/';
@@ -116,47 +71,54 @@ class WirecardTransactionsController extends ModuleAdminController
      */
     public function renderView()
     {
-        try {
-            $transaction_data = $this->mapTransactionDataToArray($this->object);
-            $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
-            $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
-            $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-            $backend_service = new BackendService($payment_config, new WirecardLogger());
+        $this->validateTransaction($this->object);
 
-            $transaction = $payment_model->getTransactionInstance();
-            $transaction->setParentTransactionId($transaction_data['id']);
-            $possible_operations = (array)$backend_service->retrieveBackendOperations($transaction, true);
+        $transaction_data = $this->mapTransactionDataToArray($this->object);
+        $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
+        $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
+        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+        $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-            // These variables are available in the Smarty context
-            $this->tpl_view_vars = array(
-                'current_index' => self::$currentIndex,
-                'payment_method' => $payment_model->getName(),
-                'possible_operations' => $this->formatOperations($possible_operations),
-                'transaction' => $transaction_data,
-            );
+        $transaction = $payment_model->createTransactionInstance();
+        $transaction->setParentTransactionId($transaction_data['id']);
+        $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
 
-            return parent::renderView();
-        } catch (\Throwable $e) {
-            echo $e->getMessage() . " :: " . get_class($e);
-        }
+        // We no longer support Masterpass
+        $operations = $transaction_data['payment_method'] === MasterpassTransaction::NAME
+            ? []
+            : $this->formatOperations($possible_operations);
+
+        // These variables are available in the Smarty context
+        $this->tpl_view_vars = array(
+            'current_index' => self::$currentIndex,
+            'back_link' => (new Link())->getAdminLink('WirecardTransactions', true),
+            'payment_method' => $payment_model->getName(),
+            'possible_operations' => $operations,
+            'transaction' => $transaction_data,
+        );
+
+        return parent::renderView();
     }
 
     /**
-     * THIS IS WORK IN PROGRESS.
-     * DO NOT REVIEW AT THIS STAGE.
+     * Process follow-up actions such as refund/cancel/etc
      *
-     * @TODO Implement proper process workflow
+     * @since 2.4.0 Major refactoring
+     * @since 1.0.0
      */
     public function postProcess()
     {
         $operation = \Tools::getValue('operation');
         $transaction_id = \Tools::getValue('transaction');
 
+        // This prevents the function from running on the list page
         if (!$operation || !$transaction_id) {
             return;
         }
 
         $transaction_data = new Transaction($transaction_id);
+        $this->validateTransaction($transaction_data);
+
         $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
         $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
 
@@ -164,39 +126,47 @@ class WirecardTransactionsController extends ModuleAdminController
         $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-        $transaction = $payment_model->getTransactionInstance();
+        $transaction = $payment_model->createTransaction($operation);
+
         $transaction->setParentTransactionId($parent_transaction['id']);
 
         try {
-            $backend_service->process($transaction, $operation);
+            $response = $backend_service->process($transaction, $operation);
+            $orders = \Order::getByReference($parent_transaction['order']);
 
-            // @TODO: This should delegate to new processing.
-            \Tools::redirectAdmin(
-                $this->context->link->getAdminLink(
-                    'WirecardTransactions',
-                    true,
-                    array(),
-                    array('tx_id' => $parent_transaction['tx'])
-                ). '&viewwirecard_payment_gateway_tx'
+            $response_factory = new ProcessablePaymentResponseFactory(
+                $response,
+                $orders->getFirst(),
+                ProcessablePaymentResponseFactory::PROCESS_BACKEND
             );
+
+            $processing_strategy = $response_factory->getResponseProcessing();
+            $processing_strategy->process();
         } catch (\Exception $e) {
-            echo $e->getMessage() . " :: " . get_class($e);
+            $this->errors[] = \Tools::displayError(
+                $e->getMessage()
+            );
+
+            $logger = new WirecardLogger();
+            $logger->error(
+                'Error in class:'. __CLASS__ .
+                ' method:' . __METHOD__ .
+                ' exception: ' . $e->getMessage() . "(" . get_class($e) . ")"
+            );
         }
+
+        parent::postProcess();
     }
 
     /**
      * Maps the database columns into an easily digestible array.
      *
-     * @param $data
+     * @param object $data
      * @return array
      * @since 2.4.0
      */
-    protected function mapTransactionDataToArray($data)
+    private function mapTransactionDataToArray($data)
     {
-        if (!Validate::isLoadedObject($data)) {
-            $this->errors[] = Tools::displayError($this->getTranslatedString('error_no_transaction'));
-        }
-
         return array(
             'tx'             => $data->tx_id,
             'id'             => $data->transaction_id,
@@ -206,8 +176,25 @@ class WirecardTransactionsController extends ModuleAdminController
             'currency'       => $data->currency,
             'response'       => json_decode($data->response),
             'payment_method' => $data->paymentmethod,
+            'order'          => $data->ordernumber,
             'badge'          => $data->transaction_state === 'open' ? 'green' : 'red',
         );
+    }
+
+    /**
+     * Checks that the transaction data is a valid object from the PrestaShop
+     * database and adds an error if this is not the case.
+     *
+     * @param object $data
+     * @since 2.4.0
+     */
+    private function validateTransaction($data)
+    {
+        if (!Validate::isLoadedObject($data)) {
+            $this->errors[] = \Tools::displayError(
+                $this->getTranslatedString('error_no_transaction')
+            );
+        }
     }
 
     /**
@@ -217,19 +204,30 @@ class WirecardTransactionsController extends ModuleAdminController
      * @return array
      * @since 2.4.0
      */
-    protected function formatOperations($possible_operations)
+    private function formatOperations($possible_operations)
     {
+        $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
+        $translations = [
+            Operation::PAY => $this->getTranslatedString('text_capture_transaction'),
+            Operation::CANCEL => $this->getTranslatedString('text_cancel_transaction'),
+            Operation::REFUND => $this->getTranslatedString('text_refund_transaction'),
+        ];
 
-        // No operations are possible for this transaction.
         if ($possible_operations === false) {
             return $operations;
         }
 
-        foreach (array_keys($possible_operations) as $operation) {
+
+        foreach ($possible_operations as $operation => $name) {
+            if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
+                continue;
+            }
+
+            $translatable_key = strtolower($name);
             $operations[] = [
-                'action' => $operation,
-                'text' => $this->getTranslatedString("text_{$operation}_transaction"),
+                "action" => $operation,
+                "name" => $translations[$translatable_key]
             ];
         }
 

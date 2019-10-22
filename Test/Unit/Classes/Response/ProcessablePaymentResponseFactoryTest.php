@@ -31,7 +31,13 @@ class ProcessablePaymentResponseFactoryTest extends \PHPUnit_Framework_TestCase
                                 ->disableOriginalConstructor()
                                 ->getMock();
 
-        $response_factory = new ProcessablePaymentResponseFactory($response, $this->order, $order_state);
+        $response_factory = new ProcessablePaymentResponseFactory(
+            $response,
+            $this->order,
+            ProcessablePaymentResponseFactory::PROCESS_RESPONSE,
+            $order_state
+        );
+
         $actual = $response_factory->getResponseProcessing();
 
         $this->assertInstanceOf($expected, $actual);

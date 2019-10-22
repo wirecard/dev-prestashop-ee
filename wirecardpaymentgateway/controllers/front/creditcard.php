@@ -22,7 +22,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
     /**
      * @var string
-     * @since 2.3.0
+     * @since 2.4.0
      */
     const TRANSLATION_FILE = "creditcard";
 

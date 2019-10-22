@@ -155,21 +155,6 @@ class PaymentPoiPia extends Payment
     }
 
     /**
-     * Create Cancel PoiPia Transaction
-     *
-     * @param Transaction $transactionData
-     * @return PoiPiaTransaction
-     * @since 1.0.0
-     */
-    public function createCancelTransaction($transactionData)
-    {
-        $transaction = new PoiPiaTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $transaction;
-    }
-
-    /**
      * Create PoiPiaTransaction
      *
      * @param \WirecardPaymentGateway $module
@@ -179,9 +164,11 @@ class PaymentPoiPia extends Payment
      * @return PoiPiaTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $transaction = new PoiPiaTransaction();
+        $context = \Context::getContext();
+        $cart = $context->cart;
+        $transaction = $this->createTransactionInstance($operation);
 
         $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
@@ -192,10 +179,11 @@ class PaymentPoiPia extends Payment
     /**
      * Get a clean transaction instance for this payment type.
      *
+     * @param string $operation
      * @return PoiPiaTransaction
-     * @since 2.3.0
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function createTransactionInstance($operation = null)
     {
         return new PoiPiaTransaction();
     }

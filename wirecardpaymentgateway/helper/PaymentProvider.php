@@ -46,7 +46,6 @@ class PaymentProvider
             PaymentGuaranteedInvoiceRatepay::TYPE => new PaymentGuaranteedInvoiceRatepay(),
             PaymentPtwentyfour::TYPE => new PaymentPtwentyfour(),
             PaymentPoiPia::TYPE => new PaymentPoiPia(),
-            PaymentMasterpass::TYPE => new PaymentMasterpass(),
             PaymentAlipayCrossborder::TYPE => new PaymentAlipayCrossborder()
         );
     }

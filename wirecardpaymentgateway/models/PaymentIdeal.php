@@ -12,6 +12,7 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\IdealBic;
+use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 
 /**
@@ -154,9 +155,11 @@ class PaymentIdeal extends Payment
      * @return null|IdealTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $transaction = new IdealTransaction();
+        $values = \Tools::getAllValues();
+        $transaction = $this->createTransactionInstance($operation);
+
         if (isset($values['idealBankBic'])) {
             $transaction->setBic($values['idealBankBic']);
         }
@@ -165,27 +168,18 @@ class PaymentIdeal extends Payment
     }
 
     /**
-     * Create refund iDEALTransaction
-     *
-     * @param $transactionData
-     * @param $module
-     * @return SepaCreditTransferTransaction
-     * @since 1.0.0
-     */
-    public function createRefundTransaction($transactionData, $module)
-    {
-        $sepa = new PaymentSepaCreditTransfer();
-        return $sepa->createRefundTransaction($transactionData, $module);
-    }
-
-    /**
      * Get a clean transaction instance for this payment type.
      *
-     * @return IdealTransaction
-     * @since 2.3.0
+     * @param string $operation
+     * @return IdealTransaction|SepaCreditTransferTransaction
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function createTransactionInstance($operation = null)
     {
+        if (Operation::CREDIT === $operation) {
+            return new SepaCreditTransferTransaction();
+        }
+
         return new IdealTransaction();
     }
 

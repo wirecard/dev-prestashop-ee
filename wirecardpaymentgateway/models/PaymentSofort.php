@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 
@@ -146,7 +147,7 @@ class PaymentSofort extends Payment
     }
 
     /**
-     * Create sofort transaction
+     * Create Sofort transaction
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
@@ -155,35 +156,24 @@ class PaymentSofort extends Payment
      * @return null|SofortTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $transaction = new SofortTransaction();
-
-        return $transaction;
-    }
-
-    /**
-     * Create refund Sofort.
-     *
-     * @param Transaction $transactionData
-     * @param $module
-     * @return SepaCreditTransferTransaction
-     * @since 1.0.0
-     */
-    public function createRefundTransaction($transactionData, $module)
-    {
-        $sepa = new PaymentSepaCreditTransfer();
-        return $sepa->createRefundTransaction($transactionData, $module);
+        return $this->createTransactionInstance($operation);
     }
 
     /**
      * Get a clean transaction instance for this payment type.
      *
-     * @return SofortTransaction
-     * @since 2.3.0
+     * @param string $operation
+     * @return SofortTransaction|SepaCreditTransferTransaction
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function createTransactionInstance($operation = null)
     {
+        if (Operation::CREDIT === $operation) {
+            return new SepaCreditTransferTransaction();
+        }
+
         return new SofortTransaction();
     }
 }

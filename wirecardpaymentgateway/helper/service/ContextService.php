@@ -75,6 +75,24 @@ class ContextService
     }
 
     /**
+     * @param string $confirmations
+     * @since 2.4.0
+     */
+    public function setConfirmations($confirmations)
+    {
+        $this->context->controller->confirmations[] = $confirmations;
+    }
+
+    /**
+     * @param string $errors
+     * @since 2.4.0
+     */
+    public function setErrors($errors)
+    {
+        $this->context->controller->errors[] = $errors;
+    }
+
+    /**
      * @param SuccessResponse $response
      * @since 2.1.0
      */

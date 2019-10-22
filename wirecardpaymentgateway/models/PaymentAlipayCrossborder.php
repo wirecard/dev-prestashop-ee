@@ -154,9 +154,11 @@ class PaymentAlipayCrossborder extends Payment
      * @return null|AlipayCrossborderTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $transaction = new AlipayCrossborderTransaction();
+        $context = \Context::getContext();
+        $cart = $context->cart;
+        $transaction = $this->createTransactionInstance($operation);
 
         $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
@@ -165,27 +167,13 @@ class PaymentAlipayCrossborder extends Payment
     }
 
     /**
-     * Create refund transaction
-     *
-     * @param Transaction $transactionData
-     * @return AlipayCrossborderTransaction
-     * @since 1.0.0
-     */
-    public function createCancelTransaction($transactionData)
-    {
-        $transaction = new AlipayCrossborderTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $transaction;
-    }
-
-    /**
      * Get a clean transaction instance for this payment type.
      *
+     * @param string $operation
      * @return AlipayCrossborderTransaction
-     * @since 2.3.0
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function createTransactionInstance($operation = null)
     {
         return new AlipayCrossborderTransaction();
     }

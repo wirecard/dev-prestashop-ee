@@ -57,7 +57,6 @@ class PaymentCreditCard extends Payment
         parent::__construct();
 
         $this->logger = new WirecardLogger();
-        $this->transaction = new CreditCardTransaction();
         $this->type = self::TYPE;
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
@@ -245,7 +244,7 @@ class PaymentCreditCard extends Payment
         $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
 
         $transactionService = new TransactionService($config, $this->logger);
-        $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
+        $transactionBuilder = new TransactionBuilder($this->type);
         // Set unique cartId as orderId to avoid order creation before payment
         $transactionBuilder->setOrderId($cartId);
         $transaction = $transactionBuilder->buildTransaction();
@@ -262,66 +261,31 @@ class PaymentCreditCard extends Payment
      * @return null|CreditCardTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
+        $module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
+        $context = \Context::getContext();
+        $cart = $context->cart;
+        $orderId = \Order::getIdByCartId($cart->id);
 
-        /** @var CreditCardConfig $paymentConfig */
+        $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
         $paymentConfig = $config->get(CreditCardTransaction::NAME);
 
-        $this->transaction->setConfig($paymentConfig);
-        $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
+        $transaction = $this->createTransactionInstance($operation);
+        $transaction->setConfig($paymentConfig);
+        $transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
 
-        return $this->transaction;
-    }
-
-    /**
-     * Create cancel transaction
-     *
-     * @param $transactionData
-     * @return CreditCardTransaction
-     * @since 1.0.0
-     */
-    public function createCancelTransaction($transactionData)
-    {
-        $this->transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $this->transaction;
-    }
-
-    /**
-     * Create refund transaction
-     *
-     * @param $transactionData
-     * @return CreditCardTransaction
-     * @since 1.2.5
-     */
-    public function createRefundTransaction($transactionData)
-    {
-        return $this->createCancelTransaction($transactionData);
-    }
-
-    /**
-     * Create pay transaction
-     *
-     * @param Transaction $transactionData
-     * @return CreditCardTransaction
-     * @since 1.0.0
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $this->transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $this->transaction;
+        return $transaction;
     }
 
     /**
      * Get a clean transaction instance for this payment type.
      *
+     * @param string $operation
      * @return CreditCardTransaction
-     * @since 2.3.0
+     * @since 2.4.0
      */
-    public function getTransactionInstance()
+    public function createTransactionInstance($operation = null)
     {
         return new CreditCardTransaction();
     }
