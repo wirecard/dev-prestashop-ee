@@ -12,6 +12,7 @@ namespace WirecardEE\Prestashop\Helper\Form\Element;
 use WirecardEE\Prestashop\Helper\Form\Constants;
 use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use Exception;
 
 class SwitchInput extends BaseElement implements FormElementInterface
 {
@@ -138,9 +139,7 @@ class SwitchInput extends BaseElement implements FormElementInterface
         $result &= is_array($data);
         $result &= (count($data) == 2);
 
-        $keys = [self::ATTRIBUTE_OFF, self::ATTRIBUTE_ON];
-
-        foreach ($keys as $key) {
+        foreach ([self::ATTRIBUTE_OFF, self::ATTRIBUTE_ON] as $key) {
             $result &= (isset($data[$key]) & is_array($data[$key]) || count($data[$key]) == 2);
         }
 
@@ -169,7 +168,7 @@ class SwitchInput extends BaseElement implements FormElementInterface
      * @param string $label
      * @param array $values
      * @param array $options
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($name, $label, array $values = [], $options = [])
     {
@@ -180,25 +179,30 @@ class SwitchInput extends BaseElement implements FormElementInterface
         }
 
         if (!$this->validateValues($values)) {
-            throw new \Exception('Wrong input!'); // todo: translation
+            throw new Exception('Wrong input!'); // todo: translation
         }
 
         $this->loadValuesFromData($values);
         $this->setOptions(array_merge($this->getOptions(), $options));
     }
 
+    /**
+     * @return array
+     */
     public function build()
     {
-        $options = $this->getOptions();
-        $fieldId = $this->getName() . "_" . $this->getType();
-        $options['id'] = $fieldId;
-        $options['name'] = $this->getName();
-        $options['label'] = $this->getLabel();
-        $options['values'] = [
-            ['id' => "on_{$fieldId}", 'value' => $this->getOnValue(), 'label' => $this->getOnLabel()],
-            ['id' => "off_{$fieldId}", 'value' => $this->getOffValue(), 'label' => $this->getOffLabel()],
+        if (!$this->hasOption('id')) {
+            $this->addOption('id', $this->generateId());
+        }
+
+        $id = $this->getOption('id');
+        $values = [
+            ['id' => "on_{$id}", 'value' => $this->getOnValue(), 'label' => $this->getOnLabel()],
+            ['id' => "off_{$id}", 'value' => $this->getOffValue(), 'label' => $this->getOffLabel()],
         ];
 
-        return $options;
+        $this->addOption('values', $values);
+
+        return parent::build();
     }
 }

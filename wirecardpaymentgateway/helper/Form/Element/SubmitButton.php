@@ -30,15 +30,4 @@ class SubmitButton extends BaseElement implements FormElementInterface
     {
         return Constants::FORM_GROUP_TYPE_SUBMIT;
     }
-
-    /**
-     * @return array
-     */
-    public function build()
-    {
-        return [
-            'name' => $this->getName(),
-            'title' => $this->getLabel(),
-        ];
-    }
 }

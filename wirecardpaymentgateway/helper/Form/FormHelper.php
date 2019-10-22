@@ -11,8 +11,11 @@ namespace WirecardEE\Prestashop\Helper\Form;
 
 use WirecardEE\Prestashop\Helper\Form\Element\SubmitButton;
 use WirecardEE\Prestashop\Helper\Form\Element\SwitchInput;
+use Exception;
+use HelperForm;
+use Configuration;
 
-class FormHelper extends \HelperFormCore
+class FormHelper extends HelperForm
 {
     /** @var array|FormElementInterface[] */
     private $elements = [];
@@ -37,24 +40,27 @@ class FormHelper extends \HelperFormCore
 
 
     /**
-     * @param $fieldName
-     * @param $label
+     * @param string $fieldName
+     * @param string $label
      * @param array $values
      * @param array $options
-     * @throws \Exception
+     * @return FormHelper
+     * @throws Exception
      */
     public function addSwitchInput($fieldName, $label, $values = [], $options = [])
     {
-        $this->elements[] = new SwitchInput($fieldName, $label, $values, $options);
+        $this->addElement(new SwitchInput($fieldName, $label, $values, $options));
+        return $this;
     }
 
     /**
-     * @param string $name
+     * @param string $fieldName
      * @param string $label
+     * @throws Exception
      */
-    public function addSubmitButton($name, $label)
+    public function addSubmitButton($fieldName, $label)
     {
-        $this->elements[] = new SubmitButton($name, $label);
+        $this->addElement(new SubmitButton($fieldName, $label));
     }
 
     /**
@@ -64,10 +70,10 @@ class FormHelper extends \HelperFormCore
     {
         $elements = [];
         foreach ($this->getElements() as $formElement) {
-            if ($formElement->getGroup() == Constants::FORM_GROUP_TYPE_SUBMIT) {
-                $elements[$formElement->getGroup()] = $formElement->build();
+            if ($formElement->getGroup() == Constants::FORM_GROUP_TYPE_INPUT) {
+                $elements[$formElement->getGroup()][] = $formElement->build();
             }
-            $elements[$formElement->getGroup()][] = $formElement->build();
+            $elements[$formElement->getGroup()] = $formElement->build();
         }
 
         return $elements;
@@ -83,7 +89,7 @@ class FormHelper extends \HelperFormCore
             if ($formElement->getGroup() != Constants::FORM_GROUP_TYPE_INPUT) {
                 continue;
             }
-            $elementValues[$formElement->getName()] = \Configuration::get($formElement->getName());
+            $elementValues[$formElement->getName()] = Configuration::get($formElement->getName());
         }
         return $elementValues;
     }
