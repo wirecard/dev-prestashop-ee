@@ -79,7 +79,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-        $transaction = $payment_model->getTransactionInstance();
+        $transaction = $payment_model->createTransactionInstance();
         $transaction->setParentTransactionId($transaction_data['id']);
         $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
 
@@ -165,7 +165,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @return array
      * @since 2.4.0
      */
-    protected function mapTransactionDataToArray($data)
+    private function mapTransactionDataToArray($data)
     {
         return array(
             'tx'             => $data->tx_id,
@@ -188,7 +188,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @param object $data
      * @since 2.4.0
      */
-    protected function validateTransaction($data)
+    private function validateTransaction($data)
     {
         if (!Validate::isLoadedObject($data)) {
             $this->errors[] = \Tools::displayError(
@@ -204,7 +204,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @return array
      * @since 2.4.0
      */
-    protected function formatOperations($possible_operations)
+    private function formatOperations($possible_operations)
     {
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];

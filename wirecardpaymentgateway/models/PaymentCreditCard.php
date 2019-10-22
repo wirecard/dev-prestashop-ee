@@ -271,7 +271,7 @@ class PaymentCreditCard extends Payment
         $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
         $paymentConfig = $config->get(CreditCardTransaction::NAME);
 
-        $transaction = $this->getTransactionInstance($operation);
+        $transaction = $this->createTransactionInstance($operation);
         $transaction->setConfig($paymentConfig);
         $transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
 
@@ -285,7 +285,7 @@ class PaymentCreditCard extends Payment
      * @return CreditCardTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         return new CreditCardTransaction();
     }

@@ -158,7 +158,7 @@ class PaymentAlipayCrossborder extends Payment
     {
         $context = \Context::getContext();
         $cart = $context->cart;
-        $transaction = $this->getTransactionInstance($operation);
+        $transaction = $this->createTransactionInstance($operation);
 
         $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
@@ -173,7 +173,7 @@ class PaymentAlipayCrossborder extends Payment
      * @return AlipayCrossborderTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         return new AlipayCrossborderTransaction();
     }

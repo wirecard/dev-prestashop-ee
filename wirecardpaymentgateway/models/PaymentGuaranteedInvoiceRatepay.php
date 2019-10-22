@@ -226,7 +226,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
             unset($context->cookie->wcsConsumerDeviceId);
         }
 
-        $transaction = $this->getTransactionInstance($operation);
+        $transaction = $this->createTransactionInstance($operation);
 
         $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
@@ -245,7 +245,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return RatepayInvoiceTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         return new RatepayInvoiceTransaction();
     }
