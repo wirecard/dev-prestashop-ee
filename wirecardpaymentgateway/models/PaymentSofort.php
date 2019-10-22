@@ -158,7 +158,7 @@ class PaymentSofort extends Payment
      */
     public function createTransaction($operation = null)
     {
-        return $this->getTransactionInstance($operation);
+        return $this->createTransactionInstance($operation);
     }
 
     /**
@@ -168,7 +168,7 @@ class PaymentSofort extends Payment
      * @return SofortTransaction|SepaCreditTransferTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         if (Operation::CREDIT === $operation) {
             return new SepaCreditTransferTransaction();

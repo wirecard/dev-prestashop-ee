@@ -171,7 +171,7 @@ class PaymentPaypal extends Payment
         $cart = $context->cart;
         $additionalInformation = new AdditionalInformationBuilder();
 
-        $transaction = $this->getTransactionInstance($operation);
+        $transaction = $this->createTransactionInstance($operation);
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setShipping($additionalInformation->createAccountHolder($cart, 'shipping'));
 
@@ -185,7 +185,7 @@ class PaymentPaypal extends Payment
      * @return PayPalTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         return new PayPalTransaction();
     }

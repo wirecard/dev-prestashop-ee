@@ -133,7 +133,7 @@ class PaymentSepaCreditTransfer extends Payment
 
     public function createTransaction($operation = null)
     {
-        return $this->getTransactionInstance($operation);
+        return $this->createTransactionInstance($operation);
     }
 
     /**
@@ -143,7 +143,7 @@ class PaymentSepaCreditTransfer extends Payment
      * @return SepaCreditTransferTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         return new SepaCreditTransferTransaction();
     }
