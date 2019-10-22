@@ -8,10 +8,12 @@
  */
 
 
-use WirecardEE\Prestashop\Helper\PaymentProvider;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use \WirecardEE\Prestashop\Helper\TranslationHelper;
-use \WirecardEE\Prestashop\Classes\Config\Constants;
+//use WirecardEE\Prestashop\Helper\PaymentProvider;
+//use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Classes\Config\Constants;
+use WirecardEE\Prestashop\Helper\Form\FormHelper;
+use WirecardEE\Prestashop\Helper\Service\GeneralSettingsService;
 
 /**
  * @property WirecardPaymentGateway $module
@@ -27,25 +29,7 @@ class WirecardGeneralSettingsController extends ModuleAdminController
 
     const DISPLAY_VIEW_NAME_ADD = "add";
 
-    const SETTING_ENABLED = "enabled";
-
-    const WIRECARD_SETTING_PREFIX = "WIRECARD_PAYMENT_GATEWAY";
-
-    /** @var array | WirecardEE\Prestashop\Models\Payment[] */
-    private $paymentMethodConfig;
-
-    /**
-     * Get all payment methods
-     * @return array|\WirecardEE\Prestashop\Models\Payment[]
-     */
-    public function getPaymentMethods()
-    {
-        if (null === $this->paymentMethodConfig) {
-            $this->paymentMethodConfig = PaymentProvider::getPayments();
-        }
-
-        return $this->paymentMethodConfig;
-    }
+    //const SETTING_ENABLED = "enabled";
 
     /**
      * WirecardGeneralSettingsController constructor.
@@ -83,89 +67,39 @@ class WirecardGeneralSettingsController extends ModuleAdminController
     }
 
     /**
-     * @param string $fieldName
-     * @param string $label
-     * @return array
-     */
-    private function getSwitchInputItem($fieldName, $label)
-    {
-        $fieldId = $fieldName . "_enabled";
-        return [
-            'id'        => $fieldId,
-            'name'      =>$fieldName,
-            'label'     => $label,
-            'type'      => 'switch',
-            'required'  => false,
-            'class'     => 't',
-            'is_bool'   => true,
-            'values'    => [
-                [ 'id' => "active_on_{$fieldId}",  'value' => 1, 'label' => $this->getTranslatedString('text_enabled')],
-                [ 'id' => "active_off_{$fieldId}", 'value' => 0, 'label' => $this->getTranslatedString('text_disabled')],
-            ]
-        ];
-    }
-
-    /**
      * render form
      * @return string
      * @throws SmartyException
+     * @throws Exception
      */
     public function renderForm()
     {
-        $inputFields = [];
-        $inputFieldCurrentValues = [];
-        $paymentMethodConfig = $this->getPaymentMethods();
-        // Auto capture turn on / off
-        $inputFields[] = $this->getSwitchInputItem(Constants::CONFIGURATION_GENERAL_AUTOMATIC_CAPTURE_ENABLED, $this->getTranslatedString('text_automatic_capture_enabled'));
-        $inputFieldCurrentValues[Constants::CONFIGURATION_GENERAL_AUTOMATIC_CAPTURE_ENABLED] = Configuration::get(Constants::CONFIGURATION_GENERAL_AUTOMATIC_CAPTURE_ENABLED);
-        // Change order state anyway
-        $inputFields[] = $this->getSwitchInputItem(Constants::CONFIGURATION_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED, $this->getTranslatedString('text_force_order_state_change_enabled'));
-        $inputFieldCurrentValues[Constants::CONFIGURATION_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED] = Configuration::get(Constants::CONFIGURATION_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED);
-        // All payments enabling / disabling in one page
-        foreach ($paymentMethodConfig as $paymentMethodType => $paymentMethod) {
-            $shopConfigService = new ShopConfigurationService($paymentMethod->getType());
-            $fieldName = $shopConfigService->getFieldName(self::SETTING_ENABLED);
-            $inputFieldCurrentValues[$fieldName] = $shopConfigService->getField(self::SETTING_ENABLED);
-            $inputFields[] = $this->getSwitchInputItem($fieldName, $paymentMethod->getName());
-        }
+        /** @var WirecardEE\Prestashop\Models\Payment[] $paymentMethodConfig */
+        //$paymentMethodConfig = PaymentProvider::getPayments();
 
+        $formHelper = new FormHelper();
+        $formHelper->addSwitchInput(Constants::CONFIGURATION_GENERAL_AUTOMATIC_CAPTURE_ENABLED, $this->getTranslatedString('text_automatic_capture_enabled'));
+        $formHelper->addSwitchInput(Constants::CONFIGURATION_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED, $this->getTranslatedString('text_force_order_state_change_enabled'));
+
+        // All payments enabling / disabling in one page
+//        foreach ($paymentMethodConfig as $paymentMethodType => $paymentMethod) {
+//            $fieldName = (new ShopConfigurationService($paymentMethod->getType()))->getFieldName(self::SETTING_ENABLED);
+//            $formHelper->addSwitchInput($fieldName, $paymentMethod->getName());
+//        }
+        // Add submit button
+        $formHelper->addSubmitButton(self::FORM_SUBMIT_ID, $this->getTranslatedString('save_general_settings'));
         // ------ Add elements to form ------
 
         // Add input fields
-        $this->fields_form['input'] = $inputFields;
-
-        // Add submit button
-        $this->fields_form['submit'] = [
-            'name' => self::FORM_SUBMIT_ID,
-            'title' => $this->getTranslatedString('save_general_settings'),
-        ];
-
+        $this->fields_form = $formHelper->buildForm();
         // Add actual values of input fields
-        $this->fields_value = $inputFieldCurrentValues;
+        $this->fields_value = $formHelper->getFormValues();
 
         return parent::renderForm();
     }
 
     /**
-     * Filters array trough items starting with specified prefix
-     * @param array $data
-     * @param string $prefix
-     * @return array
-     */
-    public function findParamsStartingWithPrefix($data, $prefix = self::WIRECARD_SETTING_PREFIX)
-    {
-        $filteredData = [];
-
-        foreach ($data as $paramName => $value) {
-            if (strpos($paramName, $prefix) !== false) {
-                $filteredData[$paramName] = $value;
-            }
-        }
-
-        return $filteredData;
-    }
-
-    /**
+     * @throws PrestaShopException
      * @see AdminController::initProcess()
      */
     public function initProcess()
@@ -175,14 +109,11 @@ class WirecardGeneralSettingsController extends ModuleAdminController
         $this->display = self::DISPLAY_VIEW_NAME_ADD;
 
         if (Tools::isSubmit(self::FORM_SUBMIT_ID)) {
-            $values = Tools::getAllValues();
-            $wirecardSettings = $this->findParamsStartingWithPrefix($values);
+            $input = Tools::getAllValues();
+            $generalSettingsService = new GeneralSettingsService();
+            $result = $generalSettingsService->saveGeneralSettingsFromInput($input);
 
-            foreach ($wirecardSettings as $setting => $value) {
-                Configuration::updateValue($setting, $value);
-            }
-
-            if (!count($this->errors)) {
+            if ($result && !count($this->errors)) {
                 $this->confirmations[] = $this->getTranslatedString('settings_updated');
             }
         }

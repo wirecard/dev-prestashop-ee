@@ -224,10 +224,9 @@ class WirecardTransactionsController extends ModuleAdminController
                 continue;
             }
 
-            $translatable_key = strtolower($name);
             $operations[] = [
                 "action" => $operation,
-                "name" => $translations[$translatable_key]
+                "name" => $translations[$operation]
             ];
         }
 
