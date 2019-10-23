@@ -116,38 +116,23 @@ class WirecardTransactionsController extends ModuleAdminController
             return;
         }
 
-
-        /*$transaction_data = new Transaction($transaction_id);
-        $this->validateTransaction($transaction_data);
-
-        $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
-        $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
-
-        $payment_model = PaymentProvider::getPayment($parent_transaction['payment_method']);
-        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-        $backend_service = new BackendService($payment_config, new WirecardLogger());
-
-        $transaction = $payment_model->createTransaction($operation);
-
-        $transaction->setParentTransactionId($parent_transaction['id']);*/
-
-        $transaction_data = new Transaction($transaction_id);
-        $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
-
+        $parentTransaction = new Transaction($transaction_id);
         $postProcessingTransactionBuilder = new \WirecardEE\Prestashop\Classes\Transaction\PostProcessingTransactionBuilder(
-            PaymentProvider::getPayment($parent_transaction['payment_method']),
-            $transaction_data
+            PaymentProvider::getPayment($parentTransaction->paymentmethod),
+            $parentTransaction
         );
-        $transaction = $postProcessingTransactionBuilder->build();
-        var_dump($transaction);die();
 
         try {
-            $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
+            $transaction = $postProcessingTransactionBuilder
+                ->setOperation($operation)
+                ->build();
+
+            $shop_config_service = new ShopConfigurationService($parentTransaction->paymentmethod);
             $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
             $backend_service = new BackendService($payment_config, new WirecardLogger());
 
             $response = $backend_service->process($transaction, $operation);
-            $orders = \Order::getByReference($parent_transaction['order']);
+            $orders = \Order::getByReference($parentTransaction->ordernumber);
 
             $response_factory = new ProcessablePaymentResponseFactory(
                 $response,

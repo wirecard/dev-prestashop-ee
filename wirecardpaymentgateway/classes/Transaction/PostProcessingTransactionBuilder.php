@@ -9,24 +9,40 @@
 
 namespace WirecardEE\Prestashop\Classes\Transaction;
 
-
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Classes\Transaction\PaymentMethod\PostProcessing\MandatoryDataBuilderFactory;
+use WirecardEE\Prestashop\Classes\Transaction\Entity\EntityBuilderFactory;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Models\Transaction as TransactionModel;
 
+/**
+ * Class PostProcessingTransactionBuilder
+ * @package WirecardEE\Prestashop\Classes\Transaction
+ * @since 2.4.0
+ */
 class PostProcessingTransactionBuilder implements TransactionBuilderInterface
 {
     /**
      * @var Payment
      */
     private $paymentMethod;
+
     /**
      * @var TransactionModel
      */
     private $transactionModel;
 
+    /**
+     * @var string
+     */
+    private $operation;
+
+    /**
+     * PostProcessingTransactionBuilder constructor.
+     * @param Payment $paymentMethod
+     * @param TransactionModel $transaction
+     * @since 2.4.0
+     */
     public function __construct(Payment $paymentMethod, TransactionModel $transaction)
     {
         $this->paymentMethod = $paymentMethod;
@@ -34,34 +50,73 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     }
 
     /**
+     * Set the operation of the payment, needed for payment methods that use SEPA Credit
+     *
+     * @param $operation
+     * @return $this
+     * @since 2.4.0
+     */
+    public function setOperation($operation)
+    {
+        $this->operation = $operation;
+
+        return $this;
+    }
+
+    /**
+     * Builds the transaction
+     *
+     * @throws \Exception
      * @return Transaction
+     * @since 2.4.0
      */
     public function build()
     {
         /** @var Transaction $transaction */
-        $transaction = $this->paymentMethod->createTransactionInstance();
-        $transaction = $this->addMandatoryData($transaction);
-
-        $builderFactory = new MandatoryDataBuilderFactory($transaction);
-        $paymentMethodBuilder = $builderFactory->create();
-
-        $transaction = $paymentMethodBuilder->build();
+        $transaction = $this->paymentMethod->createTransactionInstance($this->operation);
+        $transaction = $this->addPostProcessingMandatoryData($transaction);
+        $transaction = $this->addPaymentMethodPostProcessingMandatoryData($transaction);
 
         return $transaction;
     }
 
-    private function addMandatoryData(Transaction $transaction)
+    /**
+     * Adds the generic post processing mandatory data(Amount, ParentTransactionId)
+     *
+     * @param Transaction $transaction
+     * @return Transaction
+     * @since 2.4.0
+     */
+    private function addPostProcessingMandatoryData($transaction)
     {
-        //@TODO please make the gets nicer.
         $transaction->setAmount(
             new Amount(
-                $this->transactionModel->get('amount'),
-                $this->transactionModel->get('currency')
+                (float) $this->transactionModel->amount,
+                $this->transactionModel->currency
             )
         );
+
         $transaction->setParentTransactionId(
-            $this->transactionModel->get('transaction_id')
+            $this->transactionModel->transaction_id
         );
+
+        return $transaction;
+    }
+
+    /**
+     * Adds the payment method specific mandatory data to transaction
+     *
+     * @param Transaction $transaction
+     * @throws \Exception
+     * @return Transaction
+     * @since 2.4.0
+     */
+    private function addPaymentMethodPostProcessingMandatoryData($transaction)
+    {
+        foreach ($this->paymentMethod->getPostProcessingMandatoryEntities() as $entity) {
+            $entityBuilder = (new EntityBuilderFactory())->create($entity);
+            $transaction = $entityBuilder->build($transaction, $this->transactionModel);
+        }
 
         return $transaction;
     }

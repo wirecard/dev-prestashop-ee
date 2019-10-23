@@ -14,6 +14,6 @@ class InitialTransactionBuilder implements TransactionBuilderInterface
 {
     public function build()
     {
-        // TODO: Implement build() method.
+        // TODO: Will be implemented to replace the initial transaction building
     }
 }
