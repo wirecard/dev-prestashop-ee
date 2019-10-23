@@ -114,8 +114,8 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     private function addPaymentMethodPostProcessingMandatoryData($transaction)
     {
         foreach ($this->paymentMethod->getPostProcessingMandatoryEntities() as $entity) {
-            $entityBuilder = (new EntityBuilderFactory())->create($entity);
-            $transaction = $entityBuilder->build($transaction, $this->transactionModel);
+            $entityBuilder = (new EntityBuilderFactory($this->transactionModel))->create($entity);
+            $transaction = $entityBuilder->build($transaction);
         }
 
         return $transaction;

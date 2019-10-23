@@ -26,33 +26,33 @@ class Transaction extends \ObjectModel
     /** @var string */
     const TRANSLATION_FILE = "transaction";
 
-    private $tx_id;
+    public $tx_id;
 
-    private $transaction_id;
+    public $transaction_id;
 
-    private $parent_transaction_id;
+    public $parent_transaction_id;
 
-    private $order_id;
+    public $order_id;
 
-    private $cart_id;
+    public $cart_id;
 
-    private $ordernumber;
+    public $ordernumber;
 
-    private $paymentmethod;
+    public $paymentmethod;
 
-    private $transaction_state;
+    public $transaction_state;
 
-    private $amount;
+    public $amount;
 
-    private $currency;
+    public $currency;
 
-    private $response;
+    public $response;
 
-    private $transaction_type;
+    public $transaction_type;
 
-    private $created;
+    public $created;
 
-    private $modified;
+    public $modified;
 
     /**
      * @return string

@@ -9,6 +9,8 @@
 
 namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
 
+use WirecardEE\Prestashop\Models\Transaction;
+
 /**
  * Class EntityBuilderFactory
  * @package WirecardEE\Prestashop\Classes\Transaction\Entity
@@ -16,6 +18,20 @@ namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
  */
 class EntityBuilderFactory
 {
+    /**
+     * @var Transaction
+     */
+    private $parentTransaction;
+
+    /**
+     * EntityBuilderFactory constructor.
+     * @param Transaction $parentTransaction
+     */
+    public function __construct($parentTransaction)
+    {
+        $this->parentTransaction = $parentTransaction;
+    }
+
     /**
      * @param $entity
      * @throws \Exception
@@ -26,9 +42,22 @@ class EntityBuilderFactory
     {
         switch ($entity) {
             case EntityBuilderList::BASKET:
-                return new BasketBuilder();
+                return $this->initBasket();
             default:
                 throw new \Exception('No builder found for this entity' . $entity . '.');
         }
+    }
+
+    /**
+     * Init BasketBuilder
+     *
+     * @return BasketBuilder
+     * @since 2.4.0
+     */
+    private function initBasket()
+    {
+        $cart = new \Cart($this->parentTransaction->getCartId());
+
+        return new BasketBuilder($cart);
     }
 }

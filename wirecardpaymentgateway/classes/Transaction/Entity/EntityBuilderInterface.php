@@ -20,8 +20,7 @@ interface EntityBuilderInterface
 {
     /**
      * @param Transaction $transaction
-     * @param \WirecardEE\Prestashop\Models\Transaction $parentTransactionData
      * @return Transaction
      */
-    public function build($transaction, $parentTransactionData);
+    public function build($transaction);
 }

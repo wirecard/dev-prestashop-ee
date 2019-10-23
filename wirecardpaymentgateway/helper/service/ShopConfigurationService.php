@@ -29,7 +29,7 @@ class ShopConfigurationService
     const CONFIG_TEMPLATE = 'WIRECARD_PAYMENT_GATEWAY_%s_%s';
 
     /**
-     * Ensures  compatibility with existing database keys.
+     * Ensures compatibility with existing database keys.
      *
      * @var array
      * @string 2.1.0

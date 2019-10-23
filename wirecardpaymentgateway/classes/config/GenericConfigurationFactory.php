@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Config;
 
 use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
+use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
@@ -46,7 +47,7 @@ class GenericConfigurationFactory implements ConfigurationFactoryInterface
     public function createConfig()
     {
         return new PaymentMethodConfig(
-            $this->configService->getType(),
+            $this->configService->getType() === RatepayInvoiceTransaction::PAYMENT_NAME ? RatepayInvoiceTransaction::NAME : $this->configService->getType(),
             $this->configService->getField('merchant_account_id'),
             $this->configService->getField('secret')
         );

@@ -72,16 +72,20 @@ class WirecardTransactionsController extends ModuleAdminController
     public function renderView()
     {
         $this->validateTransaction($this->object);
-
         $transaction_data = $this->mapTransactionDataToArray($this->object);
         $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
         $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
+
         $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-        $transaction = $payment_model->createTransactionInstance();
-        $transaction->setParentTransactionId($transaction_data['id']);
-        $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
+        try {
+            $transaction = $payment_model->createTransactionInstance();
+            $transaction->setParentTransactionId($transaction_data['id']);
+            $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
+        } catch (\Exception $exception) {
+            //@TODO error handling
+        }
 
         // We no longer support Masterpass
         $operations = $transaction_data['payment_method'] === MasterpassTransaction::NAME
