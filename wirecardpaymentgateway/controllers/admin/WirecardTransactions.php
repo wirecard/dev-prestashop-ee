@@ -118,7 +118,7 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $parentTransaction = new Transaction($transaction_id);
         $postProcessingTransactionBuilder = new \WirecardEE\Prestashop\Classes\Transaction\PostProcessingTransactionBuilder(
-            PaymentProvider::getPayment($parentTransaction->paymentmethod),
+            PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
             $parentTransaction
         );
 
@@ -127,12 +127,12 @@ class WirecardTransactionsController extends ModuleAdminController
                 ->setOperation($operation)
                 ->build();
 
-            $shop_config_service = new ShopConfigurationService($parentTransaction->paymentmethod);
+            $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
             $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
             $backend_service = new BackendService($payment_config, new WirecardLogger());
 
             $response = $backend_service->process($transaction, $operation);
-            $orders = \Order::getByReference($parentTransaction->ordernumber);
+            $orders = \Order::getByReference($parentTransaction->getOrderNumber());
 
             $response_factory = new ProcessablePaymentResponseFactory(
                 $response,

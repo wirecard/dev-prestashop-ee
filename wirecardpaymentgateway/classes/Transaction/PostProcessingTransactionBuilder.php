@@ -91,13 +91,13 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         $transaction->setAmount(
             new Amount(
-                (float) $this->transactionModel->amount,
-                $this->transactionModel->currency
+                (float) $this->transactionModel->getAmount(),
+                $this->transactionModel->getCurrency()
             )
         );
 
         $transaction->setParentTransactionId(
-            $this->transactionModel->transaction_id
+            $this->transactionModel->getTransactionId()
         );
 
         return $transaction;
