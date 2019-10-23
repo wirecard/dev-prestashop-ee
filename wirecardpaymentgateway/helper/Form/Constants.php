@@ -16,4 +16,25 @@ class Constants
 
     const FORM_ELEMENT_TYPE_SWITCH = "switch";
     const FORM_ELEMENT_TYPE_SUBMIT = "submit";
+    const FORM_ELEMENT_TYPE_RADIO = "radio";
+
+    /**
+     * @return array
+     */
+    public static function getGroupTypesWithChildren()
+    {
+        return [
+            self::FORM_GROUP_TYPE_INPUT
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getElementTypesWithValues()
+    {
+        return [
+            self::FORM_ELEMENT_TYPE_SWITCH
+        ];
+    }
 }

@@ -76,7 +76,7 @@ class GeneralSettingsService
             $wirecardSettings = $this->findParamsStartingWithPrefix($settings);
             foreach ($wirecardSettings as $setting => $value) {
                 $updateResult = Configuration::updateValue($setting, $value);
-                if (!$result) {
+                if (!$updateResult) {
                     $this->addValidationError("Setting {$setting} wasn't saved!");
                 }
                 $result &= $updateResult;

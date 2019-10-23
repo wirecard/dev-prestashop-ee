@@ -11,9 +11,8 @@
 namespace WirecardEE\Prestashop\Helper\Form\Element;
 
 use WirecardEE\Prestashop\Helper\Form\Constants;
-use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
 
-class SubmitButton extends BaseElement implements FormElementInterface
+class SubmitButton extends BaseElement
 {
     /**
      * @return string
@@ -29,5 +28,12 @@ class SubmitButton extends BaseElement implements FormElementInterface
     public function getGroup()
     {
         return Constants::FORM_GROUP_TYPE_SUBMIT;
+    }
+
+    public function build()
+    {
+        parent::build();
+        $this->addOption('title', $this->getLabel());
+        return $this->getOptions();
     }
 }

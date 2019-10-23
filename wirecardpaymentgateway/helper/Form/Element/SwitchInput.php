@@ -10,11 +10,10 @@
 namespace WirecardEE\Prestashop\Helper\Form\Element;
 
 use WirecardEE\Prestashop\Helper\Form\Constants;
-use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use Exception;
 
-class SwitchInput extends BaseElement implements FormElementInterface
+class SwitchInput extends BaseElement
 {
     use TranslationHelper;
 
@@ -41,6 +40,9 @@ class SwitchInput extends BaseElement implements FormElementInterface
     /** @var mixed|string|bool|int */
     private $onValue;
 
+    /**
+     * @return array
+     */
     private function getDefaultValues()
     {
         return [
@@ -191,6 +193,7 @@ class SwitchInput extends BaseElement implements FormElementInterface
      */
     public function build()
     {
+        $this->addOption('label', $this->getLabel());
         if (!$this->hasOption('id')) {
             $this->addOption('id', $this->generateId());
         }

@@ -12,9 +12,12 @@ namespace WirecardEE\Prestashop\Helper\Form\Element;
 
 use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
 use Exception;
+use WirecardEE\Prestashop\Helper\OptionHelper;
 
 abstract class BaseElement implements FormElementInterface
 {
+    use OptionHelper;
+
     /**
      * @var string
      */
@@ -29,11 +32,6 @@ abstract class BaseElement implements FormElementInterface
      * @var mixed
      */
     private $value;
-
-    /**
-     * @var array
-     */
-    protected $options = [];
 
     /**
      * @return string
@@ -68,47 +66,6 @@ abstract class BaseElement implements FormElementInterface
     }
 
     /**
-     * @return array
-     */
-    public function getOptions()
-    {
-        return $this->options;
-    }
-
-    /**
-     * @param array $options
-     */
-    public function setOptions($options)
-    {
-        $this->options = $options;
-    }
-
-    /**
-     * @param $option
-     * @param $value
-     */
-    public function addOption($option, $value)
-    {
-        $this->options[$option] = $value;
-    }
-
-    public function getOption($key)
-    {
-        $options = $this->getOptions();
-        return $this->hasOption($key) ? $options[$key] : null;
-    }
-
-    /**
-     * @param $key
-     * @return bool
-     */
-    public function hasOption($key)
-    {
-        $options = $this->getOptions();
-        return isset($options[$key]);
-    }
-
-    /**
      * @return string
      */
     public function generateId()
@@ -139,7 +96,6 @@ abstract class BaseElement implements FormElementInterface
     public function build()
     {
         $this->addOption('name', $this->getName());
-        $this->addOption('label', $this->getLabel());
         return $this->getOptions();
     }
 }
