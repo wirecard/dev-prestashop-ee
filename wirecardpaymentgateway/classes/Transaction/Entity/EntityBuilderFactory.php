@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
 
+use WirecardEE\Prestashop\Classes\Transaction\Adapter\Cart\TransactionCartData;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -56,8 +57,8 @@ class EntityBuilderFactory
      */
     private function initBasket()
     {
-        $cart = new \Cart($this->parentTransaction->getCartId());
+        $basketData = new TransactionCartData($this->parentTransaction->getResponse());
 
-        return new BasketBuilder($cart);
+        return new BasketBuilder($basketData);
     }
 }

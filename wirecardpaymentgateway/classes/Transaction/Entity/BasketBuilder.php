@@ -12,6 +12,8 @@ namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
+use WirecardEE\Prestashop\Classes\Transaction\Adapter\Cart\CartDataInterface;
+use WirecardEE\Prestashop\Classes\Transaction\Adapter\Product\CartItemInterface;
 
 /**
  * Class BasketBuilder
@@ -21,91 +23,48 @@ use Wirecard\PaymentSdk\Entity\Item;
 class BasketBuilder implements EntityBuilderInterface
 {
     /**
-     * @var \Cart
+     * @var CartDataInterface
      */
-    private $cart;
+    private $cartData;
 
     /**
      * BasketBuilder constructor.
-     * @param \Cart $cart
+     * @param CartDataInterface
      * @since 2.4.0
      */
-    public function __construct($cart)
+    public function __construct($cartData)
     {
-        $this->cart = $cart;
+        $this->cartData = $cartData;
     }
 
     /**
      * @param \Wirecard\PaymentSdk\Transaction\Transaction $transaction
-     * @param \WirecardEE\Prestashop\Models\Transaction $parentTransactionData
      * @return void|\Wirecard\PaymentSdk\Transaction\Transaction
      * @since 2.4.0
      */
     public function build($transaction)
     {
-        $order_id = \Order::getIdByCartId($this->cart->id);
-
         $basket = new Basket();
         $basket->setVersion($transaction);
 
-        /** @var \Currency $currency */
-        $currency = new \Currency($this->cart->id_currency);
-
-        $context = \Context::getContext();
-
-        /** @var array $product */
-        foreach ($this->cart->getProducts() as $product) {
-            var_dump("product");
-            $grossAmount = $product['total_wt'] / $product['cart_quantity'];
-            $nettoAmount = $product['price_with_reduction_without_tax'];
-            $taxAmount = $grossAmount - $nettoAmount;
-
-            //@TODO here we need to do currency conversion.
-
-            $basket->add(
-                $this->createItem(
-                    \Tools::substr($product['name'], 0, 127),
-                    (new Amount($grossAmount, $currency->iso_code)),
-                    $product['quantity'],
-                    \Tools::substr(strip_tags($product['description_short']), 0, 127),
-                    $product['reference'],
-                    (new Amount($taxAmount, $currency->iso_code)),
-                    $product['rate']
-                )
+        /** @var CartItemInterface $cartItem */
+        foreach ($this->cartData->getCartItems() as $cartItem) {
+            $basketItem = new Item(
+                $cartItem->getName(),
+                $cartItem->getAmount(),
+                $cartItem->getQuantity()
             );
+
+            $basketItem->setTaxAmount($cartItem->getTaxAmount());
+            $basketItem->setTaxRate($cartItem->getTaxRate());
+            $basketItem->setDescription($cartItem->getShortDescription());
+            $basketItem->setArticleNumber($cartItem->getProductReference());
+
+            $basket->add($basketItem);
         }
-        die();
+
         $transaction->setBasket($basket);
 
         return $transaction;
-    }
-
-    /**
-     * @param string $name
-     * @param Amount $amount
-     * @param int $quantity
-     * @param sting $shortDescription
-     * @param $articleNumber
-     * @param $taxAmount
-     * @param $taxRate
-     * @return Item
-     */
-    private function createItem(
-        $name,
-        $amount,
-        $quantity,
-        $shortDescription,
-        $articleNumber,
-        $taxAmount,
-        $taxRate
-    ) {
-        $item = new Item($name, $amount, $quantity);
-
-        $item->setArticleNumber($articleNumber)
-            ->setDescription($shortDescription)
-            ->setTaxRate($taxRate)
-            ->setTaxAmount($taxAmount);
-
-        return $item;
     }
 }
