@@ -19,7 +19,7 @@ export TODAY=$(date +%Y-%m-%d)
 
 
 
-export PROJECT_FOLDER="woocommerce-ee-${PRESTASHOP_VERSION}"
+export PROJECT_FOLDER="prestashop-ee-${PRESTASHOP_VERSION}"
 if [ ! -d "${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}" ]; then
 mkdir -p ${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}
 fi
