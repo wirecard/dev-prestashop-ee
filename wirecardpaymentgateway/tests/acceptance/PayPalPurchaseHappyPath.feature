@@ -13,6 +13,7 @@ Feature: PayPalPurchaseHappyPath
     And I fill fields with "Billing Data"
     Then I select "Wirecard PayPal"
 
+  @env ui_test @patch @minor @major
   Scenario: purchase
     Given I check "I agree to the terms of service"
     And I click "Order with an obligation to pay"
