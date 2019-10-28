@@ -13,7 +13,6 @@ Feature: CreditCard3DSPurchaseHappyPath
     And I fill fields with "Billing Data"
     Then I select "Wirecard Credit Card"
 
-  @env ui_test @patch @minor @major
   Scenario: purchase
     Given I fill fields with "Valid Credit Card Data"
     When I check "I agree to the terms of service"
