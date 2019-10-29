@@ -123,6 +123,8 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->registerHook('actionPaymentConfirmation')
             || !$this->registerHook('displayOrderConfirmation')
+            || !$this->registerHook('postUpdateOrderStatus')
+            || !$this->registerHook('updateOrderStatus')
             || !$this->createTable('tx')
             || !$this->createTable('cc')
             || !$this->setDefaults()) {
@@ -966,6 +968,31 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $this->context->smarty->assign('base_url', Context::getContext()->shop->getBaseURL(true));
         $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
+    }
+
+
+    /**
+     * Hook called after the status of an order changes.
+     * @param array $params
+     * @since 2.5.0
+     */
+    public function hookActionOrderStatusPostUpdate($params) {
+        /** @var int $orderId */
+        $orderId = intval($params['id_order']);
+        /** @var OrderState $newOrderStatus */
+        $newOrderStatus = $params['newOrderStatus'];
+    }
+
+    /**
+     * Hook called before the status of an order changes.
+     * @param array $params
+     * @since 2.5.0
+     */
+    public function hookActionOrderStatusUpdate($params) {
+        /** @var int $orderId */
+        $orderId = intval($params['id_order']);
+        /** @var OrderState $newOrderStatus */
+        $newOrderStatus = $params['newOrderStatus'];
     }
 
     /**

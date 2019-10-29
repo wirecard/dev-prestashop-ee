@@ -12,27 +12,28 @@ namespace WirecardEE\Prestashop\Helper;
 class StringHelper {
 
     /**
-     * string with specified prefix
+     * Returns new string from defined "from" value
      * @param string $value
-     * @param string $prefix
+     * @param string $fromString
      * @return string
+     * @since 2.5.0
      */
-    public static function beginFrom($value, $prefix)
+    public static function startFrom($value, $fromString)
     {
-        $newString = substr($value, strpos($value, $prefix) + strlen($prefix));
+        $newString = substr($value, strpos($value, $fromString) + strlen($fromString));
         return strval($newString);
     }
 
     /**
-     * Sani
+     * Returns new string with replacement of specified values
      * @param string $value
-     * @param array $searchList
-     * @param array $replacementList
+     * @param array|string $search
+     * @param array|string $replacement
      * @return string
-     * @since 2.4.0
+     * @since 2.5.0
      */
-    public static function replaceWith($value, $searchList = ['-'], $replacementList = ['_'])
+    public static function replaceWith($value, $search, $replacement)
     {
-        return strval(str_replace($searchList, $replacementList, $value));
+        return strval(str_replace($search, $replacement, $value));
     }
 }
