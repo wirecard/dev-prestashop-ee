@@ -47,7 +47,8 @@ class GenericConfigurationFactory implements ConfigurationFactoryInterface
     public function createConfig()
     {
         return new PaymentMethodConfig(
-            $this->configService->getType() === RatepayInvoiceTransaction::PAYMENT_NAME ? RatepayInvoiceTransaction::NAME : $this->configService->getType(),
+            $this->configService->getType() === RatepayInvoiceTransaction::PAYMENT_NAME
+                ? RatepayInvoiceTransaction::NAME : $this->configService->getType(),
             $this->configService->getField('merchant_account_id'),
             $this->configService->getField('secret')
         );
