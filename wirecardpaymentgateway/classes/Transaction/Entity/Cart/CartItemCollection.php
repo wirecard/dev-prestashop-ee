@@ -178,6 +178,11 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
         $prefix = self::WIRECARD_ORDER_ITEM_PREFIX;
         // Decode raw data
         $transactionRawDataArr = json_decode($rawData, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $transactionRawDataArr = [];
+        }
+
         // Filter data with specified prefix
         $transactionRawDataArr = array_filter($transactionRawDataArr, function($key) use ($prefix) {
             return strpos($key, $prefix) !== false;
