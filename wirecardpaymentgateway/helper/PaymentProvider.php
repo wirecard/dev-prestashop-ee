@@ -14,6 +14,7 @@ use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
 use WirecardEE\Prestashop\Models\PaymentSofort;
+use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 
 /**
  * Class PaymentProvider
@@ -43,7 +44,7 @@ class PaymentProvider
             PaymentSepaCreditTransfer::TYPE => new PaymentSepaCreditTransfer(),
             PaymentSofort::TYPE => new PaymentSofort(),
             PaymentIdeal::TYPE => new PaymentIdeal(),
-            PaymentGuaranteedInvoiceRatepay::TYPE => new PaymentGuaranteedInvoiceRatepay(),
+            RatepayInvoiceTransaction::PAYMENT_NAME => new PaymentGuaranteedInvoiceRatepay(),
             PaymentPtwentyfour::TYPE => new PaymentPtwentyfour(),
             PaymentPoiPia::TYPE => new PaymentPoiPia(),
             PaymentAlipayCrossborder::TYPE => new PaymentAlipayCrossborder()

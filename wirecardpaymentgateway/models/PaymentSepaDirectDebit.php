@@ -203,7 +203,7 @@ class PaymentSepaDirectDebit extends Payment
         $context = \Context::getContext();
         $orderId = \Order::getIdByCartId($context->cart->id);
 
-        $transaction = $this->getTransactionInstance($operation);
+        $transaction = $this->createTransactionInstance($operation);
 
         if (isset($values['sepaFirstName']) && isset($values['sepaLastName']) && isset($values['sepaIban'])) {
             $account_holder = new AccountHolder();
@@ -233,7 +233,7 @@ class PaymentSepaDirectDebit extends Payment
      * @return SepaDirectDebitTransaction|SepaCreditTransferTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         if (Operation::CREDIT === $operation) {
             return new SepaCreditTransferTransaction();

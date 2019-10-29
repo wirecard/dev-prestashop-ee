@@ -3,10 +3,10 @@
 namespace WirecardEE\Prestashop\Helper;
 
 /**
- * Class TransactionManager
+ * Class DBTransactionManager
  * @since 2.4.0
  */
-class TransactionManager
+class DBTransactionManager
 {
     /**
      * @var string
@@ -25,6 +25,10 @@ class TransactionManager
         $this->database = \Db::getInstance();
     }
 
+    /**
+     * @param string $transaction_id
+     * @since 2.4.0
+     */
     public function markTransactionClosed($transaction_id)
     {
         $whereClause = sprintf(
@@ -37,21 +41,5 @@ class TransactionManager
             [ 'transaction_state' => 'closed' ],
             $whereClause
         );
-    }
-
-    public function getShopTransactionId($transaction_id)
-    {
-        $whereClause = sprintf(
-            'transaction_id = "%s"',
-            pSQL($transaction_id)
-        );
-
-        $query = (new \DbQuery())
-            ->from(self::TRANSACTION_TABLE)
-            ->where($whereClause);
-
-        $transaction = $this->database->getRow($query);
-
-        return $transaction->tx_id;
     }
 }

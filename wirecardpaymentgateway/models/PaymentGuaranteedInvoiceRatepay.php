@@ -9,10 +9,9 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderList;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Helper\DeviceIdentificationHelper;
@@ -226,7 +225,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
             unset($context->cookie->wcsConsumerDeviceId);
         }
 
-        $transaction = $this->getTransactionInstance($operation);
+        $transaction = $this->createTransactionInstance($operation);
 
         $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
@@ -245,7 +244,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return RatepayInvoiceTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         return new RatepayInvoiceTransaction();
     }
@@ -425,5 +424,18 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         return array(
           'device_identification' => DeviceIdentificationHelper::generateFingerprint()
         );
+    }
+
+    /**
+     * Return Guaranteed Invoice Ratepay post processing mandatory entities
+     *
+     * @return array
+     * @since 2.4.0
+     */
+    public function getPostProcessingMandatoryEntities()
+    {
+        return [
+            EntityBuilderList::BASKET
+        ];
     }
 }

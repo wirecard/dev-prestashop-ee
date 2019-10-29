@@ -261,5 +261,16 @@ abstract class Payment extends PaymentOption
      * @return \Wirecard\PaymentSdk\Transaction\Transaction
      * @since 2.4.0
      */
-    abstract public function getTransactionInstance($operation = null);
+    abstract public function createTransactionInstance($operation = null);
+
+    /**
+     * Returns an array of Entities that are mandatory for the payment method post processing transactions
+     *
+     * @return array
+     * @since 2.4.0
+     */
+    public function getPostProcessingMandatoryEntities()
+    {
+        return [];
+    }
 }

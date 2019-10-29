@@ -158,7 +158,7 @@ class PaymentIdeal extends Payment
     public function createTransaction($operation = null)
     {
         $values = \Tools::getAllValues();
-        $transaction = $this->getTransactionInstance($operation);
+        $transaction = $this->createTransactionInstance($operation);
 
         if (isset($values['idealBankBic'])) {
             $transaction->setBic($values['idealBankBic']);
@@ -174,7 +174,7 @@ class PaymentIdeal extends Payment
      * @return IdealTransaction|SepaCreditTransferTransaction
      * @since 2.4.0
      */
-    public function getTransactionInstance($operation = null)
+    public function createTransactionInstance($operation = null)
     {
         if (Operation::CREDIT === $operation) {
             return new SepaCreditTransferTransaction();

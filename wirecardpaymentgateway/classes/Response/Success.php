@@ -14,7 +14,7 @@ use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\TransactionManager;
+use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
@@ -56,7 +56,7 @@ final class Success implements ProcessablePaymentResponse
     /** @var ShopConfigurationService */
     private $configuration_service;
 
-    /** @var TransactionManager */
+    /** @var DBTransactionManager */
     private $transaction_manager;
   
     /**
@@ -75,7 +75,7 @@ final class Success implements ProcessablePaymentResponse
 
         $this->order_service = new OrderService($order);
         $this->context_service = new ContextService(\Context::getContext());
-        $this->transaction_manager = new TransactionManager();
+        $this->transaction_manager = new DBTransactionManager();
         $this->cart = $this->order_service->getOrderCart();
         $this->customer = new \Customer((int) $this->cart->id_customer);
         $this->module = \Module::getInstanceByName('wirecardpaymentgateway');

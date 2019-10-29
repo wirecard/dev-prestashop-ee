@@ -10,6 +10,7 @@
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
@@ -72,16 +73,20 @@ class WirecardTransactionsController extends ModuleAdminController
     public function renderView()
     {
         $this->validateTransaction($this->object);
-
         $transaction_data = $this->mapTransactionDataToArray($this->object);
         $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
         $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
+
         $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
         $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-        $transaction = $payment_model->getTransactionInstance();
-        $transaction->setParentTransactionId($transaction_data['id']);
-        $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
+        try {
+            $transaction = $payment_model->createTransactionInstance();
+            $transaction->setParentTransactionId($transaction_data['id']);
+            $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
+        } catch (\Exception $exception) {
+            //@TODO error handling
+        }
 
         // We no longer support Masterpass
         $operations = $transaction_data['payment_method'] === MasterpassTransaction::NAME
@@ -116,23 +121,23 @@ class WirecardTransactionsController extends ModuleAdminController
             return;
         }
 
-        $transaction_data = new Transaction($transaction_id);
-        $this->validateTransaction($transaction_data);
-
-        $parent_transaction = $this->mapTransactionDataToArray($transaction_data);
-        $shop_config_service = new ShopConfigurationService($parent_transaction['payment_method']);
-
-        $payment_model = PaymentProvider::getPayment($parent_transaction['payment_method']);
-        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-        $backend_service = new BackendService($payment_config, new WirecardLogger());
-
-        $transaction = $payment_model->createTransaction($operation);
-
-        $transaction->setParentTransactionId($parent_transaction['id']);
+        $parentTransaction = new Transaction($transaction_id);
+        $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
+            PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
+            $parentTransaction
+        );
 
         try {
+            $transaction = $postProcessingTransactionBuilder
+                ->setOperation($operation)
+                ->build();
+
+            $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
+            $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
+            $backend_service = new BackendService($payment_config, new WirecardLogger());
+
             $response = $backend_service->process($transaction, $operation);
-            $orders = \Order::getByReference($parent_transaction['order']);
+            $orders = \Order::getByReference($parentTransaction->getOrderNumber());
 
             $response_factory = new ProcessablePaymentResponseFactory(
                 $response,
@@ -165,7 +170,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @return array
      * @since 2.4.0
      */
-    protected function mapTransactionDataToArray($data)
+    private function mapTransactionDataToArray($data)
     {
         return array(
             'tx'             => $data->tx_id,
@@ -188,7 +193,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @param object $data
      * @since 2.4.0
      */
-    protected function validateTransaction($data)
+    private function validateTransaction($data)
     {
         if (!Validate::isLoadedObject($data)) {
             $this->errors[] = \Tools::displayError(
@@ -204,7 +209,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @return array
      * @since 2.4.0
      */
-    protected function formatOperations($possible_operations)
+    private function formatOperations($possible_operations)
     {
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
