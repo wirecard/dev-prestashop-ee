@@ -41,7 +41,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $this->context->cookie->__set('pia-enabled', false);
         $shopConfigService = new ShopConfigurationService($paymentType);
         $cartId = \Tools::getValue('order_number');
-        $cart = new Cart($cartId);
+        $cart = $cartId !== false ? new Cart($cartId) : $this->context->cart;
 
         $operation = $shopConfigService->getField('payment_action');
         $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
