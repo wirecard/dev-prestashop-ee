@@ -23,20 +23,5 @@
             </td>
         </tr>
     {/foreach}
-
-    <tr class="wd-card-row">
-        <td>
-            <label for="ccVaultId">Test token</label>
-        </td>
-
-        <td align="right">
-            <button type="button" class="btn btn-success" data-tokenid="5168216323601006">
-                <b>{$strings.use}</b>
-            </button>
-            <button type="button" disabled class="btn btn-danger" data-cardid="{$card.cc_id}">
-                <b>{$strings.delete}</b>
-            </button>
-        </td>
-    </tr>
 </table>
 

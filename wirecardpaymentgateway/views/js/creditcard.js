@@ -35,8 +35,7 @@ var SpinnerState = {
 };
 
 jQuery(function () {
-    setSpinnerState(SpinnerState.VISIBLE);
-    initializeHandlers();
+    jQuery(document).on("click", Constants.PAYMENT_METHOD_RADIO_ID, onPaymentMethodSelected);
 });
 
 /*
@@ -52,7 +51,6 @@ function initializeHandlers()
 {
     var $document = jQuery(document);
 
-    $document.on("click", Constants.PAYMENT_METHOD_RADIO_ID, onPaymentMethodSelected);
     $document.on("click", Constants.DELETE_CARD_BUTTON_ID, onCardDeletion);
     $document.on("click", Constants.USE_CARD_BUTTON_ID, onCardSelected);
     $document.on("submit", Constants.PAYMENT_FORM_ID, onPaymentFormSubmit);
@@ -81,6 +79,7 @@ function initializeForm(tokenId = null)
  */
 function onPaymentMethodSelected()
 {
+    initializeHandlers();
     initializeForm();
 }
 
