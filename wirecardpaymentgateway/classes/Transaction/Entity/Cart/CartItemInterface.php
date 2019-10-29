@@ -7,13 +7,13 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Adapter\Product;
+namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 
 use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
  * Interface CartItemInterface
- * @package WirecardEE\Prestashop\Classes\Transaction\Adapter\Product
+ * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
  * @since 2.4.0
  */
 interface CartItemInterface

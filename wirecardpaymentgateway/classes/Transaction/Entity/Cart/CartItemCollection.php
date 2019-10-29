@@ -7,11 +7,11 @@
  *  https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Adapter\Product;
+namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 
 /**
- * Class ProductDataCollection
- * @package WirecardEE\Prestashop\Classes\Transaction\Adapter\Product
+ * Class CartItemCollection
+ * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
  * @since 2.4.0
  */
 class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
@@ -126,5 +126,71 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
     public function offsetGet($offset)
     {
         return $this->products[$offset];
+    }
+
+    /**
+     * @param string $transactionRawData
+     * @since 2.4.0
+     */
+    public function createProductCollectionFromTransactionData($transactionRawData)
+    {
+        $basket = $this->parseToArrayItems($transactionRawData);
+
+        foreach ($basket as $product) {
+            $productData = new CartItem();
+            $productData->createProductFromArray($product);
+            $this->products[] = $productData;
+        }
+    }
+
+    /**
+     * @param string $transactionRawData
+     * @return array
+     * @since 2.4.0
+     */
+    private function parseToArrayItems($transactionRawData)
+    {
+        $basket = [];
+        foreach (json_decode($transactionRawData, true) as $responseFieldName => $responseValue) {
+            if ($this->isBasketField($responseFieldName)) {
+                $itemPositionWithFieldName = $this->getItemPositionAndFieldName($responseFieldName);
+                $itemPosition = substr($itemPositionWithFieldName, 0, strpos($itemPositionWithFieldName, '.'));
+                $itemFieldName = substr($itemPositionWithFieldName, strpos($itemPositionWithFieldName, '.') + 1);
+
+                $basket[$itemPosition][$this->sanitizeFieldName($itemFieldName)] = $responseValue;
+            }
+        }
+
+        return $basket;
+    }
+
+    /**
+     * @param string $responseFieldName
+     * @return bool
+     * @since 2.4.0
+     */
+    private function isBasketField($responseFieldName)
+    {
+        return strpos($responseFieldName, 'order-items') !== false;
+    }
+
+    /**
+     * @param string $responseFieldName
+     * @return false|string
+     * @since 2.4.0
+     */
+    private function getItemPositionAndFieldName($responseFieldName)
+    {
+        return substr($responseFieldName, strpos($responseFieldName, 'order-item.') + strlen('order-item.'));
+    }
+
+    /**
+     * @param string $responseFieldName
+     * @return string
+     * @since 2.4.0
+     */
+    private function sanitizeFieldName($responseFieldName)
+    {
+        return str_replace('-', '_', $responseFieldName);
     }
 }

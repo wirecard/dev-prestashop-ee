@@ -7,17 +7,17 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction;
+namespace WirecardEE\Prestashop\Classes\Transaction\Builder;
 
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Classes\Transaction\Entity\EntityBuilderFactory;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderFactory;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Models\Transaction as TransactionModel;
 
 /**
  * Class PostProcessingTransactionBuilder
- * @package WirecardEE\Prestashop\Classes\Transaction
+ * @package WirecardEE\Prestashop\Classes\Transaction\Builder
  * @since 2.4.0
  */
 class PostProcessingTransactionBuilder implements TransactionBuilderInterface
@@ -52,7 +52,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     /**
      * Set the operation of the payment, needed for payment methods that use SEPA Credit
      *
-     * @param $operation
+     * @param string $operation
      * @return $this
      * @since 2.4.0
      */

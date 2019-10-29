@@ -7,13 +7,13 @@
  *  https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Adapter\Product;
+namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 
 use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
  * Class CartItem
- * @package WirecardEE\Prestashop\Classes\Transaction\Adapter\Product
+ * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
  * @since 2.4.0
  */
 class CartItem implements CartItemInterface
@@ -54,38 +54,13 @@ class CartItem implements CartItemInterface
     private $taxRate;
 
     /**
-     * ProductData constructor.
-     * @param string $name
-     * @param Amount $amount
-     * @param int $quantity
-     * @param string $shortDescription
-     * @param string $productReference
-     * @param null|Amount $taxAmount
-     * @param null|float $taxRate
-     * @since 2.4.0
+     * @var int
      */
-    public function __construct(
-        $name,
-        $amount,
-        $quantity,
-        $shortDescription,
-        $productReference,
-        $taxAmount = null,
-        $taxRate = null
-    ) {
-        $this->name = $name;
-        $this->amount = $amount;
-        $this->quantity = $quantity;
-        $this->shortDescription = $shortDescription;
-        $this->productReference = $productReference;
+    private $roundingPrecision;
 
-        if ($taxAmount !== null) {
-            $this->taxAmount = $taxAmount;
-        }
-
-        if ($taxRate !== null) {
-            $this->taxRate = $taxRate;
-        }
+    public function __construct()
+    {
+        $this->roundingPrecision = \Configuration::get('PS_PRICE_DISPLAY_PRECISION');
     }
 
     /**
@@ -212,5 +187,32 @@ class CartItem implements CartItemInterface
     public function setTaxRate($taxRate)
     {
         $this->taxRate = $taxRate;
+    }
+
+    /**
+     * @param array $product
+     * @since 2.4.0
+     */
+    public function createProductFromArray($product)
+    {
+        $this->name = $product['name'];
+        $this->amount = new Amount(
+            \Tools::ps_round($product['amount'], $this->roundingPrecision),
+            $product['currency']
+        );
+        $this->quantity = $product['quantity'];
+        $this->shortDescription = $product['description'];
+        $this->productReference = $product['article_number'];
+
+        if (array_key_exists('tax_amount',$product)) {
+            $this->taxAmount = new Amount(
+                \Tools::ps_round($product['tax_amount'], $this->roundingPrecision),
+                $product['currency']
+            );
+        }
+
+        if (array_key_exists('tax_rate', $product)) {
+            $this->taxRate = \Tools::ps_round($product['tax_rate'], $this->roundingPrecision);
+        }
     }
 }

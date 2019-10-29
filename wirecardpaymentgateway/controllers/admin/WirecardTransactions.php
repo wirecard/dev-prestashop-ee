@@ -121,7 +121,7 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         $parentTransaction = new Transaction($transaction_id);
-        $postProcessingTransactionBuilder = new \WirecardEE\Prestashop\Classes\Transaction\PostProcessingTransactionBuilder(
+        $postProcessingTransactionBuilder = new \WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder(
             PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
             $parentTransaction
         );

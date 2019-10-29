@@ -7,20 +7,20 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
+namespace WirecardEE\Prestashop\Classes\Transaction\Builder;
 
 use Wirecard\PaymentSdk\Transaction\Transaction;
 
 /**
- * Interface EntityBuilderInterface
- * @package WirecardEE\Prestashop\Classes\Transaction\Entity
+ * Interface TransactionBuilderInterface
+ * @package WirecardEE\Prestashop\Classes\Transaction\Builder
  * @since 2.4.0
  */
-interface EntityBuilderInterface
+interface TransactionBuilderInterface
 {
     /**
-     * @param Transaction $transaction
      * @return Transaction
+     * @since 2.4.0
      */
-    public function build($transaction);
+    public function build();
 }

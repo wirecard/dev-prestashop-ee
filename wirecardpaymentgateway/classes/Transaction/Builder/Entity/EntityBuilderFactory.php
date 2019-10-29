@@ -7,14 +7,15 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
+namespace WirecardEE\Prestashop\Classes\Transaction\Builder\Entity;
 
-use WirecardEE\Prestashop\Classes\Transaction\Adapter\Cart\TransactionCartData;
+use WirecardEE\Prestashop\Classes\Transaction\Entity\Cart\TransactionCart;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\Basket\BasketBuilder;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class EntityBuilderFactory
- * @package WirecardEE\Prestashop\Classes\Transaction\Entity
+ * @package WirecardEE\Prestashop\Classes\Transaction\Builder\Entity
  * @since 2.4.0
  */
 class EntityBuilderFactory
@@ -34,7 +35,7 @@ class EntityBuilderFactory
     }
 
     /**
-     * @param $entity
+     * @param string $entity
      * @throws \Exception
      * @return EntityBuilderInterface
      * @since 2.4.0
@@ -57,7 +58,7 @@ class EntityBuilderFactory
      */
     private function initBasket()
     {
-        $basketData = new TransactionCartData($this->parentTransaction->getResponse());
+        $basketData = new TransactionCart($this->parentTransaction->getResponse());
 
         return new BasketBuilder($basketData);
     }

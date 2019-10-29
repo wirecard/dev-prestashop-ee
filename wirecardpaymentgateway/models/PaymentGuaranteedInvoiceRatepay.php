@@ -9,8 +9,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Classes\Transaction\Entity\EntityBuilderList;
@@ -436,6 +434,8 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     public function getPostProcessingMandatoryEntities()
     {
-        return [EntityBuilderList::BASKET];
+        return [
+            EntityBuilderList::BASKET
+        ];
     }
 }

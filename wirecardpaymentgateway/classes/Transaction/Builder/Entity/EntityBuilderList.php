@@ -7,11 +7,11 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
+namespace WirecardEE\Prestashop\Classes\Transaction\Builder\Entity;
 
 /**
- * Class EntityBuilderList contains all entity builders
- * @package WirecardEE\Prestashop\Classes\Transaction\Entity
+ * Class EntityBuilderList
+ * @package WirecardEE\Prestashop\Classes\Transaction\Builder\Entity
  * @since 2.4.0
  */
 class EntityBuilderList
