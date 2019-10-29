@@ -7,6 +7,7 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+use Symfony\Component\HttpFoundation\Response;
 use \WirecardEE\Prestashop\Models\CreditCardVault;
 use \WirecardEE\Prestashop\Helper\TranslationHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,6 +36,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     {
         $this->ajax = true;
         $this->vaultModel = new CreditCardVault($this->context->customer->id);
+
         parent::initContent();
     }
 
@@ -45,6 +47,11 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     public function displayAjaxListStoredCards()
     {
+        $templatePath = join(
+            DIRECTORY_SEPARATOR,
+            [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', 'creditcard_list.tpl']
+        );
+
         $data = [
             'cards' => $this->vaultModel->getUserCards($this->context->cart->id_address_invoice),
             'strings' => [
@@ -53,7 +60,10 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
             ]
         ];
 
-        $response = new JsonResponse($data);
+        $this->context->smarty->assign($data);
+        $html = $this->context->smarty->fetch($templatePath);
+
+        $response = new JsonResponse([ 'html' => $html ]);
         $response->send();
     }
 
@@ -62,18 +72,22 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      *
      * @since 1.1.0
      */
-    public function displayAjaxAddCard()
+    public function displayAjaxSaveCard()
     {
-        $tokenId = Tools::getValue('tokenid');
-        $maskedpan = Tools::getValue('maskedpan');
+        $tokenId = Tools::getValue('tokenId');
+        $maskedPan = Tools::getValue('maskedPan');
 
-        if (!$tokenId || !$maskedpan) {
-            $this->displayAjaxListStoredCards();
+        if (!$tokenId || !$maskedPan) {
+            $response = new Response("No token or PAN provided.", 400);
+            $response->send();
+
+            return;
         }
 
-        $this->vaultModel->addCard($maskedpan, $tokenId, $this->context->cart->id_address_invoice);
+        $this->vaultModel->addCard($maskedPan, $tokenId, $this->context->cart->id_address_invoice);
 
-        $this->displayAjaxListStoredCards();
+        $response = new Response("", 201);
+        $response->send();
     }
 
     /**
@@ -83,13 +97,13 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     public function displayAjaxDeleteCard()
     {
-        $ccid = Tools::getValue('ccid');
+        $cardId = Tools::getValue('cardId');
 
-        if (!$ccid) {
+        if (!$cardId) {
             $this->displayAjaxListStoredCards();
         }
 
-        $this->vaultModel->deleteCard($ccid);
+        $this->vaultModel->deleteCard($cardId);
 
         $this->displayAjaxListStoredCards();
     }
