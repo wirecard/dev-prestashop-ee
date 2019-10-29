@@ -7,16 +7,14 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Adapter\Cart;
-
-use WirecardEE\Prestashop\Classes\Transaction\Adapter\Product\CartItemCollection;
+namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 
 /**
  * Interface CartDataInterface
- * @package WirecardEE\Prestashop\Classes\Transaction\Adapter\Cart
+ * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
  * @since 2.4.0
  */
-interface CartDataInterface
+interface CartInterface
 {
     /**
      * @return CartItemCollection

@@ -29,6 +29,12 @@ class ContextService
      */
     public function __construct($context)
     {
+        if (!$context instanceof \Context) {
+            throw new \InvalidArgumentException(
+                self::class . ' cannot be initiated as the provided parameter is not type of ' . \Context::class
+            );
+        }
+
         $this->context = $context;
     }
 

@@ -10,6 +10,7 @@
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
@@ -121,7 +122,7 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         $parentTransaction = new Transaction($transaction_id);
-        $postProcessingTransactionBuilder = new \WirecardEE\Prestashop\Classes\Transaction\PostProcessingTransactionBuilder(
+        $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
             PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
             $parentTransaction
         );

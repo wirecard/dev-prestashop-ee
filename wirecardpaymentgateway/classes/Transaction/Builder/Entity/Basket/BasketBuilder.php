@@ -7,29 +7,29 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Classes\Transaction\Entity;
+namespace WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\Basket;
 
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
-use WirecardEE\Prestashop\Classes\Transaction\Adapter\Cart\CartDataInterface;
-use WirecardEE\Prestashop\Classes\Transaction\Adapter\Product\CartItemInterface;
+use WirecardEE\Prestashop\Classes\Transaction\Entity\Cart\CartItemInterface;
+use WirecardEE\Prestashop\Classes\Transaction\Entity\Cart\TransactionCart;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderInterface;
 
 /**
  * Class BasketBuilder
- * @package WirecardEE\Prestashop\Classes\Transaction\Entity
+ * @package WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\Basket
  * @since 2.4.0
  */
 class BasketBuilder implements EntityBuilderInterface
 {
     /**
-     * @var CartDataInterface
+     * @var TransactionCart
      */
     private $cartData;
 
     /**
      * BasketBuilder constructor.
-     * @param CartDataInterface
+     * @param TransactionCart
      * @since 2.4.0
      */
     public function __construct($cartData)

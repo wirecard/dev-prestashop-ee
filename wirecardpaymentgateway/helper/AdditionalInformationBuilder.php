@@ -30,10 +30,14 @@ class AdditionalInformationBuilder
     /** @var CurrencyHelper */
     private $currencyHelper;
 
+    /** @var int */
+    private $roundingPrecision;
+
 
     public function __construct()
     {
         $this->currencyHelper = new CurrencyHelper();
+        $this->roundingPrecision = \Configuration::get('PS_PRICE_DISPLAY_PRECISION');
     }
 
     /**
@@ -64,10 +68,10 @@ class AdditionalInformationBuilder
 
                 $netAmount = $product['total'] / $quantity;
                 $taxAmount = $grossAmount - $netAmount;
-                $taxRate = \Tools::ps_round($taxAmount / $grossAmount * 100, \Configuration::get('PS_PRICE_DISPLAY_PRECISION'));
+                $taxRate = \Tools::ps_round($taxAmount / $grossAmount * 100, $this->roundingPrecision);
 
                 $amount = $this->currencyHelper->getAmount(
-                    \Tools::ps_round($grossAmount, \Configuration::get('PS_PRICE_DISPLAY_PRECISION')),
+                    \Tools::ps_round($grossAmount, $this->roundingPrecision),
                     $currency
                 );
 
