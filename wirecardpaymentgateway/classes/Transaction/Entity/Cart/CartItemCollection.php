@@ -9,6 +9,8 @@
 
 namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 
+use WirecardEE\Prestashop\Helper\StringHelper;
+
 /**
  * Class CartItemCollection
  * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
@@ -16,6 +18,7 @@ namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
  */
 class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 {
+    const WIRECARD_ORDER_ITEM_PREFIX = "order-items.0.order-item.";
     /**
      * @var array
      * @since 2.4.0
@@ -134,7 +137,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
      */
     public function createProductCollectionFromTransactionData($transactionRawData)
     {
-        $basket = $this->parseToArrayItems($transactionRawData);
+        $basket = $this->initBasketFromRawData($transactionRawData);
 
         foreach ($basket as $product) {
             $productData = new CartItem();
@@ -157,8 +160,41 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
                 $itemPosition = substr($itemPositionWithFieldName, 0, strpos($itemPositionWithFieldName, '.'));
                 $itemFieldName = substr($itemPositionWithFieldName, strpos($itemPositionWithFieldName, '.') + 1);
 
-                $basket[$itemPosition][$this->sanitizeFieldName($itemFieldName)] = $responseValue;
+                $basket[$itemPosition][StringHelper::replaceWith($itemFieldName)] = $responseValue;
             }
+        }
+
+        return $basket;
+    }
+
+    /**
+     * @param string $rawData
+     * @return array
+     * @since 2.4.0
+     */
+    private function initBasketFromRawData($rawData)
+    {
+        $basket = [];
+        $prefix = self::WIRECARD_ORDER_ITEM_PREFIX;
+        // Decode raw data
+        $transactionRawDataArr = json_decode($rawData, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $transactionRawDataArr = [];
+        }
+
+        // Filter data with specified prefix
+        $transactionRawDataArr = array_filter($transactionRawDataArr, function($key) use ($prefix) {
+            return strpos($key, $prefix) !== false;
+        }, ARRAY_FILTER_USE_KEY);
+
+        foreach ($transactionRawDataArr as $responseFieldName => $responseValue) {
+            // Get field name after prefix
+            $fieldNameWithoutPrefix = StringHelper::beginFrom($responseFieldName, $prefix);
+            // Unpack fieldName to index / fieldName
+            list($index, $fieldName) = explode('.', $fieldNameWithoutPrefix);
+            // Add element with specified index and fieldName to basket
+            $basket[$index][StringHelper::replaceWith($fieldName)] = $responseValue;
         }
 
         return $basket;
@@ -171,7 +207,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
      */
     private function isBasketField($responseFieldName)
     {
-        return strpos($responseFieldName, 'order-items') !== false;
+        return strpos($responseFieldName, 'order-items.0.order-item') !== false;
     }
 
     /**
@@ -182,15 +218,5 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
     private function getItemPositionAndFieldName($responseFieldName)
     {
         return substr($responseFieldName, strpos($responseFieldName, 'order-item.') + strlen('order-item.'));
-    }
-
-    /**
-     * @param string $responseFieldName
-     * @return string
-     * @since 2.4.0
-     */
-    private function sanitizeFieldName($responseFieldName)
-    {
-        return str_replace('-', '_', $responseFieldName);
     }
 }
