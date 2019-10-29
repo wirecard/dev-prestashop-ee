@@ -90,10 +90,9 @@ function attachFormField($form, name, value)
  */
 function attachFormFields($form, data)
 {
-    for (var index in data) {
-        if (data.hasOwnProperty(index)) {
-            var prop = index.toString();
-            attachFormField($form, prop, data[prop]);
+    for (var prop in data) {
+        if (data.hasOwnProperty(prop)) {
+            attachFormField($form, prop, data[prop.toString()]);
         }
     }
 }
@@ -127,6 +126,100 @@ function submitFormToShop()
 
     $document.off("submit", Constants.PAYMENT_FORM_ID);
     $form.submit();
+}
+
+/*
+ * AJAX requests
+ */
+
+/**
+ * Loads the necessary data for the seamless credit card form
+ *
+ * @param tokenId
+ * @since 2.4.0
+ */
+function getFormData(tokenId = null)
+{
+    var formDataRequest = jQuery.ajax({
+        url: configProviderURL,
+        dataType: "json",
+        data: {
+            action: "getSeamlessConfig",
+            cartId: cartId,
+            tokenId: tokenId
+        }
+    });
+
+    formDataRequest
+        .done(onFormDataReceived)
+        .fail(onFormError);
+}
+
+/**
+ * Gets all available cards for this customer
+ *
+ * @since 2.4.0
+ */
+function getCardList()
+{
+    if (!ccVaultEnabled) {
+        return;
+    }
+
+    var cardListRequest = jQuery.ajax({
+        url: ccVaultURL,
+        data: {
+            action: "liststoredcards"
+        }
+    });
+
+    cardListRequest
+        .done(onCardListReceived)
+        .fail(onError);
+}
+
+/**
+ * Saves the card and submits the payment form to the shop
+ *
+ * @param tokenId
+ * @param maskedPan
+ * @since 2.4.0
+ */
+function saveCardAndSubmitToShop(tokenId, maskedPan)
+{
+    var cardSavingRequest = jQuery.ajax({
+        url: ccVaultURL,
+        data: {
+            action: "savecard",
+            tokenId: tokenId,
+            maskedPan: maskedPan
+        }
+    });
+
+    cardSavingRequest
+        .done(submitFormToShop)
+        .fail(onError);
+}
+
+/**
+ * Deletes the saved card from the backend
+ *
+ * @param cardId
+ * @since 2.4.0
+ */
+function deleteCard(cardId)
+{
+    var cardDeletionRequest =  jQuery.ajax({
+        url: ccVaultURL,
+        data: {
+            action: "deletecard",
+            cardId: cardId
+        }
+    });
+
+    cardDeletionRequest
+        .done(onCardListReceived)
+        .fail(onError);
 }
 
 /*
@@ -283,100 +376,6 @@ function onCardSelected()
 function onPaymentMethodSelected()
 {
     initializeForm();
-}
-
-/*
- * AJAX requests
- */
-
-/**
- * Loads the necessary data for the seamless credit card form
- *
- * @param tokenId
- * @since 2.4.0
- */
-function getFormData(tokenId = null)
-{
-    var formDataRequest = jQuery.ajax({
-        url: configProviderURL,
-        dataType: "json",
-        data: {
-            action: "getSeamlessConfig",
-            cartId: cartId,
-            tokenId: tokenId
-        }
-    });
-
-    formDataRequest
-        .done(onFormDataReceived)
-        .fail(onFormError);
-}
-
-/**
- * Gets all available cards for this customer
- *
- * @since 2.4.0
- */
-function getCardList()
-{
-    if (!ccVaultEnabled) {
-        return;
-    }
-
-    var cardListRequest = jQuery.ajax({
-        url: ccVaultURL,
-        data: {
-            action: "liststoredcards"
-        }
-    });
-
-    cardListRequest
-        .done(onCardListReceived)
-        .fail(onError);
-}
-
-/**
- * Saves the card and submits the payment form to the shop
- *
- * @param tokenId
- * @param maskedPan
- * @since 2.4.0
- */
-function saveCardAndSubmitToShop(tokenId, maskedPan)
-{
-    var cardSavingRequest = jQuery.ajax({
-        url: ccVaultURL,
-        data: {
-            action: "savecard",
-            tokenId: tokenId,
-            maskedPan: maskedPan
-        }
-    });
-
-    cardSavingRequest
-        .done(submitFormToShop)
-        .fail(onError);
-}
-
-/**
- * Deletes the saved card from the backend
- *
- * @param cardId
- * @since 2.4.0
- */
-function deleteCard(cardId)
-{
-    var cardDeletionRequest =  jQuery.ajax({
-        url: ccVaultURL,
-        data: {
-            action: "deletecard",
-            cardId: cardId
-        }
-    });
-
-    cardDeletionRequest
-        .done(onCardListReceived)
-        .fail(onError);
 }
 
 /*
