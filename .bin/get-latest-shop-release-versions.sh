@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -x
+
 curl -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/prestashop/prestashop/releases | jq -r '.[] | .tag_name' | egrep -v [a-zA-Z] | grep -v "^1.6" | head -n3 > tmp.txt
 
 sort -nr tmp.txt > ${PRESTASHOP_COMPATIBILITY_FILE}

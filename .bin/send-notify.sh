@@ -1,4 +1,8 @@
 #!/bin/bash
+
+set -e
+set -x
+
 PREVIEW_LINK='https://raw.githack.com/wirecard/reports'
 REPORT_FILE='report.html'
 #choose slack channel depending on the gateway
