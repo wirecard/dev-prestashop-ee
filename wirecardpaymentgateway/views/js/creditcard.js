@@ -19,7 +19,7 @@ var Constants = {
     MODAL_ID: "#wirecard-ccvault-modal",
     IFRAME_ID: "#wirecard-integrated-payment-page-frame",
     CONTAINER_ID: "payment-processing-gateway-credit-card-form",
-    PAYMENT_FORM_ID: "#payment-form[action*=\"creditcard\"]",
+    PAYMENT_FORM_ID: "form[action*=\"creditcard\"]",
     PAYMENT_METHOD_RADIO_ID: "input[name=\"payment-option\"][data-module-name=\"wd-creditcard\"]",
     USE_CARD_BUTTON_ID: "button[data-tokenid]",
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
@@ -90,8 +90,9 @@ function attachFormField($form, name, value)
  */
 function attachFormFields($form, data)
 {
-    for (var prop in data) {
-        if (data.hasOwnProperty(prop)) {
+    for (var index in data) {
+        if (data.hasOwnProperty(index)) {
+            var prop = index.toString();
             attachFormField($form, prop, data[prop]);
         }
     }
@@ -122,7 +123,7 @@ function setIframeSize()
 function submitFormToShop()
 {
     var $document = jQuery(document);
-    var $form = jQuery(document.querySelector(Constants.PAYMENT_FORM_ID));
+    var $form = jQuery(Constants.PAYMENT_FORM_ID);
 
     $document.off("submit", Constants.PAYMENT_FORM_ID);
     $form.submit();
@@ -165,7 +166,7 @@ function onFormError(error)
  */
 function onSeamlessFormSubmit(data)
 {
-    var $form = jQuery(document.querySelector(Constants.PAYMENT_FORM_ID));
+    var $form = jQuery(Constants.PAYMENT_FORM_ID);
     var $checkmark = jQuery(Constants.SAVE_CARD_CHECKMARK_ID);
     var shouldSaveCard = $checkmark.prop("checked");
 
@@ -220,11 +221,12 @@ function onFormRendered()
  */
 function onFormDataReceived(formData)
 {
-    jQuery(Constants.MODAL_ID).modal("hide");
+    var $form = jQuery(Constants.PAYMENT_FORM_ID);
 
     // WPP requires the parameter in snake_case
     // eslint-disable-next-line camelcase
     formData.wpp_options_cvv_hidden = true;
+    attachFormField($form, "order_number", formData.field_value_1);
 
     WPP.seamlessRender({
         requestData: formData,
@@ -268,6 +270,7 @@ function onCardSelected()
     var $button = jQuery(this);
     var tokenId = $button.data("tokenid");
 
+    jQuery(Constants.MODAL_ID).modal("hide");
     setSpinnerState(SpinnerState.VISIBLE);
     initializeForm(tokenId);
 }

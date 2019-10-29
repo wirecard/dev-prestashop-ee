@@ -185,8 +185,8 @@ class TransactionBuilder
      */
     private function addTokenId()
     {
-        if ($this->transaction instanceof CreditCardTransaction && \Tools::getValue('token_id')) {
-            $this->transaction->setTokenId(\Tools::getValue('token_id'));
+        if ($this->transaction instanceof CreditCardTransaction && \Tools::getValue('tokenId')) {
+            $this->transaction->setTokenId(\Tools::getValue('tokenId'));
         }
     }
 
