@@ -1,6 +1,9 @@
 #!/bin/bash
 # This script will send the notification if 'fail' parameter is passed it will
-set -e # Exit with nonzero exit code if anything fails
+
+set -e
+set -x
+
 export REPO_NAME='reports'
 export REPO_LINK="https://github.com/wirecard/${REPO_NAME}"
 export REPO_ADDRESS="${REPO_LINK}.git"
@@ -19,7 +22,7 @@ export TODAY=$(date +%Y-%m-%d)
 
 
 
-export PROJECT_FOLDER="woocommerce-ee-${PRESTASHOP_VERSION}"
+export PROJECT_FOLDER="prestashop-ee-${PRESTASHOP_VERSION}"
 if [ ! -d "${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}" ]; then
 mkdir -p ${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}
 fi
