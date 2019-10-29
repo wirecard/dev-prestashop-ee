@@ -34,125 +34,53 @@ var SpinnerState = {
     VISIBLE: "block"
 };
 
+jQuery(function () {
+    setSpinnerState(SpinnerState.VISIBLE);
+    initializeHandlers();
+});
+
 /*
- * DOM manipulation functions
+ * Section: Initializers
  */
 
 /**
- * Sets the loading spinner visible or hidden
- *
- * @param state
- * @since 2.4.0
- */
-function setSpinnerState(state)
-{
-    var $button = jQuery(Constants.STORED_CARD_BUTTON_ID);
-    var $container = jQuery("#" + Constants.CONTAINER_ID);
-
-    jQuery(Constants.CARD_SPINNER_ID).css("display", state);
-
-    if (SpinnerState.HIDDEN === state) {
-        $button.removeAttr("disabled");
-        $container.css("display", "block");
-
-        return;
-    }
-
-    $button.attr("disabled", "disabled");
-    $container.css("display", "none");
-}
-
-/**
- * Add a hidden form field to the given form element
- *
- * @param $form
- * @param name
- * @param value
- * @since 2.4.0
- */
-function attachFormField($form, name, value)
-{
-    var $input = jQuery("<input>").attr({
-        type: "hidden",
-        value: value,
-        name: name,
-    });
-
-    $form.append($input);
-}
-
-/**
- * Attaches all fields in data to a given form element
- *
- * @param $form
- * @param data
- * @since 2.4.0
- */
-function attachFormFields($form, data)
-{
-    for (var prop in data) {
-        if (data.hasOwnProperty(prop)) {
-            attachFormField($form, prop, data[prop.toString()]);
-        }
-    }
-}
-
-/**
- * Sets the iframe size appropriate for its contents
+ * Initializes all event handlers for the interface
  *
  * @since 2.4.0
  */
-function setIframeSize()
-{
-    var $iframe = jQuery(Constants.IFRAME_ID);
-    var $window = jQuery(window);
-
-    if ($window.width() < Constants.IFRAME_HEIGHT_CUTOFF) {
-        $iframe.height(Constants.IFRAME_HEIGHT_MOBILE);
-    }
-
-    $iframe.height(Constants.IFRAME_HEIGHT_DESKTOP);
-}
-
-/**
- * Submits the payment form to the shop
- *
- * @since 2.4.0
- */
-function submitFormToShop()
+function initializeHandlers()
 {
     var $document = jQuery(document);
-    var $form = jQuery(Constants.PAYMENT_FORM_ID);
 
-    $document.off("submit", Constants.PAYMENT_FORM_ID);
-    $form.submit();
+    $document.on("click", Constants.PAYMENT_METHOD_RADIO_ID, onPaymentMethodSelected);
+    $document.on("click", Constants.DELETE_CARD_BUTTON_ID, onCardDeletion);
+    $document.on("click", Constants.USE_CARD_BUTTON_ID, onCardSelected);
+    $document.on("submit", Constants.PAYMENT_FORM_ID, onPaymentFormSubmit);
+}
+
+/**
+ * Loads the card list for one-click and renders the seamless form
+ *
+ * @param tokenId
+ * @since 2.4.0
+ */
+function initializeForm(tokenId = null)
+{
+    getCardList();
+    getFormData(tokenId);
 }
 
 /*
- * Business logic functions
+ * Section: Business logic functions
  */
 
 /**
- * Error handling for generic AJAX requests
+ * Initializes the form once credit card is selected
  *
- * @param error
  * @since 2.4.0
  */
-function onError(error)
+function onPaymentMethodSelected()
 {
-    console.error("Run-time error:", error.responseText);
-}
-
-/**
- * Error handling for WPP errors
- *
- * @param error
- * @since 2.4.0
- */
-function onFormError(error)
-{
-    console.error("Form error:", error);
-
     initializeForm();
 }
 
@@ -274,18 +202,8 @@ function onCardSelected()
     initializeForm(tokenId);
 }
 
-/**
- * Initializes the form once credit card is selected
- *
- * @since 2.4.0
- */
-function onPaymentMethodSelected()
-{
-    initializeForm();
-}
-
 /*
- * AJAX requests
+ * Section: AJAX requests
  */
 
 /**
@@ -379,37 +297,124 @@ function deleteCard(cardId)
 }
 
 /*
- * Initializers
+ * Section: DOM manipulation functions
  */
 
 /**
- * Initializes all event handlers for the interface
+ * Sets the loading spinner visible or hidden
+ *
+ * @param state
+ * @since 2.4.0
+ */
+function setSpinnerState(state)
+{
+    var $button = jQuery(Constants.STORED_CARD_BUTTON_ID);
+    var $container = jQuery("#" + Constants.CONTAINER_ID);
+
+    jQuery(Constants.CARD_SPINNER_ID).css("display", state);
+
+    if (SpinnerState.HIDDEN === state) {
+        $button.removeAttr("disabled");
+        $container.css("display", "block");
+
+        return;
+    }
+
+    $button.attr("disabled", "disabled");
+    $container.css("display", "none");
+}
+
+/**
+ * Add a hidden form field to the given form element
+ *
+ * @param $form
+ * @param name
+ * @param value
+ * @since 2.4.0
+ */
+function attachFormField($form, name, value)
+{
+    var $input = jQuery("<input>").attr({
+        type: "hidden",
+        value: value,
+        name: name,
+    });
+
+    $form.append($input);
+}
+
+/**
+ * Attaches all fields in data to a given form element
+ *
+ * @param $form
+ * @param data
+ * @since 2.4.0
+ */
+function attachFormFields($form, data)
+{
+    for (var prop in data) {
+        if (data.hasOwnProperty(prop)) {
+            attachFormField($form, prop, data[prop.toString()]);
+        }
+    }
+}
+
+/**
+ * Sets the iframe size appropriate for its contents
  *
  * @since 2.4.0
  */
-function initializeHandlers()
+function setIframeSize()
+{
+    var $iframe = jQuery(Constants.IFRAME_ID);
+    var $window = jQuery(window);
+
+    if ($window.width() < Constants.IFRAME_HEIGHT_CUTOFF) {
+        $iframe.height(Constants.IFRAME_HEIGHT_MOBILE);
+    }
+
+    $iframe.height(Constants.IFRAME_HEIGHT_DESKTOP);
+}
+
+/**
+ * Submits the payment form to the shop
+ *
+ * @since 2.4.0
+ */
+function submitFormToShop()
 {
     var $document = jQuery(document);
+    var $form = jQuery(Constants.PAYMENT_FORM_ID);
 
-    $document.on("click", Constants.PAYMENT_METHOD_RADIO_ID, onPaymentMethodSelected);
-    $document.on("click", Constants.DELETE_CARD_BUTTON_ID, onCardDeletion);
-    $document.on("click", Constants.USE_CARD_BUTTON_ID, onCardSelected);
-    $document.on("submit", Constants.PAYMENT_FORM_ID, onPaymentFormSubmit);
+    $document.off("submit", Constants.PAYMENT_FORM_ID);
+    $form.submit();
+}
+
+
+/*
+ * Section: Error handlers
+ */
+
+/**
+ * Error handling for generic AJAX requests
+ *
+ * @param error
+ * @since 2.4.0
+ */
+function onError(error)
+{
+    console.error("Run-time error:", error.responseText);
 }
 
 /**
- * Loads the card list for one-click and renders the seamless form
+ * Error handling for WPP errors
  *
- * @param tokenId
+ * @param error
  * @since 2.4.0
  */
-function initializeForm(tokenId = null)
+function onFormError(error)
 {
-    getCardList();
-    getFormData(tokenId);
-}
+    console.error("Form error:", error);
 
-jQuery(function () {
-    setSpinnerState(SpinnerState.VISIBLE);
-    initializeHandlers();
-});
+    initializeForm();
+}
