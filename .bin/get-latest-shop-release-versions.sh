@@ -12,5 +12,5 @@ if [[ $(git diff HEAD ${PRESTASHOP_COMPATIBILITY_FILE}) != '' ]]; then
     git config --global user.email "wirecard@travis-ci.org"
     git add  ${PRESTASHOP_COMPATIBILITY_FILE}
     git commit -m "${SHOP_SYSTEM_UPDATE_COMMIT}"
-    git push --quiet https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG} HEAD:TPWDCEE-5363
+    git push --quiet https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG} HEAD:master
 fi
