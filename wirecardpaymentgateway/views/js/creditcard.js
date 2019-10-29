@@ -6,7 +6,10 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+// Declaring global variables for ESLint and allowing console.error statements
+
 /* global cartId, WPP, configProviderURL, ccVaultURL, ccVaultEnabled */
+/* eslint no-console: ["error", {allow: ["error"]}] */
 
 var Constants = {
     IFRAME_HEIGHT_DESKTOP: 410,
