@@ -94,9 +94,9 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 
         if (empty($offset)) {
             $this->products[] = $value;
-        } else {
-            $this->products[$offset] = $value;
         }
+
+        $this->products[$offset] = $value;
     }
 
     /**

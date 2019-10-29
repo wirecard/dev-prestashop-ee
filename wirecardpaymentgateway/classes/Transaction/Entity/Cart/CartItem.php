@@ -204,7 +204,7 @@ class CartItem implements CartItemInterface
         $this->shortDescription = $product['description'];
         $this->productReference = $product['article_number'];
 
-        if (array_key_exists('tax_amount',$product)) {
+        if (array_key_exists('tax_amount', $product)) {
             $this->taxAmount = new Amount(
                 \Tools::ps_round($product['tax_amount'], $this->roundingPrecision),
                 $product['currency']

@@ -11,7 +11,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
-use WirecardEE\Prestashop\Classes\Transaction\Entity\EntityBuilderList;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderList;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Helper\DeviceIdentificationHelper;
