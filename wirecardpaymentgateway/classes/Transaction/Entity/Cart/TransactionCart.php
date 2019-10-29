@@ -34,7 +34,7 @@ class TransactionCart implements CartInterface
     }
 
     /**
-     * @return void|CartItemCollection
+     * @return CartItemCollection
      * @since 2.4.0
      */
     public function getCartItems()
