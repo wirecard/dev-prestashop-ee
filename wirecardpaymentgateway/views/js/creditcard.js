@@ -6,7 +6,7 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-/* global cartId, WPP, configProviderURL, ccVaultURL */
+/* global cartId, WPP, configProviderURL, ccVaultURL, ccVaultEnabled */
 
 var Constants = {
     IFRAME_HEIGHT_DESKTOP: 410,
@@ -141,6 +141,10 @@ function getFormData(tokenId = null)
  */
 function getCardList()
 {
+    if (!ccVaultEnabled) {
+        return
+    }
+
     var cardListRequest = jQuery.ajax({
         url: ccVaultURL,
         data: {
@@ -365,9 +369,9 @@ function initializeHandlers()
 {
     var $document = jQuery(document)
 
+    $document.on("click", Constants.PAYMENT_METHOD_RADIO_ID, onPaymentMethodSelected)
     $document.on("click", Constants.DELETE_CARD_BUTTON_ID, onCardDeletion)
     $document.on("click", Constants.USE_CARD_BUTTON_ID, onCardSelected)
-    $document.on("click", Constants.PAYMENT_METHOD_RADIO_ID, onPaymentMethodSelected)
     $document.on("submit", Constants.PAYMENT_FORM_ID, onPaymentFormSubmit)
 }
 

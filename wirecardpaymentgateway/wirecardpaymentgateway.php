@@ -922,6 +922,7 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $creditCardConfig = new ShopConfigurationService(PaymentCreditCard::TYPE);
         $wppUrl = $creditCardConfig->getField('wpp_url');
+        $ccVaultEnabled = $creditCardConfig->getField('ccvault_enabled');
 
         $link = new Link;
         $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
@@ -931,6 +932,7 @@ class WirecardPaymentGateway extends PaymentModule
             array(
                 'configProviderURL' => $ajaxLink,
                 'ccVaultURL' => $ccVaultLink,
+                'ccVaultEnabled' => $ccVaultEnabled,
                 'cartId' => $this->context->cart->id,
             )
         );
