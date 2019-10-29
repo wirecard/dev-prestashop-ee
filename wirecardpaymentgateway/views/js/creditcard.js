@@ -82,6 +82,22 @@ function attachFormField($form, name, value)
 }
 
 /**
+ * Attaches all fields in data to a given form element
+ *
+ * @param $form
+ * @param data
+ * @since 2.4.0
+ */
+function attachFormFields($form, data)
+{
+    for (var prop in data) {
+        if (data.hasOwnProperty(prop)) {
+            attachFormField($form, prop, data[prop]);
+        }
+    }
+}
+
+/**
  * Sets the iframe size appropriate for its contents
  *
  * @since 2.4.0
@@ -151,15 +167,10 @@ function onSeamlessFormSubmit(data)
 {
     var $form = jQuery(document.querySelector(Constants.PAYMENT_FORM_ID));
     var $checkmark = jQuery(Constants.SAVE_CARD_CHECKMARK_ID);
-    var shouldSaveCard = $checkmark.prop('checked');
+    var shouldSaveCard = $checkmark.prop("checked");
 
-    attachFormField($form, 'jsresponse', 'true');
-
-    for (var prop in data) {
-        if (data.hasOwnProperty(prop)) {
-            attachFormField($form, prop, data[prop]);
-        }
-    }
+    attachFormField($form, "jsresponse", "true");
+    attachFormFields($form, data);
 
     if (
         shouldSaveCard
@@ -209,8 +220,10 @@ function onFormRendered()
  */
 function onFormDataReceived(formData)
 {
-    jQuery(Constants.MODAL_ID).modal('hide');
+    jQuery(Constants.MODAL_ID).modal("hide");
 
+    // WPP requires the parameter in snake_case
+    // eslint-disable-next-line camelcase
     formData.wpp_options_cvv_hidden = true;
 
     WPP.seamlessRender({
@@ -240,7 +253,7 @@ function onCardListReceived(cardList)
 function onCardDeletion()
 {
     var $button = jQuery(this);
-    var cardId = $button.data('cardid');
+    var cardId = $button.data("cardid");
 
     deleteCard(cardId);
 }
@@ -253,7 +266,7 @@ function onCardDeletion()
 function onCardSelected()
 {
     var $button = jQuery(this);
-    var tokenId = $button.data('tokenid');
+    var tokenId = $button.data("tokenid");
 
     setSpinnerState(SpinnerState.VISIBLE);
     initializeForm(tokenId);
@@ -397,4 +410,4 @@ function initializeForm(tokenId = null)
 jQuery(function () {
     setSpinnerState(SpinnerState.VISIBLE);
     initializeHandlers();
-})
+});
