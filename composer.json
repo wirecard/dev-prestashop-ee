@@ -7,7 +7,7 @@
   "require": {
     "php": ">=5.6",
     "symfony/options-resolver": "^3",
-    "wirecard/payment-sdk-php": "3.8.0",
+    "wirecard/payment-sdk-php": "dev-PRBUG-2115-examples",
     "php-http/guzzle5-adapter": ">=1.0.1",
     "guzzlehttp/psr7": ">=1.4.2",
     "wirecard/base-url-matcher": "1.0.0",

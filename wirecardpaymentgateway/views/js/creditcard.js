@@ -149,9 +149,6 @@ function onFormDataReceived(formData)
 {
     var $form = jQuery(Constants.PAYMENT_FORM_ID);
 
-    // WPP requires the parameter in snake_case
-    // eslint-disable-next-line camelcase
-    formData.wpp_options_cvv_hidden = true;
     attachFormField($form, "order_number", formData.field_value_1);
 
     WPP.seamlessRender({
