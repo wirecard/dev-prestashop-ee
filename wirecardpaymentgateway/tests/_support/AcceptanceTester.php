@@ -212,7 +212,7 @@ class AcceptanceTester extends \Codeception\Actor
     private function prepareGenericCheckout($type='')
     {
         $this->iAmOnPage('Product');
-        $this->fillField($this->currentPage->getElement('Quantity'), '5');
+        $this->fillField($this->currentPage->getElement('Quantity'), '10');
 
         if (strpos($type, 'Non3DS') !== false) {
             $this->fillField($this->currentPage->getElement('Quantity'), '1');
@@ -281,5 +281,23 @@ class AcceptanceTester extends \Codeception\Actor
         //check that last transaction in the table is the one under test
         $transactionTypes = $this->getColumnFromDatabaseNoCriteria('ps_wirecard_payment_gateway_tx', 'transaction_type');
         $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions[$paymentMethod]['tx_table'][$paymentAction]);
+    }
+
+    /**
+     * Checks for an element on the page and allows you to act based on whether
+     * its present or not
+     *
+     * @param $element
+     * @return bool
+     * @since 2.4.0
+     */
+    public function canSeeOptionalElement($element) {
+        try {
+            $this->seeElement($element);
+        } catch (\PHPUnit_Framework_AssertionFailedError $f) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -129,8 +129,13 @@ class Checkout extends Base
         $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->creditcard->first_name);
         $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->creditcard->last_name);
         $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->creditcard->card_number);
-        $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->creditcard->cvv);
         $I->fillField($this->getElement('Credit Card Valid until'), $data_field_values->creditcard->valid_until);
+
+        $I->wait(1);
+        if ($I->canSeeOptionalElement($this->getElement('Credit Card CVV'))) {
+            $I->fillField($this->getElement('Credit Card CVV'), $data_field_values->creditcard->cvv);
+        }
+
         $I->switchToIFrame();
     }
 
