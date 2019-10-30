@@ -98,7 +98,6 @@ class WirecardPaymentGateway extends PaymentModule
             'validation',
             'notify',
             'return',
-            'configprovider',
             'sepadirectdebit',
             'creditcard'
         );
@@ -925,13 +924,14 @@ class WirecardPaymentGateway extends PaymentModule
         $ccVaultEnabled = $creditCardConfig->getField('ccvault_enabled');
 
         $link = new Link;
-        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
-        $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
+        $ccControllerUrl = $link->getModuleLink(
+            'wirecardpaymentgateway',
+            'creditcard'
+        );
 
         Media::addJsDef(
             array(
-                'configProviderURL' => $ajaxLink,
-                'ccVaultURL' => $ccVaultLink,
+                'ccControllerUrl' => $ccControllerUrl,
                 'ccVaultEnabled' => $ccVaultEnabled,
                 'cartId' => $this->context->cart->id,
             )
