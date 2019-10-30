@@ -409,7 +409,7 @@ class Transaction extends \ObjectModel
                 'class' => 'fixed-width-lg',
             ),
             'transaction_type' => array(
-                'title' => $this->getTranslatedString('ransactionType'),
+                'title' => $this->getTranslatedString('transactionType'),
                 'class' => 'fixed-width-xs',
             ),
             'transaction_state' => array(

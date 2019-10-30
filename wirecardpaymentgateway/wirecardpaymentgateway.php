@@ -993,6 +993,9 @@ class WirecardPaymentGateway extends PaymentModule
         $orderId = intval($params['id_order']);
         /** @var OrderState $newOrderStatus */
         $newOrderStatus = $params['newOrderStatus'];
+        if ($newOrderStatus->id == _PS_OS_SHIPPING_ && intval(Configuration::get(\WirecardEE\Prestashop\Classes\Config\Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED))) {
+            $order = new Order($orderId);
+        }
     }
 
     /**
