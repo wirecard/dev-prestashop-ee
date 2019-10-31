@@ -29,6 +29,7 @@ class DbFinder
     public function __construct()
     {
         $this->database = Db::getInstance();
+        $this->queryBuilder = new DbQuery();
     }
 
     /**

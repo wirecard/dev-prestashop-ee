@@ -24,23 +24,17 @@ class TransactionFinder extends DbFinder
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    public function getTransactionByOrderIdWithCurrentState($orderId)
+    public function getCurrentTransactionByOrderId($orderId)
     {
         $transaction = null;
         $queryBuilder = $this->getQueryBuilder();
-        $query = $queryBuilder->from('wirecard_payment_gateway_tx wtx')
+        $query = $queryBuilder->from('wirecard_payment_gateway_tx')
             ->select('ps_wirecard_payment_gateway_tx.*')
-            ->leftJoin(
-                'ps_orders',
-                'order',
-                'wtx.`order_id` = order.`id_order`')
-            ->leftJoin(
-                'ps_order_history',
-                'order_history',
-                'wtx.`order_id` = order_history.`id_order`')
-            ->where('wtx.`order_id` = ' . pSQL($orderId) . " AND order_history.`id_order_state` = order.`current_state`");
+            ->leftJoin('orders', 'o', 'ps_wirecard_payment_gateway_tx.`order_id` = o.`id_order`')
+            ->leftJoin('order_history', 'order_history', 'ps_wirecard_payment_gateway_tx.`order_id` = order_history.`id_order`')
+            ->where('ps_wirecard_payment_gateway_tx.`order_id` = ' . pSQL($orderId) . " AND order_history.`id_order_state` = o.`current_state`");
         if ($result = $this->getDb()->getRow($query)) {
-            $transaction = new Transaction(intval($result['id']));
+            $transaction = new Transaction(intval($result['tx_id']));
         }
 
         return $transaction;

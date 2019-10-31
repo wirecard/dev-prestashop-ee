@@ -19,6 +19,8 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use \WirecardEE\Prestashop\Classes\Hook\OrderStatusPostUpdateCommand;
+use \WirecardEE\Prestashop\Classes\Hook\OrderStatusPostUpdateHandler;
 
 /**
  * Class WirecardPaymentGateway
@@ -986,16 +988,13 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      * Hook called before the status of an order changes.
      * @param array $params
+     * @throws Exception
      * @since 2.5.0
      */
     public function hookActionOrderStatusUpdate($params) {
-        /** @var int $orderId */
-        $orderId = intval($params['id_order']);
-        /** @var OrderState $newOrderStatus */
-        $newOrderStatus = $params['newOrderStatus'];
-        if ($newOrderStatus->id == _PS_OS_SHIPPING_ && intval(Configuration::get(\WirecardEE\Prestashop\Classes\Config\Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED))) {
-            $order = new Order($orderId);
-        }
+        $orderStatusPostUpdateCommand = new OrderStatusPostUpdateCommand($params['newOrderStatus'], $params['id_order']);
+        $orderStatusPostUpdateHandler = new OrderStatusPostUpdateHandler(_PS_OS_SHIPPING_, $orderStatusPostUpdateCommand);
+        $orderStatusPostUpdateHandler->handle();
     }
 
     /**

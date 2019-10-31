@@ -23,6 +23,9 @@ class Transaction extends \ObjectModel
 {
     use TranslationHelper;
 
+    const  TRANSACTION_STATE_OPEN = 'open';
+    const  TRANSACTION_STATE_CLOSED = 'closed';
+
     /** @var string */
     const TRANSLATION_FILE = "transaction";
 
@@ -279,6 +282,22 @@ class Transaction extends \ObjectModel
     }
 
     /**
+     * @return bool
+     */
+    public function isParent()
+    {
+        return !empty($this->getParentTransactionId());
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTransactionStateOpen()
+    {
+        return $this->getTransactionState() == self::TRANSACTION_STATE_OPEN;
+    }
+
+    /**
      * @see ObjectModel::$definition
      */
     public static $definition = array(
@@ -418,5 +437,25 @@ class Transaction extends \ObjectModel
             ),
 
         );
+    }
+
+    /**
+     * Maps the database columns into an easily digestible array.
+     * @return array
+     * @since 2.4.0
+     */
+    public function toViewArray() {
+        return [
+            'tx'             => $this->tx_id,
+            'id'             => $this->transaction_id,
+            'type'           => $this->transaction_type,
+            'status'         => $this->transaction_state,
+            'amount'         => $this->amount,
+            'currency'       => $this->currency,
+            'response'       => json_decode($this->response),
+            'payment_method' => $this->paymentmethod,
+            'order'          => $this->ordernumber,
+            'badge'          => $this->isTransactionStateOpen() ? 'green' : 'red',
+        ];
     }
 }
