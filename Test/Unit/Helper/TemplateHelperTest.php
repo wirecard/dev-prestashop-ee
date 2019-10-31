@@ -11,7 +11,8 @@ use WirecardEE\Prestashop\Helper\TemplateHelper;
 
 class TemplateHelperTest extends \PHPUnit_Framework_TestCase
 {
-    public function testItReturnsCorrectPath() {
+    public function testItReturnsCorrectPath()
+    {
         $path = TemplateHelper::getTemplatePath('creditcard');
 
         $this->assertEquals(
