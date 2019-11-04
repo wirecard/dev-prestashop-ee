@@ -42,7 +42,9 @@ final class Failure implements ProcessablePaymentNotification
      */
     public function process()
     {
-        $this->order->setCurrentState(_PS_OS_ERROR_);
-        $this->order->save();
+        if ($this->order->getCurrentState() !== _PS_OS_ERROR_) {
+            $this->order->setCurrentState(_PS_OS_ERROR_);
+            $this->order->save();
+        }
     }
 }
