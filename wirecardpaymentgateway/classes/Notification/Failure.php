@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Notification;
 
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 /**
  * Class Failure
@@ -24,6 +25,9 @@ final class Failure implements ProcessablePaymentNotification
     /** @var FailureResponse  */
     private $notification;
 
+    /** @var OrderService */
+    private $order_service;
+
     /**
      * FailurePaymentProcessing constructor.
      *
@@ -35,6 +39,7 @@ final class Failure implements ProcessablePaymentNotification
     {
         $this->order = $order;
         $this->notification = $notification;
+        $this->order_service = new OrderService($order);
     }
 
     /**
@@ -45,6 +50,8 @@ final class Failure implements ProcessablePaymentNotification
         if ($this->order->getCurrentState() !== _PS_OS_ERROR_) {
             $this->order->setCurrentState(_PS_OS_ERROR_);
             $this->order->save();
+
+            $this->order_service->updateOrderPayment($this->notification->getData()['transaction-id'], 0);
         }
     }
 }
