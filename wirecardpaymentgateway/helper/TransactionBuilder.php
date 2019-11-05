@@ -275,7 +275,7 @@ class TransactionBuilder
      */
     private function addLocale()
     {
-        $this->transaction = $this->transaction->setLocale(
+        $this->transaction->setLocale(
             $this->context->language->iso_code
         );
     }
