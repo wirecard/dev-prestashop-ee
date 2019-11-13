@@ -13,7 +13,7 @@ Feature: CreditCard3DSWppv2AuthorizationHappyPath
     And I fill fields with "Billing Data"
     Then I select "Wirecard Credit Card"
 
-  @env ui_test @ui_test
+  @env ui_test @patch @minor @major
   Scenario: authorize
     Given I fill fields with "Valid Credit Card Data"
     When I check "I agree to the terms of service"
