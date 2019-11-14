@@ -5,7 +5,7 @@ Feature: CreditCard3DSPurchaseHappyPath
 
   Background:
     Given I activate "creditcard" payment action "pay" in configuration
-    Given I activate one-click checkout in configuration
+    And I activate one-click checkout in configuration
     And I prepare credit card checkout "3DS"
     And I am on "Checkout" page
     And I fill fields with "Customer Data with password"
