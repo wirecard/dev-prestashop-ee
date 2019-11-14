@@ -265,6 +265,19 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
+     * @Given I activate one-click checkout in configuration
+     * @since 2.4.0
+     */
+    public function iActivateOneClickCheckoutInConfiguration()
+    {
+        $this->updateInDatabase(
+            'ps_configuration',
+            ['value' => 1],
+            ['name' => 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_CCVAULT_ENABLED']
+        );
+    }
+
+    /**
      * @Then I see :paymentMethod :paymentAction in transaction table
      * @param string $paymentMethod
      * @param string $paymentAction

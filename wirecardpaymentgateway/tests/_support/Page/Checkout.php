@@ -29,10 +29,16 @@ class Checkout extends Base
      */
 
     public $elements = array(
+        'Sign in' => "//*[@href='#checkout-login-form']",
+
+        'Sign-in Email' => "//form[@id='login-form']//*[@name='email']",
+        'Sign-in Password' => "//form[@id='login-form']//*[@name='password']",
+
         'Social title' => "//*[@name='id_gender']",
         'First Name' => "//*[@name='firstname']",
         'Last Name' => "//*[@name='lastname']",
         'Email' => "//*[@name='email']",
+        'Password' => "//*[@name='password']",
         'Address' => "//*[@name='address1']",
         'City' => "//*[@name='city']",
         'Zip/Postal Code' => "//*[@name='postcode']",
@@ -49,6 +55,9 @@ class Checkout extends Base
         'Credit Card CVV' => "//*[@id='pp-cc-cvv']",
         'Credit Card Valid until' => "//*[@id='pp-cc-expiration-date']",
 
+        'Save for later use' => "//*[@id='wirecard-store-card']",
+        'Use saved credit card' => "//*[@id='stored-card]",
+        'Use card' => "//*[@class='btn btn-success'][@data-tokenid]",
         'I agree to the terms of service' => "//*[@name='conditions_to_approve[terms-and-conditions]']",
         "Order with an obligation to pay" => "//*[@class='btn btn-primary center-block']",
 
@@ -59,19 +68,30 @@ class Checkout extends Base
     /**
      * Method fillCustomerDetails
      *
+     * @param bool $usePassword Fills password field and creates new account
+     *
      * @since 2.0.1
      */
-    public function fillCustomerDetails()
+    public function fillCustomerDetails($usePassword = false)
     {
         $I = $this->tester;
         $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
+
         $I->selectOption($this->getElement('Social title'), '1');
         $I->waitForElementVisible($this->getElement('First Name'));
+
         $I->fillField($this->getElement('First Name'), $data_field_values->first_name);
+
         $I->waitForElementVisible($this->getElement('Last Name'));
         $I->fillField($this->getElement('Last Name'), $data_field_values->last_name);
+
         $I->waitForElementVisible($this->getElement('Email'));
         $I->fillField($this->getElement('Email'), $data_field_values->email_address);
+
+        if ($usePassword) {
+            $I->waitForElementVisible($this->getElement('Password'));
+            $I->fillField($this->getElement('Password'), $data_field_values->password);
+        }
     }
 
     /**
@@ -113,6 +133,17 @@ class Checkout extends Base
 
         $I->waitForElementVisible($this->getElement('Continue3'));
         $I->click($this->getElement('Continue3'));
+    }
+
+    public function fillSignInDetails() {
+        $I = $this->tester;
+
+        $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
+
+        $I->fillField($this->getElement('Sign-in Email'), $data_field_values->email_address);
+        $I->fillField($this->getElement('Sign-in Password'), $data_field_values->password);
+
+        $I->click($this->getElement('Next'));
     }
 
     /**
