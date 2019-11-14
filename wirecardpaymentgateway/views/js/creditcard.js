@@ -215,8 +215,8 @@ function getFormData(tokenId = null)
         dataType: "json",
         data: {
             action: "getSeamlessConfig",
-            cart_id: cartId,
-            token_id: tokenId
+            "cart_id": cartId,
+            "token_id": tokenId
         }
     });
 
@@ -261,8 +261,8 @@ function saveCardAndSubmitToShop(tokenId, maskedPan)
         url: ccControllerUrl,
         data: {
             action: "saveCard",
-            token_id: tokenId,
-            masked_pan: maskedPan
+            "token_id": tokenId,
+            "masked_pan": maskedPan
         }
     });
 
@@ -283,7 +283,7 @@ function deleteCard(cardId)
         url: ccControllerUrl,
         data: {
             action: "deleteCard",
-            card_id: cardId
+            "card_id": cardId
         }
     });
 
