@@ -31,7 +31,7 @@ env:
           browser: chrome # 'chrome' or 'firefox'
           capabilities:
             'build': '%VERSION%'
-            'project': 'prestashop-ee-%GATEWAY%-%PRESTASHOP_RELEASE_VERSION%'
+            'project': 'prestashop-ee-%GATEWAY%-%PRESTASHOP_RELEASE_VERSION%-%LATEST_RELEASED_SHOP_EXTENSION%'
             'browserstack.user': '%BROWSERSTACK_USER%'
             'browserstack.key': '%BROWSERSTACK_ACCESS_KEY%'
 

@@ -8,7 +8,7 @@
 
 // Declaring global variables for ESLint and allowing console.error statements
 
-/* global cartId, WPP, configProviderURL, ccVaultURL, ccVaultEnabled */
+/* global cartId, WPP, ccControllerUrl, ccVaultEnabled */
 /* eslint no-console: ["error", {allow: ["error"]}] */
 
 var Constants = {
@@ -20,7 +20,7 @@ var Constants = {
     IFRAME_ID: "#wirecard-integrated-payment-page-frame",
     CONTAINER_ID: "payment-processing-gateway-credit-card-form",
     PAYMENT_FORM_ID: "form[action*=\"creditcard\"]",
-    PAYMENT_METHOD_RADIO_ID: "input[name=\"payment-option\"][data-module-name=\"wd-creditcard\"]",
+    CREDITCARD_RADIO_ID: "input[name=\"payment-option\"][data-module-name=\"wd-creditcard\"]",
     USE_CARD_BUTTON_ID: "button[data-tokenid]",
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
@@ -35,7 +35,7 @@ var SpinnerState = {
 };
 
 jQuery(function () {
-    jQuery(document).on("click", Constants.PAYMENT_METHOD_RADIO_ID, onPaymentMethodSelected);
+    jQuery(document).on("click", Constants.CREDITCARD_RADIO_ID, onPaymentMethodSelected);
 });
 
 /*
@@ -47,7 +47,7 @@ jQuery(function () {
  *
  * @since 2.4.0
  */
-function initializeHandlers()
+function initializeCreditCardEventHandlers()
 {
     var $document = jQuery(document);
 
@@ -79,7 +79,7 @@ function initializeForm(tokenId = null)
  */
 function onPaymentMethodSelected()
 {
-    initializeHandlers();
+    initializeCreditCardEventHandlers();
     initializeForm();
 }
 
@@ -149,10 +149,7 @@ function onFormDataReceived(formData)
 {
     var $form = jQuery(Constants.PAYMENT_FORM_ID);
 
-    // WPP requires the parameter in snake_case
-    // eslint-disable-next-line camelcase
-    formData.wpp_options_cvv_hidden = true;
-    attachFormField($form, "order_number", formData.field_value_1);
+    attachFormField($form, "cart_id", formData.field_value_1);
 
     WPP.seamlessRender({
         requestData: formData,
@@ -214,12 +211,12 @@ function onCardSelected()
 function getFormData(tokenId = null)
 {
     var formDataRequest = jQuery.ajax({
-        url: configProviderURL,
+        url: ccControllerUrl,
         dataType: "json",
         data: {
             action: "getSeamlessConfig",
-            cartId: cartId,
-            tokenId: tokenId
+            "cart_id": cartId,
+            "token_id": tokenId
         }
     });
 
@@ -240,9 +237,9 @@ function getCardList()
     }
 
     var cardListRequest = jQuery.ajax({
-        url: ccVaultURL,
+        url: ccControllerUrl,
         data: {
-            action: "liststoredcards"
+            action: "listStoredCards"
         }
     });
 
@@ -261,11 +258,11 @@ function getCardList()
 function saveCardAndSubmitToShop(tokenId, maskedPan)
 {
     var cardSavingRequest = jQuery.ajax({
-        url: ccVaultURL,
+        url: ccControllerUrl,
         data: {
-            action: "savecard",
-            tokenId: tokenId,
-            maskedPan: maskedPan
+            action: "saveCard",
+            "token_id": tokenId,
+            "masked_pan": maskedPan
         }
     });
 
@@ -283,10 +280,10 @@ function saveCardAndSubmitToShop(tokenId, maskedPan)
 function deleteCard(cardId)
 {
     var cardDeletionRequest =  jQuery.ajax({
-        url: ccVaultURL,
+        url: ccControllerUrl,
         data: {
-            action: "deletecard",
-            cardId: cardId
+            action: "deleteCard",
+            "card_id": cardId
         }
     });
 

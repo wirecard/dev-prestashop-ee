@@ -11,6 +11,7 @@ namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\TemplateHelper;
 
 /**
  * Class FormPost
@@ -19,10 +20,6 @@ use WirecardEE\Prestashop\Helper\Service\ContextService;
  */
 final class FormPost implements ProcessablePaymentResponse
 {
-    const FORM_TEMPLATE = _PS_MODULE_DIR_ . 'wirecardpaymentgateway' . DIRECTORY_SEPARATOR .
-    'views' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR .
-    'creditcard_submitform.tpl';
-
     /** @var FormInteractionResponse  */
     private $response;
 
@@ -44,7 +41,7 @@ final class FormPost implements ProcessablePaymentResponse
         $context_service = new ContextService(\Context::getContext());
 
         $context_service->showTemplateWithData(
-            self::FORM_TEMPLATE,
+            TemplateHelper::getFrontendTemplatePath('creditcard_submitform'),
             $this->getDataFromResponse($this->response)
         );
     }

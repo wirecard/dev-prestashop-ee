@@ -61,7 +61,7 @@ $supportedPaymentActionsPerPaymentMethod = [
 
 // main script - read payment method from command line, build the config and write it into database
 if (count($argv) < 3) {
-    $supportedPaymentMethods = implode("\n  ", array_keys( $defaultConfig));
+    $supportedPaymentMethods = implode("\n  ", array_keys($defaultConfig));
     $supportedPaymentActions = '';
     foreach ($defaultConfig as $key => $value) {
         $supportedPaymentActions .= $supportedPaymentActions . "\n  "

@@ -55,7 +55,6 @@ class Checkout extends Base
         'Credit Card CVV' => "//*[@id='pp-cc-cvv']",
         'Credit Card Valid until' => "//*[@id='pp-cc-expiration-date']",
 
-        'Save for later use' => "//*[@id='wirecard-store-card']",
         'Use saved credit card' => "//button[@type='button'][contains(@data-target, '#wirecard-ccvault-modal')]",
         'Use card' => "//*[@class='btn btn-success']",
         'I agree to the terms of service' => "//*[@name='conditions_to_approve[terms-and-conditions]']",
@@ -80,19 +79,12 @@ class Checkout extends Base
         $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
 
         $I->selectOption($this->getElement('Social title'), '1');
-        $I->waitForElementVisible($this->getElement('First Name'));
-
-        $I->fillField($this->getElement('First Name'), $data_field_values->first_name);
-
-        $I->waitForElementVisible($this->getElement('Last Name'));
-        $I->fillField($this->getElement('Last Name'), $data_field_values->last_name);
-
-        $I->waitForElementVisible($this->getElement('Email'));
-        $I->fillField($this->getElement('Email'), $data_field_values->email_address);
+        $I->preparedFillField($this->getElement('First Name'), $data_field_values->first_name);
+        $I->preparedFillField($this->getElement('Last Name'), $data_field_values->last_name);
+        $I->preparedFillField($this->getElement('Email'), $data_field_values->email_address);
 
         if ($usePassword) {
-            $I->waitForElementVisible($this->getElement('Password'));
-            $I->fillField($this->getElement('Password'), $data_field_values->password);
+            $I->preparedFillField($this->getElement('Password'), $data_field_values->password);
         }
     }
 
@@ -122,19 +114,12 @@ class Checkout extends Base
     {
         $I = $this->tester;
         $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
-        $I->waitForElementVisible($this->getElement('Address'));
-        $I->fillField($this->getElement('Address'), $data_field_values->street_address);
-        $I->waitForElementVisible($this->getElement('City'));
-        $I->fillField($this->getElement('City'), $data_field_values->town);
-        $I->waitForElementVisible($this->getElement('Zip/Postal Code'));
-        $I->fillField($this->getElement('Zip/Postal Code'), $data_field_values->post_code);
-        $I->waitForElementVisible($this->getElement('Phone'));
-        $I->fillField($this->getElement('Phone'), $data_field_values->phone);
-        $I->waitForElementVisible($this->getElement('Continue2'));
-        $I->click($this->getElement('Continue2'));
-
-        $I->waitForElementVisible($this->getElement('Continue3'));
-        $I->click($this->getElement('Continue3'));
+        $I->preparedFillField($this->getElement('Address'), $data_field_values->street_address);
+        $I->preparedFillField($this->getElement('City'), $data_field_values->town);
+        $I->preparedFillField($this->getElement('Zip/Postal Code'), $data_field_values->post_code);
+        $I->preparedFillField($this->getElement('Phone'), $data_field_values->phone);
+        $I->preparedClick($this->getElement('Continue2'));
+        $I->preparedClick($this->getElement('Continue3'));
     }
 
     public function fillSignInDetails() {
@@ -142,8 +127,8 @@ class Checkout extends Base
 
         $data_field_values = $I->getDataFromDataFile('tests/_data/CustomerData.json');
 
-        $I->fillField($this->getElement('Sign-in Email'), $data_field_values->email_address);
-        $I->fillField($this->getElement('Sign-in Password'), $data_field_values->password);
+        $I->preparedFillField($this->getElement('Sign-in Email'), $data_field_values->email_address);
+        $I->preparedFillField($this->getElement('Sign-in Password'), $data_field_values->password);
 
         $I->click($this->getElement('Log In'));
     }
@@ -158,11 +143,11 @@ class Checkout extends Base
         $data_field_values = $I->getDataFromDataFile('tests/_data/PaymentMethodData.json');
 
         $this->switchFrame();
-        $I->waitForElementVisible($this->getElement('Credit Card Last Name'));
-        $I->fillField($this->getElement('Credit Card First Name'), $data_field_values->creditcard->first_name);
-        $I->fillField($this->getElement('Credit Card Last Name'), $data_field_values->creditcard->last_name);
-        $I->fillField($this->getElement('Credit Card Card number'), $data_field_values->creditcard->card_number);
-        $I->fillField($this->getElement('Credit Card Valid until'), $data_field_values->creditcard->valid_until);
+        $I->preparedFillField($this->getElement('Credit Card First Name'), $data_field_values->creditcard->first_name);
+        $I->preparedFillField($this->getElement('Credit Card Last Name'), $data_field_values->creditcard->last_name);
+        $I->preparedFillField($this->getElement('Credit Card Card number'), $data_field_values->creditcard->card_number);
+        $I->preparedFillField($this->getElement('Credit Card CVV'), $data_field_values->creditcard->cvv);
+        $I->preparedFillField($this->getElement('Credit Card Valid until'), $data_field_values->creditcard->valid_until);
 
         $I->wait(1);
         if ($I->canSeeOptionalElement($this->getElement('Credit Card CVV'))) {
