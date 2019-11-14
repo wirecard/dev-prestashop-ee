@@ -289,7 +289,7 @@ class TransactionBuilder
      */
     public function createOrder()
     {
-        $orderManager = new OrderManager($this->module);
+        $orderManager = new OrderManager();
 
         $order = new \Order($orderManager->createOrder(
             $this->cart,
