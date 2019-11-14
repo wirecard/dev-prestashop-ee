@@ -24,7 +24,7 @@ Feature: CreditCard3DSOneClickHappyPath
     And I click "Continue"
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
-    And I see "creditcard" "authorization" in transaction table
+    And I see "creditcard" "purchase" in transaction table
 
   @ui_test @env ui_test
   Scenario: on-click-purchase
