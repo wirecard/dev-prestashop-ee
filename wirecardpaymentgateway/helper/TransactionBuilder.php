@@ -186,8 +186,8 @@ class TransactionBuilder
      */
     private function addTokenId()
     {
-        if ($this->transaction instanceof CreditCardTransaction && \Tools::getValue('tokenId')) {
-            $this->transaction->setTokenId(\Tools::getValue('tokenId'));
+        if ($this->transaction instanceof CreditCardTransaction && \Tools::getValue('token_id')) {
+            $this->transaction->setTokenId(\Tools::getValue('token_id'));
         }
     }
 
@@ -289,7 +289,7 @@ class TransactionBuilder
      */
     public function createOrder()
     {
-        $orderManager = new OrderManager($this->module);
+        $orderManager = new OrderManager();
 
         $order = new \Order($orderManager->createOrder(
             $this->cart,

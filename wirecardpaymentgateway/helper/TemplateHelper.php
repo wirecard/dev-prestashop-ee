@@ -17,18 +17,31 @@ namespace WirecardEE\Prestashop\Helper;
  */
 class TemplateHelper
 {
+    const VIEWS_DIRECTORY = 'views';
+    const TEMPLATES_DIRECTORY = 'templates';
+    const FRONTEND_DIRECTORY = 'front';
+
+    const TEMPLATE_EXT = '.tpl';
+
     /**
-     * Gets the path for a template
+     * Gets the path for a frontend template
      *
      * @param string $template
      * @return string
      * @since 2.4.0
      */
-    public static function getTemplatePath($template)
+    public static function getFrontendTemplatePath($template)
     {
         return implode(
             DIRECTORY_SEPARATOR,
-            [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', $template . '.tpl']
+            [
+                _PS_MODULE_DIR_,
+                \WirecardPaymentGateway::NAME,
+                self::VIEWS_DIRECTORY,
+                self::TEMPLATES_DIRECTORY,
+                self::FRONTEND_DIRECTORY,
+                $template . self::TEMPLATE_EXT
+            ]
         );
     }
 }

@@ -197,7 +197,7 @@ abstract class Payment extends PaymentOption
     public function getFormTemplateWithData()
     {
         try {
-            $templatePath = TemplateHelper::getTemplatePath(static::TYPE);
+            $templatePath = TemplateHelper::getFrontendTemplatePath(static::TYPE);
 
             if (!file_exists($templatePath)) {
                 return false;

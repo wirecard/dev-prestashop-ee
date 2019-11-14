@@ -15,10 +15,10 @@
 
             <td align="right">
                 <button type="button" class="btn btn-success" data-tokenid="{$card.token}">
-                    <b>{$strings.use}</b>
+                    <b>{lFallback s='vault_use_card_text' mod='wirecardpaymentgateway'}</b>
                 </button>
                 <button type="button" class="btn btn-danger" data-cardid="{$card.cc_id}">
-                    <b>{$strings.delete}</b>
+                    <b>{lFallback s='vault_delete_card_text' mod='wirecardpaymentgateway'}</b>
                 </button>
             </td>
         </tr>

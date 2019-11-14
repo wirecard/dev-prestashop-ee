@@ -13,7 +13,7 @@ class TemplateHelperTest extends \PHPUnit_Framework_TestCase
 {
     public function testItReturnsCorrectPath()
     {
-        $path = TemplateHelper::getTemplatePath('creditcard');
+        $path = TemplateHelper::getFrontendTemplatePath('creditcard');
 
         $this->assertEquals(
             'modules/wirecardpaymentgateway/views/templates/front/creditcard.tpl',

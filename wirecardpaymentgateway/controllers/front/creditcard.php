@@ -21,23 +21,15 @@ use WirecardEE\Prestashop\Models\PaymentCreditCard;
  */
 class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
-    use TranslationHelper;
-
     /**
-     * @var string
-     * @since 2.3.0
+     * @var CreditCardVault $credit_card_vault_model
      */
-    const TRANSLATION_FILE = "creditcard";
-
-    /**
-     * @var CreditCardVault $credit_card_vault
-     */
-    private $credit_card_vault;
+    private $credit_card_vault_model;
 
     public function initContent()
     {
         $this->ajax = true;
-        $this->credit_card_vault = new CreditCardVault($this->context->customer->id);
+        $this->credit_card_vault_model = new CreditCardVault($this->context->customer->id);
 
         parent::initContent();
     }
@@ -49,9 +41,10 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     public function displayAjaxListStoredCards()
     {
-        $templatePath = TemplateHelper::getTemplatePath('creditcard_list');
+        $templatePath = TemplateHelper::getFrontendTemplatePath('creditcard_list');
+        $cards = $this->credit_card_vault_model->getUserCards($this->context->cart->id_address_invoice);
 
-        $this->context->smarty->assign($this->getCardListData());
+        $this->context->smarty->assign([ 'cards' => $cards ]);
         $html = $this->context->smarty->fetch($templatePath);
 
         $response = new JsonResponse([ 'html' => $html ]);
@@ -66,17 +59,17 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     public function displayAjaxSaveCard()
     {
-        $tokenId = Tools::getValue('tokenId');
-        $maskedPan = Tools::getValue('maskedPan');
+        $token_id = Tools::getValue('token_id');
+        $masked_pan = Tools::getValue('masked_pan');
 
-        if (!$tokenId || !$maskedPan) {
+        if (!$token_id || !$masked_pan) {
             $response = new Response("No token or PAN provided.", 400);
             $response->send();
 
             return;
         }
 
-        $this->credit_card_vault->addCard($maskedPan, $tokenId, $this->context->cart->id_address_invoice);
+        $this->credit_card_vault_model->addCard($masked_pan, $token_id, $this->context->cart->id_address_invoice);
 
         $response = new Response("", 201);
         $response->send();
@@ -89,13 +82,13 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     public function displayAjaxDeleteCard()
     {
-        $cardId = Tools::getValue('cardId');
+        $card_id = Tools::getValue('card_id');
 
-        if (!$cardId) {
+        if (!$card_id) {
             $this->displayAjaxListStoredCards();
         }
 
-        $this->credit_card_vault->deleteCard($cardId);
+        $this->credit_card_vault_model->deleteCard($card_id);
 
         $this->displayAjaxListStoredCards();
     }
@@ -109,33 +102,16 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     public function displayAjaxGetSeamlessConfig()
     {
-        $cartId = Tools::getValue('cartId');
+        $cart_id = Tools::getValue('cart_id');
         $payment = new PaymentCreditCard();
 
         try {
-            $requestData = $payment->getRequestData($this->module, $this->context, $cartId);
-            $response = JsonResponse::fromJsonString($requestData);
+            $request_data = $payment->getRequestData($this->module, $this->context, $cart_id);
+            $response = JsonResponse::fromJsonString($request_data);
         } catch (\Exception $exception) {
             $response = new JsonResponse(null);
         }
 
         $response->send();
-    }
-
-    /**
-     * Gets necessary data for building the saved card list.
-     *
-     * @return array
-     * @since 2.4.0
-     */
-    private function getCardListData()
-    {
-        return [
-            'cards' => $this->credit_card_vault->getUserCards($this->context->cart->id_address_invoice),
-            'strings' => [
-                'use' => $this->getTranslatedString('vault_use_card_text'),
-                'delete' => $this->getTranslatedString('vault_delete_card_text')
-            ]
-        ];
     }
 }

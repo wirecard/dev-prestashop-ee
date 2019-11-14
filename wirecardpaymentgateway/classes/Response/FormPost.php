@@ -41,7 +41,7 @@ final class FormPost implements ProcessablePaymentResponse
         $context_service = new ContextService(\Context::getContext());
 
         $context_service->showTemplateWithData(
-            TemplateHelper::getTemplatePath('creditcard_submitform'),
+            TemplateHelper::getFrontendTemplatePath('creditcard_submitform'),
             $this->getDataFromResponse($this->response)
         );
     }

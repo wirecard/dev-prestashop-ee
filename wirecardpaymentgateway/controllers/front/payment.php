@@ -74,10 +74,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         if ($orderId) {
             $this->transactionBuilder->setOrderId($orderId);
             return $orderId;
-        } else {
-            $orderId = $this->transactionBuilder->createOrder();
-            return $orderId;
         }
+
+        $orderId = $this->transactionBuilder->createOrder();
+        return $orderId;
     }
 
     /**
