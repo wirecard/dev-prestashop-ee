@@ -1,5 +1,16 @@
 [
   {
+    "release": "2.4.0",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.6.1",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+      "Implement new and improved credit card workflow for one-click checkout",
+      "Prevent orders from displaying duplicate payments",
+      "Add transaction IDs to failed orders"
+    ]
+  },
+  {
     "release": "2.3.0",
     "shopsystem": "PrestaShop",
     "tested": "1.7.6.0",
