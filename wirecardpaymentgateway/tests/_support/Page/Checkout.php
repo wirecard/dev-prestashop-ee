@@ -56,13 +56,15 @@ class Checkout extends Base
         'Credit Card Valid until' => "//*[@id='pp-cc-expiration-date']",
 
         'Save for later use' => "//*[@id='wirecard-store-card']",
-        'Use saved credit card' => "//*[@id='stored-card]",
-        'Use card' => "//*[@class='btn btn-success'][@data-tokenid]",
+        'Use saved credit card' => "//button[@type='button'][contains(@data-target, '#wirecard-ccvault-modal')]",
+        'Use card' => "//*[@class='btn btn-success']",
         'I agree to the terms of service' => "//*[@name='conditions_to_approve[terms-and-conditions]']",
         "Order with an obligation to pay" => "//*[@class='btn btn-primary center-block']",
 
         'I agree to the terms and conditions and the privacy policy' => "//*[@name='psgdpr']",
-        'Next' => "//*[@name='continue']"
+        'Next' => "//button[@type='submit'][contains(@data-link-action, 'register-new-customer')]",
+        'Save For Later Use' => "//*[@id='wirecard-store-card']",
+        'Log In' => "//button[@type='submit'][contains(@data-link-action, 'sign-in')]"
     );
 
     /**
@@ -143,7 +145,7 @@ class Checkout extends Base
         $I->fillField($this->getElement('Sign-in Email'), $data_field_values->email_address);
         $I->fillField($this->getElement('Sign-in Password'), $data_field_values->password);
 
-        $I->click($this->getElement('Next'));
+        $I->click($this->getElement('Log In'));
     }
 
     /**
