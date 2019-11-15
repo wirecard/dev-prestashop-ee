@@ -57,6 +57,8 @@ final class Failure implements ProcessablePaymentResponse
         if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
             $this->order->setCurrentState(_PS_OS_ERROR_);
             $this->order->save();
+
+            $this->order_service->updateOrderPayment($this->response->getData()['transaction-id'], 0);
         }
 
         $cart_clone = $this->order_service->getNewCartDuplicate();
