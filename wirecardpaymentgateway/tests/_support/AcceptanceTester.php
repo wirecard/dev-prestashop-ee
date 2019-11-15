@@ -232,7 +232,7 @@ class AcceptanceTester extends ActorExtendedWithWrappers
         $this->preparedFillField($this->currentPage->getElement('Quantity'), '1');
 
         if ($type == '3DS') {
-            $this->preparedFillField($this->currentPage->getElement('Quantity'), '10');
+            $this->preparedFillField($this->currentPage->getElement('Quantity'), '5');
         }
         $this->preparedClick($this->currentPage->getElement('Add to cart'));
         $this->waitForText('Product successfully added to your shopping cart');
@@ -282,19 +282,6 @@ class AcceptanceTester extends ActorExtendedWithWrappers
     }
 
     /**
-     * @Given I activate one-click checkout in configuration
-     * @since 2.4.0
-     */
-    public function iActivateOneClickCheckoutInConfiguration()
-    {
-        $this->updateInDatabase(
-            'ps_configuration',
-            ['value' => 1],
-            ['name' => 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_CCVAULT_ENABLED']
-        );
-    }
-
-    /**
      * @Then I see :paymentMethod :paymentAction in transaction table
      * @param string $paymentMethod
      * @param string $paymentAction
@@ -311,24 +298,6 @@ class AcceptanceTester extends ActorExtendedWithWrappers
         //check that last transaction in the table is the one under test
         $transactionTypes = $this->getColumnFromDatabaseNoCriteria('ps_wirecard_payment_gateway_tx', 'transaction_type');
         $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions[$paymentMethod]['tx_table'][$paymentAction]);
-    }
-
-    /**
-     * Checks for an element on the page and allows you to act based on whether
-     * its present or not
-     *
-     * @param $element
-     * @return bool
-     * @since 2.4.0
-     */
-    public function canSeeOptionalElement($element) {
-        try {
-            $this->seeElement($element);
-        } catch (\PHPUnit_Framework_AssertionFailedError $f) {
-            return false;
-        }
-
-        return true;
     }
 
     /**

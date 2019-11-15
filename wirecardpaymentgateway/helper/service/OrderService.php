@@ -46,12 +46,6 @@ class OrderService
             $order_payments[$last_index]->amount = $amount;
             $order_payments[$last_index]->save();
         }
-
-        //prevent issue with double amount being paid
-        if ($amount > 0) {
-            $order_payments[0]->amount = 0;
-            $order_payments[0]->save();
-        }
     }
 
     /**

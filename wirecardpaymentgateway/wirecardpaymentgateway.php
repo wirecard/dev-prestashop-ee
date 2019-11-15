@@ -51,7 +51,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.4.0';
+    const VERSION = '2.3.0';
 
     /**
      * @var string
@@ -91,13 +91,14 @@ class WirecardPaymentGateway extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.6.1');
+        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.6.0');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
             'validation',
             'notify',
             'return',
+            'configprovider',
             'sepadirectdebit',
             'creditcard'
         );
@@ -144,7 +145,7 @@ class WirecardPaymentGateway extends PaymentModule
             return false;
         }
 
-        $orderManager = new OrderManager();
+        $orderManager = new OrderManager($this);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
         $orderManager->createOrderState(OrderManager::WIRECARD_OS_STARTING);
@@ -921,18 +922,15 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $creditCardConfig = new ShopConfigurationService(PaymentCreditCard::TYPE);
         $wppUrl = $creditCardConfig->getField('wpp_url');
-        $ccVaultEnabled = $creditCardConfig->getField('ccvault_enabled');
 
         $link = new Link;
-        $ccControllerUrl = $link->getModuleLink(
-            'wirecardpaymentgateway',
-            'creditcard'
-        );
+        $ajaxLink = $link->getModuleLink('wirecardpaymentgateway', 'configprovider');
+        $ccVaultLink = $link->getModuleLink('wirecardpaymentgateway', 'creditcard');
 
         Media::addJsDef(
             array(
-                'ccControllerUrl' => $ccControllerUrl,
-                'ccVaultEnabled' => $ccVaultEnabled,
+                'configProviderURL' => $ajaxLink,
+                'ccVaultURL' => $ccVaultLink,
                 'cartId' => $this->context->cart->id,
             )
         );

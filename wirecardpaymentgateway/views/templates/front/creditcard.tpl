@@ -17,7 +17,10 @@
                 </button>
                 <h2>{lFallback s='text_creditcard_selection' mod='wirecardpaymentgateway'}</h2>
             </div>
-            <div class="modal-body" id="wd-card-list">
+            <div class="modal-body">
+                <table class="table table-hover">
+
+                </table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">{lFallback s='cancel' mod='wirecardpaymentgateway'}</button>

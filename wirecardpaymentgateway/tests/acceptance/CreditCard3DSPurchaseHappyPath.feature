@@ -5,10 +5,9 @@ Feature: CreditCard3DSPurchaseHappyPath
 
   Background:
     Given I activate "creditcard" payment action "pay" in configuration
-    And I activate one-click checkout in configuration
     And I prepare credit card checkout "3DS"
     And I am on "Checkout" page
-    And I fill fields with "Customer Data with password"
+    And I fill fields with "Customer Data"
     When I check "I agree to the terms and conditions and the privacy policy"
     And I click "Next"
     And I fill fields with "Billing Data"
@@ -18,7 +17,6 @@ Feature: CreditCard3DSPurchaseHappyPath
   Scenario: purchase
     Given I fill fields with "Valid Credit Card Data"
     When I check "I agree to the terms of service"
-    When I check "Save for later use"
     And I click "Order with an obligation to pay"
     And I am redirected to "Verified" page
     And I enter "wirecard" in field "Password"

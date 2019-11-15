@@ -31,7 +31,7 @@ class Acceptance extends \Codeception\Module
         $json_data = json_decode(file_get_contents($fileName));
         if (! $json_data) {
             $error = error_get_last();
-            echo 'Failed to get customer data from '. $fileName .'. Error was: ' . $error['message'];
+            echo 'Failed to get customer data from tests/_data/CustomerData.json. Error was: ' . $error['message'];
         } else {
             return $json_data;
         }
@@ -47,21 +47,7 @@ class Acceptance extends \Codeception\Module
      */
     public static function fillFieldsWithData($dataType, $page)
     {
-        switch(true) {
-            case stripos($dataType, 'customer data with password') !== false:
-                $page->fillCustomerDetails(true);
-                break;
-            case stripos($dataType, 'customer data') !== false:
-                $page->fillCustomerDetails();
-                break;
-            case stripos($dataType, 'credit card') !== false:
-                $page->fillCreditCardDetails();
-                break;
-            case stripos($dataType, 'sign in') !== false:
-                $page->fillSignInDetails();
-                break;
-            default:
-                $page->fillBillingDetails();
-        }
+        ((strpos($dataType, 'Customer') !== false)? $page->fillCustomerDetails():
+            (strpos($dataType, 'Credit Card')? $page->fillCreditCardDetails():$page->fillBillingDetails()));
     }
 }

@@ -7,7 +7,7 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-const _PS_MODULE_DIR_ = 'modules';
+const _PS_MODULE_DIR_ = './';
 const _PS_PRICE_COMPUTE_PRECISION_ = 2;
 const _DB_PREFIX_ = 'Prefix_';
 const _MYSQL_ENGINE_ = 'mysql';

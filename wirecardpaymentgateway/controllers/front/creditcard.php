@@ -7,12 +7,9 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-use Symfony\Component\HttpFoundation\Response;
+use \WirecardEE\Prestashop\Models\CreditCardVault;
+use \WirecardEE\Prestashop\Helper\TranslationHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use WirecardEE\Prestashop\Helper\TemplateHelper;
-use WirecardEE\Prestashop\Models\CreditCardVault;
-use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * @property WirecardPaymentGateway module
@@ -21,16 +18,23 @@ use WirecardEE\Prestashop\Models\PaymentCreditCard;
  */
 class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontController
 {
+    use TranslationHelper;
+
     /**
-     * @var CreditCardVault $credit_card_vault_model
+     * @var string
+     * @since 2.3.0
      */
-    private $credit_card_vault_model;
+    const TRANSLATION_FILE = "creditcard";
+
+    /**
+     * @var CreditCardVault $vaultModel
+     */
+    private $vaultModel;
 
     public function initContent()
     {
         $this->ajax = true;
-        $this->credit_card_vault_model = new CreditCardVault($this->context->customer->id);
-
+        $this->vaultModel = new CreditCardVault($this->context->customer->id);
         parent::initContent();
     }
 
@@ -41,77 +45,52 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     public function displayAjaxListStoredCards()
     {
-        $templatePath = TemplateHelper::getFrontendTemplatePath('creditcard_list');
-        $cards = $this->credit_card_vault_model->getUserCards($this->context->cart->id_address_invoice);
+        $data = [
+            'cards' => $this->vaultModel->getUserCards($this->context->cart->id_address_invoice),
+            'strings' => [
+                'use' => $this->getTranslatedString('vault_use_card_text'),
+                'delete' => $this->getTranslatedString('vault_delete_card_text')
+            ]
+        ];
 
-        $this->context->smarty->assign([ 'cards' => $cards ]);
-        $html = $this->context->smarty->fetch($templatePath);
-
-        $response = new JsonResponse([ 'html' => $html ]);
+        $response = new JsonResponse($data);
         $response->send();
     }
 
     /**
-     * Save a card token in the credit card vault
+     * add a card and return a list of stored user credit cards
      *
-     * @since 2.4.0 Use proper Symfony response
      * @since 1.1.0
      */
-    public function displayAjaxSaveCard()
+    public function displayAjaxAddCard()
     {
-        $token_id = Tools::getValue('token_id');
-        $masked_pan = Tools::getValue('masked_pan');
+        $tokenId = Tools::getValue('tokenid');
+        $maskedpan = Tools::getValue('maskedpan');
 
-        if (!$token_id || !$masked_pan) {
-            $response = new Response("No token or PAN provided.", 400);
-            $response->send();
-
-            return;
+        if (!$tokenId || !$maskedpan) {
+            $this->displayAjaxListStoredCards();
         }
 
-        $this->credit_card_vault_model->addCard($masked_pan, $token_id, $this->context->cart->id_address_invoice);
+        $this->vaultModel->addCard($maskedpan, $tokenId, $this->context->cart->id_address_invoice);
 
-        $response = new Response("", 201);
-        $response->send();
+        $this->displayAjaxListStoredCards();
     }
 
     /**
-     * Delete a card and return a list of stored user credit cards
+     * delete a card and return a list of stored user credit cards
      *
      * @since 1.1.0
      */
     public function displayAjaxDeleteCard()
     {
-        $card_id = Tools::getValue('card_id');
+        $ccid = Tools::getValue('ccid');
 
-        if (!$card_id) {
+        if (!$ccid) {
             $this->displayAjaxListStoredCards();
         }
 
-        $this->credit_card_vault_model->deleteCard($card_id);
+        $this->vaultModel->deleteCard($ccid);
 
         $this->displayAjaxListStoredCards();
-    }
-
-
-    /**
-     * Generate Credit Card config
-     *
-     * @since 2.4.0 Move function to Credit Card controller
-     * @since 1.0.0
-     */
-    public function displayAjaxGetSeamlessConfig()
-    {
-        $cart_id = Tools::getValue('cart_id');
-        $payment = new PaymentCreditCard();
-
-        try {
-            $request_data = $payment->getRequestData($this->module, $this->context, $cart_id);
-            $response = JsonResponse::fromJsonString($request_data);
-        } catch (\Exception $exception) {
-            $response = new JsonResponse(null);
-        }
-
-        $response->send();
     }
 }
