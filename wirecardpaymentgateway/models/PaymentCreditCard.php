@@ -253,6 +253,7 @@ class PaymentCreditCard extends Payment
         // Set unique cartId as orderId to avoid order creation before payment
         $transactionBuilder->setOrderId($cartId);
         $transaction = $transactionBuilder->buildTransaction();
+
         return $transactionService->getCreditCardUiWithData($transaction, $operation, $languageCode);
     }
 
