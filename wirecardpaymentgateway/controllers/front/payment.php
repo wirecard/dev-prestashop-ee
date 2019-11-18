@@ -15,7 +15,6 @@ use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -41,18 +40,17 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
         $shopConfigService = new ShopConfigurationService($paymentType);
-        $cartId = \Tools::getValue('cart_id');
-        $cart = $cartId !== false ? new \Cart($cartId) : $this->context->cart;
 
         $operation = $shopConfigService->getField('payment_action');
         $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
         $this->transactionBuilder = new TransactionBuilder($paymentType);
-        // Create order and get orderId
-        $orderId = $this->determineFinalOrderId();
 
         try {
+            // Create order and get orderId
+            $orderId = $this->determineFinalOrderId();
             $transaction = $this->transactionBuilder->buildTransaction();
-            $this->executeTransaction($transaction, $operation, $config, $cart, $orderId);
+
+            $this->executeTransaction($transaction, $operation, $config, $orderId);
         } catch (\Exception $exception) {
             $this->errors[] = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
@@ -63,11 +61,12 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      * Check if we have an existing orderId or create one if required.
      *
      * @return int
+     * @throws Exception
      * @since 2.0.0
      */
     private function determineFinalOrderId()
     {
-        // $cartId used for cart_id within intial request
+        // $cartId used for cart_id within initial request
         $cartId = \Tools::getValue('cart_id');
         $orderId = Order::getIdByCartId($cartId);
 
@@ -86,63 +85,49 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      * @param $transaction
      * @param $operation
      * @param $config
-     * @param $cart
      * @param $orderId
+     * @return void
+     * @throws \Http\Client\Exception
      * @since 2.0.0
      */
-    private function executeTransaction($transaction, $operation, $config, $cart, $orderId)
+    private function executeTransaction($transaction, $operation, $config, $orderId)
     {
+        $transactionService = new TransactionService($config, new WirecardLogger());
+
         $isSeamlessTransaction = \Tools::getValue('jsresponse');
+
+        //@TODO refactor to a known design pattern.
         if ($isSeamlessTransaction) {
-            return $this->executeSeamlessTransaction($_POST, $config, $cart, $orderId);
+            $response = $this->executeSeamlessTransaction($_POST, $transactionService);
+        } else {
+            $response = $this->executeDefaultTransaction($transaction, $operation, $transactionService);
         }
-        return $this->executeDefaultTransaction($transaction, $config, $operation, $orderId);
+
+        return $this->handleTransactionResponse($response, $orderId);
     }
 
     /**
-     * Execute transactions with operation pay and reserve
-     *
      * @param Transaction $transaction
-     * @param \Wirecard\PaymentSdk\Config\Config $config
      * @param string $operation
-     * @param int $orderId
-     * @since 2.0.0
+     * @param TransactionService $transactionService
+     * @return Wirecard\PaymentSdk\Response\Response
+     * @throws \Http\Client\Exception
+     *
      */
-    private function executeDefaultTransaction($transaction, $config, $operation, $orderId)
+    private function executeDefaultTransaction($transaction, $operation, $transactionService)
     {
-        $transactionService = new TransactionService($config, new WirecardLogger());
-        try {
-            /** @var \Wirecard\PaymentSdk\Response\Response $response */
-            $response = $transactionService->process($transaction, $operation);
-            $this->handleTransactionResponse($response, $orderId);
-        } catch (Exception $exception) {
-            $this->errors[] = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        }
+        return $transactionService->process($transaction, $operation);
     }
 
     /**
-     * Execute a seamless form transaction
-     *
-     * @param $data
-     * @param $config
-     * @param $cart
-     * @param $orderId
-     * @since 2.0.0
+     * @param array $data
+     * @param TransactionService $transactionService
+     * @return mixed
+     * @throws \Http\Client\Exception
      */
-    private function executeSeamlessTransaction($data, $config, $cart, $orderId)
+    private function executeSeamlessTransaction($data, $transactionService)
     {
-        $paymentType = \Tools::getValue('payment_type');
-        $redirectUrl =  $this->module->createRedirectUrl($orderId, $paymentType, 'success', $cart->id);
-        $transactionService = new TransactionService($config, new WirecardLogger());
-
-        try {
-            $response = $transactionService->processJsResponse($data, $redirectUrl);
-            $this->handleTransactionResponse($response, $orderId);
-        } catch (Exception $exception) {
-            $this->errors[] = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
-        }
+        return $transactionService->handleResponse($data);
     }
 
     /**
