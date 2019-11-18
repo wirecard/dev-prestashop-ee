@@ -16,7 +16,7 @@ use WirecardEE\Prestashop\Models\Transaction;
 /**
  * Class EntityBuilderFactory
  * @package WirecardEE\Prestashop\Classes\Transaction\Builder\Entity
- * @since 2.4.0
+ * @since 2.5.0
  */
 class EntityBuilderFactory
 {
@@ -28,6 +28,7 @@ class EntityBuilderFactory
     /**
      * EntityBuilderFactory constructor.
      * @param Transaction $parentTransaction
+     * @since 2.5.0
      */
     public function __construct($parentTransaction)
     {
@@ -38,7 +39,7 @@ class EntityBuilderFactory
      * @param string $entity
      * @throws \Exception
      * @return EntityBuilderInterface
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function create($entity)
     {
@@ -54,7 +55,7 @@ class EntityBuilderFactory
      * Init BasketBuilder
      *
      * @return BasketBuilder
-     * @since 2.4.0
+     * @since 2.5.0
      */
     private function initBasket()
     {

@@ -14,13 +14,13 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
 /**
  * Interface TransactionBuilderInterface
  * @package WirecardEE\Prestashop\Classes\Transaction\Builder
- * @since 2.4.0
+ * @since 2.5.0
  */
 interface TransactionBuilderInterface
 {
     /**
      * @return Transaction
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function build();
 }

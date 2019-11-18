@@ -18,7 +18,7 @@ use WirecardEE\Prestashop\Models\Transaction as TransactionModel;
 /**
  * Class PostProcessingTransactionBuilder
  * @package WirecardEE\Prestashop\Classes\Transaction\Builder
- * @since 2.4.0
+ * @since 2.5.0
  */
 class PostProcessingTransactionBuilder implements TransactionBuilderInterface
 {
@@ -41,7 +41,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
      * PostProcessingTransactionBuilder constructor.
      * @param Payment $paymentMethod
      * @param TransactionModel $transaction
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function __construct(Payment $paymentMethod, TransactionModel $transaction)
     {
@@ -54,7 +54,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
      *
      * @param string $operation
      * @return $this
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function setOperation($operation)
     {
@@ -68,7 +68,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
      *
      * @throws \Exception
      * @return Transaction
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function build()
     {
@@ -85,7 +85,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
      *
      * @param Transaction $transaction
      * @return Transaction
-     * @since 2.4.0
+     * @since 2.5.0
      */
     private function addPostProcessingMandatoryData($transaction)
     {
@@ -109,7 +109,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
      * @param Transaction $transaction
      * @throws \Exception
      * @return Transaction
-     * @since 2.4.0
+     * @since 2.5.0
      */
     private function addPaymentMethodPostProcessingMandatoryData($transaction)
     {

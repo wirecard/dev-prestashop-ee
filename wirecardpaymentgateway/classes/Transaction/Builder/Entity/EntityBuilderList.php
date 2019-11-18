@@ -12,7 +12,7 @@ namespace WirecardEE\Prestashop\Classes\Transaction\Builder\Entity;
 /**
  * Class EntityBuilderList
  * @package WirecardEE\Prestashop\Classes\Transaction\Builder\Entity
- * @since 2.4.0
+ * @since 2.5.0
  */
 class EntityBuilderList
 {

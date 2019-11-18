@@ -12,20 +12,20 @@ namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 /**
  * Class TransactionCartData
  * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
- * @since 2.4.0
+ * @since 2.5.0
  */
 class TransactionCart implements CartInterface
 {
     /**
      * @var CartItemCollection
-     * @since 2.4.0
+     * @since 2.5.0
      */
     private $cartItemCollection;
 
     /**
      * TransactionCartData constructor.
      * @param string $transactionRawData
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function __construct($transactionRawData)
     {
@@ -35,7 +35,7 @@ class TransactionCart implements CartInterface
 
     /**
      * @return CartItemCollection
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function getCartItems()
     {

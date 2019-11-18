@@ -14,26 +14,27 @@ use WirecardEE\Prestashop\Helper\StringHelper;
 /**
  * Class CartItemCollection
  * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
- * @since 2.4.0
+ * @since 2.5.0
  */
 class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 {
     const WIRECARD_ORDER_ITEM_PREFIX = "order-items.0.order-item.";
+    
     /**
      * @var array
-     * @since 2.4.0
+     * @since 2.5.0
      */
     private $products = [];
 
     /**
      * @var int
-     * @since 2.4.0
+     * @since 2.5.0
      */
     private $position = 0;
 
     /**
      * @return CartItemInterface
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function current()
     {
@@ -42,7 +43,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 
     /**
      * @return int
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function key()
     {
@@ -50,7 +51,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
     }
 
     /**
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function rewind()
     {
@@ -59,7 +60,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 
     /**
      * @return bool
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function valid()
     {
@@ -68,7 +69,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 
     /**
      * @return int
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function next()
     {
@@ -77,7 +78,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 
     /**
      * @return int|void
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function count()
     {
@@ -87,7 +88,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
     /**
      * @param mixed $offset
      * @param mixed $value
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function offsetSet($offset, $value)
     {
@@ -105,7 +106,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
     /**
      * @param mixed $offset
      * @return bool
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function offsetExists($offset)
     {
@@ -114,7 +115,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 
     /**
      * @param mixed $offset
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function offsetUnset($offset)
     {
@@ -124,7 +125,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
     /**
      * @param mixed $offset
      * @return mixed
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function offsetGet($offset)
     {
@@ -133,7 +134,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
 
     /**
      * @param string $transactionRawData
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function createProductCollectionFromTransactionData($transactionRawData)
     {
@@ -147,30 +148,9 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
     }
 
     /**
-     * @param string $transactionRawData
-     * @return array
-     * @since 2.4.0
-     */
-    private function parseToArrayItems($transactionRawData)
-    {
-        $basket = [];
-        foreach (json_decode($transactionRawData, true) as $responseFieldName => $responseValue) {
-            if ($this->isBasketField($responseFieldName)) {
-                $itemPositionWithFieldName = $this->getItemPositionAndFieldName($responseFieldName);
-                $itemPosition = substr($itemPositionWithFieldName, 0, strpos($itemPositionWithFieldName, '.'));
-                $itemFieldName = substr($itemPositionWithFieldName, strpos($itemPositionWithFieldName, '.') + 1);
-
-                $basket[$itemPosition][StringHelper::replaceWith($itemFieldName)] = $responseValue;
-            }
-        }
-
-        return $basket;
-    }
-
-    /**
      * @param string $rawData
      * @return array
-     * @since 2.4.0
+     * @since 2.5.0
      */
     private function initBasketFromRawData($rawData)
     {
@@ -184,7 +164,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
         }
 
         // Filter data with specified prefix
-        $transactionRawDataArr = array_filter($transactionRawDataArr, function($key) use ($prefix) {
+        $transactionRawDataArr = array_filter($transactionRawDataArr, function ($key) use ($prefix) {
             return strpos($key, $prefix) !== false;
         }, ARRAY_FILTER_USE_KEY);
 
@@ -198,25 +178,5 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
         }
 
         return $basket;
-    }
-
-    /**
-     * @param string $responseFieldName
-     * @return bool
-     * @since 2.4.0
-     */
-    private function isBasketField($responseFieldName)
-    {
-        return strpos($responseFieldName, 'order-items.0.order-item') !== false;
-    }
-
-    /**
-     * @param string $responseFieldName
-     * @return false|string
-     * @since 2.4.0
-     */
-    private function getItemPositionAndFieldName($responseFieldName)
-    {
-        return substr($responseFieldName, strpos($responseFieldName, 'order-item.') + strlen('order-item.'));
     }
 }

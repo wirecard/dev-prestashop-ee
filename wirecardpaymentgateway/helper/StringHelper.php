@@ -9,6 +9,11 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+/**
+ * Class StringHelper
+ * @package WirecardEE\Prestashop\Helper
+ * @since 2.5.0
+ */
 class StringHelper {
 
     /**
@@ -16,6 +21,7 @@ class StringHelper {
      * @param string $value
      * @param string $prefix
      * @return string
+     * @since 2.5.0
      */
     public static function beginFrom($value, $prefix)
     {
@@ -24,12 +30,11 @@ class StringHelper {
     }
 
     /**
-     * Sani
      * @param string $value
      * @param array $searchList
      * @param array $replacementList
      * @return string
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public static function replaceWith($value, $searchList = ['-'], $replacementList = ['_'])
     {
