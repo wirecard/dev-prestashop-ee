@@ -41,8 +41,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
         $shopConfigService = new ShopConfigurationService($paymentType);
-        $cartId = \Tools::getValue('order_number');
-        $cart = new Cart($cartId);
+        $cartId = \Tools::getValue('cart_id');
+        $cart = $cartId !== false ? new \Cart($cartId) : $this->context->cart;
 
         $operation = $shopConfigService->getField('payment_action');
         $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
@@ -67,17 +67,17 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      */
     private function determineFinalOrderId()
     {
-        // $cartId used for order_number within intial request
-        $cartId = \Tools::getValue('order_number');
+        // $cartId used for cart_id within intial request
+        $cartId = \Tools::getValue('cart_id');
         $orderId = Order::getIdByCartId($cartId);
 
         if ($orderId) {
             $this->transactionBuilder->setOrderId($orderId);
             return $orderId;
-        } else {
-            $orderId = $this->transactionBuilder->createOrder();
-            return $orderId;
         }
+
+        $orderId = $this->transactionBuilder->createOrder();
+        return $orderId;
     }
 
     /**

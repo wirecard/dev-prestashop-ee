@@ -14,7 +14,7 @@ chmod +x $PWD/jq
 # Open ngrok tunnel
 $PWD/ngrok authtoken $NGROK_TOKEN
 TIMESTAMP=$(date +%s)
-$PWD/ngrok http 8080 -subdomain="${TIMESTAMP}${GATEWAY}-presta-${PRESTASHOP_RELEASE_VERSION}" > /dev/null &
+$PWD/ngrok http 8080 -subdomain="${RANDOM}${TIMESTAMP}${GATEWAY}-presta-${PRESTASHOP_RELEASE_VERSION}" > /dev/null &
 NGROK_URL_HTTPS=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
 
 # allow ngrok to initialize
@@ -33,5 +33,22 @@ bash .bin/start-shopsystem.sh
 
 composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
 
+export GIT_BRANCH=${TRAVIS_BRANCH}
+
+# if tests triggered by PR, use different Travis variable to get branch name
+if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then
+    export $GIT_BRANCH="${TRAVIS_PULL_REQUEST_BRANCH}"
+fi
+
+# find out test group to be run
+if [[ $GIT_BRANCH =~ "${PATCH_RELEASE}" ]]; then
+   TEST_GROUP="${PATCH_RELEASE}"
+elif [[ $GIT_BRANCH =~ "${MINOR_RELEASE}" ]]; then
+   TEST_GROUP="${MINOR_RELEASE}"
+# run all tests in nothing else specified
+else
+   TEST_GROUP="${MAJOR_RELEASE}"
+fi
+
 #run tests
-cd wirecardpaymentgateway && vendor/bin/codecept run acceptance --env ui_test -g ui_test --html --xml
+cd wirecardpaymentgateway && vendor/bin/codecept run acceptance --env ui_test -g ${TEST_GROUP} --html --xml

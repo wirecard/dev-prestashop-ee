@@ -13,6 +13,7 @@ use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\TemplateHelper;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
@@ -157,10 +158,7 @@ abstract class Payment extends PaymentOption
     public function getFormTemplateWithData()
     {
         try {
-            $templatePath = join(
-                DIRECTORY_SEPARATOR,
-                [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', static::TYPE  . ".tpl"]
-            );
+            $templatePath = TemplateHelper::getFrontendTemplatePath(static::TYPE);
 
             if (!file_exists($templatePath)) {
                 return false;
