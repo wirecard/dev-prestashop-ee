@@ -14,8 +14,8 @@ namespace WirecardEE\Prestashop\Helper;
  * @package WirecardEE\Prestashop\Helper
  * @since 2.5.0
  */
-class StringHelper {
-
+class StringHelper
+{
     /**
      * string with specified prefix
      * @param string $value
