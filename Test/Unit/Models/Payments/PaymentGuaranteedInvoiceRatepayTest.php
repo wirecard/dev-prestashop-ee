@@ -115,46 +115,4 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($actual);
     }
-
-
-    public function testCreateCancelTransaction()
-    {
-        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
-        $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
-
-        $actual = $this->payment->createCancelTransaction($this->transactionData, $this->paymentModule);
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testCreatePayTransaction()
-    {
-        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
-        $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
-
-        $basket = new \Wirecard\PaymentSdk\Entity\Basket();
-        $basket->setVersion($expected);
-        $expected->setBasket($basket);
-
-        $actual = $this->payment->createPayTransaction($this->transactionData);
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testCreateRefundTransaction()
-    {
-        $expected = new \Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction();
-        $expected->setParentTransactionId('my_secret_id');
-        $expected->setAmount(new \Wirecard\PaymentSdk\Entity\Amount(20, 'EUR'));
-
-        $basket = new \Wirecard\PaymentSdk\Entity\Basket();
-        $basket->setVersion($expected);
-        $expected->setBasket($basket);
-
-        $actual = $this->payment->createRefundTransaction($this->transactionData, $this->paymentModule);
-
-        $this->assertEquals($expected, $actual);
-    }
 }
