@@ -7,7 +7,6 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
