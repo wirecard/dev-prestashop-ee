@@ -96,7 +96,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $isSeamlessTransaction = \Tools::getValue('jsresponse');
 
         if ($isSeamlessTransaction) {
-            return $transactionService->handleResponse($_POST);
+            return $transactionService->handleResponse(\Tools::getAllValues());
         }
 
         return $transactionService->process($transaction, $operation);
