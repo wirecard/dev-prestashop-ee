@@ -36,28 +36,7 @@ abstract class Success implements ProcessablePaymentResponse
     protected $response;
 
     /** @var OrderService */
-    private $order_service;
-
-    /** @var \Cart */
-    protected $cart;
-
-    /** @var \Customer */
-    protected $customer;
-
-    /** @var string */
-    private $process_type;
-
-    /** @var \WirecardPaymentGateway */
-    protected $module;
-
-    /** @var ContextService  */
-    protected $context_service;
-
-    /** @var ShopConfigurationService */
-    protected $configuration_service;
-
-    /** @var DBTransactionManager */
-    protected $transaction_manager;
+    protected $order_service;
   
     /**
      * SuccessResponseProcessing constructor.
@@ -72,12 +51,6 @@ abstract class Success implements ProcessablePaymentResponse
         $this->response = $response;
 
         $this->order_service = new OrderService($order);
-        $this->context_service = new ContextService(\Context::getContext());
-        $this->transaction_manager = new DBTransactionManager();
-        $this->cart = $this->order_service->getOrderCart();
-        $this->customer = new \Customer((int) $this->cart->id_customer);
-        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
-        $this->configuration_service = new ShopConfigurationService('wiretransfer');
     }
 
     /**

@@ -50,7 +50,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
             $orderId = $this->determineFinalOrderId();
             $transaction = $this->transactionBuilder->buildTransaction();
 
-            $this->executeTransaction($transaction, $operation, $config, $orderId);
+            $response = $this->executeTransaction($transaction, $operation, $config);
+            $this->handleTransactionResponse($response, $orderId);
         } catch (\Exception $exception) {
             $this->errors[] = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
@@ -85,49 +86,21 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      * @param $transaction
      * @param $operation
      * @param $config
-     * @param $orderId
-     * @return void
+     * @return \Wirecard\PaymentSdk\Response\FailureResponse|\Wirecard\PaymentSdk\Response\InteractionResponse|
+     * \Wirecard\PaymentSdk\Response\Response|\Wirecard\PaymentSdk\Response\SuccessResponse
      * @throws \Http\Client\Exception
      * @since 2.0.0
      */
-    private function executeTransaction($transaction, $operation, $config, $orderId)
+    private function executeTransaction($transaction, $operation, $config)
     {
         $transactionService = new TransactionService($config, new WirecardLogger());
-
         $isSeamlessTransaction = \Tools::getValue('jsresponse');
 
-        //@TODO refactor to a known design pattern.
         if ($isSeamlessTransaction) {
-            $response = $this->executeSeamlessTransaction($_POST, $transactionService);
-        } else {
-            $response = $this->executeDefaultTransaction($transaction, $operation, $transactionService);
+            return $transactionService->handleResponse($_POST);
         }
 
-        return $this->handleTransactionResponse($response, $orderId);
-    }
-
-    /**
-     * @param Transaction $transaction
-     * @param string $operation
-     * @param TransactionService $transactionService
-     * @return Wirecard\PaymentSdk\Response\Response
-     * @throws \Http\Client\Exception
-     *
-     */
-    private function executeDefaultTransaction($transaction, $operation, $transactionService)
-    {
         return $transactionService->process($transaction, $operation);
-    }
-
-    /**
-     * @param array $data
-     * @param TransactionService $transactionService
-     * @return mixed
-     * @throws \Http\Client\Exception
-     */
-    private function executeSeamlessTransaction($data, $transactionService)
-    {
-        return $transactionService->handleResponse($data);
     }
 
     /**
