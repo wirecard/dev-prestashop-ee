@@ -351,7 +351,7 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
             }
         }
 
-        if (count($this->getAllowedCountries( 'shipping'))) {
+        if (count($this->getAllowedCountries('shipping'))) {
             $c = new \Country($shipping->id_country);
             if (!in_array($c->iso_code, $this->getAllowedCountries('shipping'))) {
                 return false;
