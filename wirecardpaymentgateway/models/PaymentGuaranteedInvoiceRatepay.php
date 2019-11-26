@@ -39,7 +39,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
     const MIN_AGE = 18;
 
-    private $currencyHelper;
     /**
      * PaymentGuaranteedInvoiceRatepay constructor.
      *
@@ -53,8 +52,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $this->name = 'Wirecard Guaranteed Invoice';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
-
-        $this->currencyHelper = new CurrencyHelper();
     }
 
     /**
@@ -282,15 +279,15 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
             return false;
         }
 
-        if (!$this->isInLimit($module, $cart->getOrderTotal())) {
+        if (!$this->isInLimit($cart->getOrderTotal())) {
             return false;
         }
 
-        if (! $this->isValidAddress($module, $shippingAddress, $billingAddress)) {
+        if (! $this->isValidAddress($shippingAddress, $billingAddress)) {
             return false;
         }
 
-        if (! in_array($currency->iso_code, $this->getAllowedCurrencies($module))) {
+        if (! in_array($currency->iso_code, $this->getAllowedCurrencies())) {
             return false;
         }
 
@@ -300,12 +297,11 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Check if total amount is in limit minimum and maximum amount
      *
-     * @param \WirecardPaymentGateway $module
      * @param float $total
      * @return bool
      * @since 1.0.0
      */
-    private function isInLimit($module, $total)
+    private function isInLimit($total)
     {
         $currencyConverter = new CurrencyHelper();
         $currency = \Context::getContext()->currency;
@@ -330,13 +326,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Validate address information (shipping, billing)
      *
-     * @param \WirecardPaymentGateway $module
      * @param \Address $shipping
      * @param \Address $billing
      * @return bool
      * @since 1.0.0
      */
-    private function isValidAddress($module, $shipping, $billing)
+    private function isValidAddress($shipping, $billing)
     {
         $isSame = $this->configuration->getField('billingshipping_same');
         if ($isSame && $shipping->id != $billing->id) {
@@ -356,16 +351,16 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
             }
         }
 
-        if (count($this->getAllowedCountries($module, 'shipping'))) {
+        if (count($this->getAllowedCountries( 'shipping'))) {
             $c = new \Country($shipping->id_country);
-            if (!in_array($c->iso_code, $this->getAllowedCountries($module, 'shipping'))) {
+            if (!in_array($c->iso_code, $this->getAllowedCountries('shipping'))) {
                 return false;
             }
         }
 
-        if (count($this->getAllowedCountries($module, 'billing'))) {
+        if (count($this->getAllowedCountries('billing'))) {
             $c = new \Country($shipping->id_country);
-            if (!in_array($c->iso_code, $this->getAllowedCountries($module, 'billing'))) {
+            if (!in_array($c->iso_code, $this->getAllowedCountries('billing'))) {
                 return false;
             }
         }
@@ -376,12 +371,11 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Get array with allowed countries per address type
      *
-     * @param \WirecardPaymentGateway $module
      * @param string $type
      * @return array
      * @since 1.0.0
      */
-    private function getAllowedCountries($module, $type)
+    private function getAllowedCountries($type)
     {
         $val = $this->configuration->getField($type . '_countries');
         if (!\Tools::strlen($val)) {
@@ -399,11 +393,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Get array with allowed currencies
      *
-     * @param \WirecardPaymentGateway $module
      * @return array
      * @since 1.0.0
      */
-    private function getAllowedCurrencies($module)
+    private function getAllowedCurrencies()
     {
         $val = $this->configuration->getField('allowed_currencies');
 
