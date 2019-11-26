@@ -66,4 +66,14 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $expected = 'sepadirectdebit';
         $this->assertEquals($expected, $actual::NAME);
     }
+
+    public function testGetPostProcessingMandatoryEntities()
+    {
+        $expected = [];
+
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
+        );
+    }
 }

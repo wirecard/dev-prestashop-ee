@@ -115,4 +115,14 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($actual);
     }
+
+    public function testGetPostProcessingMandatoryEntities()
+    {
+        $expected = ['basket'];
+
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
+        );
+    }
 }

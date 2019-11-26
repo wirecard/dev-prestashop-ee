@@ -65,4 +65,14 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
         $expected = 'sofortbanking';
         $this->assertEquals($expected, $actual::NAME);
     }
+
+    public function testGetPostProcessingMandatoryEntities()
+    {
+        $expected = [];
+
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
+        );
+    }
 }

@@ -265,7 +265,7 @@ abstract class Payment extends PaymentOption
      * Returns an array of Entities that are mandatory for the payment method post processing transactions
      *
      * @return array
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function getPostProcessingMandatoryEntities()
     {
