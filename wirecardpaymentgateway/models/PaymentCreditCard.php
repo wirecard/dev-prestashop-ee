@@ -264,17 +264,11 @@ class PaymentCreditCard extends Payment
      */
     public function createTransaction($operation = null)
     {
-        $module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
-        $context = \Context::getContext();
-        $cart = $context->cart;
-        $orderId = \Order::getIdByCartId($cart->id);
-
         $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
         $paymentConfig = $config->get(CreditCardTransaction::NAME);
 
         $transaction = $this->createTransactionInstance($operation);
         $transaction->setConfig($paymentConfig);
-        $transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
 
         return $transaction;
     }
