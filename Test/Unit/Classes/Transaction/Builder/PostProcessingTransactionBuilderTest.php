@@ -7,7 +7,7 @@
  *  https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-require_once ('wirecardpaymentgateway/wirecardpaymentgateway.php');
+require_once('wirecardpaymentgateway/wirecardpaymentgateway.php');
 
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
