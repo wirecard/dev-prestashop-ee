@@ -202,12 +202,11 @@ abstract class Payment extends PaymentOption
     /**
      * Check if payment is available for specific cart content default true
      *
-     * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @return bool
      * @since 1.0.0
      */
-    public function isAvailable($module, $cart)
+    public function isAvailable($cart)
     {
         return true;
     }

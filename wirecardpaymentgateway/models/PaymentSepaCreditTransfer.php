@@ -10,8 +10,6 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
-use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class PaymentSepaDirectDebit
@@ -50,11 +48,10 @@ class PaymentSepaCreditTransfer extends Payment
     }
 
     /**
-     * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @return bool
      */
-    public function isAvailable($module, $cart)
+    public function isAvailable($cart)
     {
         return false;
     }

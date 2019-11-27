@@ -13,7 +13,6 @@ use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Constant\ChallengeInd;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
@@ -47,7 +46,6 @@ class PaymentCreditCard extends Payment
 
     /**
      * PaymentCreditCard constructor.
-     * @param \Module $module
      *
      * @since 2.0.0 Add logger
      * @since 1.0.0
@@ -229,14 +227,13 @@ class PaymentCreditCard extends Payment
     /**
      * Create request data for credit card ui
      *
-     * @param \WirecardPaymentGateway $module
      * @param \Context $context
      * @param int $cartId
      * @return mixed
      * @throws \Exception
      * @since 1.0.0
      */
-    public function getRequestData($module, $context, $cartId)
+    public function getRequestData($context, $cartId)
     {
         $paymentAction = $this->configuration->getField('payment_action');
         $operation = $this->getOperationForPaymentAction($paymentAction);

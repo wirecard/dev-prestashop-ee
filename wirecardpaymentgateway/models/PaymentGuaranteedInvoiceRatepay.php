@@ -247,13 +247,12 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
      * @throws \Exception
      * @return bool
      * @since 1.0.0
      */
-    public function isAvailable($module, $cart)
+    public function isAvailable($cart)
     {
         /** @var \Customer $customer */
         $customer = new \Customer($cart->id_customer);
@@ -267,30 +266,14 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         /** @var \Currency $currency */
         $currency = new \Currency($cart->id_currency);
 
-        $birthDay = new \DateTime($customer->birthday);
-        $difference = $birthDay->diff(new \DateTime());
-        $age = $difference->format('%y');
-
-        if ($cart->isVirtualCart()) {
-            return false;
-        };
-
-        if ($age < self::MIN_AGE) {
+        if ($cart->isVirtualCart() &&
+            !$this->isAboveAgeLimit($customer->birthday) &&
+            !$this->isInLimit($cart->getOrderTotal()) &&
+            !$this->isValidAddress($shippingAddress, $billingAddress) &&
+            !in_array($currency->iso_code, $this->getAllowedCurrencies())
+        ) {
             return false;
         }
-
-        if (!$this->isInLimit($cart->getOrderTotal())) {
-            return false;
-        }
-
-        if (! $this->isValidAddress($shippingAddress, $billingAddress)) {
-            return false;
-        }
-
-        if (! in_array($currency->iso_code, $this->getAllowedCurrencies())) {
-            return false;
-        }
-
         return true;
     }
 
@@ -417,6 +400,23 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         return array(
           'device_identification' => DeviceIdentificationHelper::generateFingerprint()
         );
+    }
+
+    /**
+     * @param string $birthDate
+     * @param int $ageLimit
+     * @return bool
+     * @throws \Exception
+     *
+     * @since 2.5.0
+     */
+    private function isAboveAgeLimit($birthDate, $ageLimit = self::MIN_AGE)
+    {
+        $birthDay = new \DateTime($birthDate);
+        $difference = $birthDay->diff(new \DateTime());
+        $age = $difference->format('%y');
+
+        return $age > $ageLimit;
     }
 
     /**
