@@ -230,8 +230,7 @@ class WirecardTransactionsController extends ModuleAdminController
             if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
                 continue;
             }
-
-            $translatable_key = strtolower($operation);
+            $translatable_key = \Tools::strtolower($operation);
             $operations[] = [
                 "action" => $operation,
                 "name" => $translations[$translatable_key]
