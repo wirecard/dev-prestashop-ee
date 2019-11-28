@@ -432,7 +432,8 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      */
     protected function getCartFromContext()
     {
-        return (\Context::getContext())->cart;
+        $context = \Context::getContext();
+        return $context->cart;
     }
 
     /**
