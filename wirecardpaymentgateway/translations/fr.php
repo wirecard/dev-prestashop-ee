@@ -220,12 +220,12 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>view_c01d298d870c928aef65a36ed62c3
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_3e3e086087769006d29d46a8b34264af'] = 'Transaction';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_8d25583937267eb8eb517107ffb277da'] = 'Paiement';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_fbedc569ae12c464ee7929c3d8a1a949'] = 'Retour';
-$_MODULE['<{wirecardpaymentgateway}prestashop>view_1bcdaa7f89a3661e83f85d23320d8d72'] = 'Annuler la transaction';
-$_MODULE['<{wirecardpaymentgateway}prestashop>view_f49bca788fe6812d21a25b1389ed2b9f'] = 'Capturer la transaction';
-$_MODULE['<{wirecardpaymentgateway}prestashop>view_d6fc0a7839bc394750357947a6bd286f'] = 'Transaction de remboursement';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_e6c596bcca9aa00b0f2a5607e393b751'] = 'Aucune opération de traitement ultérieur disponible pour cette transaction.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_d9fd6c8837d36286422ce0eb279ec051'] = 'Données de réponse';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_b1754a4f0b4b1b5b7b393c62fd74209e'] = 'Total';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_1bcdaa7f89a3661e83f85d23320d8d72'] = 'Annuler la transaction';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_f49bca788fe6812d21a25b1389ed2b9f'] = 'Capturer la transaction';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_d6fc0a7839bc394750357947a6bd286f'] = 'Transaction de remboursement';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_a0a058baaeef16e88f6bd2ee36c03f6f'] = 'PayPal';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_3c92742f3c1349e9c46fe4dd5da62a98'] = 'Carte de crédit';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_881646092902e7bb84bb2a78b777164d'] = 'Prélèvement SEPA';

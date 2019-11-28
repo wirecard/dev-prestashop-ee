@@ -232,7 +232,7 @@ class WirecardTransactionsController extends ModuleAdminController
                 continue;
             }
 
-            $translatable_key = strtolower($name);
+            $translatable_key = strtolower($operation);
             $operations[] = [
                 "action" => $operation,
                 "name" => $translations[$translatable_key]
