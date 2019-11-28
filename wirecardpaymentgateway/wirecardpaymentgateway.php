@@ -11,7 +11,7 @@ $autoloadPath = __DIR__ . '/vendor/autoload.php';
 if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
-ini_set( 'serialize_precision', -1 );
+
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
@@ -367,7 +367,7 @@ class WirecardPaymentGateway extends PaymentModule
                 continue;
             }
 
-            if (!$paymentMethod->isAvailable($this, $params['cart'])) {
+            if (!$paymentMethod->isAvailable()) {
                 continue;
             }
 
