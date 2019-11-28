@@ -48,10 +48,9 @@ class PaymentSepaCreditTransfer extends Payment
     }
 
     /**
-     * @param \Cart $cart
      * @return bool
      */
-    public function isAvailable($cart)
+    public function isAvailable()
     {
         return false;
     }

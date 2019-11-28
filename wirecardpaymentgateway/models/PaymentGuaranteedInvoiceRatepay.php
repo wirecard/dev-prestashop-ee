@@ -252,8 +252,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return bool
      * @since 1.0.0
      */
-    public function isAvailable($cart)
+    public function isAvailable()
     {
+        $cart = $this->getCartFromContext();
+
         /** @var \Customer $customer */
         $customer = new \Customer($cart->id_customer);
 
@@ -266,10 +268,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         /** @var \Currency $currency */
         $currency = new \Currency($cart->id_currency);
 
-        if ($cart->isVirtualCart() &&
-            !$this->isAboveAgeLimit($customer->birthday) &&
-            !$this->isInLimit($cart->getOrderTotal()) &&
-            !$this->isValidAddress($shippingAddress, $billingAddress) &&
+        if ($cart->isVirtualCart() ||
+            !$this->isAboveAgeLimit($customer->birthday) ||
+            !$this->isInLimit($cart->getOrderTotal()) ||
+            !$this->isValidAddress($shippingAddress, $billingAddress) ||
             !in_array($currency->iso_code, $this->getAllowedCurrencies())
         ) {
             return false;
@@ -309,16 +311,17 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Validate address information (shipping, billing)
      *
-     * @param \Address $shipping
-     * @param \Address $billing
+     * @param \Address $shippingAddress
+     * @param \Address $billingAddress
      * @return bool
      * @since 1.0.0
      */
-    private function isValidAddress($shipping, $billing)
+    private function isValidAddress($shippingAddress, $billingAddress)
     {
         $isSame = $this->configuration->getField('billingshipping_same');
-        if ($isSame && $shipping->id != $billing->id) {
-            $fields = array(
+        //@TODO refactor this complicated block
+        if ($isSame && $shippingAddress->id != $billingAddress->id) {
+            $fieldsToCompare = array(
                 'country',
                 'company',
                 'firstname',
@@ -327,25 +330,16 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 'postcode',
                 'city'
             );
-            foreach ($fields as $f) {
-                if ($billing->$f != $shipping->$f) {
+            foreach ($fieldsToCompare as $field) {
+                if ($billingAddress->$field != $shippingAddress->$field) {
                     return false;
                 }
             }
         }
 
-        if (count($this->getAllowedCountries('shipping'))) {
-            $c = new \Country($shipping->id_country);
-            if (!in_array($c->iso_code, $this->getAllowedCountries('shipping'))) {
-                return false;
-            }
-        }
-
-        if (count($this->getAllowedCountries('billing'))) {
-            $c = new \Country($shipping->id_country);
-            if (!in_array($c->iso_code, $this->getAllowedCountries('billing'))) {
-                return false;
-            }
+        if (!$this->isCountryAllowed($shippingAddress, 'shipping') ||
+            !$this->isCountryAllowed($billingAddress, 'billing')) {
+            return false;
         }
 
         return true;
@@ -430,5 +424,39 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         return [
             EntityBuilderList::BASKET
         ];
+    }
+
+    /**
+     * @return \Cart
+     * @since 2.5.0
+     */
+    protected function getCartFromContext()
+    {
+        return (\Context::getContext())->cart;
+    }
+
+    /**
+     * Checks if the address country is valid for the merchant configuration
+     * as $type you can set 'shipping' or 'billing'
+     *
+     * @param \Address $address
+     * @param string $type
+     * @return bool
+     * @since 2.5.0
+     */
+    private function isCountryAllowed($address, $type)
+    {
+        $configuredCountries = $this->getAllowedCountries($type);
+        //if empty no countries are allowed
+        if (empty($configuredCountries)) {
+            return false;
+        }
+
+        $addressCountry = new \Country($address->id_country);
+        if (!in_array($addressCountry->iso_code, $configuredCountries)) {
+            return false;
+        }
+
+        return true;
     }
 }
