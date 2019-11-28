@@ -17,7 +17,7 @@ use WirecardEE\Prestashop\Helper\StringHelper;
  * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
  * @since 2.5.0
  */
-class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
+class CartItemCollection implements \Countable, \Iterator
 {
     const WIRECARD_ORDER_ITEM_PREFIX = "order-items.0.order-item.";
     
@@ -91,7 +91,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
      * @param mixed $value
      * @since 2.5.0
      */
-    public function offsetSet($offset, $value)
+ /*   public function offsetSet($offset, $value)
     {
         if (!$value instanceof CartItemInterface) {
             throw new \InvalidArgumentException('Value must implement CartItemInterface');
@@ -109,7 +109,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
      * @return bool
      * @since 2.5.0
      */
-    public function offsetExists($offset)
+  /*  public function offsetExists($offset)
     {
         return isset($this->products[$offset]);
     }
@@ -118,7 +118,7 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
      * @param mixed $offset
      * @since 2.5.0
      */
-    public function offsetUnset($offset)
+   /* public function offsetUnset($offset)
     {
         unset($this->products[$offset]);
     }
@@ -128,10 +128,10 @@ class CartItemCollection implements \Countable, \Iterator, \ArrayAccess
      * @return mixed
      * @since 2.5.0
      */
-    public function offsetGet($offset)
+  /*  public function offsetGet($offset)
     {
         return $this->products[$offset];
-    }
+    }*/
 
     /**
      * @param string $transactionRawData

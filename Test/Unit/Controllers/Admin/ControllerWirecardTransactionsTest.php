@@ -25,9 +25,9 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
         $beckendService->shouldReceive('retrieveBackendOperations')
             ->andReturn(
                 [
-                    Operation::REFUND,
-                    Operation::CANCEL,
-                    Operation::PAY
+                    Operation::REFUND => 'Refund',
+                    Operation::CANCEL => 'Cancel',
+                    Operation::PAY => 'Capture'
                 ]
             );
 
@@ -48,14 +48,14 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
             'payment_method' => 'Wirecard Credit Card',
             'possible_operations' => [
                 [
-                    'action' => 0,
-                    'name' => 'text_refund_transaction'
+                    'action' => 'refund',
+                    'name' => 'Refund transaction'
                 ], [
-                    'action' => 1,
-                    'name' => 'text_cancel_transaction'
+                    'action' => 'cancel',
+                    'name' => 'Cancel transaction'
                 ], [
-                    'action' => 2,
-                    'name' => 'text_capture_transaction'
+                    'action' => 'pay',
+                    'name' => 'Capture transaction'
                 ],
             ],
             'back_link' => 'WirecardTransactions',

@@ -226,13 +226,11 @@ class WirecardTransactionsController extends ModuleAdminController
             return $operations;
         }
 
-
-        foreach ($possible_operations as $operation => $name) {
+        foreach (array_keys($possible_operations) as $operation) {
             if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
                 continue;
             }
-
-            $translatable_key = strtolower($operation);
+            $translatable_key = \Tools::strtolower($operation);
             $operations[] = [
                 "action" => $operation,
                 "name" => $translations[$translatable_key]
