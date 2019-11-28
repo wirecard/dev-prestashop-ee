@@ -240,7 +240,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @param string $operation
      * @return RatepayInvoiceTransaction
      * @since 2.4.0
-     * 
      * @SuppressWarnings(PHPMD)
      * @TODO refactor the $operation out of the abstract payment
      */
