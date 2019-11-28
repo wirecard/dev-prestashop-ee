@@ -240,6 +240,8 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @param string $operation
      * @return RatepayInvoiceTransaction
      * @since 2.4.0
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     * @TODO refactor the $operation out of the abstract payment
      */
     public function createTransactionInstance($operation = null)
     {
