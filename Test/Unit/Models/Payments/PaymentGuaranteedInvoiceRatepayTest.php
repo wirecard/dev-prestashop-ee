@@ -86,7 +86,9 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
         );
         $cartMock->id_customer = 2;
 
-        $paymentMock = Mockery::mock(PaymentGuaranteedInvoiceRatepay::class)->shouldAllowMockingProtectedMethods()->makePartial();
+        $paymentMock = Mockery::mock(PaymentGuaranteedInvoiceRatepay::class)
+            ->shouldAllowMockingProtectedMethods()
+            ->makePartial();
         $paymentMock->shouldReceive('getCartFromContext')->andReturn($cartMock);
         setProtectedProperty($paymentMock, 'configuration', $this->shopConfig);
 
