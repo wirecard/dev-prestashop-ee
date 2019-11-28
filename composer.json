@@ -40,8 +40,12 @@
       "WirecardEE\\Prestashop\\Classes\\": "wirecardpaymentgateway/classes/",
       "WirecardEE\\Prestashop\\Models\\": "wirecardpaymentgateway/models/",
       "WirecardEE\\Prestashop\\Helper\\": "wirecardpaymentgateway/helper/",
-      "WirecardEE\\Prestashop\\Controllers\\": "wirecardpaymentgateway/controllers/",
-      "WirecardEE\\Test": "Test"
+      "WirecardEE\\Prestashop\\Controllers\\": "wirecardpaymentgateway/controllers/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WirecardEE\\Prestashop\\Test\\": "Test"
     }
   },
   "config": {
