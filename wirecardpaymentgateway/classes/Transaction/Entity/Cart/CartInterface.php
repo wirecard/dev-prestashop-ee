@@ -12,13 +12,13 @@ namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 /**
  * Interface CartDataInterface
  * @package WirecardEE\Prestashop\Classes\Transaction\Entity\Cart
- * @since 2.4.0
+ * @since 2.5.0
  */
 interface CartInterface
 {
     /**
      * @return CartItemCollection
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function getCartItems();
 }

@@ -69,24 +69,13 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-
-    public function testCreateRefundTransaction()
+    public function testGetPostProcessingMandatoryEntities()
     {
-        $expected = new \Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction();
+        $expected = [];
 
-        $accountHolder = new \Wirecard\PaymentSdk\Entity\AccountHolder();
-        $accountHolder->setAddress(new \Wirecard\PaymentSdk\Entity\Address(null, null, null));
-        $accountHolder->setDateOfBirth(new \DateTime('01-01-1980'));
-        $accountHolder->setEmail('max.mustermann@email.com');
-
-        $expected->setAccountHolder($accountHolder);
-        $expected->setParentTransactionId('my_secret_id');
-
-        $actual = $this->payment->createRefundTransaction(
-            $this->transactionData,
-            $this->paymentModule
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
         );
-
-        $this->assertEquals($expected, $actual);
     }
 }

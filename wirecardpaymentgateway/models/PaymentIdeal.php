@@ -10,7 +10,6 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\IdealTransaction;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
 use Wirecard\PaymentSdk\Entity\IdealBic;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;

@@ -14,6 +14,8 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
+use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcessingSuccess;
 
 /**
  * Class ProcessablePaymentResponseFactory
@@ -28,7 +30,7 @@ class ProcessablePaymentResponseFactory
     /** @var string */
     const PROCESS_BACKEND = 'process_backend';
 
-    /** @var Response|false */
+    /** @var SuccessResponse|FailureResponse|InteractionResponse|FormInteractionResponse */
     private $response;
 
     /** @var \Order  */
@@ -69,7 +71,11 @@ class ProcessablePaymentResponseFactory
 
         switch (true) {
             case $this->response instanceof SuccessResponse:
-                return new Success($this->order, $this->response, $this->process_type);
+                if ($this->process_type === self::PROCESS_RESPONSE) {
+                    return new InitialSuccess($this->order, $this->response);
+                }
+
+                return new PostProcessingSuccess($this->order, $this->response);
             case $this->response instanceof InteractionResponse:
                 return new Redirect($this->response);
             case $this->response instanceof FormInteractionResponse:

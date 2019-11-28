@@ -34,8 +34,9 @@ use Page\Product as ProductPage;
 use Page\Shop as ShopPage;
 use Page\OrderReceived as OrderReceivedPage;
 use Page\Verified as VerifiedPage;
+use Wirecard\ElasticEngine\tests\_support\ActorExtendedWithWrappers as ActorExtendedWithWrappers;
 
-class AcceptanceTester extends \Codeception\Actor
+class AcceptanceTester extends ActorExtendedWithWrappers
 {
 
     use _generated\AcceptanceTesterActions;
@@ -94,25 +95,41 @@ class AcceptanceTester extends \Codeception\Actor
                 $page = new ShopPage($this);
                 break;
             case 'Verified':
-                $this->wait(15);
                 $page = new VerifiedPage($this);
                 break;
             case 'Order Received':
-                $this->wait(10);
                 $page = new OrderReceivedPage($this);
                 break;
             case 'Pay Pal Log In':
-                $this->wait( 10 );
-                $page = new PayPalLogInPage( $this );
+                $page = new PayPalLogInPage($this);
                 break;
             case 'Pay Pal Review':
-                $this->wait( 20 );
-                $page = new PayPalReviewPage( $this );
+                $page = new PayPalReviewPage($this);
                 break;
             default:
                 $page = null;
         }
         return $page;
+    }
+
+    /**
+     * Method waitUntilPageLoaded
+     * @param integer $maxTimeout
+     * @since   2.3.0
+     */
+    public function waitUntilPageLoaded($maxTimeout = 60)
+    {
+        $counter = 0;
+        while ($counter <= $maxTimeout) {
+            $this->wait(1);
+            $counter++;
+            $currentUrl = $this->grabFromCurrentUrl();
+            if ($currentUrl != '' && $this->currentPage->getURL() != '') {
+                if (strpos($currentUrl, $this->currentPage->getURL()) != false) {
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -138,6 +155,7 @@ class AcceptanceTester extends \Codeception\Actor
         // Open the page and initialize required pageObject
         $this->currentPage = $this->selectPage($page);
         $this->amOnPage($this->currentPage->getURL());
+        $this->waitUntilPageLoaded();
     }
 
     /**
@@ -146,9 +164,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function iClick($object)
     {
-        $this->waitForElementVisible($this->getPageElement($object));
-        $this->waitForElementClickable($this->getPageElement($object));
-        $this->click($this->getPageElement($object));
+        $this->preparedClick($this->getPageElement($object));
     }
 
     /**
@@ -159,6 +175,8 @@ class AcceptanceTester extends \Codeception\Actor
     {
         // Initialize required pageObject WITHOUT checking URL
         $this->currentPage = $this->selectPage($page);
+        $this->waitUntilPageLoaded();
+        $this->wait(3);
         // Check only specific keyword that page URL should contain
         $this->seeInCurrentUrl($this->currentPage->getURL());
     }
@@ -178,8 +196,7 @@ class AcceptanceTester extends \Codeception\Actor
      */
     public function iEnterInField($fieldValue, $fieldID)
     {
-        $this->waitForElementVisible($this->getPageElement($fieldID));
-        $this->fillField($this->getPageElement($fieldID), $fieldValue);
+        $this->preparedFillField($this->getPageElement($fieldID), $fieldValue);
     }
 
     /**
@@ -209,15 +226,15 @@ class AcceptanceTester extends \Codeception\Actor
         $this->prepareGenericCheckout();
     }
 
-    private function prepareGenericCheckout($type='')
+    private function prepareGenericCheckout($type = '')
     {
         $this->iAmOnPage('Product');
-        $this->fillField($this->currentPage->getElement('Quantity'), '5');
+        $this->preparedFillField($this->currentPage->getElement('Quantity'), '1');
 
-        if (strpos($type, 'Non3DS') !== false) {
-            $this->fillField($this->currentPage->getElement('Quantity'), '1');
+        if ($type == '3DS') {
+            $this->preparedFillField($this->currentPage->getElement('Quantity'), '10');
         }
-        $this->click($this->currentPage->getElement('Add to cart'));
+        $this->preparedClick($this->currentPage->getElement('Add to cart'));
         $this->waitForText('Product successfully added to your shopping cart');
     }
 
@@ -265,6 +282,19 @@ class AcceptanceTester extends \Codeception\Actor
     }
 
     /**
+     * @Given I activate one-click checkout in configuration
+     * @since 2.4.0
+     */
+    public function iActivateOneClickCheckoutInConfiguration()
+    {
+        $this->updateInDatabase(
+            'ps_configuration',
+            ['value' => 1],
+            ['name' => 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_CCVAULT_ENABLED']
+        );
+    }
+
+    /**
      * @Then I see :paymentMethod :paymentAction in transaction table
      * @param string $paymentMethod
      * @param string $paymentAction
@@ -282,4 +312,32 @@ class AcceptanceTester extends \Codeception\Actor
         $transactionTypes = $this->getColumnFromDatabaseNoCriteria('ps_wirecard_payment_gateway_tx', 'transaction_type');
         $this->assertEquals(end($transactionTypes), $this->mappedPaymentActions[$paymentMethod]['tx_table'][$paymentAction]);
     }
+
+    /**
+     * Checks for an element on the page and allows you to act based on whether
+     * its present or not
+     *
+     * @param $element
+     * @return bool
+     * @since 2.4.0
+     */
+    public function canSeeOptionalElement($element) {
+        try {
+            $this->seeElement($element);
+        } catch (\PHPUnit_Framework_AssertionFailedError $f) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @When I pay with PayPal
+     * @since 2.3.0
+     */
+    public function iPayWithPayPal()
+    {
+        $this->currentPage->performPaypalPayment();
+    }
+
 }

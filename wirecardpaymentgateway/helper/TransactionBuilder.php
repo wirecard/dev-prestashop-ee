@@ -105,6 +105,7 @@ class TransactionBuilder
         /** @var Transaction $transaction */
         $this->transaction = $payment->createTransaction();
 
+        $this->addLocale();
         $this->addAmount();
         $this->addRedirects();
         $this->addCustomField('cartId', $this->cart->id);
@@ -261,14 +262,27 @@ class TransactionBuilder
     }
 
     /**
+     * Add locale to the transaction
+     *
+     * @since 2.4.0
+     */
+    private function addLocale()
+    {
+        $this->transaction->setLocale(
+            $this->context->language->iso_code
+        );
+    }
+
+    /**
      * Create order and set internal order ID.
      *
      * @return int
+     * @throws \Exception
      * @since 2.0.0
      */
     public function createOrder()
     {
-        $orderManager = new OrderManager($this->module);
+        $orderManager = new OrderManager();
 
         $order = new \Order($orderManager->createOrder(
             $this->cart,

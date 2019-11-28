@@ -50,8 +50,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends WirecardFrontCon
         $payment_state = \Tools::getValue('payment_state');
 
         try {
-            $order_id = \Order::getIdByCartId($cart_id);
-            $order = new Order((int) $order_id);
+            $order = Order::getByCartId($cart_id);
 
             if ($payment_state !== Cancel::CANCEL_PAYMENT_STATE) {
                 $response = $this->processRawResponse($response);

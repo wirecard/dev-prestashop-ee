@@ -10,6 +10,11 @@ export PRESTASHOP_CONTAINER_DOMAIN=${NGROK_URL#*//}
 export PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_DOMAIN}
 export PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_VERSION}
 
+
+if [[ ${LATEST_EXTENSION_RELEASE}  == "1" ]]; then
+    # switch to desired version if we are testing specific release
+    git checkout tags/${LATEST_RELEASED_SHOP_EXTENSION_VERSION}
+fi
 # used to change the compatibility version to match the prestashop version
 # has to be done before generate-release-package.sh is executed
 replace="s/^\s*\$this->ps_versions_compliancy = array.*$/\$this->ps_versions_compliancy = array('min' => '${PRESTASHOP_CONTAINER_VERSION}', 'max' => '${PRESTASHOP_CONTAINER_VERSION}');/"
@@ -23,10 +28,15 @@ docker-compose build --no-cache --build-arg PRESTASHOP_CONTAINER_NAME=${PRESTASH
                                 --build-arg PRESTASHOP_CONTAINER_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL} \
                                 --build-arg PRESTASHOP_CONTAINER_VERSION=${PRESTASHOP_CONTAINER_VERSION} \
                                 prestashop.web
-docker-compose up --force-recreate -d
+
+docker-compose up -d prestashop.database
+sleep 15
+docker-compose ps
+docker-compose up -d prestashop.web
+docker-compose ps
 
 # wait for the host to startup
-while ! $(curl --output /dev/null --silent --head --fail "http://${PRESTASHOP_CONTAINER_SHOP_URL}/backend/index.php"); do
+while ! $(curl --output /dev/null --silent  --head --fail "http://${PRESTASHOP_CONTAINER_SHOP_URL}/backend/index.php"); do
     echo "Waiting for docker container to initialize"
     ((c++)) && ((c==50)) && break
     sleep 5

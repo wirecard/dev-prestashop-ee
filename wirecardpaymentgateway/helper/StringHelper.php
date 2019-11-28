@@ -9,31 +9,35 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-class StringHelper {
-
+/**
+ * Class StringHelper
+ * @package WirecardEE\Prestashop\Helper
+ * @since 2.5.0
+ */
+class StringHelper
+{
     /**
-     * Returns new string from defined "from" value
+     * string with specified prefix
      * @param string $value
-     * @param string $fromString
+     * @param string $prefix
      * @return string
      * @since 2.5.0
      */
-    public static function startFrom($value, $fromString)
+    public static function beginFrom($value, $prefix)
     {
-        $newString = substr($value, strpos($value, $fromString) + strlen($fromString));
+        $newString = substr($value, strpos($value, $prefix) + strlen($prefix));
         return strval($newString);
     }
 
     /**
-     * Returns new string with replacement of specified values
      * @param string $value
-     * @param array|string $search
-     * @param array|string $replacement
+     * @param array $searchList
+     * @param array $replacementList
      * @return string
      * @since 2.5.0
      */
-    public static function replaceWith($value, $search, $replacement)
+    public static function replaceWith($value, $searchList = ['-'], $replacementList = ['_'])
     {
-        return strval(str_replace($search, $replacement, $value));
+        return strval(str_replace($searchList, $replacementList, $value));
     }
 }

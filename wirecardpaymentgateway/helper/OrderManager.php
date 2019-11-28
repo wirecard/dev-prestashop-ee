@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use Wirecard\PaymentSdk\BackendService;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
@@ -140,7 +141,7 @@ class OrderManager
      */
     public static function isIgnorable($notification)
     {
-        return $notification->getTransactionType() === 'check-payer-response';
+        return $notification->getTransactionType() === Transaction::TYPE_CHECK_PAYER_RESPONSE;
     }
 
     /**

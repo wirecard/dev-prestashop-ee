@@ -4,19 +4,36 @@ language: php
 
 env:
   global:
-  - COMPOSER_ARGS="--no-interaction"
-  - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/.bin/shop-releases.txt
+    - COMPOSER_ARGS="--no-interaction"
+    - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/.bin/compatible-shop-releases.txt
+    - SHOP_SYSTEM_UPDATE_COMMIT="Update latest shop releases"
+    - MANUAL_UITEST_TRIGGER_COMMIT="Test my build"
+    - PATCH_RELEASE="patch"
+    - MINOR_RELEASE="minor"
+    - MAJOR_RELEASE="major"
+    - PRESTASHOP_COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/.bin/new-shop-releases.txt
 
 matrix:
   allow_failures:
-    - stage: acceptance-test
+  - stage: phraseapp-check-if-in-sync
+  - stage: acceptance-test
+    env:
+      - GATEWAY=API-TEST
+      - PRESTASHOP_RELEASE_VERSION=1
+      - ALLOW_FAIL=1
+  - stage: acceptance-test
+    env:
+      - GATEWAY=API-TEST
+      - PRESTASHOP_RELEASE_VERSION=1
+      - LATEST_EXTENSION_RELEASE=1
+      - ALLOW_FAIL=1
   include:
   - php: 5.6
-    if: env(PHRASEAPP_PULL) != '1' AND type != cron
+    if: env(PHRASEAPP_PULL) != '1' AND type != cron AND commit_message !~ env(SHOP_SYSTEM_UPDATE_COMMIT) AND commit_message !~ env(MANUAL_UITEST_TRIGGER_COMMIT)
   - php: 7.0
-    if: env(PHRASEAPP_PULL) != '1' AND type != cron
+    if: env(PHRASEAPP_PULL) != '1' AND type != cron AND commit_message !~ env(SHOP_SYSTEM_UPDATE_COMMIT) AND commit_message !~ env(MANUAL_UITEST_TRIGGER_COMMIT)
   - php: 7.1
-    if: env(PHRASEAPP_PULL) != '1' AND type != cron
+    if: env(PHRASEAPP_PULL) != '1' AND type != cron AND commit_message !~ env(SHOP_SYSTEM_UPDATE_COMMIT) AND commit_message !~ env(MANUAL_UITEST_TRIGGER_COMMIT)
 
   - stage: validator-test
     if: env(VALIDATOR_TEST) = '1'
@@ -35,76 +52,96 @@ matrix:
     ruby: 2.5.3
     before_install: skip
     install:
-    - travis_retry gem install bundler -v 2.0.1
-    - travis_retry bundle install
+      - travis_retry gem install bundler -v 2.0.1
+      - travis_retry bundle install
     script:
-    - .bin/rake phraseapp:ci_update
+      - .bin/rake phraseapp:ci_update
     after_script: skip
-    
+
   - stage: phraseapp-check-if-in-sync
     if: type != cron AND type = pull_request
     language: ruby
     ruby: 2.5.3
     before_install: skip
     install:
-    - travis_retry gem install bundler -v 2.0.1
-    - travis_retry bundle install
+      - travis_retry gem install bundler -v 2.0.1
+      - travis_retry bundle install
     script:
-    - .bin/rake phraseapp:ci_check_if_in_sync
+      - .bin/rake phraseapp:ci_check_if_in_sync
     after_script: skip
 
-  - stage: get-prestashop-versions
+  - stage: get-latest-shop-release-versions
     if: type = cron
     php: 7.1
     install: skip
     before_script: skip
-    script: bash .bin/get-prestashop-versions.sh
+    script: bash .bin/get-latest-shop-release-versions.sh
     after_script: skip
     after_failure: skip
 
   - &acceptance-test
     stage: acceptance-test
-    if: type = cron
+    #   run this stage on pull request if head branch name contains one of these words (patch, major, minor)
+    #   or when build triggered ad-hoc with special commit message
+    #   tests will use extension version = branch which originated pull request
+    #   or branch which was defined in ad-hoc trigger in Travis UI
+    if: (type = pull_request AND (head_branch =~ env(PATCH_RELEASE) OR head_branch =~ env(MINOR_RELEASE) OR head_branch =~ env(MAJOR_RELEASE))) OR (commit_message =~ env(MANUAL_UITEST_TRIGGER_COMMIT))
     php: 7.1
     env:
-    - GATEWAY=API-TEST
-    - PRESTASHOP_RELEASE_VERSION=1
+      - GATEWAY=API-TEST
+      - PRESTASHOP_RELEASE_VERSION=1
     before_install: skip
     install:
-    - export PRESTASHOP_VERSION=$(awk "NR==$PRESTASHOP_RELEASE_VERSION {print; exit}" ${PRESTASHOP_RELEASES_FILE})
-    - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
+      # check if files are same or not
+      - cmp --silent ${PRESTASHOP_RELEASES_FILE} ${PRESTASHOP_COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
+      # check from which file to take versions
+      - if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_COMPATIBILITY_FILE}); fi
+      - export LATEST_RELEASED_SHOP_EXTENSION_VERSION=`jq .[0].release ${TRAVIS_BUILD_DIR}/SHOPVERSIONS | tr -d '"'`
+      - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
     script: bash .bin/run-ui-tests.sh
     after_script: skip
     after_success:
-    - bash .bin/upload-logs-and-notify.sh
+      - bash .bin/upload-logs-and-notify.sh
+      - bash .bin/update-shop-release-versions.sh
     after_failure:
-    - bash .bin/upload-logs-and-notify.sh fail
+      - bash .bin/upload-logs-and-notify.sh fail
 
+    # run this stage on pull request if head branch name contains major (on major release)
+    # tests will use branch which originated pull request
   - <<: *acceptance-test
-    if: type = cron
+    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
     env:
-    - GATEWAY=API-TEST
-    - PRESTASHOP_RELEASE_VERSION=2
+      - GATEWAY=API-TEST
+      - PRESTASHOP_RELEASE_VERSION=2
+
+  # run this stage on pull request if head branch name contains major (on major release)
+  # tests will use branch which originated pull request
   - <<: *acceptance-test
-    if: type = cron
+    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
     env:
-    - GATEWAY=API-TEST
-    - PRESTASHOP_RELEASE_VERSION=3
+      - GATEWAY=API-TEST
+      - PRESTASHOP_RELEASE_VERSION=3
+
+  # run this stage when shop system updated with latest shop extension release version
+  # tests will use tip of master branch
   - <<: *acceptance-test
-    if: type = cron
+    if: commit_message =~ env(SHOP_SYSTEM_UPDATE_COMMIT)
     env:
-    - GATEWAY=API-WDCEE-TEST
-    - PRESTASHOP_RELEASE_VERSION=1
+      - GATEWAY=API-TEST
+      - PRESTASHOP_RELEASE_VERSION=1
+      # if this stage fails, it will not fail the whole build
+      - ALLOW_FAIL=1
+
+  # run this stage when shop system updated with latest shop extension release version
+  # tests will use latest released extension version
   - <<: *acceptance-test
-    if: type = cron
+    if: commit_message =~ env(SHOP_SYSTEM_UPDATE_COMMIT)
     env:
-    - GATEWAY=API-WDCEE-TEST
-    - PRESTASHOP_RELEASE_VERSION=2
-  - <<: *acceptance-test
-    if: type = cron
-    env:
-    - GATEWAY=API-WDCEE-TEST
-    - PRESTASHOP_RELEASE_VERSION=3
+      - GATEWAY=API-TEST
+      - PRESTASHOP_RELEASE_VERSION=1
+      - LATEST_EXTENSION_RELEASE=1
+      # if this stage fails, it will not fail the whole build
+      - ALLOW_FAIL=1
 
   - stage: deploy
     if: tag IS present AND type = push

@@ -14,13 +14,14 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
 /**
  * Interface EntityBuilderInterface
  * @package WirecardEE\Prestashop\Classes\Transaction\Builder\Entity
- * @since 2.4.0
+ * @since 2.5.0
  */
 interface EntityBuilderInterface
 {
     /**
      * @param Transaction $transaction
      * @return Transaction
+     * @since 2.5.0
      */
     public function build($transaction);
 }

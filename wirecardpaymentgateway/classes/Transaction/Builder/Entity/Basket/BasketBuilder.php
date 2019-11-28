@@ -18,7 +18,7 @@ use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderInterf
 /**
  * Class BasketBuilder
  * @package WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\Basket
- * @since 2.4.0
+ * @since 2.5.0
  */
 class BasketBuilder implements EntityBuilderInterface
 {
@@ -30,7 +30,7 @@ class BasketBuilder implements EntityBuilderInterface
     /**
      * BasketBuilder constructor.
      * @param TransactionCart
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function __construct($cartData)
     {
@@ -40,7 +40,7 @@ class BasketBuilder implements EntityBuilderInterface
     /**
      * @param \Wirecard\PaymentSdk\Transaction\Transaction $transaction
      * @return void|\Wirecard\PaymentSdk\Transaction\Transaction
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function build($transaction)
     {

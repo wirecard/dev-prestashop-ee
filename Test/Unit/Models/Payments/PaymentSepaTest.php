@@ -67,9 +67,13 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-    public function testSepaMandate()
+    public function testGetPostProcessingMandatoryEntities()
     {
-        $expected = 'WIRECARD_PAYMENT_GATEWAY_SEPADIRECTDEBIT_CREDITOR_ID-id-' . strtotime(date('Y-m-d H:i:s'));
-        $this->assertEquals($expected, $this->payment->generateMandateId($this->paymentModule, 'id'));
+        $expected = [];
+
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
+        );
     }
 }

@@ -14,13 +14,13 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
 /**
  * Class InitialTransactionBuilder
  * @package WirecardEE\Prestashop\Classes\Transaction\Builder
- * @since 2.4.0
+ * @since 2.5.0
  */
 class InitialTransactionBuilder implements TransactionBuilderInterface
 {
     /**
      * @return Transaction
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function build()
     {

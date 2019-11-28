@@ -13,6 +13,7 @@ use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\TemplateHelper;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
@@ -157,10 +158,7 @@ abstract class Payment extends PaymentOption
     public function getFormTemplateWithData()
     {
         try {
-            $templatePath = join(
-                DIRECTORY_SEPARATOR,
-                [_PS_MODULE_DIR_, \WirecardPaymentGateway::NAME, 'views', 'templates', 'front', static::TYPE  . ".tpl"]
-            );
+            $templatePath = TemplateHelper::getFrontendTemplatePath(static::TYPE);
 
             if (!file_exists($templatePath)) {
                 return false;
@@ -204,12 +202,10 @@ abstract class Payment extends PaymentOption
     /**
      * Check if payment is available for specific cart content default true
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
      * @return bool
      * @since 1.0.0
      */
-    public function isAvailable($module, $cart)
+    public function isAvailable()
     {
         return true;
     }
@@ -267,7 +263,7 @@ abstract class Payment extends PaymentOption
      * Returns an array of Entities that are mandatory for the payment method post processing transactions
      *
      * @return array
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function getPostProcessingMandatoryEntities()
     {
