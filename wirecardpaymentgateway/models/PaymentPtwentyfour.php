@@ -11,8 +11,6 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PtwentyfourTransaction;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 
 /**
  * Class PaymentPtwentyfour

@@ -85,7 +85,10 @@ class WirecardTransactionsController extends ModuleAdminController
             $transaction->setParentTransactionId($transaction_data['id']);
             $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
         } catch (\Exception $exception) {
-            //@TODO error handling
+            $this->errors[] = \Tools::displayError(
+                $exception->getMessage()
+            );
+            return parent::renderView();
         }
 
         // We no longer support Masterpass
@@ -229,7 +232,7 @@ class WirecardTransactionsController extends ModuleAdminController
                 continue;
             }
 
-            $translatable_key = strtolower($name);
+            $translatable_key = strtolower($operation);
             $operations[] = [
                 "action" => $operation,
                 "name" => $translations[$translatable_key]

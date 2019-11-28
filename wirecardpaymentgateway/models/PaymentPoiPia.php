@@ -10,8 +10,6 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PoiPiaTransaction;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 
 /**
@@ -28,6 +26,12 @@ class PaymentPoiPia extends Payment
      * @since 2.1.0
      */
     const TYPE = PoiPiaTransaction::NAME;
+
+    /**
+     * @var string
+     * @since 2.5.0
+     */
+    const PIA = 'pia';
 
     /**
      * @var string

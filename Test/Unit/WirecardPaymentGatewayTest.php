@@ -85,18 +85,6 @@ class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($actual);
     }
 
-    public function testPaymentOptions()
-    {
-        $actual = $this->gateway->hookPaymentOptions(array('cart' => new Cart()));
-
-        $this->assertCount(9, $actual);
-    }
-
-    /*public function testHookActionFrontControllerSetMedia()
-    {
-        $this->assertEquals(true, $this->gateway->hookActionFrontControllerSetMedia());
-    }*/
-
     public function testExecuteSql()
     {
         $this->assertEquals(true, $this->gateway->executeSql("UPDATE foo SET foo='bar'"));

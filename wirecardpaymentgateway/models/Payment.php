@@ -202,12 +202,10 @@ abstract class Payment extends PaymentOption
     /**
      * Check if payment is available for specific cart content default true
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
      * @return bool
      * @since 1.0.0
      */
-    public function isAvailable($module, $cart)
+    public function isAvailable()
     {
         return true;
     }
@@ -265,7 +263,7 @@ abstract class Payment extends PaymentOption
      * Returns an array of Entities that are mandatory for the payment method post processing transactions
      *
      * @return array
-     * @since 2.4.0
+     * @since 2.5.0
      */
     public function getPostProcessingMandatoryEntities()
     {

@@ -73,30 +73,12 @@ class CartItem implements CartItemInterface
     }
 
     /**
-     * @param string $name
-     * @since 2.5.0
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    /**
      * @return Amount
      * @since 2.5.0
      */
     public function getAmount()
     {
         return $this->amount;
-    }
-
-    /**
-     * @param Amount $amount
-     * @since 2.5.0
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
     }
 
     /**
@@ -109,30 +91,12 @@ class CartItem implements CartItemInterface
     }
 
     /**
-     * @param int $quantity
-     * @since 2.5.0
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
-    }
-
-    /**
      * @return string
      * @since 2.5.0
      */
     public function getShortDescription()
     {
         return $this->shortDescription;
-    }
-
-    /**
-     * @param string $shortDescription
-     * @since 2.5.0
-     */
-    public function setShortDescription($shortDescription)
-    {
-        $this->shortDescription = $shortDescription;
     }
 
     /**
@@ -145,15 +109,6 @@ class CartItem implements CartItemInterface
     }
 
     /**
-     * @param string $productReference
-     * @since 2.5.0
-     */
-    public function setProductReference($productReference)
-    {
-        $this->productReference = $productReference;
-    }
-
-    /**
      * @return Amount
      * @since 2.5.0
      */
@@ -163,30 +118,12 @@ class CartItem implements CartItemInterface
     }
 
     /**
-     * @param Amount $taxAmount
-     * @since 2.5.0
-     */
-    public function setTaxAmount($taxAmount)
-    {
-        $this->taxAmount = $taxAmount;
-    }
-
-    /**
      * @return float
      * @since 2.5.0
      */
     public function getTaxRate()
     {
         return $this->taxRate;
-    }
-
-    /**
-     * @param float $taxRate
-     * @since 2.5.0
-     */
-    public function setTaxRate($taxRate)
-    {
-        $this->taxRate = $taxRate;
     }
 
     /**

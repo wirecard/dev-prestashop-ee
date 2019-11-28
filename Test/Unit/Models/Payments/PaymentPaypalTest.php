@@ -65,19 +65,13 @@ class PaymentPaypalTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-    public function testCreateCancelTransaction()
+    public function testGetPostProcessingMandatoryEntities()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\PayPalTransaction();
-        $actual->setParentTransactionId('my_secret_id');
+        $expected = [];
 
-        $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
-    }
-
-    public function testCreatePayTransaction()
-    {
-        $actual = new \Wirecard\PaymentSdk\Transaction\PayPalTransaction();
-        $actual->setParentTransactionId('my_secret_id');
-
-        $this->assertEquals($actual, $this->payment->createPayTransaction($this->transactionData));
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
+        );
     }
 }

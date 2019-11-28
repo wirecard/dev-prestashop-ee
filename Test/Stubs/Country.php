@@ -9,7 +9,7 @@
 
 class Country
 {
-    public $iso_code;
+    public $iso_code = 'AT';
 
     public static function getCountries($var = null)
     {

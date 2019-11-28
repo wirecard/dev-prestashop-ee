@@ -367,7 +367,7 @@ class WirecardPaymentGateway extends PaymentModule
                 continue;
             }
 
-            if (!$paymentMethod->isAvailable($this, $params['cart'])) {
+            if (!$paymentMethod->isAvailable()) {
                 continue;
             }
 

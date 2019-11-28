@@ -65,19 +65,4 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(\Wirecard\PaymentSdk\Transaction\PayPalTransaction::class, $actual);
     }
-
-    public function testCanCancel()
-    {
-        $this->assertEquals(false, $this->payment->canCancel('test'));
-    }
-
-    public function testCanCapture()
-    {
-        $this->assertEquals(false, $this->payment->canCapture('test'));
-    }
-
-    public function testCanRefund()
-    {
-        $this->assertEquals(true, $this->payment->canRefund('capture-authorization'));
-    }
 }
