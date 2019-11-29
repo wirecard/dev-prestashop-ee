@@ -145,7 +145,7 @@ class SwitchInput extends BaseElement
             $result &= (isset($data[$key]) & is_array($data[$key]) || count($data[$key]) == 2);
         }
 
-        return true;
+        return $result;
     }
 
     /**

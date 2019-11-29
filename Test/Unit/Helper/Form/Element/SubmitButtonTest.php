@@ -64,9 +64,14 @@ class SubmitButtonTest extends \PHPUnit_Framework_TestCase
         $result = $this->object->build();
         $this->assertTrue(is_array($result));
         $this->assertNotEmpty($result);
-        $this->assertEquals(['name' => self::DEFAULT_ARG_NAME, 'label' => self::DEFAULT_ARG_LABEL, 'type' => $this->object->getType()], $result);
+        $expectedResult = [
+            'name' => self::DEFAULT_ARG_NAME,
+            'title' => self::DEFAULT_ARG_LABEL,
+            'type' => $this->object->getType()
+        ];
+        $this->assertEquals($expectedResult, $result);
         $this->assertEquals($this->object->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
-        $this->assertArrayHasKey("label", $result);
+        $this->assertArrayHasKey("title", $result);
     }
 }

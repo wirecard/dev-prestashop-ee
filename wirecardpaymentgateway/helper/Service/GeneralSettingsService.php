@@ -52,7 +52,7 @@ class GeneralSettingsService
      * @return bool
      * @throws \PrestaShopException
      */
-    public function validate($settings)
+    public function validateInput($settings)
     {
         $result = true;
         if (empty($settings)) {
@@ -71,18 +71,17 @@ class GeneralSettingsService
      */
     public function saveGeneralSettingsFromInput(array $settings)
     {
-        $result = $this->validate($settings);
+        $result = $this->validateInput($settings);
         if ($result) {
             $wirecardSettings = $this->findParamsStartingWithPrefix($settings);
             foreach ($wirecardSettings as $setting => $value) {
                 $updateResult = Configuration::updateValue($setting, $value);
                 if (!$updateResult) {
                     $this->addValidationError("Setting {$setting} wasn't saved!");
+                    $result = false;
                 }
-                $result &= $updateResult;
             }
         }
-
 
         return $result;
     }

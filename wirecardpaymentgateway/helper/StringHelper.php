@@ -23,7 +23,7 @@ class StringHelper
      * @return string
      * @since 2.5.0
      */
-    public static function beginFrom($value, $prefix)
+    public static function startFrom($value, $prefix)
     {
         $newString = substr($value, strpos($value, $prefix) + strlen($prefix));
         return strval($newString);

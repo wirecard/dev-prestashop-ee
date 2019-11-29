@@ -32,6 +32,7 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
     {
         $this->object = $this->getMockForAbstractClass(BaseElement::class,
             [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]);
+        $this->object->expects($this->any())->method('getType')->willReturn(self::TEST_DEFAULT_TYPE);
     }
 
     /**
@@ -78,9 +79,8 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
         $result = $this->object->build();
         $this->assertTrue(is_array($result));
         $this->assertNotEmpty($result);
-        $this->assertEquals(['name' => self::DEFAULT_ARG_NAME, 'label' => self::DEFAULT_ARG_LABEL, 'type' => null], $result);
+        $this->assertEquals(['name' => self::DEFAULT_ARG_NAME, 'type' => null], $result);
         $this->assertEquals($this->object->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
-        $this->assertArrayHasKey("label", $result);
     }
 }

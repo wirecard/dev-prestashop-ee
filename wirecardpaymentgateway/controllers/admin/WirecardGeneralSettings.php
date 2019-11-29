@@ -78,12 +78,19 @@ class WirecardGeneralSettingsController extends ModuleAdminController
         //$paymentMethodConfig = PaymentProvider::getPayments();
 
         $formHelper = new FormHelper();
-        $formHelper->addSwitchInput(Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED, $this->getTranslatedString('text_automatic_capture_enabled'));
-        $formHelper->addSwitchInput(Constants::SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED, $this->getTranslatedString('text_force_order_state_change_enabled'));
+        $formHelper->addSwitchInput(
+            Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED,
+            $this->getTranslatedString('text_automatic_capture_enabled')
+        );
+        $formHelper->addSwitchInput(
+            Constants::SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED,
+            $this->getTranslatedString('text_force_order_state_change_enabled')
+        );
 
         // All payments enabling / disabling in one page
 //        foreach ($paymentMethodConfig as $paymentMethodType => $paymentMethod) {
-//            $fieldName = (new ShopConfigurationService($paymentMethod->getType()))->getFieldName(self::SETTING_ENABLED);
+//            $fieldName =
+//                      (new ShopConfigurationService($paymentMethod->getType()))->getFieldName(self::SETTING_ENABLED);
 //            $formHelper->addSwitchInput($fieldName, $paymentMethod->getName());
 //        }
         // Add submit button
@@ -112,11 +119,10 @@ class WirecardGeneralSettingsController extends ModuleAdminController
             $input = Tools::getAllValues();
             $generalSettingsService = new GeneralSettingsService();
             $result = $generalSettingsService->saveGeneralSettingsFromInput($input);
+            $this->errors = array_merge($this->errors, $generalSettingsService->getErrors());
 
             if ($result && !count($this->errors)) {
                 $this->confirmations[] = $this->getTranslatedString('settings_updated');
-            } else {
-                $this->errors = $generalSettingsService->getErrors();
             }
         }
     }
