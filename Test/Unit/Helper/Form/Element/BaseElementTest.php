@@ -58,7 +58,7 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
     /**
      * @group unit
      * @small
-     * @covers ::generateId
+     * @covers ::generateUniqueId
      */
     public function testGenerateId()
     {
@@ -66,7 +66,8 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
             [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]);
 
         $this->object->expects($this->once())->method('getType')->will($this->returnValue(self::TEST_DEFAULT_TYPE));
-        $this->assertEquals(self::DEFAULT_ARG_NAME . "_" . self::TEST_DEFAULT_TYPE, $this->object->generateId());
+        $prefix = self::DEFAULT_ARG_NAME . "_" . self::TEST_DEFAULT_TYPE;
+        $this->assertContains($prefix, $this->object->generateUniqueId());
     }
 
     /**

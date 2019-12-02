@@ -9,23 +9,23 @@
 
 namespace WirecardEE\Prestashop\Classes\Service;
 
-use http\Exception\InvalidArgumentException;
+
 use Wirecard\PaymentSdk\BackendService;
+
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
+use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
-use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
-use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
-use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use PrestaShopDatabaseException;
-use PrestaShopException;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\Transaction;
 
 class TransactionPossibleOperationService implements ServiceInterface
 {
+    use TranslationHelper;
+
     /** @var Transaction */
     private $transaction;
     /** @var array */
@@ -45,9 +45,10 @@ class TransactionPossibleOperationService implements ServiceInterface
     }
 
     /**
+     * @param bool $format
      * @return array|bool
      */
-    public function getPossibleOperationList()
+    public function getPossibleOperationList($format = true)
     {
         $possible_operations = [];
         $shop_config_service = new ShopConfigurationService($this->transaction->getPaymentMethod());
@@ -67,6 +68,47 @@ class TransactionPossibleOperationService implements ServiceInterface
             $possible_operations = [];
         }
 
+        // We no longer support Masterpass
+        if ($format && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
+            $possible_operations = $this->formatOperations($possible_operations);
+        }
+
         return $possible_operations;
+    }
+
+    /**
+     * Formats the post-processing operations for use in the template.
+     *
+     * @param array $possible_operations
+     * @return array
+     * @since 2.4.0
+     */
+    private function formatOperations(array $possible_operations)
+    {
+        $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
+        $operations = [];
+        $translations = [
+            //@TODO add constant to paymentSDK
+            'capture' => $this->getTranslatedString('text_capture_transaction'),
+            Operation::CANCEL => $this->getTranslatedString('text_cancel_transaction'),
+            Operation::REFUND => $this->getTranslatedString('text_refund_transaction'),
+        ];
+
+        if ($possible_operations === false) {
+            return $operations;
+        }
+
+        foreach ($possible_operations as $operation => $key) {
+            if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
+                continue;
+            }
+            $translatable_key = \Tools::strtolower($key);
+            $operations[] = [
+                "action" => $operation,
+                "name" => $translations[$translatable_key]
+            ];
+        }
+
+        return $operations;
     }
 }

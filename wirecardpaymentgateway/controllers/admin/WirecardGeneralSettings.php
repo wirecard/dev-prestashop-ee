@@ -8,8 +8,6 @@
  */
 
 
-//use WirecardEE\Prestashop\Helper\PaymentProvider;
-//use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Classes\Config\Constants;
 use WirecardEE\Prestashop\Helper\Form\FormHelper;
@@ -28,8 +26,6 @@ class WirecardGeneralSettingsController extends ModuleAdminController
     const FORM_SUBMIT_ID = "send_request";
 
     const DISPLAY_VIEW_NAME_ADD = "add";
-
-    //const SETTING_ENABLED = "enabled";
 
     /**
      * WirecardGeneralSettingsController constructor.
@@ -60,8 +56,8 @@ class WirecardGeneralSettingsController extends ModuleAdminController
 
         switch ($this->display) {
             case self::DISPLAY_VIEW_NAME_ADD:
-                $this->toolbar_title[] = $this->getTranslatedString('general_settings_title');
-                $this->addMetaTitle($this->getTranslatedString('general_settings_title'));
+                $this->toolbar_title[] = $this->getTranslatedString('general_settings_title');// @TODO: Translation
+                $this->addMetaTitle($this->getTranslatedString('general_settings_title'));// @TODO: Translation
                 break;
         }
     }
@@ -77,17 +73,21 @@ class WirecardGeneralSettingsController extends ModuleAdminController
         $formHelper = new FormHelper();
         $formHelper->addSwitchInput(
             Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED,
-            $this->getTranslatedString('text_automatic_capture_enabled')
+            $this->getTranslatedString('text_automatic_capture_enabled'), // @TODO: Translation
+            [],  // default values
+            ['desc' => $this->getTranslatedString('text_automatic_capture_description')]  // @TODO: Translation
         );
         $formHelper->addSwitchInput(
             Constants::SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED,
-            $this->getTranslatedString('text_force_order_state_change_enabled')
+            $this->getTranslatedString('text_force_order_state_change_enabled'), // @TODO: Translation
+            [],  // default values
+            ['desc' => $this->getTranslatedString('text_force_order_state_change_description')]  // @TODO: Translation
         );
 
         // ------ Add elements to form ------
 
         // Add submit button
-        $formHelper->addSubmitButton(self::FORM_SUBMIT_ID, $this->getTranslatedString('save_general_settings'));
+        $formHelper->addSubmitButton(self::FORM_SUBMIT_ID, $this->getTranslatedString('save_general_settings')); // @TODO: Translation
 
         // Add input fields
         $this->fields_form = $formHelper->buildForm();
@@ -115,7 +115,7 @@ class WirecardGeneralSettingsController extends ModuleAdminController
             $this->errors = array_merge($this->errors, $generalSettingsService->getErrors());
 
             if ($result && !count($this->errors)) {
-                $this->confirmations[] = $this->getTranslatedString('settings_updated');
+                $this->confirmations[] = $this->getTranslatedString('settings_updated');// @TODO: Translation
             }
         }
     }

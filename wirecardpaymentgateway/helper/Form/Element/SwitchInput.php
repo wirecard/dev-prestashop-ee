@@ -40,6 +40,9 @@ class SwitchInput extends BaseElement
     /** @var mixed|string|bool|int */
     private $onValue;
 
+    /** @var  */
+    private $description = null;
+
     /**
      * @return array
      */
@@ -132,6 +135,22 @@ class SwitchInput extends BaseElement
     }
 
     /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
      * @param array $data
      * @return bool
      */
@@ -195,7 +214,7 @@ class SwitchInput extends BaseElement
     {
         $this->addOption('label', $this->getLabel());
         if (!$this->hasOption('id')) {
-            $this->addOption('id', $this->generateId());
+            $this->addOption('id', $this->generateUniqueId());
         }
 
         $id = $this->getOption('id');
@@ -203,6 +222,10 @@ class SwitchInput extends BaseElement
             ['id' => "on_{$id}", 'value' => $this->getOnValue(), 'label' => $this->getOnLabel()],
             ['id' => "off_{$id}", 'value' => $this->getOffValue(), 'label' => $this->getOffLabel()],
         ];
+
+        if (!empty($this->getDescription())) {
+            $this->addOption('desc', $this->getDescription());
+        }
 
         $this->addOption('values', $values);
 

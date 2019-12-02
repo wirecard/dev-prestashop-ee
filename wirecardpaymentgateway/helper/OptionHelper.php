@@ -52,8 +52,7 @@ trait OptionHelper
      */
     public function getOption($key)
     {
-        $options = $this->getOptions();
-        return $this->hasOption($key) ? $options[$key] : null;
+        return $this->hasOption($key) ? $this->options[$key] : null;
     }
 
     /**
@@ -62,8 +61,7 @@ trait OptionHelper
      */
     public function hasOption($key)
     {
-        $options = $this->getOptions();
-        return isset($options[$key]);
+        return isset($this->options[$key]);
     }
 
     /**

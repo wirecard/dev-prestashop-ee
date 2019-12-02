@@ -68,9 +68,9 @@ abstract class BaseElement implements FormElementInterface
     /**
      * @return string
      */
-    public function generateId()
+    public function generateUniqueId()
     {
-        return $this->getName() . "_" . $this->getType();
+        return $this->getName() . "_" . $this->getType() . "_" . uniqid();
     }
 
     /**
