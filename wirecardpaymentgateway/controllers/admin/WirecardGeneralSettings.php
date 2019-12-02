@@ -74,9 +74,6 @@ class WirecardGeneralSettingsController extends ModuleAdminController
      */
     public function renderForm()
     {
-        /** @var WirecardEE\Prestashop\Models\Payment[] $paymentMethodConfig */
-        //$paymentMethodConfig = PaymentProvider::getPayments();
-
         $formHelper = new FormHelper();
         $formHelper->addSwitchInput(
             Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED,
@@ -87,18 +84,14 @@ class WirecardGeneralSettingsController extends ModuleAdminController
             $this->getTranslatedString('text_force_order_state_change_enabled')
         );
 
-        // All payments enabling / disabling in one page
-//        foreach ($paymentMethodConfig as $paymentMethodType => $paymentMethod) {
-//            $fieldName =
-//                      (new ShopConfigurationService($paymentMethod->getType()))->getFieldName(self::SETTING_ENABLED);
-//            $formHelper->addSwitchInput($fieldName, $paymentMethod->getName());
-//        }
+        // ------ Add elements to form ------
+
         // Add submit button
         $formHelper->addSubmitButton(self::FORM_SUBMIT_ID, $this->getTranslatedString('save_general_settings'));
-        // ------ Add elements to form ------
 
         // Add input fields
         $this->fields_form = $formHelper->buildForm();
+
         // Add actual values of input fields
         $this->fields_value = $formHelper->getFormValues();
 

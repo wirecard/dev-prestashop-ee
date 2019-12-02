@@ -70,13 +70,11 @@ class FormHelper extends HelperForm
     {
         $elements = [];
         foreach ($this->getElements() as $formElement) {
-
             if (in_array($formElement->getGroup(), Constants::getGroupTypesWithChildren())) {
                 $elements[$formElement->getGroup()][] = $formElement->build();
             } else {
                 $elements[$formElement->getGroup()] = $formElement->build();
             }
-
         }
 
         return $elements;
@@ -92,8 +90,17 @@ class FormHelper extends HelperForm
             if (!in_array($formElement->getType(), Constants::getElementTypesWithValues())) {
                 continue;
             }
-            $elementValues[$formElement->getName()] = Configuration::get($formElement->getName());
+            $elementValues[$formElement->getName()] = $this->getValueByElementName($formElement->getName());
         }
         return $elementValues;
+    }
+
+    /**
+     * @param mixed $name
+     * @return int|string|mixed
+     */
+    protected function getValueByElementName($name)
+    {
+        return Configuration::get($name);
     }
 }

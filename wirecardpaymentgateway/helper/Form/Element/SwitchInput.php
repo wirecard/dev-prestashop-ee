@@ -142,7 +142,7 @@ class SwitchInput extends BaseElement
         $result &= (count($data) == 2);
 
         foreach ([self::ATTRIBUTE_OFF, self::ATTRIBUTE_ON] as $key) {
-            $result &= (isset($data[$key]) & is_array($data[$key]) || count($data[$key]) == 2);
+            $result &= (isset($data[$key]) && is_array($data[$key]) && count($data[$key]) == 2);
         }
 
         return $result;

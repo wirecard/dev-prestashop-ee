@@ -16,7 +16,6 @@ class Constants
 
     const FORM_ELEMENT_TYPE_SWITCH = "switch";
     const FORM_ELEMENT_TYPE_SUBMIT = "submit";
-    const FORM_ELEMENT_TYPE_RADIO = "radio";
 
     /**
      * @return array

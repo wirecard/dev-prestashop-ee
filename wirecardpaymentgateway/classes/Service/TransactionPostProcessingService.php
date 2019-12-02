@@ -30,12 +30,12 @@ class TransactionPostProcessingService implements ServiceInterface
 
     /**
      * TransactionPostProcessingService constructor.
-     * @param string $opertion
+     * @param string $operation
      * @param int $transaction_id
      */
-    public function __construct($opertion, $transaction_id)
+    public function __construct($operation, $transaction_id)
     {
-        $this->operation = $opertion;
+        $this->operation = $operation;
         $this->transaction_id = $transaction_id;
     }
 
