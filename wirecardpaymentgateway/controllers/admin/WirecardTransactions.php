@@ -217,7 +217,8 @@ class WirecardTransactionsController extends ModuleAdminController
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
         $translations = [
-            Operation::PAY => $this->getTranslatedString('text_capture_transaction'),
+            //@TODO add constant to paymentSDK
+            'capture' => $this->getTranslatedString('text_capture_transaction'),
             Operation::CANCEL => $this->getTranslatedString('text_cancel_transaction'),
             Operation::REFUND => $this->getTranslatedString('text_refund_transaction'),
         ];
@@ -226,11 +227,11 @@ class WirecardTransactionsController extends ModuleAdminController
             return $operations;
         }
 
-        foreach (array_keys($possible_operations) as $operation) {
+        foreach ($possible_operations as $operation => $key) {
             if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
                 continue;
             }
-            $translatable_key = \Tools::strtolower($operation);
+            $translatable_key = \Tools::strtolower($key);
             $operations[] = [
                 "action" => $operation,
                 "name" => $translations[$translatable_key]
