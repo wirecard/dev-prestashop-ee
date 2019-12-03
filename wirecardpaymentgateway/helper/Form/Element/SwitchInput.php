@@ -13,6 +13,11 @@ use WirecardEE\Prestashop\Helper\Form\Constants;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use Exception;
 
+/**
+ * Class SwitchInput
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Helper\Form\Element
+ */
 class SwitchInput extends BaseElement
 {
     use TranslationHelper;

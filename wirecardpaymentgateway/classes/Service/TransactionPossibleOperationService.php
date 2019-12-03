@@ -20,7 +20,14 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\Transaction;
+use Exception;
+use Tools;
 
+/**
+ * Class TransactionPossibleOperationService
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Classes\Service
+ */
 class TransactionPossibleOperationService implements ServiceInterface
 {
     use TranslationHelper;
@@ -36,12 +43,12 @@ class TransactionPossibleOperationService implements ServiceInterface
     /**
      * TransactionPossibleOperationService constructor.
      * @param Transaction $transaction
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($transaction)
     {
         if (!$transaction instanceof Transaction) {
-            throw new \Exception("transaction isn't instance of Transaction");
+            throw new Exception("transaction isn't instance of Transaction");
         }
         $this->transaction = $transaction;
     }
@@ -66,7 +73,7 @@ class TransactionPossibleOperationService implements ServiceInterface
             if (is_array($result)) {
                 $possible_operations = $result;
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $possible_operations = [];
         }
 
@@ -104,7 +111,7 @@ class TransactionPossibleOperationService implements ServiceInterface
             if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
                 continue;
             }
-            $translatable_key = \Tools::strtolower($key);
+            $translatable_key = Tools::strtolower($key);
             $operations[] = [
                 "action" => $operation,
                 "name" => $translations[$translatable_key]

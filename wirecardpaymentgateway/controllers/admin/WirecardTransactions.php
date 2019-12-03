@@ -113,6 +113,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * database and adds an error if this is not the case.
      *
      * @param object $data
+     * @throws PrestaShopException
      * @since 2.4.0
      */
     private function validateTransaction($data)

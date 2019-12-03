@@ -17,7 +17,7 @@ use Tools;
  * Class GeneralSettingsService
  *
  * @package WirecardEE\Prestashop\Helper\Service
- * @since 2.1.0
+ * @since 2.5.0
  */
 class GeneralSettingsService
 {

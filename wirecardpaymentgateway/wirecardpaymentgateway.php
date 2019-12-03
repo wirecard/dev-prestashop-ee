@@ -982,10 +982,6 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function hookActionOrderStatusPostUpdate($params)
     {
-        /** @var int $orderId */
-        $orderId = intval($params['id_order']);
-        /** @var OrderState $newOrderStatus */
-        $newOrderStatus = $params['newOrderStatus'];
     }
 
     /**

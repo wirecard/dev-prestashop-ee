@@ -18,7 +18,13 @@ use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionB
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use Exception;
 
+/**
+ * Class TransactionPostProcessingService
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Classes\Service
+ */
 class TransactionPostProcessingService implements ServiceInterface
 {
     /** @var string */
@@ -79,7 +85,7 @@ class TransactionPostProcessingService implements ServiceInterface
 
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
             $logger = new WirecardLogger();
             $logger->error(

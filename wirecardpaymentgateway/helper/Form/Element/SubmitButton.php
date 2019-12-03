@@ -12,6 +12,11 @@ namespace WirecardEE\Prestashop\Helper\Form\Element;
 
 use WirecardEE\Prestashop\Helper\Form\Constants;
 
+/**
+ * Class SubmitButton
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Helper\Form\Element
+ */
 class SubmitButton extends BaseElement
 {
     /**

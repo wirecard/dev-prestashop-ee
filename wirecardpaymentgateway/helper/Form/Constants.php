@@ -9,6 +9,11 @@
 
 namespace WirecardEE\Prestashop\Helper\Form;
 
+/**
+ * Class Constants
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Helper\Form
+ */
 class Constants
 {
     const FORM_GROUP_TYPE_INPUT = "input";

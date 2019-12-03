@@ -15,6 +15,11 @@ use Exception;
 use HelperForm;
 use Configuration;
 
+/**
+ * Class FormHelper
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Helper\Form
+ */
 class FormHelper extends HelperForm
 {
     /** @var array|FormElementInterface[] */

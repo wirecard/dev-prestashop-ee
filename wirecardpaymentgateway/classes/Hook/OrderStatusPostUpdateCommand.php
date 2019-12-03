@@ -10,7 +10,13 @@
 namespace WirecardEE\Prestashop\Classes\Hook;
 
 use OrderState;
+use Exception;
 
+/**
+ * class OrderStatusPostUpdateCommand
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Classes\Hook
+ */
 class OrderStatusPostUpdateCommand
 {
     /** @var int */
@@ -22,16 +28,16 @@ class OrderStatusPostUpdateCommand
      * OrderStatusPostUpdateCommand constructor.
      * @param $orderState
      * @param $orderId
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($orderState, $orderId)
     {
         if (!intval($orderId) || !is_numeric($orderId)) {
-            throw new \Exception("orderId is not numeric!");
+            throw new Exception("orderId is not numeric!");
         }
         $this->orderId = intval($orderId);
         if (!$orderState instanceof OrderState) {
-            throw new \Exception("orderState param is not instance of OrderState!");
+            throw new Exception("orderState param is not instance of OrderState!");
         }
         $this->orderState = $orderState;
     }
@@ -45,7 +51,7 @@ class OrderStatusPostUpdateCommand
     }
 
     /**
-     * @return \OrderState
+     * @return OrderState
      */
     public function getOrderState()
     {

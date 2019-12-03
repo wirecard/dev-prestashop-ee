@@ -15,7 +15,15 @@ use \WirecardEE\Prestashop\Classes\Config\Constants;
 use Configuration;
 use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
 use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
+use PrestaShopDatabaseException;
+use PrestaShopException;
+use Exception;
 
+/**
+ * class OrderStatusPostUpdateHandler
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Classes\Hook
+ */
 class OrderStatusPostUpdateHandler implements CommandHandlerInterface
 {
     /** @var int */
@@ -30,27 +38,42 @@ class OrderStatusPostUpdateHandler implements CommandHandlerInterface
     }
 
     /**
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
-     * @throws \Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws Exception
      */
-    public function handle()
+    protected function onChangeToShippingStatus()
     {
-        $orderId = $this->command->getOrderId();
-        $orderState = $this->command->getOrderState();
-
-        if ($orderState->id == $this->changeToStatusId &&
+        // Check if status equals to "shipping" and automatic capture enabled in settings
+        if ($this->command->getOrderState()->id == $this->changeToStatusId &&
             intval(Configuration::get(Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED))) {
-            $transaction = (new TransactionFinder())->getCurrentTransactionByOrderId($orderId);
+            // Find transaction
+            $transaction = (new TransactionFinder())->getCurrentTransactionByOrderId($this->command->getOrderId());
             if ($transaction && $transaction->isTransactionStateOpen()) {
-                $operation = Operation::PAY;
                 $possibleOperationService = new TransactionPossibleOperationService($transaction);
-                $operations = $possibleOperationService->getPossibleOperationList();
-                if (in_array($operation, array_keys($operations))) {
-                    $postProcessingService = new TransactionPostProcessingService($operation, $transaction->getTxId());
+                // Get possible payment operations for appropriate transaction
+                $operations = $possibleOperationService->getPossibleOperationList(false);
+                // if transaction accept operation "PAY"
+                if (in_array(Operation::PAY, array_keys($operations))) {
+                    // Init Transaction PostProcessing Service
+                    $postProcessingService = new TransactionPostProcessingService(
+                        Operation::PAY,
+                        $transaction->getTxId()
+                    );
+                    // Process payment
                     $postProcessingService->process();
                 }
             }
         }
+    }
+
+    /**
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function handle()
+    {
+        // Must be moved to a separate class in case of expansion of logic
+        $this->onChangeToShippingStatus();
     }
 }

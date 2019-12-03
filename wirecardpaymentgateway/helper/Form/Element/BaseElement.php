@@ -14,6 +14,11 @@ use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
 use Exception;
 use WirecardEE\Prestashop\Helper\OptionHelper;
 
+/**
+ * Class BaseElement
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Helper\Form\Element
+ */
 abstract class BaseElement implements FormElementInterface
 {
     use OptionHelper;

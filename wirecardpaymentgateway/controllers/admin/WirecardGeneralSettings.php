@@ -14,6 +14,8 @@ use WirecardEE\Prestashop\Helper\Form\FormHelper;
 use WirecardEE\Prestashop\Helper\Service\GeneralSettingsService;
 
 /**
+ * Class WirecardGeneralSettingsController
+ * @since 2.5.0
  * @property WirecardPaymentGateway $module
  */
 class WirecardGeneralSettingsController extends ModuleAdminController

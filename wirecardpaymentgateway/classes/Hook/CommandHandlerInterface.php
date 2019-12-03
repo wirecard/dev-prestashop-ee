@@ -9,6 +9,11 @@
 
 namespace WirecardEE\Prestashop\Classes\Hook;
 
+/**
+ * Interface CommandHandlerInterface
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Classes\Hook
+ */
 interface CommandHandlerInterface
 {
     public function handle();

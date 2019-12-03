@@ -9,6 +9,11 @@
 
 namespace WirecardEE\Prestashop\Classes\Service;
 
+/**
+ * Interface ServiceInterface
+ * @since 2.5.0
+ *@package WirecardEE\Prestashop\Classes\Service
+ */
 interface ServiceInterface
 {
 }

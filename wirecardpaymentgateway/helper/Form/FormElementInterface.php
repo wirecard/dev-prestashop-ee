@@ -9,6 +9,11 @@
 
 namespace WirecardEE\Prestashop\Helper\Form;
 
+/**
+ * Interface FormElementInterface
+ * @since 2.5.0
+ * @package WirecardEE\Prestashop\Helper\Form
+ */
 interface FormElementInterface
 {
     /**
