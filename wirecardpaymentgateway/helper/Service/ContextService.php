@@ -29,6 +29,12 @@ class ContextService
      */
     public function __construct($context)
     {
+        if (!$context instanceof \Context) {
+            throw new \InvalidArgumentException(
+                self::class . ' cannot be initiated as the provided parameter is not type of ' . \Context::class
+            );
+        }
+
         $this->context = $context;
     }
 
@@ -72,6 +78,24 @@ class ContextService
     {
         $this->context->smarty->assign($data);
         $this->context->smarty->display($template_path);
+    }
+
+    /**
+     * @param string $confirmations
+     * @since 2.4.0
+     */
+    public function setConfirmations($confirmations)
+    {
+        $this->context->controller->confirmations[] = $confirmations;
+    }
+
+    /**
+     * @param string $errors
+     * @since 2.4.0
+     */
+    public function setErrors($errors)
+    {
+        $this->context->controller->errors[] = $errors;
     }
 
     /**

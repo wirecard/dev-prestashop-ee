@@ -69,18 +69,13 @@ class PaymentAlipayCrossborderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-
-    public function testCreateCancelTransaction()
+    public function testGetPostProcessingMandatoryEntities()
     {
-        $expected = new \Wirecard\PaymentSdk\Transaction\AlipayCrossborderTransaction();
+        $expected = [];
 
-        $expected->setParentTransactionId('my_secret_id');
-
-        $actual = $this->payment->createCancelTransaction(
-            $this->transactionData,
-            $this->paymentModule
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
         );
-
-        $this->assertEquals($expected, $actual);
     }
 }

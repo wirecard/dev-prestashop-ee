@@ -13,7 +13,6 @@ use Wirecard\Converter\WppVTwoConverter;
 use Wirecard\PaymentSdk\Constant\ChallengeInd;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
-use Wirecard\PaymentSdk\Config\CreditCardConfig;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
@@ -42,12 +41,11 @@ class PaymentCreditCard extends Payment
     /** @var CreditCardTransaction */
     protected $transaction;
 
-    /** @var Logger $logger */
+    /** @var WirecardLogger $logger */
     protected $logger;
 
     /**
      * PaymentCreditCard constructor.
-     * @param \Module $module
      *
      * @since 2.0.0 Add logger
      * @since 1.0.0
@@ -57,15 +55,10 @@ class PaymentCreditCard extends Payment
         parent::__construct();
 
         $this->logger = new WirecardLogger();
-        $this->transaction = new CreditCardTransaction();
         $this->type = self::TYPE;
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
-
-        $this->cancel  = array('authorization');
-        $this->capture = array('authorization');
-        $this->refund  = array('purchase', 'capture-authorization');
     }
 
     /**
@@ -234,14 +227,13 @@ class PaymentCreditCard extends Payment
     /**
      * Create request data for credit card ui
      *
-     * @param \WirecardPaymentGateway $module
      * @param \Context $context
      * @param int $cartId
      * @return mixed
      * @throws \Exception
      * @since 1.0.0
      */
-    public function getRequestData($module, $context, $cartId)
+    public function getRequestData($context, $cartId)
     {
         $paymentAction = $this->configuration->getField('payment_action');
         $operation = $this->getOperationForPaymentAction($paymentAction);
@@ -249,7 +241,7 @@ class PaymentCreditCard extends Payment
         $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
 
         $transactionService = new TransactionService($config, $this->logger);
-        $transactionBuilder = new TransactionBuilder($module, $context, $cartId, $this->type);
+        $transactionBuilder = new TransactionBuilder($this->type);
         // Set unique cartId as orderId to avoid order creation before payment
         $transactionBuilder->setOrderId($cartId);
         $transaction = $transactionBuilder->buildTransaction();
@@ -267,57 +259,27 @@ class PaymentCreditCard extends Payment
      * @return null|CreditCardTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
         $config = (new PaymentConfigurationFactory($this->configuration))->createConfig();
-
-        /** @var CreditCardConfig $paymentConfig */
         $paymentConfig = $config->get(CreditCardTransaction::NAME);
 
-        $this->transaction->setConfig($paymentConfig);
-        $this->transaction->setTermUrl($module->createRedirectUrl($orderId, $this->type, 'success', $cart->id));
+        $transaction = $this->createTransactionInstance($operation);
+        $transaction->setConfig($paymentConfig);
 
-        return $this->transaction;
+        return $transaction;
     }
 
     /**
-     * Create cancel transaction
+     * Get a clean transaction instance for this payment type.
      *
-     * @param $transactionData
+     * @param string $operation
      * @return CreditCardTransaction
-     * @since 1.0.0
+     * @since 2.4.0
      */
-    public function createCancelTransaction($transactionData)
+    public function createTransactionInstance($operation = null)
     {
-        $this->transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $this->transaction;
-    }
-
-    /**
-     * Create refund transaction
-     *
-     * @param $transactionData
-     * @return CreditCardTransaction
-     * @since 1.2.5
-     */
-    public function createRefundTransaction($transactionData)
-    {
-        return $this->createCancelTransaction($transactionData);
-    }
-
-    /**
-     * Create pay transaction
-     *
-     * @param Transaction $transactionData
-     * @return CreditCardTransaction
-     * @since 1.0.0
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $this->transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $this->transaction;
+        return new CreditCardTransaction();
     }
 
     /**

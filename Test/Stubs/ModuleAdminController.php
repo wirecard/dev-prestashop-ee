@@ -27,6 +27,7 @@ class ModuleAdminController extends Controller
         $this->object->transaction_id = '12l3j123kjg12kj3g123';
         $this->object->transaction_type = 'authorization';
         $this->object->transaction_state = 'success';
+        $this->object->ordernumber = '12';
         $this->object->amount = '20';
         $this->object->currency = 'EUR';
         $this->object->tx_id = '11';

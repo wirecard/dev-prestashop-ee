@@ -14,6 +14,8 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
+use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcessingSuccess;
 
 /**
  * Class ProcessablePaymentResponseFactory
@@ -22,7 +24,13 @@ use Wirecard\PaymentSdk\Response\FailureResponse;
  */
 class ProcessablePaymentResponseFactory
 {
-    /** @var Response|false */
+    /** @var string */
+    const PROCESS_RESPONSE = 'process_response';
+
+    /** @var string */
+    const PROCESS_BACKEND = 'process_backend';
+
+    /** @var SuccessResponse|FailureResponse|InteractionResponse|FormInteractionResponse */
     private $response;
 
     /** @var \Order  */
@@ -31,18 +39,23 @@ class ProcessablePaymentResponseFactory
     /** @var string */
     private $order_state;
 
+    /** @var string  */
+    private $process_type;
+
     /**
      * ResponseProcessingFactory constructor.
      *
      * @param Response $response
      * @param \Order $order
+     * @param string $process_type
      * @param string $order_state
      * @since 2.1.0
      */
-    public function __construct($response, $order, $order_state = null)
+    public function __construct($response, $order, $process_type = self::PROCESS_RESPONSE, $order_state = null)
     {
         $this->order = $order;
         $this->order_state = $order_state;
+        $this->process_type = $process_type;
         $this->response = $response;
     }
 
@@ -58,14 +71,18 @@ class ProcessablePaymentResponseFactory
 
         switch (true) {
             case $this->response instanceof SuccessResponse:
-                return new Success($this->order, $this->response);
+                if ($this->process_type === self::PROCESS_RESPONSE) {
+                    return new InitialSuccess($this->order, $this->response);
+                }
+
+                return new PostProcessingSuccess($this->order, $this->response);
             case $this->response instanceof InteractionResponse:
                 return new Redirect($this->response);
             case $this->response instanceof FormInteractionResponse:
                 return new FormPost($this->response);
             case $this->response instanceof FailureResponse:
             default:
-                return new Failure($this->order, $this->response);
+                return new Failure($this->order, $this->response, $this->process_type);
         }
     }
 

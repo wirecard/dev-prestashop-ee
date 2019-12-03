@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 use Wirecard\PaymentSdk\Transaction\SofortTransaction;
 
@@ -49,8 +50,6 @@ class PaymentSofort extends Payment
         $this->setLogo(
             'https://cdn.klarna.com/1.0/shared/image/generic/badge/de_de/pay_now/standard/pink.svg'
         );
-
-        $this->refund  = array('debit');
     }
 
     /**
@@ -148,7 +147,7 @@ class PaymentSofort extends Payment
     }
 
     /**
-     * Create sofort transaction
+     * Create Sofort transaction
      *
      * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
@@ -157,24 +156,24 @@ class PaymentSofort extends Payment
      * @return null|SofortTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
-        $transaction = new SofortTransaction();
-
-        return $transaction;
+        return $this->createTransactionInstance($operation);
     }
 
     /**
-     * Create refund Sofort.
+     * Get a clean transaction instance for this payment type.
      *
-     * @param Transaction $transactionData
-     * @param $module
-     * @return SepaCreditTransferTransaction
-     * @since 1.0.0
+     * @param string $operation
+     * @return SofortTransaction|SepaCreditTransferTransaction
+     * @since 2.4.0
      */
-    public function createRefundTransaction($transactionData, $module)
+    public function createTransactionInstance($operation = null)
     {
-        $sepa = new PaymentSepaCreditTransfer();
-        return $sepa->createRefundTransaction($transactionData, $module);
+        if (Operation::CREDIT === $operation) {
+            return new SepaCreditTransferTransaction();
+        }
+
+        return new SofortTransaction();
     }
 }

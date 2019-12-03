@@ -9,6 +9,9 @@
 
 class Address
 {
+    /** @var int $id */
+    public $id = 1;
+
     /** @var int Customer ID which address belongs to */
     public $id_customer = null;
 

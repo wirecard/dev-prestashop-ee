@@ -63,12 +63,13 @@ class PaymentPtwentyfourTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-
-    public function testCreateCancelTransaction()
+    public function testGetPostProcessingMandatoryEntities()
     {
-        $expected = new \Wirecard\PaymentSdk\Transaction\PtwentyfourTransaction();
-        $expected->setParentTransactionId('my_secret_id');
+        $expected = [];
 
-        $this->assertEquals($expected, $this->payment->createCancelTransaction($this->transactionData));
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
+        );
     }
 }

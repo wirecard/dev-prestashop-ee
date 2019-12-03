@@ -27,7 +27,6 @@
                         invoice:'{lFallback s='ratepayinvoice' mod='wirecardpaymentgateway'}',
                         'alipay-xborder':'{lFallback s='alipay_crossborder' mod='wirecardpaymentgateway'}',
                         p24:'{lFallback s='ptwentyfour' mod='wirecardpaymentgateway'}',
-                        masterpass:'{lFallback s='masterpass' mod='wirecardpaymentgateway'}'
                     };
                     $("a[data-toggle=tab]").each(function() {
                         $(this).html(translate[$(this).html().toLowerCase()]);

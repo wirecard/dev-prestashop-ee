@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use Wirecard\PaymentSdk\BackendService;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
@@ -132,7 +133,7 @@ class OrderManager
     }
 
     /**
-     * Ignore all 'check-payer-response' transaction types and masterpass 'debit' and 'authorization' notifications
+     * Ignore all 'check-payer-response' transaction types
      *
      * @param SuccessResponse $notification
      * @return boolean
@@ -140,20 +141,7 @@ class OrderManager
      */
     public static function isIgnorable($notification)
     {
-        return $notification->getTransactionType() === 'check-payer-response' ||
-               self::isMasterpassIgnorable($notification);
-    }
-
-    /**
-     * @param SuccessResponse $notification
-     * @return boolean
-     * @since 2.1.0
-     */
-    public static function isMasterpassIgnorable($notification)
-    {
-        return $notification->getPaymentMethod() === 'masterpass' &&
-               ($notification->getTransactionType() === 'debit' ||
-                $notification->getTransactionType() === 'authorization');
+        return $notification->getTransactionType() === Transaction::TYPE_CHECK_PAYER_RESPONSE;
     }
 
     /**
@@ -193,7 +181,7 @@ class OrderManager
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
 
         if ($backend_service->isFinal($notification->getTransactionType())) {
-            return 'close';
+            return 'closed';
         }
         return 'open';
     }
