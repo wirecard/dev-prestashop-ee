@@ -12,11 +12,11 @@ namespace WirecardEE\Test\Prestashop\Helper;
 use WirecardEE\Prestashop\Helper\ArrayHelper;
 
 /**
- * Class FormHelperTest
+ * Class ArrayHelperTest
  * @package WirecardEE\Test\Prestashop\Helper
  * @coversDefaultClass \WirecardEE\Prestashop\Helper\ArrayHelper
  */
-class FormHelperTest extends \PHPUnit_Framework_TestCase
+class ArrayHelperTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @return array
