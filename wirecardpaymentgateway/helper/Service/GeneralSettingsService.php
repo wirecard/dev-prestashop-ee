@@ -74,7 +74,7 @@ class GeneralSettingsService
     {
         $result = $this->validateInput($settings);
         if ($result) {
-            $wirecardSettings = ArrayHelper::startsWithPrefix($settings, self::WIRECARD_SETTING_PREFIX);
+            $wirecardSettings = ArrayHelper::filterWithPrefix($settings, self::WIRECARD_SETTING_PREFIX);
             foreach ($wirecardSettings as $setting => $value) {
                 $updateResult = Configuration::updateValue($setting, $value);
                 if (!$updateResult) {

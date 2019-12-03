@@ -23,7 +23,7 @@ class ArrayHelper
      * @return array
      * @since 2.5.0
      */
-    public static function startsWithPrefix($data, $prefix)
+    public static function filterWithPrefix($data, $prefix)
     {
         $filteredData = [];
 
