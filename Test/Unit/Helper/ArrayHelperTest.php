@@ -50,7 +50,7 @@ class ArrayHelperTest extends \PHPUnit_Framework_TestCase
     /**
      * @group unit
      * @small
-     * @covers ::startsWithPrefix
+     * @covers ::filterWithPrefix
      * @dataProvider filterWithPrefixDataProvider
      * @param array $data
      * @param array $expectedResult
@@ -58,6 +58,6 @@ class ArrayHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testFilterWithPrefix($data, $prefix, $expectedResult)
     {
-        $this->assertEquals($expectedResult, ArrayHelper::startsWithPrefix($data, $prefix));
+        $this->assertEquals($expectedResult, ArrayHelper::filterWithPrefix($data, $prefix));
     }
 }
