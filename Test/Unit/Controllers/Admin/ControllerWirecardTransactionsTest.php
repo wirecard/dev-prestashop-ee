@@ -50,9 +50,8 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
         $transaction->setOrderNumber(12);
         $transaction->setTransactionType('authorization');
         $transaction->setTransactionState('success');
-        $transaction->setTransactionId('12l3j123kjg12kj3g123');
+        $transaction->setTransactionId('QWERTY123XYZAABB1122');
         return $transaction;
-
     }
 
     public function testConstructor()

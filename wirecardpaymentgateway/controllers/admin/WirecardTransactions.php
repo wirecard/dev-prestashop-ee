@@ -102,10 +102,6 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transaction_id);
-        echo "<pre>";
-        print_r($transactionPostProcessingService);
-        echo "</pre>";
-        die;
         $transactionPostProcessingService->process();
         $this->errors = $transactionPostProcessingService->getErrors();
 
