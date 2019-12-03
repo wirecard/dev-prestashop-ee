@@ -37,8 +37,6 @@ class TransactionPossibleOperationService implements ServiceInterface
 
     /** @var Transaction */
     private $transaction;
-    /** @var array */
-    private $errors = [];
 
     /**
      * TransactionPossibleOperationService constructor.

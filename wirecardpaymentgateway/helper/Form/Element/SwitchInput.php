@@ -222,10 +222,11 @@ class SwitchInput extends BaseElement
             $this->addOption('id', $this->generateUniqueId());
         }
 
-        $id = $this->getOption('id');
+        $unique_id = $this->getOption('id');
+
         $values = [
-            ['id' => "on_{$id}", 'value' => $this->getOnValue(), 'label' => $this->getOnLabel()],
-            ['id' => "off_{$id}", 'value' => $this->getOffValue(), 'label' => $this->getOffLabel()],
+            ['id' => "on_{$unique_id}", 'value' => $this->getOnValue(), 'label' => $this->getOnLabel()],
+            ['id' => "off_{$unique_id}", 'value' => $this->getOffValue(), 'label' => $this->getOffLabel()],
         ];
 
         if (!empty($this->getDescription())) {

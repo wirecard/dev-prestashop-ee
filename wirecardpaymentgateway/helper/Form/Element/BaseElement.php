@@ -34,11 +34,6 @@ abstract class BaseElement implements FormElementInterface
     private $label;
 
     /**
-     * @var mixed
-     */
-    private $value;
-
-    /**
      * @return string
      */
     public function getName()

@@ -974,16 +974,6 @@ class WirecardPaymentGateway extends PaymentModule
         $this->context->smarty->registerPlugin('function', 'lFallback', array('WirecardPaymentGateway', 'lFallback'));
     }
 
-
-    /**
-     * Hook called after the status of an order changes.
-     * @param array $params
-     * @since 2.5.0
-     */
-    public function hookActionOrderStatusPostUpdate($params)
-    {
-    }
-
     /**
      * Hook called before the status of an order changes.
      * @param array $params
