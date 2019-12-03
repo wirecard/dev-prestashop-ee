@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Helper\Service;
 
 use Configuration;
+use WirecardEE\Prestashop\Helper\ArrayHelper;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use Tools;
 
@@ -73,7 +74,7 @@ class GeneralSettingsService
     {
         $result = $this->validateInput($settings);
         if ($result) {
-            $wirecardSettings = $this->findParamsStartingWithPrefix($settings);
+            $wirecardSettings = ArrayHelper::startsWithPrefix($settings, self::WIRECARD_SETTING_PREFIX);
             foreach ($wirecardSettings as $setting => $value) {
                 $updateResult = Configuration::updateValue($setting, $value);
                 if (!$updateResult) {
@@ -84,24 +85,5 @@ class GeneralSettingsService
         }
 
         return $result;
-    }
-
-    /**
-     * Filters array trough items starting with specified prefix
-     * @param array $data
-     * @param string $prefix
-     * @return array
-     */
-    protected function findParamsStartingWithPrefix($data, $prefix = self::WIRECARD_SETTING_PREFIX)
-    {
-        $filteredData = [];
-
-        foreach ($data as $paramName => $value) {
-            if (strpos($paramName, $prefix) !== false) {
-                $filteredData[$paramName] = $value;
-            }
-        }
-
-        return $filteredData;
     }
 }
