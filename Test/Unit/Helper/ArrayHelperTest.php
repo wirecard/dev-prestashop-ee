@@ -39,7 +39,7 @@ class ArrayHelperTest extends \PHPUnit_Framework_TestCase
             'prefix_',
             ['prefix_prefix_foo' => 'bar']
         ];
-        $dataSet['array_with_prefix_1'] = [
+        $dataSet['array_with_prefix_2'] = [
             ['prefix_foo' => 'bar', 'prefix_baz' => 'foo'],
             'prefix_',
             ['prefix_foo' => 'bar', 'prefix_baz' => 'foo']
