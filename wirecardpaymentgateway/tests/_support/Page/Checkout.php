@@ -98,6 +98,10 @@ class Checkout extends Base
     {
         $I = $this->tester;
         try {
+            if ($box === 'I agree to the terms of service')
+            {
+                $I->wait(3);
+            }
             $I->scrollTo(['class' => 'payment-options'], 20, 50);
             $I->checkOption($this->getElement($box));
         } catch (Exception $e) {
