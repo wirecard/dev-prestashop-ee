@@ -26,7 +26,7 @@ Feature: CreditCard3DSOneClickHappyPath
     And I see "YOUR ORDER IS CONFIRMED"
     And I see "creditcard" "purchase" in transaction table
 
-  @ui_test @major @minor @patch @env ui_test
+  @ui_test @env ui_test
   Scenario: on-click-purchase
     Given I click "Sign in"
     And I fill fields with "Sign in data"
