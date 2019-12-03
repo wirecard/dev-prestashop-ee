@@ -9,7 +9,6 @@
 
 namespace WirecardEE\Prestashop\Classes\Service;
 
-
 use Wirecard\PaymentSdk\BackendService;
 
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
@@ -25,6 +24,9 @@ use WirecardEE\Prestashop\Models\Transaction;
 class TransactionPossibleOperationService implements ServiceInterface
 {
     use TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = "wirecardtransactions";
 
     /** @var Transaction */
     private $transaction;

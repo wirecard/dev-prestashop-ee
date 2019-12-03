@@ -39,7 +39,8 @@ class OrderStatusPostUpdateHandler implements CommandHandlerInterface
         $orderId = $this->command->getOrderId();
         $orderState = $this->command->getOrderState();
 
-        if ($orderState->id == $this->changeToStatusId && intval(Configuration::get(Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED))) {
+        if ($orderState->id == $this->changeToStatusId &&
+            intval(Configuration::get(Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED))) {
             $transaction = (new TransactionFinder())->getCurrentTransactionByOrderId($orderId);
             if ($transaction && $transaction->isTransactionStateOpen()) {
                 $operation = Operation::PAY;

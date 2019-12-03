@@ -30,8 +30,10 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->object = $this->getMockForAbstractClass(BaseElement::class,
-            [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]);
+        $this->object = $this->getMockForAbstractClass(
+            BaseElement::class,
+            [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]
+        );
         $this->object->expects($this->any())->method('getType')->willReturn(self::TEST_DEFAULT_TYPE);
     }
 
@@ -40,7 +42,7 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
      * @small
      * @expectedException \Exception
      */
-    public function testConstructor_Exception()
+    public function testConstructorException()
     {
         $this->object = $this->getMockForAbstractClass(BaseElement::class, ["", ""]);
     }
@@ -62,8 +64,10 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateId()
     {
-        $this->object = $this->getMockForAbstractClass(BaseElement::class,
-            [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]);
+        $this->object = $this->getMockForAbstractClass(
+            BaseElement::class,
+            [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]
+        );
 
         $this->object->expects($this->once())->method('getType')->will($this->returnValue(self::TEST_DEFAULT_TYPE));
         $prefix = self::DEFAULT_ARG_NAME . "_" . self::TEST_DEFAULT_TYPE;

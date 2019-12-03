@@ -87,7 +87,10 @@ class WirecardGeneralSettingsController extends ModuleAdminController
         // ------ Add elements to form ------
 
         // Add submit button
-        $formHelper->addSubmitButton(self::FORM_SUBMIT_ID, $this->getTranslatedString('save_general_settings')); // @TODO: Translation
+        $formHelper->addSubmitButton(
+            self::FORM_SUBMIT_ID,
+            $this->getTranslatedString('save_general_settings')
+        ); // @TODO: Translation
 
         // Add input fields
         $this->fields_form = $formHelper->buildForm();

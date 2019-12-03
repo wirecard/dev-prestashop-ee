@@ -980,7 +980,8 @@ class WirecardPaymentGateway extends PaymentModule
      * @param array $params
      * @since 2.5.0
      */
-    public function hookActionOrderStatusPostUpdate($params) {
+    public function hookActionOrderStatusPostUpdate($params)
+    {
         /** @var int $orderId */
         $orderId = intval($params['id_order']);
         /** @var OrderState $newOrderStatus */
@@ -993,9 +994,16 @@ class WirecardPaymentGateway extends PaymentModule
      * @throws Exception
      * @since 2.5.0
      */
-    public function hookActionOrderStatusUpdate($params) {
-        $orderStatusPostUpdateCommand = new OrderStatusPostUpdateCommand($params['newOrderStatus'], $params['id_order']);
-        $orderStatusPostUpdateHandler = new OrderStatusPostUpdateHandler(_PS_OS_SHIPPING_, $orderStatusPostUpdateCommand);
+    public function hookActionOrderStatusUpdate($params)
+    {
+        $orderStatusPostUpdateCommand = new OrderStatusPostUpdateCommand(
+            $params['newOrderStatus'],
+            $params['id_order']
+        );
+        $orderStatusPostUpdateHandler = new OrderStatusPostUpdateHandler(
+            _PS_OS_SHIPPING_,
+            $orderStatusPostUpdateCommand
+        );
         $orderStatusPostUpdateHandler->handle();
     }
 

@@ -9,6 +9,7 @@
 
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\Operation;
+use WirecardEE\Prestashop\Models\Transaction;
 
 require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/admin/WirecardTransactions.php';
 
@@ -21,7 +22,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $beckendService = \Mockery::mock('overload:'. BackendService::class);
+        $beckendService = \Mockery::mock('overload:' . BackendService::class);
         $beckendService->shouldReceive('retrieveBackendOperations')
             ->andReturn(
                 [
@@ -32,6 +33,26 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->wirecardTransactionsController = new WirecardTransactionsController();
+
+        $this->wirecardTransactionsController->object = $this->getTestTransaction();
+    }
+
+    /**
+     * @return Transaction
+     */
+    protected function getTestTransaction()
+    {
+        $transaction = new Transaction();
+        $transaction->setPaymentMethod('creditcard');
+        $transaction->setTxId(11);
+        $transaction->setAmount(20);
+        $transaction->setCurrency('EUR');
+        $transaction->setOrderNumber(12);
+        $transaction->setTransactionType('authorization');
+        $transaction->setTransactionState('success');
+        $transaction->setTransactionId('12l3j123kjg12kj3g123');
+        return $transaction;
+
     }
 
     public function testConstructor()
@@ -42,7 +63,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
     public function testRenderView()
     {
         $this->wirecardTransactionsController->renderView();
-
+        $transaction = $this->getTestTransaction();
         $expected = [
             'current_index' => '1',
             'payment_method' => 'Wirecard Credit Card',
@@ -60,15 +81,15 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
             ],
             'back_link' => 'WirecardTransactions',
             'transaction' => [
-                'tx' => '11',
-                'id' => '12l3j123kjg12kj3g123',
-                'type' => 'authorization',
-                'status' => 'success',
-                'amount' => '20',
-                'currency' => 'EUR',
+                'tx' => $transaction->getTxId(),
+                'id' => $transaction->getTransactionId(),
+                'type' => $transaction->getTransactionType(),
+                'status' => $transaction->getTransactionState(),
+                'amount' => $transaction->getAmount(),
+                'currency' => $transaction->getCurrency(),
                 'response' => null,
-                'payment_method' => 'creditcard',
-                'order' => '12',
+                'payment_method' => $transaction->getPaymentMethod(),
+                'order' => $transaction->getOrderNumber(),
                 'badge' => 'red'
             ]
         ];

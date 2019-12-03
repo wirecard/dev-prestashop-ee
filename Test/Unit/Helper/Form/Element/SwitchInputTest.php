@@ -80,7 +80,13 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
         $dataSet["default_scope"] = [
             [SwitchInput::ATTRIBUTE_ON => ['enabled', 1], SwitchInput::ATTRIBUTE_OFF => ['disabled', 0]],
             1,
-            "OK"
+            "Default values"
+        ];
+
+        $dataSet["custom_scope"] = [
+            [SwitchInput::ATTRIBUTE_ON => ['ok', 'X'], SwitchInput::ATTRIBUTE_OFF => ['not_ok', 'Y']],
+            1,
+            "Custom values"
         ];
 
         $dataSet["ON_settings_missed"] = [

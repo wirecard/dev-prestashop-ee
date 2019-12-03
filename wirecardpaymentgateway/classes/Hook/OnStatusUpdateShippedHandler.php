@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Classes\Hook;
 
-class OnStatusUpdateShippedHandler {
+class OnStatusUpdateShippedHandler
+{
 
 }

@@ -37,5 +37,4 @@ class OrderFinder extends DbFinder
     {
         return (Order::getByReference($reference))->getFirst();
     }
-
 }

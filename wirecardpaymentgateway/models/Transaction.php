@@ -444,7 +444,8 @@ class Transaction extends \ObjectModel
      * @return array
      * @since 2.4.0
      */
-    public function toViewArray() {
+    public function toViewArray()
+    {
         return [
             'tx'             => $this->tx_id,
             'id'             => $this->transaction_id,

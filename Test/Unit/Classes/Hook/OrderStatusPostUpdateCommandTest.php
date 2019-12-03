@@ -46,7 +46,7 @@ class OrderStatusPostUpdateCommandTest extends \PHPUnit_Framework_TestCase
      * @expectedException \Exception
      * @throws \Exception
      */
-    public function testThrowException_NotInstanceOfOrderState()
+    public function testThrowExceptionNotInstanceOfOrderState()
     {
         $command = new OrderStatusPostUpdateCommand(null, 123);
     }
@@ -58,7 +58,7 @@ class OrderStatusPostUpdateCommandTest extends \PHPUnit_Framework_TestCase
      * @expectedException \Exception
      * @throws \Exception
      */
-    public function testthrowException_NotNumericOrderID()
+    public function testthrowExceptionNotNumericOrderID()
     {
         $orderState = new \OrderState();
         $orderState->name = 'shipped';
