@@ -18,7 +18,7 @@ class PayPalReview extends Base
      * @var string
      * @since 2.2.1
      */
-    public $URL = 'review';
+    public $URL = 'checkout';
 
     /**
      * @var array
