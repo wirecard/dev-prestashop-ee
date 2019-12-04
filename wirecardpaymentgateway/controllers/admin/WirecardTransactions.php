@@ -34,8 +34,12 @@ class WirecardTransactionsController extends ModuleAdminController
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
 
+    const UNINITIALIZED_PARTIAL_PROCESSING = -1;
+
     /** @var ContextService */
     protected $context_service;
+
+    private $processed_amount = self::UNINITIALIZED_PARTIAL_PROCESSING;
 
     public function __construct()
     {
@@ -61,6 +65,11 @@ class WirecardTransactionsController extends ModuleAdminController
 
         parent::__construct();
         $this->tpl_folder = 'backend/';
+    }
+
+    private function hasProcessedAmount()
+    {
+        return $this->processed_amount != self::UNINITIALIZED_PARTIAL_PROCESSING;
     }
 
     /**
@@ -98,9 +107,13 @@ class WirecardTransactionsController extends ModuleAdminController
             : $this->formatOperations($possible_operations);
 
         $transaction = new Transaction($this->object->tx_id);
-        $remaining_delta_amount = $transaction->getAmount() - $transaction->getProcessedAmount();
         $transaction_amount = $transaction->getAmount();
         $processed_amount = $transaction->getProcessedAmount();
+        if($this->hasProcessedAmount()) {
+            $processed_amount = $this->processed_amount;
+        }
+        $remaining_delta_amount = $transaction_amount - $processed_amount;
+
         $child_transactions = $transaction->getAllChildTransactions();
         // These variables are available in the Smarty context
         $amounts = compact('remaining_delta_amount', 'transaction_amount', 'processed_amount');
@@ -128,12 +141,12 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $operation = \Tools::getValue('operation');
         $transaction_id = \Tools::getValue('transaction');
-        $delta_amount = \Tools::getValue('partial-delta-amount');
 
         // This prevents the function from running on the list page
         if (!$operation || !$transaction_id) {
-            return;
+            return parent::postProcess();
         }
+        $delta_amount = \Tools::getValue('partial-delta-amount');
 
         $parentTransaction = new Transaction($transaction_id);
         $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
@@ -162,6 +175,9 @@ class WirecardTransactionsController extends ModuleAdminController
 
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
+            $this->processed_amount = $parentTransaction->getProcessedAmount();
+            $p = $this->processed_amount;
+            error_log("\t\t\t processed: $p");
         } catch (\Exception $e) {
             $this->errors[] = \Tools::displayError(
                 $e->getMessage()
@@ -175,7 +191,7 @@ class WirecardTransactionsController extends ModuleAdminController
             );
         }
 
-        parent::postProcess();
+        return parent::postProcess();
     }
 
     /**
