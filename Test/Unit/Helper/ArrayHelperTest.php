@@ -7,7 +7,7 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Test\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Test\Helper;
 
 use WirecardEE\Prestashop\Helper\ArrayHelper;
 

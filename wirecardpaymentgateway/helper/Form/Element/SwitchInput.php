@@ -9,7 +9,7 @@
 
 namespace WirecardEE\Prestashop\Helper\Form\Element;
 
-use WirecardEE\Prestashop\Helper\Form\Constants;
+use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use Exception;
 
@@ -22,8 +22,10 @@ class SwitchInput extends BaseElement
 {
     use TranslationHelper;
 
+    /** @var string  */
     const ATTRIBUTE_ON = "on";
 
+    /** @var string  */
     const ATTRIBUTE_OFF = "off";
 
     /** @var array */
@@ -45,11 +47,12 @@ class SwitchInput extends BaseElement
     /** @var mixed|string|bool|int */
     private $onValue;
 
-    /** @var  */
+    /** @var string */
     private $description = null;
 
     /**
      * @return array
+     * @since 2.5.0
      */
     private function getDefaultValues()
     {
@@ -61,22 +64,25 @@ class SwitchInput extends BaseElement
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getType()
     {
-        return Constants::FORM_ELEMENT_TYPE_SWITCH;
+        return FormConstants::FORM_ELEMENT_TYPE_SWITCH;
     }
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getGroup()
     {
-        return Constants::FORM_GROUP_TYPE_INPUT;
+        return FormConstants::FORM_GROUP_TYPE_INPUT;
     }
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getOffLabel()
     {
@@ -85,6 +91,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @param string $offLabel
+     * @since 2.5.0
      */
     public function setOffLabel($offLabel)
     {
@@ -93,6 +100,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @return bool|int|string|mixed
+     * @since 2.5.0
      */
     public function getOffValue()
     {
@@ -101,6 +109,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @param bool|int|string|mixed $offValue
+     * @since 2.5.0
      */
     public function setOffValue($offValue)
     {
@@ -109,6 +118,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getOnLabel()
     {
@@ -117,6 +127,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @param string $onLabel
+     * @since 2.5.0
      */
     public function setOnLabel($onLabel)
     {
@@ -125,6 +136,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @return bool|int|string|mixed
+     * @since 2.5.0
      */
     public function getOnValue()
     {
@@ -133,6 +145,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @param bool|int|string|mixed $onValue
+     * @since 2.5.0
      */
     public function setOnValue($onValue)
     {
@@ -141,6 +154,7 @@ class SwitchInput extends BaseElement
 
     /**
      * @return mixed
+     * @since 2.5.0
      */
     public function getDescription()
     {
@@ -149,43 +163,11 @@ class SwitchInput extends BaseElement
 
     /**
      * @param mixed $description
+     * @since 2.5.0
      */
     public function setDescription($description)
     {
         $this->description = $description;
-    }
-
-    /**
-     * @param array $data
-     * @return bool
-     */
-    protected function validateValues(array $data)
-    {
-        $result = true;
-        $result &= is_array($data);
-        $result &= (count($data) == 2);
-
-        foreach ([self::ATTRIBUTE_OFF, self::ATTRIBUTE_ON] as $key) {
-            $result &= (isset($data[$key]) && is_array($data[$key]) && count($data[$key]) == 2);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $data
-     * @return SwitchInput
-     */
-    protected function loadValuesFromData(array $data)
-    {
-        list($offLabel, $offValue) = $data[self::ATTRIBUTE_OFF];
-        $this->setOffLabel($offLabel);
-        $this->setOffValue($offValue);
-        list($onLabel, $onValue) = $data[self::ATTRIBUTE_ON];
-        $this->setOnLabel($onLabel);
-        $this->setOnValue($onValue);
-
-        return $this;
     }
 
     /**
@@ -195,8 +177,9 @@ class SwitchInput extends BaseElement
      * @param array $values
      * @param array $options
      * @throws Exception
+     * @since 2.5.0
      */
-    public function __construct($name, $label, array $values = [], $options = [])
+    public function __construct($name, $label, array $values = [], array $options = [])
     {
         parent::__construct($name, $label);
 
@@ -213,7 +196,54 @@ class SwitchInput extends BaseElement
     }
 
     /**
+     * @param array $data
+     * @return bool
+     * @since 2.5.0
+     */
+    protected function validateValues(array $data)
+    {
+        $result = true;
+        if (!is_array($data) || count($data) != 2) {
+            $result = false;
+        }
+
+        foreach ([self::ATTRIBUTE_OFF, self::ATTRIBUTE_ON] as $key) {
+            if (!isset($data[$key]) || !is_array($data[$key]) || count($data[$key]) != 2) {
+                $result = false;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $data
+     * @return SwitchInput
+     * @since 2.5.0
+     */
+    protected function loadValuesFromData(array $data)
+    {
+        foreach ($data as $key => $values) {
+            if ($key == self::ATTRIBUTE_OFF) {
+                $this->setOffLabel($data[$key][0]);
+                $this->setOffValue($data[$key][1]);
+            }
+            if ($key == self::ATTRIBUTE_ON) {
+                $this->setOnLabel($data[$key][0]);
+                $this->setOnValue($data[$key][1]);
+            }
+        }
+
+        return $this;
+    }
+
+    private function initValuesFromData($toggleKey, array $data) {
+
+    }
+
+    /**
      * @return array
+     * @since 2.5.0
      */
     public function build()
     {

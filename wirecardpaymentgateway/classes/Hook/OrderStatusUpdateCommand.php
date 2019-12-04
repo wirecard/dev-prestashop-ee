@@ -13,11 +13,11 @@ use OrderState;
 use Exception;
 
 /**
- * class OrderStatusPostUpdateCommand
+ * class OrderStatusUpdateCommand
  * @since 2.5.0
  * @package WirecardEE\Prestashop\Classes\Hook
  */
-class OrderStatusPostUpdateCommand
+class OrderStatusUpdateCommand
 {
     /** @var int */
     private $orderId;
@@ -26,9 +26,10 @@ class OrderStatusPostUpdateCommand
 
     /**
      * OrderStatusPostUpdateCommand constructor.
-     * @param $orderState
-     * @param $orderId
+     * @param OrderState $orderState
+     * @param int $orderId
      * @throws Exception
+     * @since 2.5.0
      */
     public function __construct($orderState, $orderId)
     {
@@ -44,6 +45,7 @@ class OrderStatusPostUpdateCommand
 
     /**
      * @return int
+     * @since 2.5.0
      */
     public function getOrderId()
     {
@@ -52,6 +54,7 @@ class OrderStatusPostUpdateCommand
 
     /**
      * @return OrderState
+     * @since 2.5.0
      */
     public function getOrderState()
     {

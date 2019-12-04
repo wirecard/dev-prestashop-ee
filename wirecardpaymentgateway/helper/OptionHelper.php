@@ -12,6 +12,7 @@ namespace WirecardEE\Prestashop\Helper;
 /**
  * Standard options functionality
  * Trait OptionHelper
+ * @since 2.5.0
  * @package WirecardEE\Prestashop\Helper
  */
 trait OptionHelper
@@ -23,6 +24,7 @@ trait OptionHelper
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public function getOptions()
     {
@@ -31,6 +33,7 @@ trait OptionHelper
 
     /**
      * @param array $options
+     * @since 2.5.0
      */
     public function setOptions($options)
     {
@@ -38,8 +41,9 @@ trait OptionHelper
     }
 
     /**
-     * @param $option
-     * @param $value
+     * @param string $option
+     * @param mixed $value
+     * @since 2.5.0
      */
     public function addOption($option, $value)
     {
@@ -49,6 +53,7 @@ trait OptionHelper
     /**
      * @param string $key
      * @return mixed|null
+     * @since 2.5.0
      */
     public function getOption($key)
     {
@@ -58,6 +63,7 @@ trait OptionHelper
     /**
      * @param $key
      * @return bool
+     * @since 2.5.0
      */
     public function hasOption($key)
     {
@@ -67,6 +73,7 @@ trait OptionHelper
     /**
      * @param string $key
      * @return mixed|null
+     * @since 2.5.0
      */
     public function deleteOption($key)
     {

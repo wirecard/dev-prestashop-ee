@@ -9,10 +9,9 @@
 
 namespace WirecardEE\Prestashop\Classes\Finder;
 
-use Order;
-
 /**
  * Class OrderFinder
+ * @since 2.5.0
  * @package WirecardEE\Prestashop\Classes\Finder
  */
 class OrderFinder extends DbFinder
@@ -23,18 +22,21 @@ class OrderFinder extends DbFinder
      * @return Order
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
+     * @since 2.5.0
      */
     public function getOrderById($orderId)
     {
-        return new Order($orderId);
+        // @TODO: Please use this method in next releases instead of pure SQL query.
+        return new \Order($orderId);
     }
 
     /**
      * @param string $reference
      * @return \ObjectModel|Order
+     * @since 2.5.0
      */
     public function getOrderByReference($reference)
     {
-        return (Order::getByReference($reference))->getFirst();
+        return (\Order::getByReference($reference))->getFirst();
     }
 }

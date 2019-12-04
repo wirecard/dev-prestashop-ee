@@ -38,6 +38,7 @@ class TransactionPostProcessingService implements ServiceInterface
      * TransactionPostProcessingService constructor.
      * @param string $operation
      * @param int $transaction_id
+     * @since 2.5.0
      */
     public function __construct($operation, $transaction_id)
     {
@@ -47,19 +48,26 @@ class TransactionPostProcessingService implements ServiceInterface
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public function getErrors()
     {
         return $this->errors;
     }
 
+    /**
+     * Transaction postprocessing
+     * @since 2.5.0
+     */
     public function process()
     {
-        $operation = $this->operation;
-        $transaction_id = $this->transaction_id;
+        // @TODO: Refactor me :(
+        // $this->buildTransaction()
+        // $this->executeTransaction()
+        // $this->processTransactionResponse()
 
         try {
-            $parentTransaction = (new TransactionFinder())->getTransactionById($transaction_id);
+            $parentTransaction = (new TransactionFinder())->getTransactionById($this->transaction_id);
 
             $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
                 PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
@@ -67,14 +75,14 @@ class TransactionPostProcessingService implements ServiceInterface
             );
 
             $transaction = $postProcessingTransactionBuilder
-                ->setOperation($operation)
+                ->setOperation($this->operation)
                 ->build();
 
             $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
             $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
             $backend_service = new BackendService($payment_config, new WirecardLogger());
 
-            $response = $backend_service->process($transaction, $operation);
+            $response = $backend_service->process($transaction, $this->operation);
             $order = (new OrderFinder())->getOrderByReference($parentTransaction->getOrderNumber());
 
             $response_factory = new ProcessablePaymentResponseFactory(

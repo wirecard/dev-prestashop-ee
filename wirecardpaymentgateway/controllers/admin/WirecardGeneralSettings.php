@@ -12,6 +12,7 @@ use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Classes\Config\Constants;
 use WirecardEE\Prestashop\Helper\Form\FormHelper;
 use WirecardEE\Prestashop\Helper\Service\GeneralSettingsService;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 /**
  * Class WirecardGeneralSettingsController
@@ -25,17 +26,20 @@ class WirecardGeneralSettingsController extends ModuleAdminController
     /** @var string */
     const TRANSLATION_FILE = "wirecardgeneralsettings";
 
+    /** @var string  */
     const FORM_SUBMIT_ID = "send_request";
 
+    /** @var string  */
     const DISPLAY_VIEW_NAME_ADD = "add";
 
     /**
      * WirecardGeneralSettingsController constructor.
      * @throws PrestaShopException
+     * @since 2.5.0
      */
     public function __construct()
     {
-        $this->context = Context::getContext();
+        $this->context = new ContextService(Context::getContext());
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
         $this->bootstrap = true;
         $this->tpl_form_vars['back_url'] = $this->context->link->getAdminLink('AdminModules') . '&configure=' .
@@ -51,6 +55,7 @@ class WirecardGeneralSettingsController extends ModuleAdminController
      * Set toolbar title
      *
      * @return void
+     * @since 2.5.0
      */
     public function initToolbarTitle()
     {
@@ -67,8 +72,9 @@ class WirecardGeneralSettingsController extends ModuleAdminController
     /**
      * render form
      * @return string
-     * @throws SmartyException
+     * @throws \SmartyException
      * @throws Exception
+     * @since 2.5.0
      */
     public function renderForm()
     {
@@ -86,18 +92,13 @@ class WirecardGeneralSettingsController extends ModuleAdminController
             ['desc' => $this->getTranslatedString('text_force_order_state_change_description')]  // @TODO: Translation
         );
 
-        // ------ Add elements to form ------
-
-        // Add submit button
         $formHelper->addSubmitButton(
             self::FORM_SUBMIT_ID,
             $this->getTranslatedString('save_general_settings')
         ); // @TODO: Translation
 
-        // Add input fields
         $this->fields_form = $formHelper->buildForm();
 
-        // Add actual values of input fields
         $this->fields_value = $formHelper->getFormValues();
 
         return parent::renderForm();
@@ -106,6 +107,7 @@ class WirecardGeneralSettingsController extends ModuleAdminController
     /**
      * @throws PrestaShopException
      * @see AdminController::initProcess()
+     * @since 2.5.0
      */
     public function initProcess()
     {

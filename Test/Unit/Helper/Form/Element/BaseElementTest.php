@@ -7,7 +7,7 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Test\Prestashop\Helper\Form\Element;
+namespace WirecardEE\Prestashop\Test\Helper\Form\Element;
 
 use WirecardEE\Prestashop\Helper\Form\Element\BaseElement;
 
@@ -25,16 +25,16 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
     /**
      * @var BaseElement
      */
-    protected $object;
+    protected $baseElement;
 
 
     protected function setUp()
     {
-        $this->object = $this->getMockForAbstractClass(
+        $this->baseElement = $this->getMockForAbstractClass(
             BaseElement::class,
             [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]
         );
-        $this->object->expects($this->any())->method('getType')->willReturn(self::TEST_DEFAULT_TYPE);
+        $this->baseElement->expects($this->any())->method('getType')->willReturn(self::TEST_DEFAULT_TYPE);
     }
 
     /**
@@ -44,7 +44,7 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorException()
     {
-        $this->object = $this->getMockForAbstractClass(BaseElement::class, ["", ""]);
+        $this->getMockForAbstractClass(BaseElement::class, ["", ""]);
     }
 
     /**
@@ -53,8 +53,8 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructor()
     {
-        $this->assertEquals(self::DEFAULT_ARG_NAME, $this->object->getName());
-        $this->assertEquals(self::DEFAULT_ARG_LABEL, $this->object->getLabel());
+        $this->assertEquals(self::DEFAULT_ARG_NAME, $this->baseElement->getName());
+        $this->assertEquals(self::DEFAULT_ARG_LABEL, $this->baseElement->getLabel());
     }
 
     /**
@@ -64,14 +64,8 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
      */
     public function testGenerateId()
     {
-        $this->object = $this->getMockForAbstractClass(
-            BaseElement::class,
-            [self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL]
-        );
-
-        $this->object->expects($this->once())->method('getType')->will($this->returnValue(self::TEST_DEFAULT_TYPE));
         $prefix = self::DEFAULT_ARG_NAME . "_" . self::TEST_DEFAULT_TYPE;
-        $this->assertContains($prefix, $this->object->generateUniqueId());
+        $this->assertContains($prefix, $this->baseElement->generateUniqueId());
     }
 
     /**
@@ -81,11 +75,11 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuild()
     {
-        $result = $this->object->build();
-        $this->assertTrue(is_array($result));
+        $result = $this->baseElement->build();
+        $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
         $this->assertEquals(['name' => self::DEFAULT_ARG_NAME, 'type' => null], $result);
-        $this->assertEquals($this->object->getOptions(), $result);
+        $this->assertEquals($this->baseElement->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
     }
 }

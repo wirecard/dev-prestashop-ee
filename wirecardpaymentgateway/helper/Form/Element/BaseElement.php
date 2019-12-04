@@ -23,18 +23,15 @@ abstract class BaseElement implements FormElementInterface
 {
     use OptionHelper;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $label;
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getName()
     {
@@ -43,6 +40,7 @@ abstract class BaseElement implements FormElementInterface
 
     /**
      * @param string $name
+     * @since 2.5.0
      */
     public function setName($name)
     {
@@ -51,6 +49,7 @@ abstract class BaseElement implements FormElementInterface
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getLabel()
     {
@@ -59,6 +58,7 @@ abstract class BaseElement implements FormElementInterface
 
     /**
      * @param string $label
+     * @since 2.5.0
      */
     public function setLabel($label)
     {
@@ -67,6 +67,7 @@ abstract class BaseElement implements FormElementInterface
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function generateUniqueId()
     {
@@ -78,6 +79,7 @@ abstract class BaseElement implements FormElementInterface
      * @param string $name
      * @param string $label
      * @throws Exception
+     * @since 2.5.0
      */
     public function __construct($name, $label)
     {
@@ -88,14 +90,15 @@ abstract class BaseElement implements FormElementInterface
         $this->setName($name);
         $this->setLabel($label);
         $this->addOption('type', $this->getType());
+        $this->addOption('name', $this->getName());
     }
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public function build()
     {
-        $this->addOption('name', $this->getName());
         return $this->getOptions();
     }
 }

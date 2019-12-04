@@ -18,21 +18,25 @@ interface FormElementInterface
 {
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getType();
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getGroup();
 
     /**
-     * @return mixed
+     * @return string
+     * @since 2.5.0
      */
     public function getName();
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public function build();
 }

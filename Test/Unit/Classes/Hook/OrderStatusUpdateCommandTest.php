@@ -7,16 +7,16 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Test\Prestashop\Classes\Hook\OrderStatusPostUpdateCommand;
+namespace WirecardEE\Prestashop\Test\Classes\Hook\OrderStatusPostUpdateCommand;
 
-use WirecardEE\Prestashop\Classes\Hook\OrderStatusPostUpdateCommand;
+use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
 
 /**
- * Class OrderStatusPostUpdateCommandTest
+ * Class OrderStatusUpdateCommandTest
  * @package WirecardEE\Prestashop\Classes\Hook
- * @coversDefaultClass  \WirecardEE\Prestashop\Classes\Hook\OrderStatusPostUpdateCommand
+ * @coversDefaultClass  \WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand
  */
-class OrderStatusPostUpdateCommandTest extends \PHPUnit_Framework_TestCase
+class OrderStatusUpdateCommandTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @group unit
@@ -30,11 +30,11 @@ class OrderStatusPostUpdateCommandTest extends \PHPUnit_Framework_TestCase
 
         $orderState = new \OrderState();
         $orderState->name = 'shipped';
-        $command = new OrderStatusPostUpdateCommand($orderState, 123);
+        $command = new OrderStatusUpdateCommand($orderState, 123);
         $this->assertNotEmpty($command->getOrderState());
         $this->assertInstanceOf(\OrderState::class, $command->getOrderState());
         $this->assertNotEmpty($command->getOrderId());
-        $this->assertTrue(is_numeric($command->getOrderId()));
+        $this->assertInternalType('int', $command->getOrderId());
         $this->assertEquals(123, $command->getOrderId());
     }
 
@@ -48,7 +48,7 @@ class OrderStatusPostUpdateCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testThrowExceptionNotInstanceOfOrderState()
     {
-        $command = new OrderStatusPostUpdateCommand(null, 123);
+        new OrderStatusUpdateCommand(null, 123);
     }
 
     /**
@@ -58,10 +58,10 @@ class OrderStatusPostUpdateCommandTest extends \PHPUnit_Framework_TestCase
      * @expectedException \Exception
      * @throws \Exception
      */
-    public function testthrowExceptionNotNumericOrderID()
+    public function testThrowExceptionNotNumericOrderID()
     {
         $orderState = new \OrderState();
         $orderState->name = 'shipped';
-        $command = new OrderStatusPostUpdateCommand($orderState, "XYZ123");
+        new OrderStatusUpdateCommand($orderState, "XYZ123");
     }
 }

@@ -7,7 +7,7 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Test\Prestashop\Helper;
+namespace WirecardEE\Prestashop\Test\Helper;
 
 use WirecardEE\Prestashop\Helper\OptionHelper;
 
@@ -21,11 +21,11 @@ class OptionHelperTest extends \PHPUnit_Framework_TestCase
     /**
      * @var OptionHelper
      */
-    protected $object;
+    protected $optionHelper;
 
     protected function setUp()
     {
-        $this->object = $this->getMockForTrait(OptionHelper::class);
+        $this->optionHelper = $this->getMockForTrait(OptionHelper::class);
     }
 
     /**
@@ -35,8 +35,8 @@ class OptionHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddOption()
     {
-        $this->object->addOption('foo', 'bar');
-        $options = $this->object->getOptions();
+        $this->optionHelper->addOption('foo', 'bar');
+        $options = $this->optionHelper->getOptions();
         $this->assertArrayHasKey('foo', $options);
         $this->assertEquals('bar', $options['foo']);
     }
@@ -48,13 +48,13 @@ class OptionHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetOptions()
     {
-        $this->assertTrue(is_array($this->object->getOptions()));
-        $this->object->addOption('foo', 'bar');
-        $this->object->addOption('foo', 'bar');
-        $this->object->addOption('foo', 'bar');
-        $this->assertCount(1, $this->object->getOptions());
-        $this->object->addOption('bar', 'foo');
-        $this->assertCount(2, $this->object->getOptions());
+        $this->assertInternalType('array', $this->optionHelper->getOptions());
+        $this->optionHelper->addOption('foo', 'bar');
+        $this->optionHelper->addOption('foo', 'bar');
+        $this->optionHelper->addOption('foo', 'bar');
+        $this->assertCount(1, $this->optionHelper->getOptions());
+        $this->optionHelper->addOption('bar', 'foo');
+        $this->assertCount(2, $this->optionHelper->getOptions());
     }
 
     /**
@@ -64,9 +64,9 @@ class OptionHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetOption()
     {
-        $this->object->addOption('foo', 'bar');
-        $this->assertEquals('bar', $this->object->getOption('foo'));
-        $this->assertEquals(null, $this->object->getOption('baz'));
+        $this->optionHelper->addOption('foo', 'bar');
+        $this->assertEquals('bar', $this->optionHelper->getOption('foo'));
+        $this->assertEquals(null, $this->optionHelper->getOption('baz'));
     }
 
     /**
@@ -76,9 +76,9 @@ class OptionHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasOption()
     {
-        $this->object->addOption('foo', 'bar');
-        $this->assertEquals(true, $this->object->hasOption('foo'));
-        $this->assertEquals(false, $this->object->hasOption('baz'));
+        $this->optionHelper->addOption('foo', 'bar');
+        $this->assertEquals(true, $this->optionHelper->hasOption('foo'));
+        $this->assertEquals(false, $this->optionHelper->hasOption('baz'));
     }
 
     /**
@@ -88,12 +88,12 @@ class OptionHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testDeleteOption()
     {
-        $this->object->addOption('foo', 'bar');
-        $this->assertCount(1, $this->object->getOptions());
-        $deletedOption = $this->object->deleteOption('foo');
+        $this->optionHelper->addOption('foo', 'bar');
+        $this->assertCount(1, $this->optionHelper->getOptions());
+        $deletedOption = $this->optionHelper->deleteOption('foo');
         $this->assertEquals('bar', $deletedOption);
-        $this->assertCount(0, $this->object->getOptions());
-        $this->assertEquals(null, $this->object->deleteOption('foo'));
-        $this->assertEquals(null, $this->object->deleteOption('baz'));
+        $this->assertCount(0, $this->optionHelper->getOptions());
+        $this->assertEquals(null, $this->optionHelper->deleteOption('foo'));
+        $this->assertEquals(null, $this->optionHelper->deleteOption('baz'));
     }
 }

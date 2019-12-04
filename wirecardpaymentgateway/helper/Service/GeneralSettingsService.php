@@ -17,14 +17,18 @@ use Tools;
 /**
  * Class GeneralSettingsService
  *
- * @package WirecardEE\Prestashop\Helper\Service
  * @since 2.5.0
+ * @package WirzecardEE\Prestashop\Helper\Service
  */
 class GeneralSettingsService
 {
     use TranslationHelper;
 
+    /** @var string  */
     const WIRECARD_SETTING_PREFIX = "WIRECARD_PAYMENT_GATEWAY";
+
+    /** @var string */
+    const TRANSLATION_FILE = 'wirecardajax';
 
     /**
      * @var array
@@ -33,6 +37,7 @@ class GeneralSettingsService
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public function getErrors()
     {
@@ -41,6 +46,7 @@ class GeneralSettingsService
 
     /**
      * @param $error
+     * @since 2.5.0
      */
     public function addValidationError($error)
     {
@@ -52,6 +58,7 @@ class GeneralSettingsService
      * @param $settings
      * @return bool
      * @throws \PrestaShopException
+     * @since 2.5.0
      */
     public function validateInput($settings)
     {
@@ -69,6 +76,7 @@ class GeneralSettingsService
      * @param array $settings
      * @return bool
      * @throws \PrestaShopException
+     * @since 2.5.0
      */
     public function saveGeneralSettingsFromInput(array $settings)
     {

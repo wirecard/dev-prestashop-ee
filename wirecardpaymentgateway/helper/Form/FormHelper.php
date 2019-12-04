@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Helper\Form;
 
+use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\Form\Element\SubmitButton;
 use WirecardEE\Prestashop\Helper\Form\Element\SwitchInput;
 use Exception;
@@ -27,6 +28,7 @@ class FormHelper extends HelperForm
 
     /**
      * @return array|FormElementInterface[]
+     * @since 2.5.0
      */
     public function getElements()
     {
@@ -36,6 +38,7 @@ class FormHelper extends HelperForm
     /**
      * @param array|FormElementInterface $element
      * @return FormHelper
+     * @since 2.5.0
      */
     public function addElement(FormElementInterface $element)
     {
@@ -51,6 +54,7 @@ class FormHelper extends HelperForm
      * @param array $options
      * @return FormHelper
      * @throws Exception
+     * @since 2.5.0
      */
     public function addSwitchInput($fieldName, $label, $values = [], $options = [])
     {
@@ -62,6 +66,7 @@ class FormHelper extends HelperForm
      * @param string $fieldName
      * @param string $label
      * @throws Exception
+     * @since 2.5.0
      */
     public function addSubmitButton($fieldName, $label)
     {
@@ -70,16 +75,17 @@ class FormHelper extends HelperForm
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public function buildForm()
     {
         $elements = [];
         foreach ($this->getElements() as $formElement) {
-            if (in_array($formElement->getGroup(), Constants::getGroupTypesWithChildren())) {
+            if (in_array($formElement->getGroup(), FormConstants::getGroupTypesWithChildren())) {
                 $elements[$formElement->getGroup()][] = $formElement->build();
-            } else {
-                $elements[$formElement->getGroup()] = $formElement->build();
+                continue;
             }
+            $elements[$formElement->getGroup()] = $formElement->build();
         }
 
         return $elements;
@@ -87,12 +93,13 @@ class FormHelper extends HelperForm
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public function getFormValues()
     {
         $elementValues = [];
         foreach ($this->getElements() as $formElement) {
-            if (!in_array($formElement->getType(), Constants::getElementTypesWithValues())) {
+            if (!in_array($formElement->getType(), FormConstants::getElementTypesWithValues())) {
                 continue;
             }
             $elementValues[$formElement->getName()] = $this->getValueByElementName($formElement->getName());
@@ -103,6 +110,7 @@ class FormHelper extends HelperForm
     /**
      * @param mixed $name
      * @return int|string|mixed
+     * @since 2.5.0
      */
     protected function getValueByElementName($name)
     {

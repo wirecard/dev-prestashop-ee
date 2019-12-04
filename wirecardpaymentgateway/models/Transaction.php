@@ -16,15 +16,15 @@ use WirecardEE\Prestashop\Helper\TranslationHelper;
  * Basic Transaction class
  *
  * Class Transaction
- *
+ * @TODO: Abstract current model to entity and collection wrapper
  * @since 1.0.0
  */
 class Transaction extends \ObjectModel
 {
     use TranslationHelper;
 
-    const  TRANSACTION_STATE_OPEN = 'open';
-    const  TRANSACTION_STATE_CLOSED = 'closed';
+    /** @var string  */
+    const TRANSACTION_STATE_OPEN = 'open';
 
     /** @var string */
     const TRANSLATION_FILE = "transaction";
@@ -283,14 +283,7 @@ class Transaction extends \ObjectModel
 
     /**
      * @return bool
-     */
-    public function isParent()
-    {
-        return !empty($this->getParentTransactionId());
-    }
-
-    /**
-     * @return bool
+     * @since 2.5.0
      */
     public function isTransactionStateOpen()
     {

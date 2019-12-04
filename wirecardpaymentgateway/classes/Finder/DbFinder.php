@@ -14,6 +14,7 @@ use PrestaShop\PrestaShop\Adapter\Entity\DbQuery;
 
 /**
  * Class DbFinder
+ * @since 2.5.0
  * @package WirecardEE\Prestashop\Classes\Finder
  */
 class DbFinder
@@ -26,6 +27,10 @@ class DbFinder
      */
     private $database;
 
+    /**
+     * DbFinder constructor.
+     * @since 2.5.0
+     */
     public function __construct()
     {
         $this->database = Db::getInstance();
@@ -34,6 +39,7 @@ class DbFinder
 
     /**
      * @return array|\Db|Db
+     * @since 2.5.0
      */
     public function getDb()
     {
@@ -42,6 +48,7 @@ class DbFinder
 
     /**
      * @return DbQuery
+     * @since 2.5.0
      */
     public function getQueryBuilder()
     {

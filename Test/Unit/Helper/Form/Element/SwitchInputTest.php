@@ -7,11 +7,11 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Test\Prestashop\Helper\Form\Element;
+namespace WirecardEE\Prestashop\Test\Helper\Form\Element;
 
 require_once __DIR__ . '/../../../../../wirecardpaymentgateway/wirecardpaymentgateway.php';
 
-use WirecardEE\Prestashop\Helper\Form\Constants;
+use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\Form\Element\SwitchInput;
 
 /**
@@ -28,12 +28,12 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
     /**
      * @var SwitchInput
      */
-    protected $object;
+    protected $switchInput;
 
 
     protected function setUp()
     {
-        $this->object = new SwitchInput(self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL);
+        $this->switchInput = new SwitchInput(self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL);
     }
 
     /**
@@ -43,7 +43,7 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetType()
     {
-        $this->assertEquals(Constants::FORM_ELEMENT_TYPE_SWITCH, $this->object->getType());
+        $this->assertEquals(FormConstants::FORM_ELEMENT_TYPE_SWITCH, $this->switchInput->getType());
     }
 
     /**
@@ -53,7 +53,7 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetGroup()
     {
-        $this->assertEquals(Constants::FORM_GROUP_TYPE_INPUT, $this->object->getGroup());
+        $this->assertEquals(FormConstants::FORM_GROUP_TYPE_INPUT, $this->switchInput->getGroup());
     }
 
     /**
@@ -63,10 +63,10 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuild()
     {
-        $result = $this->object->build();
-        $this->assertTrue(is_array($result));
+        $result = $this->switchInput->build();
+        $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
-        $this->assertEquals($this->object->getOptions(), $result);
+        $this->assertEquals($this->switchInput->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
         $this->assertArrayHasKey("label", $result);
         $this->assertArrayHasKey("values", $result);
@@ -151,10 +151,10 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidateValues($data, $expectedResult, $message)
     {
-        $reflection = new \ReflectionClass(get_class($this->object));
+        $reflection = new \ReflectionClass(get_class($this->switchInput));
         $method = $reflection->getMethod('validateValues');
         $method->setAccessible(true);
-        $result = $method->invokeArgs($this->object, [$data]);
+        $result = $method->invokeArgs($this->switchInput, [$data]);
         $this->assertEquals($expectedResult, $result, $message);
     }
 
@@ -174,13 +174,13 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
             SwitchInput::ATTRIBUTE_ON => [$onLabel, $onValue],
             SwitchInput::ATTRIBUTE_OFF => [$offLabel, $offValue]
         ];
-        $reflection = new \ReflectionClass(get_class($this->object));
+        $reflection = new \ReflectionClass(get_class($this->switchInput));
         $method = $reflection->getMethod('loadValuesFromData');
         $method->setAccessible(true);
-        $method->invokeArgs($this->object, [$data]);
-        $this->assertEquals($offLabel, $this->object->getOffLabel());
-        $this->assertEquals($onLabel, $this->object->getOnLabel());
-        $this->assertEquals($onValue, $this->object->getOnValue());
-        $this->assertEquals($offValue, $this->object->getOffValue());
+        $method->invokeArgs($this->switchInput, [$data]);
+        $this->assertEquals($offLabel, $this->switchInput->getOffLabel());
+        $this->assertEquals($onLabel, $this->switchInput->getOnLabel());
+        $this->assertEquals($onValue, $this->switchInput->getOnValue());
+        $this->assertEquals($offValue, $this->switchInput->getOffValue());
     }
 }

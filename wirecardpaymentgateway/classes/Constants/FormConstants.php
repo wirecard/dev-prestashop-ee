@@ -7,23 +7,27 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Prestashop\Helper\Form;
+namespace WirecardEE\Prestashop\Classes\Constants;
 
 /**
- * Class Constants
+ * Class FormConstants
  * @since 2.5.0
- * @package WirecardEE\Prestashop\Helper\Form
+ * @package WirecardEE\Prestashop\Classes\Constants
  */
-class Constants
+class FormConstants
 {
+    /** @var string  */
     const FORM_GROUP_TYPE_INPUT = "input";
+    /** @var string  */
     const FORM_GROUP_TYPE_SUBMIT = "submit";
-
+    /** @var string  */
     const FORM_ELEMENT_TYPE_SWITCH = "switch";
+    /** @var string  */
     const FORM_ELEMENT_TYPE_SUBMIT = "submit";
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public static function getGroupTypesWithChildren()
     {
@@ -34,6 +38,7 @@ class Constants
 
     /**
      * @return array
+     * @since 2.5.0
      */
     public static function getElementTypesWithValues()
     {

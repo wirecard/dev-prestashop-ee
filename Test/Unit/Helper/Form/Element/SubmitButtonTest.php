@@ -7,9 +7,9 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Test\Prestashop\Helper\Form\Element;
+namespace WirecardEE\Prestashop\Test\Helper\Form\Element;
 
-use WirecardEE\Prestashop\Helper\Form\Constants;
+use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\Form\Element\SubmitButton;
 
 /**
@@ -23,15 +23,12 @@ class SubmitButtonTest extends \PHPUnit_Framework_TestCase
     const DEFAULT_ARG_NAME = "foo";
     const DEFAULT_ARG_LABEL = "bar";
 
-    /**
-     * @var SubmitButton
-     */
-    protected $object;
-
+    /** @var SubmitButton */
+    protected $submitButton;
 
     protected function setUp()
     {
-        $this->object = new SubmitButton(self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL);
+        $this->submitButton = new SubmitButton(self::DEFAULT_ARG_NAME, self::DEFAULT_ARG_LABEL);
     }
 
     /**
@@ -41,7 +38,7 @@ class SubmitButtonTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetType()
     {
-        $this->assertEquals(Constants::FORM_ELEMENT_TYPE_SUBMIT, $this->object->getType());
+        $this->assertEquals(FormConstants::FORM_ELEMENT_TYPE_SUBMIT, $this->submitButton->getType());
     }
 
     /**
@@ -51,7 +48,7 @@ class SubmitButtonTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetGroup()
     {
-        $this->assertEquals(Constants::FORM_GROUP_TYPE_SUBMIT, $this->object->getGroup());
+        $this->assertEquals(FormConstants::FORM_GROUP_TYPE_SUBMIT, $this->submitButton->getGroup());
     }
 
     /**
@@ -61,16 +58,16 @@ class SubmitButtonTest extends \PHPUnit_Framework_TestCase
      */
     public function testBuild()
     {
-        $result = $this->object->build();
-        $this->assertTrue(is_array($result));
+        $result = $this->submitButton->build();
+        $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
         $expectedResult = [
             'name' => self::DEFAULT_ARG_NAME,
             'title' => self::DEFAULT_ARG_LABEL,
-            'type' => $this->object->getType()
+            'type' => $this->submitButton->getType()
         ];
         $this->assertEquals($expectedResult, $result);
-        $this->assertEquals($this->object->getOptions(), $result);
+        $this->assertEquals($this->submitButton->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
         $this->assertArrayHasKey("title", $result);
     }

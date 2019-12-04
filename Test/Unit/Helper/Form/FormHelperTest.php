@@ -7,11 +7,11 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-namespace WirecardEE\Test\Prestashop\Helper\Form\Element;
+namespace WirecardEE\Prestashop\Test\Helper\Form\Element;
 
 require_once __DIR__ . '/../../../../wirecardpaymentgateway/wirecardpaymentgateway.php';
 
-use WirecardEE\Prestashop\Helper\Form\Constants;
+use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\Form\Element\SubmitButton;
 use WirecardEE\Prestashop\Helper\Form\Element\SwitchInput;
 use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
@@ -27,12 +27,12 @@ class FormHelperTest extends \PHPUnit_Framework_TestCase
     /**
      * @var FormHelper
      */
-    protected $object;
+    protected $formHelper;
 
 
     protected function setUp()
     {
-        $this->object = new FormHelper();
+        $this->formHelper = new FormHelper();
     }
 
     /**
@@ -42,7 +42,7 @@ class FormHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnInit()
     {
-        $this->assertCount(0, $this->object->getElements());
+        $this->assertCount(0, $this->formHelper->getElements());
     }
 
     /**
@@ -52,13 +52,13 @@ class FormHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddElement()
     {
-        $this->assertCount(0, $this->object->getElements());
+        $this->assertCount(0, $this->formHelper->getElements());
         $submitBtn = new SubmitButton("test", "test1");
-        $this->object->addElement($submitBtn);
-        $this->assertNotEmpty($this->object->getElements());
-        $this->assertCount(1, $this->object->getElements());
+        $this->formHelper->addElement($submitBtn);
+        $this->assertNotEmpty($this->formHelper->getElements());
+        $this->assertCount(1, $this->formHelper->getElements());
 
-        $this->assertInstanceOf(FormElementInterface::class, $this->object->getElements()[0]);
+        $this->assertInstanceOf(FormElementInterface::class, $this->formHelper->getElements()[0]);
     }
 
     /**
@@ -69,15 +69,15 @@ class FormHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddSubmitButton()
     {
-        $this->assertCount(0, $this->object->getElements());
+        $this->assertCount(0, $this->formHelper->getElements());
         $fieldName = "testFieldName";
         $fieldLabel = "foo";
         $submitBtn = new SubmitButton($fieldName, $fieldLabel);
-        $this->object->addSubmitButton($fieldName, $fieldLabel);
-        $this->assertCount(1, $this->object->getElements());
-        $element = $this->object->getElements()[0];
-        $this->assertEquals(Constants::FORM_GROUP_TYPE_SUBMIT, $element->getGroup());
-        $this->assertEquals(Constants::FORM_ELEMENT_TYPE_SUBMIT, $element->getType());
+        $this->formHelper->addSubmitButton($fieldName, $fieldLabel);
+        $this->assertCount(1, $this->formHelper->getElements());
+        $element = $this->formHelper->getElements()[0];
+        $this->assertEquals(FormConstants::FORM_GROUP_TYPE_SUBMIT, $element->getGroup());
+        $this->assertEquals(FormConstants::FORM_ELEMENT_TYPE_SUBMIT, $element->getType());
         $this->assertInstanceOf(FormElementInterface::class, $element);
         $this->assertEquals($submitBtn, $element);
     }
@@ -92,13 +92,13 @@ class FormHelperTest extends \PHPUnit_Framework_TestCase
     {
         $fieldName = "testFieldName";
         $fieldLabel = "foo";
-        $this->assertCount(0, $this->object->getElements());
+        $this->assertCount(0, $this->formHelper->getElements());
         $switchItem = new SwitchInput($fieldName, $fieldLabel);
-        $this->object->addSwitchInput($fieldName, $fieldLabel);
-        $this->assertCount(1, $this->object->getElements());
-        $element = $this->object->getElements()[0];
-        $this->assertEquals(Constants::FORM_GROUP_TYPE_INPUT, $element->getGroup());
-        $this->assertEquals(Constants::FORM_ELEMENT_TYPE_SWITCH, $element->getType());
+        $this->formHelper->addSwitchInput($fieldName, $fieldLabel);
+        $this->assertCount(1, $this->formHelper->getElements());
+        $element = $this->formHelper->getElements()[0];
+        $this->assertEquals(FormConstants::FORM_GROUP_TYPE_INPUT, $element->getGroup());
+        $this->assertEquals(FormConstants::FORM_ELEMENT_TYPE_SWITCH, $element->getType());
         $this->assertInstanceOf(FormElementInterface::class, $element);
         $this->assertEquals($switchItem, $element);
     }
@@ -166,10 +166,10 @@ class FormHelperTest extends \PHPUnit_Framework_TestCase
     public function testBuildForm($elements, $has_input, $has_submit, $input_count)
     {
         foreach ($elements as $element) {
-            $this->object->addElement($element);
+            $this->formHelper->addElement($element);
         }
 
-        $result = $this->object->buildForm();
+        $result = $this->formHelper->buildForm();
 
         $this->assertTrue(is_array($result));
         $this->assertEquals($has_input, isset($result['input']));
@@ -185,20 +185,20 @@ class FormHelperTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetFormValues()
     {
-        $result = $this->object->getFormValues();
+        $result = $this->formHelper->getFormValues();
         $this->assertEmpty($result);
-        $this->object->addSubmitButton("foo", "bar");
-        $result = $this->object->getFormValues();
+        $this->formHelper->addSubmitButton("foo", "bar");
+        $result = $this->formHelper->getFormValues();
         $this->assertEmpty($result);
-        $this->object->addSwitchInput("fooSwitch", "barSwitch");
+        $this->formHelper->addSwitchInput("fooSwitch", "barSwitch");
 
-        $result = $this->object->getFormValues();
+        $result = $this->formHelper->getFormValues();
         $this->assertNotEmpty($result);
         $this->assertEquals(array (
             'fooSwitch' => 'fooSwitch'
         ), $result);
-        $this->object->addSwitchInput("fooSwitch1", "barSwitch1");
-        $result = $this->object->getFormValues();
+        $this->formHelper->addSwitchInput("fooSwitch1", "barSwitch1");
+        $result = $this->formHelper->getFormValues();
         $this->assertEquals(array (
             'fooSwitch' => 'fooSwitch',
             'fooSwitch1' => 'fooSwitch1',

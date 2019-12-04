@@ -13,6 +13,7 @@ use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class TransactionFinder
+ * @since 2.5.0
  * @package WirecardEE\Prestashop\Classes\Finder
  */
 class TransactionFinder extends DbFinder
@@ -22,6 +23,7 @@ class TransactionFinder extends DbFinder
      * @return Transaction|null
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
+     * @since 2.5.0
      */
     public function getCurrentTransactionByOrderId($orderId)
     {
@@ -51,6 +53,7 @@ class TransactionFinder extends DbFinder
      * @return Transaction
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
+     * @since 2.5.0
      */
     public function getTransactionById($transaction_id)
     {

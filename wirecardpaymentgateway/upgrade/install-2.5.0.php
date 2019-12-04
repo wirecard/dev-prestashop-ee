@@ -28,8 +28,6 @@ function upgrade_module_2_5_0($module)
     $module->installTabs();
     $module->registerHook('postUpdateOrderStatus');
     $module->registerHook('updateOrderStatus');
-    // Set new settings
-    // Configuration::updateValue();
 
     return true;
 }

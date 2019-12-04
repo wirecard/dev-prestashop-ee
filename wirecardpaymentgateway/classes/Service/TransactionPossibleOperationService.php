@@ -14,6 +14,7 @@ use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
@@ -42,6 +43,7 @@ class TransactionPossibleOperationService implements ServiceInterface
      * TransactionPossibleOperationService constructor.
      * @param Transaction $transaction
      * @throws Exception
+     * @since 2.5.0
      */
     public function __construct($transaction)
     {
@@ -52,32 +54,55 @@ class TransactionPossibleOperationService implements ServiceInterface
     }
 
     /**
-     * @param bool $format
-     * @return array|bool
+     * @return BackendService
+     * @since 2.5.0
      */
-    public function getPossibleOperationList($format = true)
+    private function getBackendService()
+    {
+        return new BackendService($this->getPaymentConfig(), new WirecardLogger());
+    }
+
+    /**
+     * @return ShopConfigurationService
+     * @since 2.5.0
+     */
+    private function getShopConfigurationService()
+    {
+        return new ShopConfigurationService($this->transaction->getPaymentMethod());
+    }
+
+    /**
+     * @return \Wirecard\PaymentSdk\Config\Config
+     * @since 2.5.0
+     */
+    private function getPaymentConfig()
+    {
+        return (new PaymentConfigurationFactory($this->getShopConfigurationService()))->createConfig();
+    }
+
+    /**
+     * @param bool $returnTemplateFormat
+     * @return array|bool
+     * @since 2.5.0
+     */
+    public function getPossibleOperationList($returnTemplateFormat = true)
     {
         $possible_operations = [];
-        $shop_config_service = new ShopConfigurationService($this->transaction->getPaymentMethod());
         $payment_model = PaymentProvider::getPayment($this->transaction->getPaymentMethod());
-
-        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-        $backend_service = new BackendService($payment_config, new WirecardLogger());
-
         try {
             $transaction = $payment_model->createTransactionInstance();
             $transaction->setParentTransactionId($this->transaction->getTransactionId());
-            $result = $backend_service->retrieveBackendOperations($transaction, true);
+            $result = $this->getBackendService()->retrieveBackendOperations($transaction, true);
             if (is_array($result)) {
                 $possible_operations = $result;
             }
         } catch (Exception $exception) {
-            $possible_operations = [];
+            (new Logger())->error($exception->getMessage());
         }
 
         // We no longer support Masterpass
-        if ($format && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
-            $possible_operations = $this->formatOperations($possible_operations);
+        if ($returnTemplateFormat && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
+            $possible_operations = $this->getOperationsForTemplate($possible_operations);
         }
 
         return $possible_operations;
@@ -88,9 +113,9 @@ class TransactionPossibleOperationService implements ServiceInterface
      *
      * @param array $possible_operations
      * @return array
-     * @since 2.4.0
+     * @since 2.5.0
      */
-    private function formatOperations(array $possible_operations)
+    private function getOperationsForTemplate(array $possible_operations)
     {
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
@@ -117,5 +142,17 @@ class TransactionPossibleOperationService implements ServiceInterface
         }
 
         return $operations;
+    }
+
+    /**
+     * @param string $operation
+     * @return bool
+     * @throws Exception
+     * @since 2.5.0
+     */
+    public function isOperationPossible($operation)
+    {
+        $operations = $this->getPossibleOperationList(false);
+        return in_array($operation, array_keys($operations), true);
     }
 }

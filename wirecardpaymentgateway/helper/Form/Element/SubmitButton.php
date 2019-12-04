@@ -10,7 +10,7 @@
 
 namespace WirecardEE\Prestashop\Helper\Form\Element;
 
-use WirecardEE\Prestashop\Helper\Form\Constants;
+use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 
 /**
  * Class SubmitButton
@@ -21,20 +21,26 @@ class SubmitButton extends BaseElement
 {
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getType()
     {
-        return Constants::FORM_ELEMENT_TYPE_SUBMIT;
+        return FormConstants::FORM_ELEMENT_TYPE_SUBMIT;
     }
 
     /**
      * @return string
+     * @since 2.5.0
      */
     public function getGroup()
     {
-        return Constants::FORM_GROUP_TYPE_SUBMIT;
+        return FormConstants::FORM_GROUP_TYPE_SUBMIT;
     }
 
+    /**
+     * @return array
+     * @since 2.5.0
+     */
     public function build()
     {
         parent::build();
