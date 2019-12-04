@@ -38,6 +38,11 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     private $operation;
 
     /**
+     * @var float
+     */
+    private $delta_amount;
+
+    /**
      * PostProcessingTransactionBuilder constructor.
      * @param Payment $paymentMethod
      * @param TransactionModel $transaction
@@ -47,6 +52,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         $this->paymentMethod = $paymentMethod;
         $this->transactionModel = $transaction;
+        $this->delta_amount = $transaction->getAmount();
     }
 
     /**
@@ -64,6 +70,18 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     }
 
     /**
+     * @param float $delta_amount
+     * @return $this
+     */
+    public function setDeltaAmount($delta_amount)
+    {
+        //TODO: check, throw exception
+        $this->delta_amount = $delta_amount;
+
+        return $this;
+    }
+
+    /**
      * Builds the transaction
      *
      * @throws \Exception
@@ -76,6 +94,9 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
         $transaction = $this->paymentMethod->createTransactionInstance($this->operation);
         $transaction = $this->addPostProcessingMandatoryData($transaction);
         $transaction = $this->addPaymentMethodPostProcessingMandatoryData($transaction);
+        $total_amount = $transaction->getAmount()->getValue();
+        $delta = $this->delta_amount;
+        error_log("total amount: $total_amount delta: $delta");
 
         return $transaction;
     }
@@ -91,7 +112,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         $transaction->setAmount(
             new Amount(
-                (float) $this->transactionModel->getAmount(),
+                (float) $this->delta_amount,
                 $this->transactionModel->getCurrency()
             )
         );

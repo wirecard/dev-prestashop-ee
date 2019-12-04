@@ -73,8 +73,7 @@ final class Success implements ProcessablePaymentNotification
             Transaction::create(
                 $this->order->id,
                 $this->order->id_cart,
-                $amount->getValue(),
-                $amount->getCurrency(),
+                $amount,
                 $this->notification,
                 $this->order_manager->getTransactionState($this->notification),
                 $this->order->reference

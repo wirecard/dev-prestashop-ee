@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\Response;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
@@ -53,6 +54,29 @@ class Transaction extends \ObjectModel
     public $created;
 
     public $modified;
+
+    /**
+     * @see ObjectModel::$definition
+     */
+    public static $definition = array(
+        'table' => 'wirecard_payment_gateway_tx',
+        'primary' => 'tx_id',
+        'fields' => array(
+            'transaction_id' => array('type' => self::TYPE_STRING),
+            'parent_transaction_id' => array('type' => self::TYPE_STRING),
+            'order_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
+            'cart_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
+            'ordernumber' => array('type' => self::TYPE_STRING),
+            'paymentmethod' => array('type' => self::TYPE_STRING, 'required' => true),
+            'transaction_type' => array('type' => self::TYPE_STRING, 'required' => true),
+            'transaction_state' => array('type' => self::TYPE_STRING, 'required' => true),
+            'amount' => array('type' => self::TYPE_FLOAT, 'required' => true),
+            'currency' => array('type' => self::TYPE_STRING, 'required' => true),
+            'response' => array('type' => self::TYPE_STRING),
+            'created' => array('type' => self::TYPE_DATE, 'required' => true),
+            'modified' => array('type' => self::TYPE_DATE),
+        ),
+    );
 
     /**
      * @return string
@@ -278,36 +302,13 @@ class Transaction extends \ObjectModel
         $this->modified = $modified;
     }
 
-    /**
-     * @see ObjectModel::$definition
-     */
-    public static $definition = array(
-        'table' => 'wirecard_payment_gateway_tx',
-        'primary' => 'tx_id',
-        'fields' => array(
-            'transaction_id' => array('type' => self::TYPE_STRING),
-            'parent_transaction_id' => array('type' => self::TYPE_STRING),
-            'order_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'cart_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'ordernumber' => array('type' => self::TYPE_STRING),
-            'paymentmethod' => array('type' => self::TYPE_STRING, 'required' => true),
-            'transaction_type' => array('type' => self::TYPE_STRING, 'required' => true),
-            'transaction_state' => array('type' => self::TYPE_STRING, 'required' => true),
-            'amount' => array('type' => self::TYPE_FLOAT, 'required' => true),
-            'currency' => array('type' => self::TYPE_STRING, 'required' => true),
-            'response' => array('type' => self::TYPE_STRING),
-            'created' => array('type' => self::TYPE_DATE, 'required' => true),
-            'modified' => array('type' => self::TYPE_DATE),
-        ),
-    );
 
     /**
      * Create transaction in wirecard_payment_gateway_tx
      *
      * @param int $idOrder
      * @param int $idCart
-     * @param float $amount
-     * @param string $currency
+     * @param Amount $amount
      * @param string $transactionState
      * @param string $orderNumber
      * @param Response $response
@@ -318,7 +319,6 @@ class Transaction extends \ObjectModel
         $idOrder,
         $idCart,
         $amount,
-        $currency,
         $response,
         $transactionState,
         $orderNumber = null
@@ -339,8 +339,8 @@ class Transaction extends \ObjectModel
             'paymentmethod' => pSQL($response->getPaymentMethod()),
             'transaction_state' => pSQL($transactionState),
             'transaction_type' => pSQL($response->getTransactionType()),
-            'amount' => (float)$amount,
-            'currency' => pSQL($currency),
+            'amount' => (float)$amount->getValue(),
+            'currency' => pSQL($amount->getCurrency()),
             'response' => pSQL(json_encode($response->getData())),
             'created' => 'NOW()'
         ));
@@ -365,6 +365,23 @@ class Transaction extends \ObjectModel
         $query->from('wirecard_payment_gateway_tx')->where('transaction_id = ' . (int)$transactionId);
 
         return \Db::getInstance()->getRow($query);
+    }
+
+    /**
+     * @return Transaction[]
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    public function getAllChildTransactions() {
+        $parent_id = $this->getTransactionId();
+        $query = new \DbQuery();
+        $query->from('wirecard_payment_gateway_tx')->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
+        $children = [];
+        $rows = \Db::getInstance()->executeS($query);
+        foreach ($rows as $row) {
+            $children[] = new Transaction($row['tx_id']);
+        }
+        return $children;
     }
 
     public function getFieldList()
@@ -419,4 +436,16 @@ class Transaction extends \ObjectModel
 
         );
     }
+
+    public function getProcessedAmount()
+    {
+        $childTransactions = $this->getAllChildTransactions();
+        $processed = 0;
+        foreach ($childTransactions as $child) {
+            //TODO: consider all children?
+            $processed += $child->getAmount();
+        }
+        return $processed;
+    }
+
 }

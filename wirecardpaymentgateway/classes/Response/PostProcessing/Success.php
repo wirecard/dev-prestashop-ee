@@ -11,10 +11,14 @@ namespace WirecardEE\Prestashop\Classes\Response\PostProcessing;
 
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Models\Transaction;
 
 class Success extends SuccessAbstract
 {
+
+    use NumericHelper;
     /**
      * @var DBTransactionManager
      */
@@ -48,7 +52,12 @@ class Success extends SuccessAbstract
 
         $transaction_id = \Tools::getValue('tx_id');
 
-        $this->transaction_manager->markTransactionClosed($transaction_id);
+        $transaction = new Transaction($transaction_id);
+        $processedAmount = $transaction->getProcessedAmount();
+        $transactionAmount = $transaction->getAmount();
+        if ($this->equals($processedAmount, $transactionAmount)) {
+            $this->transaction_manager->markTransactionClosed($transaction_id);
+        }
         $this->context_service->setConfirmations(
             $this->getTranslatedString('success_new_transaction')
         );

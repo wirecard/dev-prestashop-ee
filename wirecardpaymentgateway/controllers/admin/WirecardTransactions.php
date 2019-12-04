@@ -74,6 +74,7 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $this->validateTransaction($this->object);
         $transaction_data = $this->mapTransactionDataToArray($this->object);
+
         $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
         $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
 
@@ -96,13 +97,22 @@ class WirecardTransactionsController extends ModuleAdminController
             ? []
             : $this->formatOperations($possible_operations);
 
+        $transaction = new Transaction($this->object->tx_id);
+        $remaining_delta_amount = $transaction->getAmount() - $transaction->getProcessedAmount();
+        $transaction_amount = $transaction->getAmount();
+        $processed_amount = $transaction->getProcessedAmount();
+        $child_transactions = $transaction->getAllChildTransactions();
         // These variables are available in the Smarty context
+        $amounts = compact('remaining_delta_amount', 'transaction_amount', 'processed_amount');
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
             'back_link' => (new Link())->getAdminLink('WirecardTransactions', true),
             'payment_method' => $payment_model->getName(),
             'possible_operations' => $operations,
             'transaction' => $transaction_data,
+            //'child_transactions' => $child_transactions,
+            //'amounts' => $amounts,
+            'remaining_delta_amount' => $remaining_delta_amount,
         );
 
         return parent::renderView();
@@ -118,6 +128,7 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $operation = \Tools::getValue('operation');
         $transaction_id = \Tools::getValue('transaction');
+        $delta_amount = \Tools::getValue('partial-delta-amount');
 
         // This prevents the function from running on the list page
         if (!$operation || !$transaction_id) {
@@ -133,6 +144,7 @@ class WirecardTransactionsController extends ModuleAdminController
         try {
             $transaction = $postProcessingTransactionBuilder
                 ->setOperation($operation)
+                ->setDeltaAmount($delta_amount)
                 ->build();
 
             $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
