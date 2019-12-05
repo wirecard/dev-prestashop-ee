@@ -223,14 +223,14 @@ class SwitchInput extends BaseElement
      */
     protected function initValuesFromData(array $data)
     {
-        foreach ($data as $key => $values) {
-            if ($key == self::ATTRIBUTE_OFF) {
-                $this->setOffLabel($data[$key][0]);
-                $this->setOffValue($data[$key][1]);
+        foreach (array_keys($data) as $property) {
+            if ($property == self::ATTRIBUTE_OFF) {
+                $this->setOffLabel($data[$property][0]);
+                $this->setOffValue($data[$property][1]);
             }
-            if ($key == self::ATTRIBUTE_ON) {
-                $this->setOnLabel($data[$key][0]);
-                $this->setOnValue($data[$key][1]);
+            if ($property == self::ATTRIBUTE_ON) {
+                $this->setOnLabel($data[$property][0]);
+                $this->setOnValue($data[$property][1]);
             }
         }
 

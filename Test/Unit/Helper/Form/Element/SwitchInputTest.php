@@ -164,7 +164,7 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
      * @covers ::initValuesFromData
      * @throws \ReflectionException
      */
-    public function testLoadValuesFromData()
+    public function testInitValuesFromData()
     {
         $onLabel = 'foo';
         $offLabel = 'bar';
@@ -175,7 +175,7 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
             SwitchInput::ATTRIBUTE_OFF => [$offLabel, $offValue]
         ];
         $reflection = new \ReflectionClass(get_class($this->switchInput));
-        $method = $reflection->getMethod('loadValuesFromData');
+        $method = $reflection->getMethod('initValuesFromData');
         $method->setAccessible(true);
         $method->invokeArgs($this->switchInput, [$data]);
         $this->assertEquals($offLabel, $this->switchInput->getOffLabel());
