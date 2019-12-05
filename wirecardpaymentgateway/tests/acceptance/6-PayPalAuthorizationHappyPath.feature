@@ -14,7 +14,7 @@ Feature: PayPalAuthorizationHappyPath
     Then I select "Wirecard PayPal"
 
   @env ui_test @patch @minor @major
-  Scenario: purchase
+  Scenario: authorization
     Given I check "I agree to the terms of service"
     And I click "Order with an obligation to pay"
     And I am redirected to "Pay Pal Log In" page
