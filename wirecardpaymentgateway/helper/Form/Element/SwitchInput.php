@@ -191,7 +191,7 @@ class SwitchInput extends BaseElement
             throw new Exception('Wrong input!'); // todo: translation
         }
 
-        $this->loadValuesFromData($values);
+        $this->initValuesFromData($values);
         $this->setOptions(array_merge($this->getOptions(), $options));
     }
 
@@ -221,7 +221,7 @@ class SwitchInput extends BaseElement
      * @return SwitchInput
      * @since 2.5.0
      */
-    protected function loadValuesFromData(array $data)
+    protected function initValuesFromData(array $data)
     {
         foreach ($data as $key => $values) {
             if ($key == self::ATTRIBUTE_OFF) {
@@ -235,10 +235,6 @@ class SwitchInput extends BaseElement
         }
 
         return $this;
-    }
-
-    private function initValuesFromData($toggleKey, array $data) {
-
     }
 
     /**

@@ -161,7 +161,7 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
     /**
      * @group unit
      * @small
-     * @covers ::loadValuesFromData
+     * @covers ::initValuesFromData
      * @throws \ReflectionException
      */
     public function testLoadValuesFromData()

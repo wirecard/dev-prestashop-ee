@@ -84,7 +84,7 @@ abstract class BaseElement implements FormElementInterface
     public function __construct($name, $label)
     {
         if (empty($name) || empty($label)) {
-            throw new Exception('Wrong input!'); // translation
+            throw new Exception("Either 'name' or 'label' property is missing or invalid.");
         }
 
         $this->setName($name);

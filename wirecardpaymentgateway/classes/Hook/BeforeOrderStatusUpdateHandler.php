@@ -11,14 +11,13 @@ namespace WirecardEE\Prestashop\Classes\Hook;
 
 use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
-use \WirecardEE\Prestashop\Classes\Config\Constants;
+use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
 use Configuration;
 use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
 use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use Exception;
-use WirecardEE\Prestashop\Classes\Service\TransactionService;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -60,7 +59,7 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
      */
     private function isAutoCaptureEnabled()
     {
-        return intval(Configuration::get(Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED));
+        return intval(Configuration::get(ConfigConstants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED));
     }
 
     /**

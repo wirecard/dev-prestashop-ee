@@ -7,9 +7,8 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Classes\Config\Constants;
+use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
 use WirecardEE\Prestashop\Helper\Form\FormHelper;
 use WirecardEE\Prestashop\Helper\Service\GeneralSettingsService;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
@@ -26,11 +25,14 @@ class WirecardGeneralSettingsController extends ModuleAdminController
     /** @var string */
     const TRANSLATION_FILE = "wirecardgeneralsettings";
 
-    /** @var string  */
+    /** @var string */
     const FORM_SUBMIT_ID = "send_request";
 
-    /** @var string  */
+    /** @var string */
     const DISPLAY_VIEW_NAME_ADD = "add";
+
+    /** @var ContextService */
+    protected $context_service;
 
     /**
      * WirecardGeneralSettingsController constructor.
@@ -39,7 +41,8 @@ class WirecardGeneralSettingsController extends ModuleAdminController
      */
     public function __construct()
     {
-        $this->context = new ContextService(Context::getContext());
+        $this->context = Context::getContext();
+        $this->context_service = new ContextService(Context::getContext());
         $this->module = Module::getInstanceByName('wirecardpaymentgateway');
         $this->bootstrap = true;
         $this->tpl_form_vars['back_url'] = $this->context->link->getAdminLink('AdminModules') . '&configure=' .
@@ -80,13 +83,13 @@ class WirecardGeneralSettingsController extends ModuleAdminController
     {
         $formHelper = new FormHelper();
         $formHelper->addSwitchInput(
-            Constants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED,
+            ConfigConstants::SETTING_GENERAL_AUTOMATIC_CAPTURE_ENABLED,
             $this->getTranslatedString('text_automatic_capture_enabled'), // @TODO: Translation
             [],  // default values
             ['desc' => $this->getTranslatedString('text_automatic_capture_description')]  // @TODO: Translation
         );
         $formHelper->addSwitchInput(
-            Constants::SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED,
+            ConfigConstants::SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED,
             $this->getTranslatedString('text_force_order_state_change_enabled'), // @TODO: Translation
             [],  // default values
             ['desc' => $this->getTranslatedString('text_force_order_state_change_description')]  // @TODO: Translation
