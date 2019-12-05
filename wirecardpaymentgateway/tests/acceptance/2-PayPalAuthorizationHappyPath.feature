@@ -17,8 +17,6 @@ Feature: PayPalAuthorizationHappyPath
   Scenario: authorization
     Given I check "I agree to the terms of service"
     And I click "Order with an obligation to pay"
-    And I am redirected to "Pay Pal Log In" page
-    And I login to Paypal
     When I am redirected to "Pay Pal Review" page
     And I click "Continue"
     And I click "Pay Now"
