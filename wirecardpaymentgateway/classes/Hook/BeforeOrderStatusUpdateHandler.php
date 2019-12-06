@@ -63,6 +63,15 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
     }
 
     /**
+     * @return int
+     * @since 2.5.0
+     */
+    private function isForceOrderStateChangeAllowed()
+    {
+        return intval(Configuration::get(ConfigConstants::SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED));
+    }
+
+    /**
      * @return bool
      * @throws Exception
      * @since 2.5.0
@@ -78,13 +87,32 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
      * @throws Exception
      * @since 2.5.0
      */
-    public function isTransactionPayable($transaction)
+    protected function isTransactionPayable($transaction)
     {
         if (is_null($transaction) || !$transaction->isTransactionStateOpen()) {
             return false;
         }
 
         return (new TransactionPossibleOperationService($transaction))->isOperationPossible(Operation::PAY);
+    }
+
+    /**
+     * @param string $operation
+     * @param Transaction $transaction
+     * @since 2.5.0
+     */
+    protected function handlePostProcessing($operation, $transaction)
+    {
+        $postProcessingService = new TransactionPostProcessingService($operation, $transaction->getTxId());
+        $postProcessingService->process();
+
+//        if ($postProcessingService->getErrors() && !$this->isForceOrderStateChangeAllowed()) {
+//            $context = \Context::getContext();
+//            $context_service = new ContextService($context);
+//            $context_service->redirectWithError($postProcessingService->getErrors(), 'order');
+        //
+//            //throw new \Exception("{Payment fail. Break and prevent change status to shipped.}");
+//        }
     }
 
     /**
@@ -102,11 +130,7 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
         $transaction = (new TransactionFinder())->getCurrentTransactionByOrderId($this->command->getOrderId());
 
         if ($this->isTransactionPayable($transaction)) {
-            $postProcessingService = new TransactionPostProcessingService(
-                Operation::PAY,
-                $transaction->getTxId()
-            );
-            $postProcessingService->process();
+            $this->handlePostProcessing(Operation::PAY, $transaction);
         }
     }
 
