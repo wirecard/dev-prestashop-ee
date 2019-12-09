@@ -82,7 +82,8 @@ class WirecardTransactionsController extends ModuleAdminController
     public function renderView()
     {
         $this->validateTransaction($this->object);
-        $transaction_data = $this->mapTransactionDataToArray($this->object);
+        $transactionModel = new Transaction($this->object->tx_id);
+        $transaction_data = $this->mapTransactionDataToArray($transactionModel);
 
         $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
         $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
@@ -106,15 +107,15 @@ class WirecardTransactionsController extends ModuleAdminController
             ? []
             : $this->formatOperations($possible_operations);
 
-        $transaction = new Transaction($this->object->tx_id);
-        $transaction_amount = $transaction->getAmount();
-        $processed_amount = $transaction->getProcessedAmount();
+
+        $transaction_amount = $transactionModel->getAmount();
+        $processed_amount = $transactionModel->getProcessedAmount();
         if($this->hasProcessedAmount()) {
             $processed_amount = $this->processed_amount;
         }
         $remaining_delta_amount = $transaction_amount - $processed_amount;
 
-        $child_transactions = $transaction->getAllChildTransactions();
+        $child_transactions = $transactionModel->getAllChildTransactions();
         // These variables are available in the Smarty context
         $amounts = compact('remaining_delta_amount', 'transaction_amount', 'processed_amount');
         $this->tpl_view_vars = array(
@@ -149,6 +150,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $delta_amount = \Tools::getValue('partial-delta-amount');
 
         $parentTransaction = new Transaction($transaction_id);
+        $this->object = $parentTransaction;
         $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
             PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
             $parentTransaction
@@ -176,8 +178,7 @@ class WirecardTransactionsController extends ModuleAdminController
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
             $this->processed_amount = $parentTransaction->getProcessedAmount();
-            $p = $this->processed_amount;
-            error_log("\t\t\t processed: $p");
+            $parentTransaction->clearCache();
         } catch (\Exception $e) {
             $this->errors[] = \Tools::displayError(
                 $e->getMessage()
@@ -201,19 +202,19 @@ class WirecardTransactionsController extends ModuleAdminController
      * @return array
      * @since 2.4.0
      */
-    private function mapTransactionDataToArray($data)
+    private function mapTransactionDataToArray(Transaction $data)
     {
         return array(
-            'tx'             => $data->tx_id,
-            'id'             => $data->transaction_id,
-            'type'           => $data->transaction_type,
-            'status'         => $data->transaction_state,
-            'amount'         => $data->amount,
-            'currency'       => $data->currency,
-            'response'       => json_decode($data->response),
-            'payment_method' => $data->paymentmethod,
-            'order'          => $data->ordernumber,
-            'badge'          => $data->transaction_state === 'open' ? 'green' : 'red',
+            'tx'             => $data->getTxId(),
+            'id'             => $data->getTransactionId(),
+            'type'           => $data->getTransactionType(),
+            'status'         => $data->getTransactionState(),
+            'amount'         => $data->getAmount(),
+            'currency'       => $data->getCurrency(),
+            'response'       => json_decode($data->getResponse()),
+            'payment_method' => $data->getPaymentMethod(),
+            'order'          => $data->getOrderNumber(),
+            'badge'          => $data->getTransactionState() === 'open' ? 'green' : 'red',
         );
     }
 
@@ -245,7 +246,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
         $translations = [
-            //@TODO add constant to paymentSDK
+            //@TODO add constant to paymentSDK once TPWDCEE-5672 is implemented
             'capture' => $this->getTranslatedString('text_capture_transaction'),
             Operation::CANCEL => $this->getTranslatedString('text_cancel_transaction'),
             Operation::REFUND => $this->getTranslatedString('text_refund_transaction'),

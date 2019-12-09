@@ -330,23 +330,49 @@ class Transaction extends \ObjectModel
             $parentTransactionId = $response->getParentTransactionId();
         }
 
-        $db->insert('wirecard_payment_gateway_tx', array(
+        //TODO: change this once TPWDCEE-5667 is implemented in the SDK
+        $paymentMethod = $response->getPaymentMethod();
+        if(!$paymentMethod) {
+            $data = $response->getData();
+            $paymentMethod = $data['payment-method'];
+        }
+
+        $tx_id = null;
+        $transactionExists = false;
+
+        $tempTransaction = new Transaction();
+        if ($tempTransaction->get($response->getTransactionId())) {
+            $tx_id = $tempTransaction->getTxId();
+            $transactionExists = true;
+        }
+
+        $data = [
             'transaction_id' => pSQL($response->getTransactionId()),
             'parent_transaction_id' => pSQL($parentTransactionId),
             'order_id' => $idOrder === null ? 'NULL' : (int)$idOrder,
             'ordernumber' => $orderNumber === null ? 'NULL' : pSQL($orderNumber),
             'cart_id' => (int)$idCart,
-            'paymentmethod' => pSQL($response->getPaymentMethod()),
+            'paymentmethod' => pSQL($paymentMethod),
             'transaction_state' => pSQL($transactionState),
             'transaction_type' => pSQL($response->getTransactionType()),
-            'amount' => (float)$amount->getValue(),
+            'amount' => $amount->getValue(),
             'currency' => pSQL($amount->getCurrency()),
             'response' => pSQL(json_encode($response->getData())),
             'created' => 'NOW()'
-        ));
+        ];
+
+        if($transactionExists && $tx_id) {
+            $data['tx_id'] = $tx_id;
+            $success = $db->update('wirecard_payment_gateway_tx', $data);
+        } else {
+            $success = $db->insert('wirecard_payment_gateway_tx', $data);
+        }
 
         if ($db->getNumberError() > 0) {
             throw new \PrestaShopDatabaseException($db->getMsgError());
+        }
+        if(!$success) {
+            throw new \PrestaShopModuleException("An unknown error occured");
         }
 
         return $db->Insert_ID();
@@ -375,7 +401,8 @@ class Transaction extends \ObjectModel
     public function getAllChildTransactions() {
         $parent_id = $this->getTransactionId();
         $query = new \DbQuery();
-        $query->from('wirecard_payment_gateway_tx')->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
+        $query->from('wirecard_payment_gateway_tx')
+              ->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
         $children = [];
         $rows = \Db::getInstance()->executeS($query);
         foreach ($rows as $row) {

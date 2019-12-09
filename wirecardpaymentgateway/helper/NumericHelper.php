@@ -7,12 +7,27 @@ namespace WirecardEE\Prestashop\Helper;
 trait NumericHelper
 {
 
-    private function equals($firstNumber, $secondNumber)
+    /**
+     * Decides whether two float numbers are equal, given a precision.
+     * @param $firstNumber
+     * @param $secondNumber
+     * @param null|int $precision
+     * @return bool
+     *
+     * No validation is done here, because it's a private method. The class using it has more context to decide what
+     * kind of validation is necessary.
+     */
+    private function equals($firstNumber, $secondNumber, $precision = null)
     {
-        $precision = (int)_PS_PRICE_COMPUTE_PRECISION_;
-        $delta = pow(10, -1 * $precision);
+        if($precision === null) {
+            $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
+        $integerCoefficient = pow(10, $precision);
+        $fractionalCoefficient = pow(10, -1 * $precision);
+        $threshold = $integerCoefficient * $fractionalCoefficient;
+        $firstNumber *= $integerCoefficient;
+        $secondNumber *= $integerCoefficient;
         $difference = abs($firstNumber - $secondNumber);
-        error_log("precision: $precision, delta: $delta, diff: $difference, first: $firstNumber, second: $secondNumber");
-        return $difference < $delta;
+        return $difference < $threshold;
     }
 }

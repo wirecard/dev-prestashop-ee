@@ -39,7 +39,7 @@
                             {$operation.name}
                         </button>
                     {/foreach}
-                    <input name="partial-delta-amount" value="{$remaining_delta_amount}"> {$transaction.currency}
+                    <input name="partial-delta-amount" value="{number_Format($remaining_delta_amount, 2)}"> {$transaction.currency}
                 </form>
             {/if}
 

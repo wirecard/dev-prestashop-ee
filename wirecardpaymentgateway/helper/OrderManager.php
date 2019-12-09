@@ -179,8 +179,10 @@ class OrderManager
     public function getTransactionState($notification)
     {
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
+        $transactionType = $notification->getTransactionType();
 
-        if ($backend_service->isFinal($notification->getTransactionType())) {
+        //TODO: use just isFinal, once ticket TPWDCEE-5668 is solved in the SDK
+        if ($backend_service->isFinal($transactionType) || $transactionType == Transaction::TYPE_REFUND_PURCHASE) {
             return 'closed';
         }
         return 'open';

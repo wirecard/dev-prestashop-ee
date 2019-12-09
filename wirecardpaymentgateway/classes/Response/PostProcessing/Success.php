@@ -50,14 +50,6 @@ class Success extends SuccessAbstract
     {
         parent::process();
 
-        $transaction_id = \Tools::getValue('tx_id');
-
-        $transaction = new Transaction($transaction_id);
-        $processedAmount = $transaction->getProcessedAmount();
-        $transactionAmount = $transaction->getAmount();
-        if ($this->equals($processedAmount, $transactionAmount)) {
-            $this->transaction_manager->markTransactionClosed($transaction_id);
-        }
         $this->context_service->setConfirmations(
             $this->getTranslatedString('success_new_transaction')
         );

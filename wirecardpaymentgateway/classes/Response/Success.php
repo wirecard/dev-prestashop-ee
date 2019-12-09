@@ -16,6 +16,7 @@ use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class Success
@@ -58,11 +59,32 @@ abstract class Success implements ProcessablePaymentResponse
      */
     public function process()
     {
-        if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-            $this->order->save();
+        $dbManager = new DBTransactionManager();
+        //outside of the try block. If locking fails, we don't want to attempt to release it
+        $dbManager->acquireLock($this->response->getTransactionId(), 30);
+        try {
+            if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+                $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+                $this->order->save();
 
-            $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
+                $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
+            }
+
+            $amount = $this->response->getRequestedAmount();
+
+            $orderManager = new OrderManager();
+            $transactionState = $orderManager->getTransactionState($this->response);
+
+            $newId = Transaction::create(
+                $this->order->id,
+                $this->order->id_cart,
+                $amount,
+                $this->response,
+                $transactionState,
+                $this->order->reference
+            );
+        } finally {
+            $dbManager->releaseLock($this->response->getTransactionId());
         }
     }
 }

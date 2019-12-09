@@ -11,6 +11,8 @@ namespace WirecardEE\Prestashop\Classes\Notification;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 
+use WirecardEE\Prestashop\Helper\DBTransactionManager;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Models\Transaction;
@@ -22,6 +24,9 @@ use WirecardEE\Prestashop\Models\Transaction;
  */
 final class Success implements ProcessablePaymentNotification
 {
+
+    use NumericHelper;
+
     /** @var \Order */
     private $order;
 
@@ -30,9 +35,6 @@ final class Success implements ProcessablePaymentNotification
 
     /** @var OrderService */
     private $order_service;
-
-    /** @var \WirecardPaymentGateway */
-    private $module;
 
     /** @var OrderManager */
     private $order_manager;
@@ -49,7 +51,6 @@ final class Success implements ProcessablePaymentNotification
         $this->order = $order;
         $this->notification = $notification;
         $this->order_service = new OrderService($order);
-        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
         $this->order_manager = new OrderManager();
     }
 
@@ -59,25 +60,42 @@ final class Success implements ProcessablePaymentNotification
      */
     public function process()
     {
-        if (!OrderManager::isIgnorable($this->notification)) {
-            $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
-            $this->order->setCurrentState($order_state);
-            $this->order->save();
+        $dbManager = new DBTransactionManager();
+        //outside of the try block. If locking fails, we don't want to attempt to release it
+        $dbManager->acquireLock($this->notification->getTransactionId(), 30);
+        try {
+            if (!OrderManager::isIgnorable($this->notification)) {
+                $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
+                $this->order->setCurrentState($order_state);
+                $this->order->save();
 
-            $amount = $this->notification->getRequestedAmount();
-            $this->order_service->updateOrderPayment(
-                $this->notification->getTransactionId(),
-                _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
-            );
+                $amount = $this->notification->getRequestedAmount();
+                $this->order_service->updateOrderPayment(
+                    $this->notification->getTransactionId(),
+                    _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
+                );
 
-            Transaction::create(
-                $this->order->id,
-                $this->order->id_cart,
-                $amount,
-                $this->notification,
-                $this->order_manager->getTransactionState($this->notification),
-                $this->order->reference
-            );
+                $orderManager = new OrderManager();
+                $newId = Transaction::create(
+                    $this->order->id,
+                    $this->order->id_cart,
+                    $amount,
+                    $this->notification,
+                    $orderManager->getTransactionState($this->notification),
+                    $this->order->reference
+                );
+
+                $parentTransactionId = $this->notification->getParentTransactionId();
+                $parentTransaction = new Transaction($parentTransactionId);
+                $parentTransactionProcessedAmount = $parentTransaction->getProcessedAmount();
+                $parentTransactionAmount = $parentTransaction->getAmount();
+                if($this->equals($parentTransactionProcessedAmount, $parentTransactionAmount)) {
+                    $transactionManager = new DBTransactionManager();
+                    $transactionManager->markTransactionClosed($parentTransactionId);
+                }
+            }
+        } finally {
+            $dbManager->releaseLock($this->notification->getTransactionId());
         }
     }
 }
