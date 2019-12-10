@@ -225,7 +225,7 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $tabManagerService = new TabManagerService($this->tabsConfig);
         $tabManagerService->uninstallTabs();
-     }
+    }
 
     /**
      * Getter for paymentfields from every payment model

@@ -9,7 +9,6 @@
 
 namespace WirecardEE\Prestashop\Classes\Config\Tab;
 
-
 class AdminControllerTabConfig implements TabConfigInterface
 {
     /**
