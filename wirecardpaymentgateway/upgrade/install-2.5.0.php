@@ -7,12 +7,6 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-$moduleName = 'wirecardpaymentgateway';
-$moduleDirectory = _PS_MODULE_DIR_ . $moduleName;
-define('DS', DIRECTORY_SEPARATOR);
-
-require_once $moduleDirectory . DS . 'helper' . DS . 'service' . DS . 'ShopConfigurationService.php';
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
