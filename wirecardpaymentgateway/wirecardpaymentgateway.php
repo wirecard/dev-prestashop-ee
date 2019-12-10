@@ -12,6 +12,8 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
+use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
+use WirecardEE\Prestashop\Classes\Service\TabManagerService;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
@@ -42,7 +44,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.4.0';
+    const VERSION = '2.5.0';
 
     /**
      * @var string
@@ -171,104 +173,65 @@ class WirecardPaymentGateway extends PaymentModule
      * Register tabs
      *
      * @since 1.0.0
+     * @since 2.5.0 major update logic moved to the TabManagerService
      */
     public function installTabs()
     {
-        $key = $this->getTranslatedString('heading_title_transaction_details');
-        $tab = new Tab();
-        $tab->active = 1;
-        $tab->class_name = 'WirecardTransactions';
-        $tab->name = array();
-        $tab->name[1] = $key;
-        foreach (Language::getLanguages(false) as $lang) {
-            $translated_string = $this->getTranslationForLanguage(
-                $lang['iso_code'],
-                $key,
-                $this->name
-            );
-            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
-                $translated_string : $tab->name[1];
-        }
-        $tab->module = $this->name;
-        $tab->icon = 'payment';
-        // Show on Sell part of menu
-        $tab->id_parent = 2;
-        $tab->parent_class_name = 'SELL';
-        $tab->add();
+        //Transaction Overview tab on the side menu
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_transaction_details',
+            'WirecardTransactions',
+            $this->name,
+            'payment',
+            1,
+            'SELL'
+        );
 
-        $key = $this->getTranslatedString('heading_title_support');
-        $tab = new Tab();
-        $tab->active = 1;
-        $tab->class_name = 'WirecardSupport';
-        $tab->name = array();
-        $tab->name[1] = $key;
-        foreach (Language::getLanguages(false) as $lang) {
-            $translated_string = $this->getTranslationForLanguage(
-                $lang['iso_code'],
-                $key,
-                $this->name
-            );
-            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
-                $translated_string : $tab->name[1];
-        }
-        $tab->module = $this->name;
-        $tab->add();
+        //Contact support tab in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_support',
+            'WirecardSupport',
+            $this->name
+        );
 
-        $key = $this->getTranslatedString('heading_title_ajax');
-        $tab = new Tab();
-        $tab->active = 1;
-        $tab->class_name = 'WirecardAjax';
-        $tab->name = array();
-        $tab->name[1] = $key;
-        foreach (Language::getLanguages(false) as $lang) {
-            $translated_string = $this->getTranslationForLanguage(
-                $lang['iso_code'],
-                $key,
-                $this->name
-            );
-            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
-                $translated_string : $tab->name[1];
-        }
-        $tab->module = $this->name;
-        $tab->id_parent = -1;
-        $tab->add();
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_ajax',
+            'WirecardAjax',
+            $this->name
+        );
 
-        $this->addTab('heading_title_general_settings', 'WirecardGeneralSettings', $this->name);
+        //General tab setting in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_general_settings',
+            'WirecardGeneralSettings',
+            $this->name
+        );
+
+        $tabManagerService = new TabManagerService($tabsConfig);
+        $tabManagerService->installTabs();
     }
 
-    protected function addTab($key, $class_name, $module_name, $is_active = 1)
-    {
-        $key = $this->getTranslatedString($key);
-        $tab = new Tab();
-        $tab->active = $is_active;
-        $tab->class_name = $class_name;
-        $tab->name = [];
-        foreach (Language::getLanguages(false) as $lang) {
-            $translated_string = $this->getTranslationForLanguage(
-                $lang['iso_code'],
-                $key,
-                $module_name
-            );
-
-            $tab->name[$lang['id_lang']] = ($translated_string !== $key) ?
-                $translated_string : $key;
-        }
-        $tab->module = $module_name;
-        $tab->add();
-    }
-
+    /**
+     * @since 2.5.0 implemented to PrestaShop standard uninstall
+     */
     public function uninstallTabs()
     {
-        $tabs = array('WirecardTransactions','WirecardSupport', 'WirecardAjax');
-        $tabRepository = $this->get('prestashop.core.admin.tab.repository');
-        foreach ($tabs as $tab) {
-            $id_tab = $tabRepository->findOneIdByClassName($tab);
-            if ($id_tab) {
-                $tab = new Tab($id_tab);
-                $tab->delete();
+        $tabs = array(
+            $this->getTranslatedString('heading_title_transaction_details'),
+            $this->getTranslatedString('heading_title_support'),
+            $this->getTranslatedString('heading_title_ajax'),
+            $this->getTranslatedString('heading_title_general_settings')
+        );
+
+        foreach ($tabs as $tabName) {
+            $tabId = (int) \Tab::getIdFromClassName($tabName);
+            if (!$tabId) {
+                continue;
             }
+            $tab = new \Tab($tabId);
+            $tab->delete();
         }
-    }
+     }
 
     /**
      * Getter for paymentfields from every payment model
