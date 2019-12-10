@@ -73,6 +73,11 @@ class WirecardPaymentGateway extends PaymentModule
     protected $html;
 
     /**
+     * @var AdminControllerTabConfig[]
+     */
+    private $tabsConfig;
+
+    /**
      * WirecardPaymentGateway constructor.
      *
      * @since 1.0.0
@@ -107,6 +112,38 @@ class WirecardPaymentGateway extends PaymentModule
         $this->confirmUninstall = $this->getTranslationForLanguage($lang->iso_code, 'confirm_uninstall', $this->name);
 
         $this->config = $this->getPaymentFields();
+
+        //Transaction Overview tab on the side menu
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_transaction_details',
+            'WirecardTransactions',
+            $this->name,
+            'payment',
+            1,
+            'SELL'
+        );
+
+        //Contact support tab in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_support',
+            'WirecardSupport',
+            $this->name
+        );
+
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_ajax',
+            'WirecardAjax',
+            $this->name
+        );
+
+        //General tab setting in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            'heading_title_general_settings',
+            'WirecardGeneralSettings',
+            $this->name
+        );
+
+        $this->tabsConfig = $tabsConfig;
     }
 
     /**
@@ -177,37 +214,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function installTabs()
     {
-        //Transaction Overview tab on the side menu
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_transaction_details',
-            'WirecardTransactions',
-            $this->name,
-            'payment',
-            1,
-            'SELL'
-        );
-
-        //Contact support tab in the module settings
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_support',
-            'WirecardSupport',
-            $this->name
-        );
-
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_ajax',
-            'WirecardAjax',
-            $this->name
-        );
-
-        //General tab setting in the module settings
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_general_settings',
-            'WirecardGeneralSettings',
-            $this->name
-        );
-
-        $tabManagerService = new TabManagerService($tabsConfig);
+        $tabManagerService = new TabManagerService($this->tabsConfig);
         $tabManagerService->installTabs();
     }
 
@@ -216,21 +223,8 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function uninstallTabs()
     {
-        $tabs = array(
-            $this->getTranslatedString('heading_title_transaction_details'),
-            $this->getTranslatedString('heading_title_support'),
-            $this->getTranslatedString('heading_title_ajax'),
-            $this->getTranslatedString('heading_title_general_settings')
-        );
-
-        foreach ($tabs as $tabName) {
-            $tabId = (int) \Tab::getIdFromClassName($tabName);
-            if (!$tabId) {
-                continue;
-            }
-            $tab = new \Tab($tabId);
-            $tab->delete();
-        }
+        $tabManagerService = new TabManagerService($this->tabsConfig);
+        $tabManagerService->uninstallTabs();
      }
 
     /**
