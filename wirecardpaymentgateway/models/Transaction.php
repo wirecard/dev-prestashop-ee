@@ -330,7 +330,7 @@ class Transaction extends \ObjectModel
             $parentTransactionId = $response->getParentTransactionId();
         }
 
-        //TODO: change this once TPWDCEE-5667 is implemented in the SDK
+        //@TODO: change this once TPWDCEE-5667 is implemented in the SDK
         $paymentMethod = $response->getPaymentMethod();
         if(!$paymentMethod) {
             $data = $response->getData();
@@ -360,7 +360,7 @@ class Transaction extends \ObjectModel
             'modified' => (new \DateTime())->format(DATE_ISO8601),
         ];
 
-        if($transactionExists && $tx_id) {
+        if ($transactionExists && $tx_id) {
             $data['tx_id'] = $tx_id;
             $success = $db->update('wirecard_payment_gateway_tx', $data, "tx_id = $tx_id");
         } else {
@@ -371,7 +371,8 @@ class Transaction extends \ObjectModel
         if ($db->getNumberError() > 0) {
             throw new \PrestaShopDatabaseException($db->getMsgError());
         }
-        if(!$success) {
+
+        if (!$success) {
             throw new \PrestaShopModuleException("An unknown error occured");
         }
 
@@ -379,11 +380,12 @@ class Transaction extends \ObjectModel
     }
 
     /**
-     * Get single transaction per transaction id
+     * Loads data into the model through the gateway transaction ID.
      *
-     * @param string $transactionId
-     * @return mixed
-     * @since 1.0.0
+     * @param $transactionId
+     * @return bool
+     * @throws \Exception
+     * @since 2.5.0
      */
     public function  hydrateByTransactionId($transactionId)
     {
@@ -391,10 +393,13 @@ class Transaction extends \ObjectModel
         $query->from('wirecard_payment_gateway_tx')->where('transaction_id = "' . pSQL($transactionId) . '"');
 
         $data = \Db::getInstance()->getRow($query);
+
         if(!$data) {
             return false;
         }
+
         $this->tx_id = (int)$data['tx_id'];
+
         foreach (self::$definition['fields'] as $fieldName => $fieldSpecification) {
             if(isset($data[$fieldName])) {
                 switch ($fieldSpecification['type']) {
@@ -411,6 +416,7 @@ class Transaction extends \ObjectModel
                         $data[$fieldName] = (string)$data[$fieldName];
                         break;
                 }
+
                 $this->$fieldName = $data[$fieldName];
             }
         }
@@ -418,20 +424,27 @@ class Transaction extends \ObjectModel
     }
 
     /**
+     * Loads all children of the transaction
+     *
      * @return Transaction[]
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
+     * @since 2.5.0
      */
     public function getAllChildTransactions() {
+        $children = [];
         $parent_id = $this->getTransactionId();
+
         $query = new \DbQuery();
         $query->from('wirecard_payment_gateway_tx')
               ->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
-        $children = [];
+
         $rows = \Db::getInstance()->executeS($query);
+
         foreach ($rows as $row) {
             $children[] = new Transaction($row['tx_id']);
         }
+
         return $children;
     }
 
@@ -488,12 +501,18 @@ class Transaction extends \ObjectModel
         );
     }
 
+    /**
+     * Returns the amount already processed by post-processing transactions
+     *
+     * @return float
+     * @since 2.5.0
+     */
     public function getProcessedAmount()
     {
         $childTransactions = $this->getAllChildTransactions();
         $processed = 0;
         foreach ($childTransactions as $child) {
-            //TODO: consider all children?
+            //@TODO: consider all children?
             $processed += $child->getAmount();
         }
         return $processed;

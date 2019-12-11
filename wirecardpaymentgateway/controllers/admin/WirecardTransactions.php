@@ -34,6 +34,7 @@ class WirecardTransactionsController extends ModuleAdminController
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
 
+    /** @var int */
     const UNINITIALIZED_PARTIAL_PROCESSING = -1;
 
     /** @var ContextService */
@@ -67,6 +68,12 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->tpl_folder = 'backend/';
     }
 
+    /**
+     * Check if there is already a processed amount for this transaction
+     *
+     * @return bool
+     * @since 2.5.0
+     */
     private function hasProcessedAmount()
     {
         return $this->processed_amount != self::UNINITIALIZED_PARTIAL_PROCESSING;
@@ -82,8 +89,8 @@ class WirecardTransactionsController extends ModuleAdminController
     public function renderView()
     {
         $this->validateTransaction($this->object);
-        $transactionModel = new Transaction($this->object->tx_id);
-        $transaction_data = $this->mapTransactionDataToArray($transactionModel);
+        $transaction_model = new Transaction($this->object->tx_id);
+        $transaction_data = $this->mapTransactionDataToArray($transaction_model);
 
         $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
         $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
@@ -99,33 +106,24 @@ class WirecardTransactionsController extends ModuleAdminController
             $this->errors[] = \Tools::displayError(
                 $exception->getMessage()
             );
+
             return parent::renderView();
         }
 
         // We no longer support Masterpass
         $operations = $transaction_data['payment_method'] === MasterpassTransaction::NAME
             ? []
-            : $this->formatOperations($possible_operations, $transactionModel);
+            : $this->formatOperations($possible_operations, $transaction_model);
 
+        $remaining_delta_amount = $transaction_model->getAmount() - $transaction_model->getProcessedAmount();
 
-        $transaction_amount = $transactionModel->getAmount();
-        $processed_amount = $transactionModel->getProcessedAmount();
-        if($this->hasProcessedAmount()) {
-            $processed_amount = $this->processed_amount;
-        }
-        $remaining_delta_amount = $transaction_amount - $processed_amount;
-
-        $child_transactions = $transactionModel->getAllChildTransactions();
         // These variables are available in the Smarty context
-        $amounts = compact('remaining_delta_amount', 'transaction_amount', 'processed_amount');
         $this->tpl_view_vars = array(
             'current_index' => self::$currentIndex,
             'back_link' => (new Link())->getAdminLink('WirecardTransactions', true),
             'payment_method' => $payment_model->getName(),
             'possible_operations' => $operations,
             'transaction' => $transaction_data,
-            //'child_transactions' => $child_transactions,
-            //'amounts' => $amounts,
             'remaining_delta_amount' => $remaining_delta_amount,
         );
 
@@ -147,10 +145,9 @@ class WirecardTransactionsController extends ModuleAdminController
         if (!$operation || !$transaction_id) {
             return parent::postProcess();
         }
-        $delta_amount = \Tools::getValue('partial-delta-amount');
 
         $parentTransaction = new Transaction($transaction_id);
-        $this->object = $parentTransaction;
+        $delta_amount = Tools::getValue('partial-delta-amount', $parentTransaction->getAmount());
         $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
             PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
             $parentTransaction
@@ -177,6 +174,7 @@ class WirecardTransactionsController extends ModuleAdminController
 
             $processing_strategy = $response_factory->getResponseProcessing();
             $processing_strategy->process();
+
             $this->processed_amount = $parentTransaction->getProcessedAmount();
             $parentTransaction->clearCache();
         } catch (\Exception $e) {
@@ -256,7 +254,7 @@ class WirecardTransactionsController extends ModuleAdminController
             return $operations;
         }
 
-        //we cannot cancel after making partial refunds
+        // We cannot cancel after making partial refunds/captures
         if($transaction->getProcessedAmount() > 0) {
             unset($possible_operations[Operation::CANCEL]);
         }
