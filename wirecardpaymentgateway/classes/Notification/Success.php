@@ -22,7 +22,7 @@ use WirecardEE\Prestashop\Models\Transaction;
  * @since 2.1.0
  * @package WirecardEE\Prestashop\Classes\Notification
  */
-final class Success implements ProcessablePaymentNotification
+abstract class Success implements ProcessablePaymentNotification
 {
 
     use NumericHelper;

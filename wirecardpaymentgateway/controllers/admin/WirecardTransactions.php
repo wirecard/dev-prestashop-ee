@@ -10,6 +10,7 @@
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
+use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
@@ -169,7 +170,7 @@ class WirecardTransactionsController extends ModuleAdminController
             $response_factory = new ProcessablePaymentResponseFactory(
                 $response,
                 $orders->getFirst(),
-                ProcessablePaymentResponseFactory::PROCESS_BACKEND
+                ProcessType::PROCESS_BACKEND
             );
 
             $processing_strategy = $response_factory->getResponseProcessing();

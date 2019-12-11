@@ -16,6 +16,7 @@ use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcessingSuccess;
+use WirecardEE\Prestashop\Classes\ProcessType;
 
 /**
  * Class ProcessablePaymentResponseFactory
@@ -24,12 +25,6 @@ use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcess
  */
 class ProcessablePaymentResponseFactory
 {
-    /** @var string */
-    const PROCESS_RESPONSE = 'process_response';
-
-    /** @var string */
-    const PROCESS_BACKEND = 'process_backend';
-
     /** @var SuccessResponse|FailureResponse|InteractionResponse|FormInteractionResponse */
     private $response;
 
@@ -39,7 +34,7 @@ class ProcessablePaymentResponseFactory
     /** @var string */
     private $order_state;
 
-    /** @var string  */
+    /** @var string */
     private $process_type;
 
     /**
@@ -51,7 +46,7 @@ class ProcessablePaymentResponseFactory
      * @param string $order_state
      * @since 2.1.0
      */
-    public function __construct($response, $order, $process_type = self::PROCESS_RESPONSE, $order_state = null)
+    public function __construct($response, $order, $process_type = ProcessType::PROCESS_RESPONSE, $order_state = null)
     {
         $this->order = $order;
         $this->order_state = $order_state;
@@ -71,7 +66,7 @@ class ProcessablePaymentResponseFactory
 
         switch (true) {
             case $this->response instanceof SuccessResponse:
-                if ($this->process_type === self::PROCESS_RESPONSE) {
+                if ($this->process_type === ProcessType::PROCESS_RESPONSE) {
                     return new InitialSuccess($this->order, $this->response);
                 }
 

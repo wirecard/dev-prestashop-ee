@@ -11,6 +11,7 @@ namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
@@ -66,7 +67,7 @@ final class Failure implements ProcessablePaymentResponse
             $this->order_service->updateOrderPayment($this->response->getData()['transaction-id'], 0);
         }
 
-        if ($this->process_type === ProcessablePaymentResponseFactory::PROCESS_BACKEND) {
+        if ($this->process_type === ProcessType::PROCESS_BACKEND) {
             $this->processBackend();
             return;
         }

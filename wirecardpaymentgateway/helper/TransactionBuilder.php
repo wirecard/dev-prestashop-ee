@@ -99,6 +99,9 @@ class TransactionBuilder
      */
     public function buildTransaction()
     {
+        /** @var \Context */
+        $context = \Context::getContext();
+
         /** @var Payment $payment */
         $payment = PaymentProvider::getPayment($this->paymentType);
 
