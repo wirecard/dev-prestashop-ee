@@ -255,7 +255,7 @@ class WirecardTransactionsController extends ModuleAdminController
         }
 
         // We cannot cancel after making partial refunds/captures
-        if($transaction->getProcessedAmount() > 0) {
+        if ($transaction->getProcessedAmount() > 0) {
             unset($possible_operations[Operation::CANCEL]);
         }
 

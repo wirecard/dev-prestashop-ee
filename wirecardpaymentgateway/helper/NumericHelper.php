@@ -3,7 +3,6 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-
 trait NumericHelper
 {
 
@@ -19,7 +18,7 @@ trait NumericHelper
      */
     private function equals($firstNumber, $secondNumber, $precision = null)
     {
-        if($precision === null) {
+        if ($precision === null) {
             $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
         }
         $integerCoefficient = pow(10, $precision);

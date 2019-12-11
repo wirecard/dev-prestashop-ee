@@ -55,14 +55,14 @@ class DBTransactionManager
      */
     public function acquireLock($name, $timeout, $maxAttempts = 1)
     {
-        if(!trim($name)) {
+        if (!trim($name)) {
             throw new \RuntimeException("Invalid name for lock: $name");
         }
         $backoffFactors = $this->getReasonableBackoffFactorsForTimeout($timeout);
         $attempts = 0;
         $startTime = microtime(true);
         $sqlTimeout = $timeout;
-        if($maxAttempts == 1) {
+        if ($maxAttempts == 1) {
             $sqlTimeout = $timeout;
         }
         while ($attempts < $maxAttempts) {

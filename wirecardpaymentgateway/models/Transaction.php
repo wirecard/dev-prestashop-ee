@@ -332,7 +332,7 @@ class Transaction extends \ObjectModel
 
         //@TODO: change this once TPWDCEE-5667 is implemented in the SDK
         $paymentMethod = $response->getPaymentMethod();
-        if(!$paymentMethod) {
+        if (!$paymentMethod) {
             $data = $response->getData();
             $paymentMethod = $data['payment-method'];
         }
@@ -387,21 +387,21 @@ class Transaction extends \ObjectModel
      * @throws \Exception
      * @since 2.5.0
      */
-    public function  hydrateByTransactionId($transactionId)
+    public function hydrateByTransactionId($transactionId)
     {
         $query = new \DbQuery();
         $query->from('wirecard_payment_gateway_tx')->where('transaction_id = "' . pSQL($transactionId) . '"');
 
         $data = \Db::getInstance()->getRow($query);
 
-        if(!$data) {
+        if (!$data) {
             return false;
         }
 
         $this->tx_id = (int)$data['tx_id'];
 
         foreach (self::$definition['fields'] as $fieldName => $fieldSpecification) {
-            if(isset($data[$fieldName])) {
+            if (isset($data[$fieldName])) {
                 switch ($fieldSpecification['type']) {
                     case self::TYPE_INT:
                         $data[$fieldName] = (int)$data[$fieldName];
@@ -431,7 +431,8 @@ class Transaction extends \ObjectModel
      * @throws \PrestaShopException
      * @since 2.5.0
      */
-    public function getAllChildTransactions() {
+    public function getAllChildTransactions()
+    {
         $children = [];
         $parent_id = $this->getTransactionId();
 
@@ -517,5 +518,4 @@ class Transaction extends \ObjectModel
         }
         return $processed;
     }
-
 }

@@ -88,9 +88,11 @@ final class Success implements ProcessablePaymentNotification
                 $parentTransactionId = $this->notification->getParentTransactionId();
                 $parentTransaction = new Transaction();
                 $hydrated = $parentTransaction->hydrateByTransactionId($parentTransactionId);
-                if($hydrated) {
+
+                if ($hydrated) {
                     $parentTransactionProcessedAmount = $parentTransaction->getProcessedAmount();
                     $parentTransactionAmount = $parentTransaction->getAmount();
+
                     if ($this->equals($parentTransactionProcessedAmount, $parentTransactionAmount)) {
                         $transactionManager = new DBTransactionManager();
                         $transactionManager->markTransactionClosed($parentTransactionId);
