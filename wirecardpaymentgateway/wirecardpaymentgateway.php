@@ -73,9 +73,9 @@ class WirecardPaymentGateway extends PaymentModule
     protected $html;
 
     /**
-     * @var AdminControllerTabConfig[]
+     * @var TabManagerService
      */
-    private $tabsConfig;
+    private $tabManagerService;
 
     /**
      * WirecardPaymentGateway constructor.
@@ -112,38 +112,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->confirmUninstall = $this->getTranslationForLanguage($lang->iso_code, 'confirm_uninstall', $this->name);
 
         $this->config = $this->getPaymentFields();
-
-        //Transaction Overview tab on the side menu
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_transaction_details',
-            'WirecardTransactions',
-            $this->name,
-            'payment',
-            1,
-            'SELL'
-        );
-
-        //Contact support tab in the module settings
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_support',
-            'WirecardSupport',
-            $this->name
-        );
-
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_ajax',
-            'WirecardAjax',
-            $this->name
-        );
-
-        //General tab setting in the module settings
-        $tabsConfig[] = new AdminControllerTabConfig(
-            'heading_title_general_settings',
-            'WirecardGeneralSettings',
-            $this->name
-        );
-
-        $this->tabsConfig = $tabsConfig;
+        $this->tabManagerService = new TabManagerService($this->initTabs());
     }
 
     /**
@@ -187,6 +156,30 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * PrestaShop method that will disable and remove the module tabs
+     * @param bool $force_all
+     * @return bool
+     * @since 2.5.0
+     */
+    public function enable($force_all = false)
+    {
+        return parent::enable($force_all) &&
+            $this->installTabs();
+    }
+
+    /**
+     * PrestaShop method that will disable and remove the module tabs
+     * @param bool $force_all
+     * @return bool
+     * @since 2.5.0
+     */
+    public function disable($force_all = false)
+    {
+        return parent::disable($force_all) &&
+            $this->uninstallTabs();
+    }
+
+    /**
      * Basic uninstall routine
      *
      * @return bool
@@ -214,8 +207,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function installTabs()
     {
-        $tabManagerService = new TabManagerService($this->tabsConfig);
-        $tabManagerService->installTabs();
+        return $this->tabManagerService->installTabs();
     }
 
     /**
@@ -223,8 +215,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function uninstallTabs()
     {
-        $tabManagerService = new TabManagerService($this->tabsConfig);
-        $tabManagerService->uninstallTabs();
+        return $this->tabManagerService->uninstallTabs();
     }
 
     /**
@@ -1036,5 +1027,45 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return true;
+    }
+
+    /**
+     * Returns an array of AdminControllerTabConfig
+     * @return array
+     * @since 2.5.0
+     */
+    private function initTabs()
+    {
+        //Transaction Overview tab on the side menu
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_transaction_details',
+            'WirecardTransactions',
+            'payment',
+            1,
+            'SELL'
+        );
+
+        //Contact support tab in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_support',
+            'WirecardSupport'
+        );
+
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_ajax',
+            'WirecardAjax'
+        );
+
+        //General tab setting in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_general_settings',
+            'WirecardGeneralSettings'
+        );
+
+        return $tabsConfig;
     }
 }

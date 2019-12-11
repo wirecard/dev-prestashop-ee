@@ -20,13 +20,13 @@ interface TabConfigInterface
      * Controller name that handel's the tab
      * @return string
      */
-    public function getController();
+    public function getControllerName();
 
     /**
      * ParentController name
      * @return string
      */
-    public function getParentController();
+    public function getParentControllerName();
 
     /**
      * Module name

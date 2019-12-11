@@ -9,12 +9,17 @@
 
 namespace WirecardEE\Prestashop\Classes\Config\Tab;
 
+/**
+ * Class AdminControllerTabConfig
+ * @package WirecardEE\Prestashop\Classes\Config\Tab
+ * @since 2.5.0
+ */
 class AdminControllerTabConfig implements TabConfigInterface
 {
     /**
      * @var string
      */
-    private $controller;
+    private $controllerName;
 
     /**
      * @var string
@@ -39,43 +44,44 @@ class AdminControllerTabConfig implements TabConfigInterface
     /**
      * @var null|string
      */
-    private $parentController;
+    private $parentControllerName;
 
     /**
      * AdminControllerTabConfig constructor.
-     * @param string $name
-     * @param string $controller
      * @param string $moduleName
+     * @param string $keyName
+     * @param string $controllerName
      * @param string $icon
      * @param int $active
-     * @param null $parentController
+     * @param null|string $parentControllerName
+     * @since 2.5.0
      */
-    public function __construct($name, $controller, $moduleName, $icon = '', $active = 1, $parentController = null)
+    public function __construct($moduleName, $keyName, $controllerName, $icon = '', $active = 1, $parentControllerName = null)
     {
-        $this->controller = $controller;
         $this->moduleName = $moduleName;
-        $this->active = $active;
-        $this->name = $this->createNameWithTranslations($name);
+        $this->name = $this->createNameWithTranslations($keyName);
+        $this->controllerName = $controllerName;
         $this->icon = $icon;
-        $this->parentController = $parentController;
+        $this->active = $active;
+        $this->parentControllerName = $parentControllerName;
     }
 
     /**
      * @return string
      * @since 2.5.0
      */
-    public function getController()
+    public function getControllerName()
     {
-        return $this->controller;
+        return $this->controllerName;
     }
 
     /**
      * @return string|null
      * @since 2.5.0
      */
-    public function getParentController()
+    public function getParentControllerName()
     {
-        return $this->parentController;
+        return $this->parentControllerName;
     }
 
     /**
@@ -128,7 +134,6 @@ class AdminControllerTabConfig implements TabConfigInterface
                 $nameKey,
                 $this->moduleName
             );
-
             $translatedNames[$language['id_lang']] = $translated_string;
         }
 

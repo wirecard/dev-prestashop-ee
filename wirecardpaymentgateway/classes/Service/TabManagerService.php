@@ -11,6 +11,7 @@ namespace WirecardEE\Prestashop\Classes\Service;
 
 use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
 use WirecardEE\Prestashop\Classes\Config\Tab\TabConfigInterface;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Class TabManagerService
@@ -42,19 +43,21 @@ class TabManagerService implements ServiceInterface
     {
         /** @var TabConfigInterface $tabConfig */
         foreach ($this->tabsConfig as $tabConfig) {
-            $tabId = $this->getTabId($tabConfig->getController());
+            $tabId = $this->getTabId($tabConfig->getControllerName());
 
             $tab = new \Tab($tabId);
             $tab->active = $tabConfig->getActive();
-            $tab->class_name = $tabConfig->getController();
+            $tab->class_name = $tabConfig->getControllerName();
             $tab->name = $tabConfig->getName();
             $tab->icon = $tabConfig->getIcon();
-            $tab->id_parent = (int) \Tab::getIdFromClassName($tabConfig->getParentController());
-            $tab->parent_class_name = $tabConfig->getParentController();
+            $tab->id_parent = (int) \Tab::getIdFromClassName($tabConfig->getParentControllerName());
+            $tab->parent_class_name = $tabConfig->getParentControllerName();
             $tab->module = $tabConfig->getModuleName();
 
             $tab->save();
         }
+
+        return true;
     }
 
     /**
@@ -64,13 +67,15 @@ class TabManagerService implements ServiceInterface
     {
         /** @var TabConfigInterface $tabConfig */
         foreach ($this->tabsConfig as $tabConfig) {
-            $tabId = (int) \Tab::getIdFromClassName($tabConfig->getController());
+            $tabId = (int) \Tab::getIdFromClassName($tabConfig->getControllerName());
             if (!$tabId) {
                 continue;
             }
             $tab = new \Tab($tabId);
             $tab->delete();
         }
+
+        return true;
     }
 
     /**
