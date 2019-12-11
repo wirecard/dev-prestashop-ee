@@ -100,9 +100,6 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
         $transaction = $this->paymentMethod->createTransactionInstance($this->operation);
         $transaction = $this->addPostProcessingMandatoryData($transaction);
         $transaction = $this->addPaymentMethodPostProcessingMandatoryData($transaction);
-        $total_amount = $transaction->getAmount()->getValue();
-        $delta = $this->delta_amount;
-        error_log("total amount: $total_amount delta: $delta");
 
         return $transaction;
     }

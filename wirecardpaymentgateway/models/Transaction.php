@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\Response;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
@@ -326,7 +327,7 @@ class Transaction extends \ObjectModel
         $db = \Db::getInstance();
         $parentTransactionId = '';
 
-        if ((new Transaction)->get($response->getParentTransactionId())) {
+        if ((new Transaction)->hydrateByTransactionId($response->getParentTransactionId())) {
             $parentTransactionId = $response->getParentTransactionId();
         }
 
@@ -338,12 +339,11 @@ class Transaction extends \ObjectModel
         }
 
         $tx_id = null;
-        $transactionExists = false;
 
         $tempTransaction = new Transaction();
-        if ($tempTransaction->get($response->getTransactionId())) {
+        $transactionExists = $tempTransaction->hydrateByTransactionId($response->getTransactionId());
+        if ($transactionExists) {
             $tx_id = $tempTransaction->getTxId();
-            $transactionExists = true;
         }
 
         $data = [
@@ -358,13 +358,14 @@ class Transaction extends \ObjectModel
             'amount' => $amount->getValue(),
             'currency' => pSQL($amount->getCurrency()),
             'response' => pSQL(json_encode($response->getData())),
-            'created' => 'NOW()'
+            'modified' => (new \DateTime())->format(DATE_ISO8601),
         ];
 
         if($transactionExists && $tx_id) {
             $data['tx_id'] = $tx_id;
-            $success = $db->update('wirecard_payment_gateway_tx', $data);
+            $success = $db->update('wirecard_payment_gateway_tx', $data, "tx_id = $tx_id");
         } else {
+            $data['created'] = (new \DateTime())->format(DATE_ISO8601);
             $success = $db->insert('wirecard_payment_gateway_tx', $data);
         }
 
@@ -385,12 +386,36 @@ class Transaction extends \ObjectModel
      * @return mixed
      * @since 1.0.0
      */
-    public function get($transactionId)
+    public function  hydrateByTransactionId($transactionId)
     {
         $query = new \DbQuery();
-        $query->from('wirecard_payment_gateway_tx')->where('transaction_id = ' . (int)$transactionId);
+        $query->from('wirecard_payment_gateway_tx')->where('transaction_id = "' . pSQL($transactionId) . '"');
 
-        return \Db::getInstance()->getRow($query);
+        $data = \Db::getInstance()->getRow($query);
+        if(!$data) {
+            return false;
+        }
+        $this->tx_id = (int)$data['tx_id'];
+        foreach (self::$definition['fields'] as $fieldName => $fieldSpecification) {
+            if(isset($data[$fieldName])) {
+                switch ($fieldSpecification['type']) {
+                    case self::TYPE_INT:
+                        $data[$fieldName] = (int)$data[$fieldName];
+                        break;
+                    case self::TYPE_FLOAT:
+                        $data[$fieldName] = (float)$data[$fieldName];
+                        break;
+                    case self::TYPE_DATE:
+                        $data[$fieldName] = new \DateTime($data[$fieldName]);
+                        break;
+                    case self::TYPE_STRING:
+                        $data[$fieldName] = (string)$data[$fieldName];
+                        break;
+                }
+                $this->$fieldName = $data[$fieldName];
+            }
+        }
+        return true;
     }
 
     /**

@@ -32,7 +32,7 @@ class DBTransactionManager
     public function markTransactionClosed($transaction_id)
     {
         $whereClause = sprintf(
-            'tx_id = "%s"',
+            'transaction_id = "%s"',
             pSQL($transaction_id)
         );
 

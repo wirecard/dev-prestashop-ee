@@ -30,16 +30,22 @@
                 </b>
             </div>
             <br>
+            //TODO: do not show cancel transaction if processed amount > 0
+            //TODO: if payment method == guaranteed invoice => do not show amount field (+test)
             {if $transaction.status == 'open'}
+                {assign var="disabled" value=""}
+                {if $remaining_delta_amount < 0.0099}
+                    {assign var="disabled" value=" disabled"}
+                {/if}
                 <form method="post" class="post-processing">
                     <input type="hidden" name="transaction" value="{$transaction.tx}" />
 
                     {foreach $possible_operations as $operation}
-                        <button type="submit" name="operation" value="{$operation.action}" class="btn btn-primary pointer">
+                        <button type="submit" name="operation" value="{$operation.action}" class="btn btn-primary pointer"{$disabled}>
                             {$operation.name}
                         </button>
                     {/foreach}
-                    <input name="partial-delta-amount" value="{number_Format($remaining_delta_amount, 2)}"> {$transaction.currency}
+                    <input name="partial-delta-amount" value="{number_format($remaining_delta_amount, 2)}"{$disabled}> {$transaction.currency}
                 </form>
             {/if}
 
