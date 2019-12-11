@@ -105,7 +105,7 @@ class WirecardTransactionsController extends ModuleAdminController
         // We no longer support Masterpass
         $operations = $transaction_data['payment_method'] === MasterpassTransaction::NAME
             ? []
-            : $this->formatOperations($possible_operations);
+            : $this->formatOperations($possible_operations, $transactionModel);
 
 
         $transaction_amount = $transactionModel->getAmount();
@@ -241,7 +241,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * @return array
      * @since 2.4.0
      */
-    private function formatOperations($possible_operations)
+    private function formatOperations($possible_operations, Transaction $transaction)
     {
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
@@ -254,6 +254,11 @@ class WirecardTransactionsController extends ModuleAdminController
 
         if ($possible_operations === false) {
             return $operations;
+        }
+
+        //we cannot cancel after making partial refunds
+        if($transaction->getProcessedAmount() > 0) {
+            unset($possible_operations[Operation::CANCEL]);
         }
 
         foreach ($possible_operations as $operation => $key) {

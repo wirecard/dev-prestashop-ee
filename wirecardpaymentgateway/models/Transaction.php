@@ -9,7 +9,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\Response;
 use WirecardEE\Prestashop\Helper\TranslationHelper;

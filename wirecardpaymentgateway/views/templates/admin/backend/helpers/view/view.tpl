@@ -30,8 +30,6 @@
                 </b>
             </div>
             <br>
-            //TODO: do not show cancel transaction if processed amount > 0
-            //TODO: if payment method == guaranteed invoice => do not show amount field (+test)
             {if $transaction.status == 'open'}
                 {assign var="disabled" value=""}
                 {if $remaining_delta_amount < 0.0099}
@@ -45,7 +43,9 @@
                             {$operation.name}
                         </button>
                     {/foreach}
-                    <input name="partial-delta-amount" value="{number_format($remaining_delta_amount, 2)}"{$disabled}> {$transaction.currency}
+                    {if $transaction.payment_method != "ratepay-invoice"}
+                        <input name="partial-delta-amount" value="{number_format($remaining_delta_amount, 2)}"{$disabled}> {$transaction.currency}
+                    {/if}
                 </form>
             {/if}
 
