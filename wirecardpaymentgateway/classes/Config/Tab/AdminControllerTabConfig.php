@@ -56,8 +56,14 @@ class AdminControllerTabConfig implements TabConfigInterface
      * @param null|string $parentControllerName
      * @since 2.5.0
      */
-    public function __construct($moduleName, $keyName, $controllerName, $icon = '', $active = 1, $parentControllerName = null)
-    {
+    public function __construct(
+        $moduleName,
+        $keyName,
+        $controllerName,
+        $icon = '',
+        $active = 1,
+        $parentControllerName = null
+    ) {
         $this->moduleName = $moduleName;
         $this->name = $this->createNameWithTranslations($keyName);
         $this->controllerName = $controllerName;
