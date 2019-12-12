@@ -31,8 +31,9 @@ class DBTransactionManager
      */
     public function markTransactionClosed($transaction_id)
     {
+        // TODO: Check for partial refund / capture for amount based values
         $whereClause = sprintf(
-            'tx_id = "%s"',
+            'transaction_id = "%s"',
             pSQL($transaction_id)
         );
 

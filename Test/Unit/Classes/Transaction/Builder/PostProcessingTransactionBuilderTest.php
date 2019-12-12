@@ -7,7 +7,7 @@
  *  https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-require_once('wirecardpaymentgateway/wirecardpaymentgateway.php');
+require_once __DIR__ . '/../../../../../wirecardpaymentgateway/wirecardpaymentgateway.php';
 
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
@@ -27,6 +27,7 @@ use WirecardEE\Prestashop\Models\Transaction;
 
 class PostProcessingTransactionBuilderTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var \Mockery\LegacyMockInterface|\Mockery\MockInterface|Transaction  */
     private $transaction;
 
     public function setUp()

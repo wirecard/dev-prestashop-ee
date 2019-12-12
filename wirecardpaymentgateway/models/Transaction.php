@@ -16,12 +16,15 @@ use WirecardEE\Prestashop\Helper\TranslationHelper;
  * Basic Transaction class
  *
  * Class Transaction
- *
+ * @TODO: Abstract current model to entity and collection wrapper
  * @since 1.0.0
  */
 class Transaction extends \ObjectModel
 {
     use TranslationHelper;
+
+    /** @var string  */
+    const TRANSACTION_STATE_OPEN = 'open';
 
     /** @var string */
     const TRANSLATION_FILE = "transaction";
@@ -279,6 +282,15 @@ class Transaction extends \ObjectModel
     }
 
     /**
+     * @return bool
+     * @since 2.5.0
+     */
+    public function isTransactionStateOpen()
+    {
+        return $this->getTransactionState() == self::TRANSACTION_STATE_OPEN;
+    }
+
+    /**
      * @see ObjectModel::$definition
      */
     public static $definition = array(
@@ -418,5 +430,26 @@ class Transaction extends \ObjectModel
             ),
 
         );
+    }
+
+    /**
+     * Maps the database columns into an easily digestible array.
+     * @return array
+     * @since 2.4.0
+     */
+    public function toViewArray()
+    {
+        return [
+            'tx'             => $this->tx_id,
+            'id'             => $this->transaction_id,
+            'type'           => $this->transaction_type,
+            'status'         => $this->transaction_state,
+            'amount'         => $this->amount,
+            'currency'       => $this->currency,
+            'response'       => json_decode($this->response),
+            'payment_method' => $this->paymentmethod,
+            'order'          => $this->ordernumber,
+            'badge'          => $this->isTransactionStateOpen() ? 'green' : 'red',
+        ];
     }
 }

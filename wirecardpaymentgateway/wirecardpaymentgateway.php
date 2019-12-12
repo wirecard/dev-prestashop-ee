@@ -12,6 +12,8 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
+use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
+use WirecardEE\Prestashop\Classes\Service\TabManagerService;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
@@ -19,6 +21,8 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use \WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
+use \WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
 
 /**
  * Class WirecardPaymentGateway
@@ -40,7 +44,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.4.0';
+    const VERSION = '2.5.0';
 
     /**
      * @var string
@@ -67,6 +71,11 @@ class WirecardPaymentGateway extends PaymentModule
      * @since 1.0.0
      */
     protected $html;
+
+    /**
+     * @var TabManagerService
+     */
+    private $tabManagerService;
 
     /**
      * WirecardPaymentGateway constructor.
@@ -103,6 +112,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->confirmUninstall = $this->getTranslationForLanguage($lang->iso_code, 'confirm_uninstall', $this->name);
 
         $this->config = $this->getPaymentFields();
+        $this->tabManagerService = new TabManagerService($this->initTabs());
     }
 
     /**
@@ -122,6 +132,8 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->registerHook('actionPaymentConfirmation')
             || !$this->registerHook('displayOrderConfirmation')
+            || !$this->registerHook('postUpdateOrderStatus')
+            || !$this->registerHook('updateOrderStatus')
             || !$this->createTable('tx')
             || !$this->createTable('cc')
             || !$this->setDefaults()) {
@@ -141,6 +153,30 @@ class WirecardPaymentGateway extends PaymentModule
         $this->installTabs();
 
         return true;
+    }
+
+    /**
+     * PrestaShop method that will disable and remove the module tabs
+     * @param bool $force_all
+     * @return bool
+     * @since 2.5.0
+     */
+    public function enable($force_all = false)
+    {
+        return parent::enable($force_all) &&
+            $this->installTabs();
+    }
+
+    /**
+     * PrestaShop method that will disable and remove the module tabs
+     * @param bool $force_all
+     * @return bool
+     * @since 2.5.0
+     */
+    public function disable($force_all = false)
+    {
+        return parent::disable($force_all) &&
+            $this->uninstallTabs();
     }
 
     /**
@@ -167,80 +203,19 @@ class WirecardPaymentGateway extends PaymentModule
      * Register tabs
      *
      * @since 1.0.0
+     * @since 2.5.0 major update logic moved to the TabManagerService
      */
     public function installTabs()
     {
-        $key = $this->getTranslatedString('heading_title_transaction_details');
-        $tab = new Tab();
-        $tab->active = 1;
-        $tab->class_name = 'WirecardTransactions';
-        $tab->name = array();
-        $tab->name[1] = $key;
-        foreach (Language::getLanguages(false) as $lang) {
-            $translated_string = $this->getTranslationForLanguage(
-                $lang['iso_code'],
-                $key,
-                $this->name
-            );
-            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
-                $translated_string : $tab->name[1];
-        }
-        $tab->module = $this->name;
-        $tab->icon = 'payment';
-        // Show on Sell part of menu
-        $tab->id_parent = 2;
-        $tab->parent_class_name = 'SELL';
-        $tab->add();
-
-        $key = $this->getTranslatedString('heading_title_support');
-        $tab = new Tab();
-        $tab->active = 1;
-        $tab->class_name = 'WirecardSupport';
-        $tab->name = array();
-        $tab->name[1] = $key;
-        foreach (Language::getLanguages(false) as $lang) {
-            $translated_string = $this->getTranslationForLanguage(
-                $lang['iso_code'],
-                $key,
-                $this->name
-            );
-            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
-                $translated_string : $tab->name[1];
-        }
-        $tab->module = $this->name;
-        $tab->add();
-
-        $key = $this->getTranslatedString('heading_title_ajax');
-        $tab = new Tab();
-        $tab->active = 1;
-        $tab->class_name = 'WirecardAjax';
-        $tab->name = array();
-        $tab->name[1] = $key;
-        foreach (Language::getLanguages(false) as $lang) {
-            $translated_string = $this->getTranslationForLanguage(
-                $lang['iso_code'],
-                $key,
-                $this->name
-            );
-            $tab->name[$lang['id_lang']] = $translated_string !== $key ?
-                $translated_string : $tab->name[1];
-        }
-        $tab->module = $this->name;
-        $tab->id_parent = -1;
-        $tab->add();
+        return $this->tabManagerService->installTabs();
     }
 
+    /**
+     * @since 2.5.0 implemented to PrestaShop standard uninstall
+     */
     public function uninstallTabs()
     {
-        $tabs = array('WirecardTransactions','WirecardSupport', 'WirecardAjax');
-        $tabRepository = $this->get('prestashop.core.admin.tab.repository');
-        foreach ($tabs as $tab) {
-            $id_tab = $tabRepository->findOneIdByClassName($tab);
-            if ($id_tab) {
-                $tab = new Tab($id_tab);
-                $tab->delete();
-            }
-        }
+        return $this->tabManagerService->uninstallTabs();
     }
 
     /**
@@ -948,6 +923,25 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
+     * Hook called before the status of an order changes.
+     * @param array $params
+     * @throws Exception
+     * @since 2.5.0
+     */
+    public function hookActionOrderStatusUpdate($params)
+    {
+        $orderStatusUpdateCommand = new OrderStatusUpdateCommand(
+            $params['newOrderStatus'],
+            $params['id_order']
+        );
+        $orderStatusPostUpdateHandler = new BeforeOrderStatusUpdateHandler(
+            _PS_OS_SHIPPING_,
+            $orderStatusUpdateCommand
+        );
+        $orderStatusPostUpdateHandler->handle();
+    }
+
+    /**
      * Return the translation for a string given a language iso code 'en' 'fr' ..
      *
      * @param string $iso_lang language iso code
@@ -1033,5 +1027,45 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return true;
+    }
+
+    /**
+     * Returns an array of AdminControllerTabConfig
+     * @return array
+     * @since 2.5.0
+     */
+    private function initTabs()
+    {
+        //Transaction Overview tab on the side menu
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_transaction_details',
+            'WirecardTransactions',
+            'payment',
+            1,
+            'SELL'
+        );
+
+        //Contact support tab in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_support',
+            'WirecardSupport'
+        );
+
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_ajax',
+            'WirecardAjax'
+        );
+
+        //General tab setting in the module settings
+        $tabsConfig[] = new AdminControllerTabConfig(
+            $this->name,
+            'heading_title_general_settings',
+            'WirecardGeneralSettings'
+        );
+
+        return $tabsConfig;
     }
 }
