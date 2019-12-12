@@ -105,14 +105,6 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
     {
         $postProcessingService = new TransactionPostProcessingService($operation, $transaction->getTxId());
         $postProcessingService->process();
-
-//        if ($postProcessingService->getErrors() && !$this->isForceOrderStateChangeAllowed()) {
-//            $context = \Context::getContext();
-//            $context_service = new ContextService($context);
-//            $context_service->redirectWithError($postProcessingService->getErrors(), 'order');
-        //
-//            //throw new \Exception("{Payment fail. Break and prevent change status to shipped.}");
-//        }
     }
 
     /**
