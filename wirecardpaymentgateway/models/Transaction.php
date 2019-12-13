@@ -17,12 +17,15 @@ use WirecardEE\Prestashop\Helper\TranslationHelper;
  * Basic Transaction class
  *
  * Class Transaction
- *
+ * @TODO: Abstract current model to entity and collection wrapper
  * @since 1.0.0
  */
 class Transaction extends \ObjectModel
 {
     use TranslationHelper;
+
+    /** @var string  */
+    const TRANSACTION_STATE_OPEN = 'open';
 
     /** @var string */
     const TRANSLATION_FILE = "transaction";
@@ -302,6 +305,14 @@ class Transaction extends \ObjectModel
         $this->modified = $modified;
     }
 
+    /**
+     * @return bool
+     * @since 2.5.0
+     */
+    public function isTransactionStateOpen()
+    {
+        return $this->getTransactionState() == self::TRANSACTION_STATE_OPEN;
+    }
 
     /**
      * Create transaction in wirecard_payment_gateway_tx
@@ -424,6 +435,50 @@ class Transaction extends \ObjectModel
     }
 
     /**
+     * Loads data into the model through the gateway transaction ID.
+     *
+     * @param $transactionId
+     * @return bool
+     * @throws \Exception
+     * @since 2.5.0
+     */
+    public function hydrateByTransactionId($transactionId)
+    {
+        $query = new \DbQuery();
+        $query->from('wirecard_payment_gateway_tx')->where('transaction_id = "' . pSQL($transactionId) . '"');
+
+        $data = \Db::getInstance()->getRow($query);
+
+        if (!$data) {
+            return false;
+        }
+
+        $this->tx_id = (int)$data['tx_id'];
+
+        foreach (self::$definition['fields'] as $fieldName => $fieldSpecification) {
+            if (isset($data[$fieldName])) {
+                switch ($fieldSpecification['type']) {
+                    case self::TYPE_INT:
+                        $data[$fieldName] = (int)$data[$fieldName];
+                        break;
+                    case self::TYPE_FLOAT:
+                        $data[$fieldName] = (float)$data[$fieldName];
+                        break;
+                    case self::TYPE_DATE:
+                        $data[$fieldName] = new \DateTime($data[$fieldName]);
+                        break;
+                    case self::TYPE_STRING:
+                        $data[$fieldName] = (string)$data[$fieldName];
+                        break;
+                }
+
+                $this->$fieldName = $data[$fieldName];
+            }
+        }
+        return true;
+    }
+
+    /**
      * Loads all children of the transaction
      *
      * @return Transaction[]
@@ -438,7 +493,7 @@ class Transaction extends \ObjectModel
 
         $query = new \DbQuery();
         $query->from('wirecard_payment_gateway_tx')
-              ->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
+            ->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
 
         $rows = \Db::getInstance()->executeS($query);
 
@@ -503,19 +558,93 @@ class Transaction extends \ObjectModel
     }
 
     /**
-     * Returns the amount already processed by post-processing transactions
+     * Maps the database columns into an easily digestible array.
+     * @return array
+     * @since 2.4.0
+     */
+    public function toViewArray()
+    {
+        return [
+            'tx'             => $this->tx_id,
+            'id'             => $this->transaction_id,
+            'type'           => $this->transaction_type,
+            'status'         => $this->transaction_state,
+            'amount'         => $this->amount,
+            'currency'       => $this->currency,
+            'response'       => json_decode($this->response),
+            'payment_method' => $this->paymentmethod,
+            'order'          => $this->ordernumber,
+            'badge'          => $this->isTransactionStateOpen() ? 'green' : 'red',
+        ];
+    }
+
+    /**
+     * Loads data into the model through the gateway transaction ID.
      *
-     * @return float
+     * @param $transactionId
+     * @return bool
+     * @throws \Exception
      * @since 2.5.0
      */
-    public function getProcessedAmount()
+    public function hydrateByTransactionId($transactionId)
     {
-        $childTransactions = $this->getAllChildTransactions();
-        $processed = 0;
-        foreach ($childTransactions as $child) {
-            //@TODO: consider all children?
-            $processed += $child->getAmount();
+        $query = new \DbQuery();
+        $query->from('wirecard_payment_gateway_tx')->where('transaction_id = "' . pSQL($transactionId) . '"');
+
+        $data = \Db::getInstance()->getRow($query);
+
+        if (!$data) {
+            return false;
         }
-        return $processed;
+
+        $this->tx_id = (int)$data['tx_id'];
+
+        foreach (self::$definition['fields'] as $fieldName => $fieldSpecification) {
+            if (isset($data[$fieldName])) {
+                switch ($fieldSpecification['type']) {
+                    case self::TYPE_INT:
+                        $data[$fieldName] = (int)$data[$fieldName];
+                        break;
+                    case self::TYPE_FLOAT:
+                        $data[$fieldName] = (float)$data[$fieldName];
+                        break;
+                    case self::TYPE_DATE:
+                        $data[$fieldName] = new \DateTime($data[$fieldName]);
+                        break;
+                    case self::TYPE_STRING:
+                        $data[$fieldName] = (string)$data[$fieldName];
+                        break;
+                }
+
+                $this->$fieldName = $data[$fieldName];
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Loads all children of the transaction
+     *
+     * @return Transaction[]
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @since 2.5.0
+     */
+    public function getAllChildTransactions()
+    {
+        $children = [];
+        $parent_id = $this->getTransactionId();
+
+        $query = new \DbQuery();
+        $query->from('wirecard_payment_gateway_tx')
+            ->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
+
+        $rows = \Db::getInstance()->executeS($query);
+
+        foreach ($rows as $row) {
+            $children[] = new Transaction($row['tx_id']);
+        }
+
+        return $children;
     }
 }

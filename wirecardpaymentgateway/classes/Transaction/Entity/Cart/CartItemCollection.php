@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Classes\Transaction\Entity\Cart;
 
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\StringHelper;
 
 /**
@@ -138,7 +139,7 @@ class CartItemCollection implements \Countable, \Iterator
      */
     public function createProductCollectionFromTransactionData($transactionRawData)
     {
-        $basket = $this->initBasketFromRawData($transactionRawData);
+        $basket = $this->parseTransactionRawData($transactionRawData);
 
         foreach ($basket as $product) {
             $productData = new CartItem();
@@ -152,7 +153,7 @@ class CartItemCollection implements \Countable, \Iterator
      * @return array
      * @since 2.5.0
      */
-    private function initBasketFromRawData($rawData)
+    private function parseTransactionRawData($rawData)
     {
         $basket = [];
         $prefix = self::WIRECARD_ORDER_ITEM_PREFIX;
@@ -161,6 +162,7 @@ class CartItemCollection implements \Countable, \Iterator
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $transactionRawDataArr = [];
+            (new Logger())->error(json_last_error_msg());
         }
 
         // Filter data with specified prefix
@@ -170,11 +172,13 @@ class CartItemCollection implements \Countable, \Iterator
 
         foreach ($transactionRawDataArr as $responseFieldName => $responseValue) {
             // Get field name after prefix
-            $fieldNameWithoutPrefix = StringHelper::beginFrom($responseFieldName, $prefix);
+            $fieldNameWithoutPrefix = StringHelper::startFrom($responseFieldName, $prefix);
             // Unpack fieldName to index / fieldName
             list($index, $fieldName) = explode('.', $fieldNameWithoutPrefix);
+            // Normalize field name
+            $normalizedFieldName = StringHelper::replaceWith($fieldName, "-", "_");
             // Add element with specified index and fieldName to basket
-            $basket[$index][StringHelper::replaceWith($fieldName)] = $responseValue;
+            $basket[$index][$normalizedFieldName] = $responseValue;
         }
 
         return $basket;

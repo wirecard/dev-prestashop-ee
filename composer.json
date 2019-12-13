@@ -43,6 +43,11 @@
       "WirecardEE\\Prestashop\\Controllers\\": "wirecardpaymentgateway/controllers/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "WirecardEE\\Prestashop\\Test\\": "Test"
+    }
+  },
   "config": {
     "vendor-dir": "wirecardpaymentgateway/vendor",
     "preferred-install": "dist",

@@ -7,25 +7,18 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-use Wirecard\PaymentSdk\BackendService;
-use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
-use Wirecard\PaymentSdk\Transaction\Operation;
-use WirecardEE\Prestashop\Classes\ProcessType;
-use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
-use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\Transaction;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
+use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
+use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
 
 /**
  * Class WirecardTransactions
  *
  * @property WirecardPaymentGateway module
+ * @property Transaction $object
  * @since 1.0.0
  */
 class WirecardTransactionsController extends ModuleAdminController
@@ -35,13 +28,8 @@ class WirecardTransactionsController extends ModuleAdminController
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
 
-    /** @var int */
-    const UNINITIALIZED_PARTIAL_PROCESSING = -1;
-
     /** @var ContextService */
     protected $context_service;
-
-    private $processed_amount = self::UNINITIALIZED_PARTIAL_PROCESSING;
 
     public function __construct()
     {
@@ -70,63 +58,28 @@ class WirecardTransactionsController extends ModuleAdminController
     }
 
     /**
-     * Check if there is already a processed amount for this transaction
-     *
-     * @return bool
-     * @since 2.5.0
-     */
-    private function hasProcessedAmount()
-    {
-        return $this->processed_amount != self::UNINITIALIZED_PARTIAL_PROCESSING;
-    }
-
-    /**
      * Render detail transaction view
      *
      * @return mixed
-     * @since 2.4.0 Major refactoring and simplification
+     * @throws Exception
      * @since 1.0.0
+     * @since 2.4.0 Major refactoring and simplification
      */
     public function renderView()
     {
         $this->validateTransaction($this->object);
-        $transaction_model = new Transaction($this->object->tx_id);
-        $transaction_data = $this->mapTransactionDataToArray($transaction_model);
-
-        $shop_config_service = new ShopConfigurationService($transaction_data['payment_method']);
-        $payment_model = PaymentProvider::getPayment($transaction_data['payment_method']);
-
-        $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-        $backend_service = new BackendService($payment_config, new WirecardLogger());
-
-        try {
-            $transaction = $payment_model->createTransactionInstance();
-            $transaction->setParentTransactionId($transaction_data['id']);
-            $possible_operations = $backend_service->retrieveBackendOperations($transaction, true);
-        } catch (\Exception $exception) {
-            $this->errors[] = \Tools::displayError(
-                $exception->getMessage()
-            );
-
-            return parent::renderView();
-        }
-
-        // We no longer support Masterpass
-        $operations = $transaction_data['payment_method'] === MasterpassTransaction::NAME
-            ? []
-            : $this->formatOperations($possible_operations, $transaction_model);
-
-        $remaining_delta_amount = $transaction_model->getAmount() - $transaction_model->getProcessedAmount();
+        $possibleOperationService = new TransactionPossibleOperationService($this->object);
+        $possible_operations = $possibleOperationService->getPossibleOperationList();
+        $payment_model = PaymentProvider::getPayment($this->object->getPaymentMethod());
 
         // These variables are available in the Smarty context
-        $this->tpl_view_vars = array(
-            'current_index' => self::$currentIndex,
-            'back_link' => (new Link())->getAdminLink('WirecardTransactions', true),
-            'payment_method' => $payment_model->getName(),
-            'possible_operations' => $operations,
-            'transaction' => $transaction_data,
-            'remaining_delta_amount' => $remaining_delta_amount,
-        );
+        $this->tpl_view_vars = [
+            'current_index'       => self::$currentIndex,
+            'back_link'           => (new Link())->getAdminLink('WirecardTransactions', true),
+            'payment_method'      => $payment_model->getName(),
+            'possible_operations' => $possible_operations,
+            'transaction'         => $this->object->toViewArray(),
+        ];
 
         return parent::renderView();
     }
@@ -134,8 +87,9 @@ class WirecardTransactionsController extends ModuleAdminController
     /**
      * Process follow-up actions such as refund/cancel/etc
      *
-     * @since 2.4.0 Major refactoring
+     * @throws Exception
      * @since 1.0.0
+     * @since 2.4.0 Major refactoring
      */
     public function postProcess()
     {
@@ -144,77 +98,14 @@ class WirecardTransactionsController extends ModuleAdminController
 
         // This prevents the function from running on the list page
         if (!$operation || !$transaction_id) {
-            return parent::postProcess();
+            return;
         }
 
-        $parentTransaction = new Transaction($transaction_id);
-        $delta_amount = Tools::getValue('partial-delta-amount', $parentTransaction->getAmount());
-        $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
-            PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
-            $parentTransaction
-        );
+        $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transaction_id);
+        $transactionPostProcessingService->process();
+        $this->errors = $transactionPostProcessingService->getErrors();
 
-        try {
-            $transaction = $postProcessingTransactionBuilder
-                ->setOperation($operation)
-                ->setDeltaAmount($delta_amount)
-                ->build();
-
-            $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
-            $payment_config = (new PaymentConfigurationFactory($shop_config_service))->createConfig();
-            $backend_service = new BackendService($payment_config, new WirecardLogger());
-
-            $response = $backend_service->process($transaction, $operation);
-            $orders = \Order::getByReference($parentTransaction->getOrderNumber());
-
-            $response_factory = new ProcessablePaymentResponseFactory(
-                $response,
-                $orders->getFirst(),
-                ProcessType::PROCESS_BACKEND
-            );
-
-            $processing_strategy = $response_factory->getResponseProcessing();
-            $processing_strategy->process();
-
-            $this->processed_amount = $parentTransaction->getProcessedAmount();
-            $parentTransaction->clearCache();
-        } catch (\Exception $e) {
-            $this->errors[] = \Tools::displayError(
-                $e->getMessage()
-            );
-
-            $logger = new WirecardLogger();
-            $logger->error(
-                'Error in class:'. __CLASS__ .
-                ' method:' . __METHOD__ .
-                ' exception: ' . $e->getMessage() . "(" . get_class($e) . ")"
-            );
-        }
-
-        return parent::postProcess();
-    }
-
-    /**
-     * Maps the database columns into an easily digestible array.
-     *
-     * @param object $data
-     * @return array
-     * @since 2.4.0
-     */
-    private function mapTransactionDataToArray(Transaction $data)
-    {
-        return array(
-            'tx'             => $data->getTxId(),
-            'id'             => $data->getTransactionId(),
-            'type'           => $data->getTransactionType(),
-            'status'         => $data->getTransactionState(),
-            'amount'         => $data->getAmount(),
-            'currency'       => $data->getCurrency(),
-            'response'       => json_decode($data->getResponse()),
-            'payment_method' => $data->getPaymentMethod(),
-            'order'          => $data->getOrderNumber(),
-            'badge'          => $data->getTransactionState() === 'open' ? 'green' : 'red',
-        );
+        parent::postProcess();
     }
 
     /**
@@ -222,6 +113,7 @@ class WirecardTransactionsController extends ModuleAdminController
      * database and adds an error if this is not the case.
      *
      * @param object $data
+     * @throws PrestaShopException
      * @since 2.4.0
      */
     private function validateTransaction($data)
@@ -231,46 +123,5 @@ class WirecardTransactionsController extends ModuleAdminController
                 $this->getTranslatedString('error_no_transaction')
             );
         }
-    }
-
-    /**
-     * Formats the post-processing operations for use in the template.
-     *
-     * @param $possible_operations
-     * @return array
-     * @since 2.4.0
-     */
-    private function formatOperations($possible_operations, Transaction $transaction)
-    {
-        $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
-        $operations = [];
-        $translations = [
-            //@TODO add constant to paymentSDK once TPWDCEE-5672 is implemented
-            'capture' => $this->getTranslatedString('text_capture_transaction'),
-            Operation::CANCEL => $this->getTranslatedString('text_cancel_transaction'),
-            Operation::REFUND => $this->getTranslatedString('text_refund_transaction'),
-        ];
-
-        if ($possible_operations === false) {
-            return $operations;
-        }
-
-        // We cannot cancel after making partial refunds/captures
-        if ($transaction->getProcessedAmount() > 0) {
-            unset($possible_operations[Operation::CANCEL]);
-        }
-
-        foreach ($possible_operations as $operation => $key) {
-            if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
-                continue;
-            }
-            $translatable_key = \Tools::strtolower($key);
-            $operations[] = [
-                "action" => $operation,
-                "name" => $translations[$translatable_key]
-            ];
-        }
-
-        return $operations;
     }
 }

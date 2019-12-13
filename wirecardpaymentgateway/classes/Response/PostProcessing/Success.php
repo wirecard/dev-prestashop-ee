@@ -49,7 +49,7 @@ class Success extends SuccessAbstract
     public function process()
     {
         parent::process();
-
+        $this->transaction_manager->markTransactionClosed($this->response->getParentTransactionId());
         $this->context_service->setConfirmations(
             $this->getTranslatedString('success_new_transaction')
         );
