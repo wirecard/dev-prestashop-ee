@@ -83,6 +83,8 @@ class TransactionPossibleOperationService implements ServiceInterface
     /**
      * @param bool $returnTemplateFormat
      * @return array|bool
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      * @since 2.5.0
      */
     public function getPossibleOperationList($returnTemplateFormat = true)
@@ -100,11 +102,31 @@ class TransactionPossibleOperationService implements ServiceInterface
             (new Logger())->error($exception->getMessage());
         }
 
+        $possible_operations = $this->disallowCancelIfPartialOperationsDone($possible_operations);
+
         // We no longer support Masterpass
         if ($returnTemplateFormat && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
             $possible_operations = $this->getOperationsForTemplate($possible_operations);
         }
 
+        return $possible_operations;
+    }
+
+    /**
+     * We cannot cancel after making partial refunds / captures.
+     *
+     * @param $possible_operations
+     * @return array
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    private function disallowCancelIfPartialOperationsDone($possible_operations)
+    {
+        if(is_array($possible_operations)) {
+            if ($this->transaction->getProcessedAmount() > 0) {
+                unset($possible_operations[Operation::CANCEL]);
+            }
+        }
         return $possible_operations;
     }
 

@@ -13,6 +13,7 @@ use Wirecard\PaymentSdk\BackendService;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
+use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
@@ -59,7 +60,7 @@ class TransactionPostProcessingService implements ServiceInterface
      * Transaction postprocessing
      * @since 2.5.0
      */
-    public function process()
+    public function process($delta_amount)
     {
         // @TODO: Refactor me :(
         // $this->buildTransaction()
@@ -76,6 +77,7 @@ class TransactionPostProcessingService implements ServiceInterface
 
             $transaction = $postProcessingTransactionBuilder
                 ->setOperation($this->operation)
+                ->setDeltaAmount($delta_amount)
                 ->build();
 
             $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
@@ -88,7 +90,7 @@ class TransactionPostProcessingService implements ServiceInterface
             $response_factory = new ProcessablePaymentResponseFactory(
                 $response,
                 $order,
-                ProcessablePaymentResponseFactory::PROCESS_BACKEND
+                ProcessType::PROCESS_BACKEND
             );
 
             $processing_strategy = $response_factory->getResponseProcessing();

@@ -72,6 +72,9 @@ class WirecardTransactionsController extends ModuleAdminController
         $possible_operations = $possibleOperationService->getPossibleOperationList();
         $payment_model = PaymentProvider::getPayment($this->object->getPaymentMethod());
 
+        $transaction_model = new Transaction($this->object->tx_id);
+        $remaining_delta_amount = $transaction_model->getRemainingAmount();
+
         // These variables are available in the Smarty context
         $this->tpl_view_vars = [
             'current_index'       => self::$currentIndex,
@@ -79,6 +82,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'payment_method'      => $payment_model->getName(),
             'possible_operations' => $possible_operations,
             'transaction'         => $this->object->toViewArray(),
+            'remaining_delta_amount' => $remaining_delta_amount,
         ];
 
         return parent::renderView();
@@ -101,11 +105,14 @@ class WirecardTransactionsController extends ModuleAdminController
             return;
         }
 
+        $parentTransaction = new Transaction($transaction_id);
+        $delta_amount = Tools::getValue('partial-delta-amount', $parentTransaction->getAmount());
+
         $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transaction_id);
-        $transactionPostProcessingService->process();
+        $transactionPostProcessingService->process($delta_amount);
         $this->errors = $transactionPostProcessingService->getErrors();
 
-        parent::postProcess();
+        return parent::postProcess();
     }
 
     /**

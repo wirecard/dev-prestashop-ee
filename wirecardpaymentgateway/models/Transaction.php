@@ -435,50 +435,6 @@ class Transaction extends \ObjectModel
     }
 
     /**
-     * Loads data into the model through the gateway transaction ID.
-     *
-     * @param $transactionId
-     * @return bool
-     * @throws \Exception
-     * @since 2.5.0
-     */
-    public function hydrateByTransactionId($transactionId)
-    {
-        $query = new \DbQuery();
-        $query->from('wirecard_payment_gateway_tx')->where('transaction_id = "' . pSQL($transactionId) . '"');
-
-        $data = \Db::getInstance()->getRow($query);
-
-        if (!$data) {
-            return false;
-        }
-
-        $this->tx_id = (int)$data['tx_id'];
-
-        foreach (self::$definition['fields'] as $fieldName => $fieldSpecification) {
-            if (isset($data[$fieldName])) {
-                switch ($fieldSpecification['type']) {
-                    case self::TYPE_INT:
-                        $data[$fieldName] = (int)$data[$fieldName];
-                        break;
-                    case self::TYPE_FLOAT:
-                        $data[$fieldName] = (float)$data[$fieldName];
-                        break;
-                    case self::TYPE_DATE:
-                        $data[$fieldName] = new \DateTime($data[$fieldName]);
-                        break;
-                    case self::TYPE_STRING:
-                        $data[$fieldName] = (string)$data[$fieldName];
-                        break;
-                }
-
-                $this->$fieldName = $data[$fieldName];
-            }
-        }
-        return true;
-    }
-
-    /**
      * Loads all children of the transaction
      *
      * @return Transaction[]
@@ -578,73 +534,34 @@ class Transaction extends \ObjectModel
         ];
     }
 
-    /**
-     * Loads data into the model through the gateway transaction ID.
-     *
-     * @param $transactionId
-     * @return bool
-     * @throws \Exception
-     * @since 2.5.0
-     */
-    public function hydrateByTransactionId($transactionId)
-    {
-        $query = new \DbQuery();
-        $query->from('wirecard_payment_gateway_tx')->where('transaction_id = "' . pSQL($transactionId) . '"');
-
-        $data = \Db::getInstance()->getRow($query);
-
-        if (!$data) {
-            return false;
-        }
-
-        $this->tx_id = (int)$data['tx_id'];
-
-        foreach (self::$definition['fields'] as $fieldName => $fieldSpecification) {
-            if (isset($data[$fieldName])) {
-                switch ($fieldSpecification['type']) {
-                    case self::TYPE_INT:
-                        $data[$fieldName] = (int)$data[$fieldName];
-                        break;
-                    case self::TYPE_FLOAT:
-                        $data[$fieldName] = (float)$data[$fieldName];
-                        break;
-                    case self::TYPE_DATE:
-                        $data[$fieldName] = new \DateTime($data[$fieldName]);
-                        break;
-                    case self::TYPE_STRING:
-                        $data[$fieldName] = (string)$data[$fieldName];
-                        break;
-                }
-
-                $this->$fieldName = $data[$fieldName];
-            }
-        }
-        return true;
-    }
 
     /**
-     * Loads all children of the transaction
+     * Calculates the sum of all child transactions of this transaction.
      *
-     * @return Transaction[]
+     * @return float|int
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
-     * @since 2.5.0
      */
-    public function getAllChildTransactions()
+    public function getProcessedAmount()
     {
-        $children = [];
-        $parent_id = $this->getTransactionId();
-
-        $query = new \DbQuery();
-        $query->from('wirecard_payment_gateway_tx')
-            ->where('parent_transaction_id = "' . pSQL($parent_id) . '"');
-
-        $rows = \Db::getInstance()->executeS($query);
-
-        foreach ($rows as $row) {
-            $children[] = new Transaction($row['tx_id']);
+        $childTransactions = $this->getAllChildTransactions();
+        $processed = 0;
+        foreach ($childTransactions as $child) {
+            $processed += $child->getAmount();
         }
-
-        return $children;
+        return $processed;
     }
+
+    /**
+     * Given some partial refunds / captures, return the remaining amount to be paid by the customer.
+     *
+     * @return float|int
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    public function getRemainingAmount()
+    {
+        return $this->getAmount() - $this->getProcessedAmount();
+    }
+
 }
