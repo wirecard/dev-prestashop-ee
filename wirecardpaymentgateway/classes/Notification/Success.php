@@ -57,6 +57,7 @@ abstract class Success implements ProcessablePaymentNotification
     /**
      * @throws \Exception
      * @since 2.1.0
+     * TODO: REFACTOR AND PRETTIFY
      */
     public function process()
     {
@@ -65,26 +66,18 @@ abstract class Success implements ProcessablePaymentNotification
         $dbManager->acquireLock($this->notification->getTransactionId(), 30);
         try {
             if (!OrderManager::isIgnorable($this->notification)) {
-                $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
-                $this->order->setCurrentState($order_state);
-                $this->order->save();
-
+                $shouldUpdate = false;
                 $amount = $this->notification->getRequestedAmount();
-                $this->order_service->updateOrderPayment(
-                    $this->notification->getTransactionId(),
-                    _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
-                );
-
-                $orderManager = new OrderManager();
                 $newId = Transaction::create(
                     $this->order->id,
                     $this->order->id_cart,
                     $amount,
                     $this->notification,
-                    $orderManager->getTransactionState($this->notification),
+                    $this->orderManager->getTransactionState($this->notification),
                     $this->order->reference
                 );
 
+                /* GET PARENT */
                 $parentTransactionId = $this->notification->getParentTransactionId();
                 $parentTransaction = new Transaction();
                 $hydrated = $parentTransaction->hydrateByTransactionId($parentTransactionId);
@@ -94,10 +87,23 @@ abstract class Success implements ProcessablePaymentNotification
                     $parentTransactionAmount = $parentTransaction->getAmount();
 
                     if ($this->equals($parentTransactionProcessedAmount, $parentTransactionAmount)) {
+                        $shouldUpdate = true;
                         $transactionManager = new DBTransactionManager();
                         $transactionManager->markTransactionClosed($parentTransactionId);
                     }
                 }
+
+                if (!$hydrated || $shouldUpdate) {
+                    $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
+                    $this->order->setCurrentState($order_state);
+                    $this->order->save();
+                }
+
+                $this->order_service->updateOrderPayment(
+                    $this->notification->getTransactionId(),
+                    _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
+                );
+
             }
         } finally {
             $dbManager->releaseLock($this->notification->getTransactionId());
