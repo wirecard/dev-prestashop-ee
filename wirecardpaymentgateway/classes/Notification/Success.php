@@ -12,9 +12,10 @@ namespace WirecardEE\Prestashop\Classes\Notification;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
-use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Models\InitialTransaction;
+use WirecardEE\Prestashop\Models\SettleableTransaction;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -24,8 +25,6 @@ use WirecardEE\Prestashop\Models\Transaction;
  */
 abstract class Success implements ProcessablePaymentNotification
 {
-
-    use NumericHelper;
 
     /** @var \Order */
     private $order;
@@ -57,7 +56,6 @@ abstract class Success implements ProcessablePaymentNotification
     /**
      * @throws \Exception
      * @since 2.1.0
-     * TODO: REFACTOR AND PRETTIFY
      */
     public function process()
     {
@@ -66,7 +64,6 @@ abstract class Success implements ProcessablePaymentNotification
         $dbManager->acquireLock($this->notification->getTransactionId(), 30);
         try {
             if (!OrderManager::isIgnorable($this->notification)) {
-                $shouldUpdate = false;
                 $amount = $this->notification->getRequestedAmount();
                 $newId = Transaction::create(
                     $this->order->id,
@@ -77,34 +74,16 @@ abstract class Success implements ProcessablePaymentNotification
                     $this->order->reference
                 );
 
-                /* GET PARENT */
-                $parentTransactionId = $this->notification->getParentTransactionId();
-                $parentTransaction = new Transaction();
-                $hydrated = $parentTransaction->hydrateByTransactionId($parentTransactionId);
+                $parentTransaction = $this->getParentTransaction();
+                $parentTransaction->markSettledAsClosed();
+                $order_state = $parentTransaction->updateOrder($this->order, $this->notification, $this->order_manager);
 
-                if ($hydrated) {
-                    $parentTransactionProcessedAmount = $parentTransaction->getProcessedAmount();
-                    $parentTransactionAmount = $parentTransaction->getAmount();
-
-                    if ($this->equals($parentTransactionProcessedAmount, $parentTransactionAmount)) {
-                        $shouldUpdate = true;
-                        $transactionManager = new DBTransactionManager();
-                        $transactionManager->markTransactionClosed($parentTransactionId);
-                    }
+                if($order_state) {
+                    $this->order_service->updateOrderPayment(
+                        $this->notification->getTransactionId(),
+                        _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
+                    );
                 }
-
-                if (!$hydrated || $shouldUpdate) {
-                    $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification, $shouldUpdate);
-                    if($order_state) {
-                        $this->order->setCurrentState($order_state);
-                        $this->order->save();
-                    }
-                }
-
-                $this->order_service->updateOrderPayment(
-                    $this->notification->getTransactionId(),
-                    _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
-                );
 
             }
         } catch (\Exception $e) {
@@ -114,5 +93,21 @@ abstract class Success implements ProcessablePaymentNotification
         {
             $dbManager->releaseLock($this->notification->getTransactionId());
         }
+    }
+
+    /**
+     * @return SettleableTransaction
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    private function getParentTransaction()
+    {
+        $parentTransactionId = $this->notification->getParentTransactionId();
+        $parentTransaction = new Transaction();
+        $hydrated = $parentTransaction->hydrateByTransactionId($parentTransactionId);
+        if($hydrated) {
+            return $parentTransaction;
+        }
+        return new InitialTransaction($this->notification->getRequestedAmount()->getValue());
     }
 }

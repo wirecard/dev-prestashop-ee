@@ -11,6 +11,10 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\Response;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Helper\DBTransactionManager;
+use WirecardEE\Prestashop\Helper\NumericHelper;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
@@ -20,9 +24,11 @@ use WirecardEE\Prestashop\Helper\TranslationHelper;
  * @TODO: Abstract current model to entity and collection wrapper
  * @since 1.0.0
  */
-class Transaction extends \ObjectModel
+class Transaction extends \ObjectModel implements SettleableTransaction
 {
     use TranslationHelper;
+
+    use NumericHelper;
 
     /** @var string  */
     const TRANSACTION_STATE_OPEN = 'open';
@@ -564,4 +570,49 @@ class Transaction extends \ObjectModel
         return $this->getAmount() - $this->getProcessedAmount();
     }
 
+    /**
+     * @return bool
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    public function markSettledAsClosed()
+    {
+        if ($this->isSettled()) {
+            $transactionManager = new DBTransactionManager();
+            $transactionManager->markTransactionClosed($this->getTransactionId());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    public function isSettled()
+    {
+        $parentTransactionProcessedAmount = $this->getProcessedAmount();
+        $parentTransactionAmount = $this->getAmount();
+        return $this->equals($parentTransactionProcessedAmount, $parentTransactionAmount);
+    }
+
+    /**
+     * @param \Order $order
+     * @param SuccessResponse $notification
+     * @param OrderManager $orderManager
+     * @return bool
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     */
+    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager)
+    {
+        if($this->isSettled()) {
+            $order_state = $orderManager->orderStateToPrestaShopOrderState($notification, true);
+            $order->setCurrentState($order_state);
+            $order->save();
+            return true;
+        }
+        return false;
+    }
 }
