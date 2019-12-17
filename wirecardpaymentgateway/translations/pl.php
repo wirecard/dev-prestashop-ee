@@ -18,7 +18,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_363ddc2d1e8
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_b88de16a1331eeff63ab5c701d255d62'] = 'Wirecard Transactions';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_4ae7d7707a0073ce0f7b2dc51158630d'] = 'Wirecard Support';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_123e952673362198bf7d5c5e54cff52e'] = 'Wirecard Ajax';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6dde257f8d241f9979e7e5e3cc07eb79'] = '';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_6dde257f8d241f9979e7e5e3cc07eb79'] = 'General Settings';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transaction_4f7ee606d388ed6691df392b8ecdd553'] = 'Transakcja';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transaction_6691d614f3d7126758144761ee4a38c6'] = 'Transaction ID';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transaction_195dfab2356fab5ba8fa39f8fadf835e'] = 'Parent Transaction ID';
@@ -190,10 +190,10 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_ca223103c3b51750b19e
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_77de2a7d1e366bd416e2a9e186e9f268'] = 'Hasło HTTP';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_36245276e84306a410a410785ac986b3'] = 'Wyślij dodatkową informację';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test konfiguracji kart kredytowych';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_575827d9bd91766dbf191cbfc7f1dee4'] = '';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_a3b6d799a2a7cbfe5277db688a4ac477'] = '';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_5f2ba2b0dc612fb9a79fcec2a726c907'] = '';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_2375bbba369e96630b01830f521a39ca'] = '';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_6dde257f8d241f9979e7e5e3cc07eb79'] = 'General Settings';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_a3b6d799a2a7cbfe5277db688a4ac477'] = 'Enable automatic catpure';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_5f2ba2b0dc612fb9a79fcec2a726c907'] = 'Trigger automatic capture once order state is changed to Shipped.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_2375bbba369e96630b01830f521a39ca'] = 'Zapisz';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_abfa4ee8f05fae13b8954098fca4f0f4'] = 'Ustawiena zaktualnizowane';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_3bd56bbf8734eb9b2d39537bbbf92cdd'] = 'No transaction found.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_c2fb8155114a173b41a33639e58fb5b7'] = 'Zgłoszenie zapytania';
@@ -270,4 +270,4 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>infos_841061061b3e6d814c1b275405fd
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_6a19862e5ec18d1115989f244ef711c3'] = 'Transakcje';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_f7e6cfa31fe7825f61f3b1aea2c03e95'] = 'Pomoc techniczna';
 $_MODULE['<{wirecardpaymentgateway}prestashop>infos_0813f19bf4c28c620953669ae9caf5ac'] = 'Informacje o wtyczkach sklepowych Wirecard';
-$_MODULE['<{wirecardpaymentgateway}prestashop>infos_6c1115f4025797503fc1d88f909e9715'] = '';
+$_MODULE['<{wirecardpaymentgateway}prestashop>infos_6c1115f4025797503fc1d88f909e9715'] = 'General Settings';
