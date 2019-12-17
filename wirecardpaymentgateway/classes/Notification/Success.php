@@ -73,7 +73,7 @@ abstract class Success implements ProcessablePaymentNotification
                     $this->order->id_cart,
                     $amount,
                     $this->notification,
-                    $this->orderManager->getTransactionState($this->notification),
+                    $this->order_manager->getTransactionState($this->notification),
                     $this->order->reference
                 );
 
@@ -94,9 +94,11 @@ abstract class Success implements ProcessablePaymentNotification
                 }
 
                 if (!$hydrated || $shouldUpdate) {
-                    $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
-                    $this->order->setCurrentState($order_state);
-                    $this->order->save();
+                    $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification, $shouldUpdate);
+                    if($order_state) {
+                        $this->order->setCurrentState($order_state);
+                        $this->order->save();
+                    }
                 }
 
                 $this->order_service->updateOrderPayment(
@@ -105,7 +107,11 @@ abstract class Success implements ProcessablePaymentNotification
                 );
 
             }
-        } finally {
+        } catch (\Exception $e) {
+            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
+            throw $e;
+        } finally
+        {
             $dbManager->releaseLock($this->notification->getTransactionId());
         }
     }

@@ -146,11 +146,12 @@ class OrderManager
 
     /**
      * @param SuccessResponse $notification
+     * @param bool $childrenEqualParent true if the sum of children equals to its own sum
      * @return mixed
      * @throws \Exception
      * @since 2.1.0
      */
-    public function orderStateToPrestaShopOrderState($notification)
+    public function orderStateToPrestaShopOrderState($notification, $childrenEqualParent)
     {
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
         $order_state = $backend_service->getOrderState($notification->getTransactionType());
@@ -161,7 +162,10 @@ class OrderManager
             case BackendService::TYPE_CANCELLED:
                 return _PS_OS_CANCELED_;
             case BackendService::TYPE_REFUNDED:
-                return _PS_OS_REFUND_;
+                if($childrenEqualParent) {
+                    return _PS_OS_REFUND_;
+                }
+                return false;
             case BackendService::TYPE_PROCESSING:
                 return _PS_OS_PAYMENT_;
             case BackendService::TYPE_PENDING:
