@@ -66,8 +66,8 @@ class WirecardGeneralSettingsController extends ModuleAdminController
 
         switch ($this->display) {
             case self::DISPLAY_VIEW_NAME_ADD:
-                $this->toolbar_title[] = $this->getTranslatedString('general_settings_title');
-                $this->addMetaTitle($this->getTranslatedString('general_settings_title'));
+                $this->toolbar_title[] = $this->getTranslatedString('heading_title_general_settings');
+                $this->addMetaTitle($this->getTranslatedString('heading_title_general_settings'));
                 break;
         }
     }

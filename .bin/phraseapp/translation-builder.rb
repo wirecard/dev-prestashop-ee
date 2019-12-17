@@ -80,6 +80,9 @@ class TranslationBuilder
     file.rewind
     translation_keys += file.read.scan(/->getTranslationForLanguage\(\$lang->iso\_code, \'(.*)\', \$this->name\)/).uniq
 
+    file.rewind
+    translation_keys += file.read.scan(/new\sAdminControllerTabConfig\(\n.*\n.*\'(.*)\'/).uniq
+
     file.close
 
     translation_keys
@@ -119,7 +122,8 @@ class TranslationBuilder
 
   def self.escape_characters_in_string(string)
     pattern = /(\'|\"|\\)/
-    string.gsub(pattern){|match|"\\"  + match}
+    haystack = string || ""
+    haystack.gsub(pattern){|match|"\\"  + match}
   end
 
   def self.get_translated_keys(file_path)

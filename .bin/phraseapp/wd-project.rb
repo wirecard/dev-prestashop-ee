@@ -51,7 +51,7 @@ class WdProject
 
     if has_key_changes || source_keys.length != translated_keys.length
       @log.warn('Changes to translatable keys have been detected in the working tree.'.yellow.bright)
-      @log.warn("Changed keys: #{changed_keys.inspect}".yellow.bright)
+      @log.warn("Changed keys: #{changed_keys.flatten.inspect}".yellow.bright)
       return true
     end
 

@@ -63,15 +63,6 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
     }
 
     /**
-     * @return int
-     * @since 2.5.0
-     */
-    private function isForceOrderStateChangeAllowed()
-    {
-        return intval(Configuration::get(ConfigConstants::SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED));
-    }
-
-    /**
      * @return bool
      * @throws Exception
      * @since 2.5.0

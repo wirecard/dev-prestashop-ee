@@ -34,7 +34,7 @@ class TransactionPossibleOperationService implements ServiceInterface
     use TranslationHelper;
 
     /** @var string */
-    const TRANSLATION_FILE = "wirecardtransactions";
+    const TRANSLATION_FILE = "transactionpossibleoperationservice";
 
     /** @var Transaction */
     private $transaction;
@@ -142,7 +142,7 @@ class TransactionPossibleOperationService implements ServiceInterface
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
         $translations = [
-            //@TODO add constant to paymentSDK
+            //@TODO Add constant to paymentSDK
             'capture' => $this->getTranslatedString('text_capture_transaction'),
             Operation::CANCEL => $this->getTranslatedString('text_cancel_transaction'),
             Operation::REFUND => $this->getTranslatedString('text_refund_transaction'),
