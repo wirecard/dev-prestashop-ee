@@ -63,6 +63,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
     {
         $this->wirecardTransactionsController->renderView();
         $transaction = $this->getTestTransaction();
+
         $expected = [
             'current_index' => '1',
             'payment_method' => 'Wirecard Credit Card',
