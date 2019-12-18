@@ -9,10 +9,9 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Device;
 use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderList;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 use WirecardEE\Prestashop\Helper\CurrencyHelper;
 use WirecardEE\Prestashop\Helper\DeviceIdentificationHelper;
@@ -40,7 +39,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
 
     const MIN_AGE = 18;
 
-    private $currencyHelper;
     /**
      * PaymentGuaranteedInvoiceRatepay constructor.
      *
@@ -54,12 +52,6 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         $this->name = 'Wirecard Guaranteed Invoice';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
-
-        $this->cancel  = array( 'authorization' );
-        $this->capture = array( 'authorization' );
-        $this->refund  = array( 'capture-authorization' );
-
-        $this->currencyHelper = new CurrencyHelper();
     }
 
     /**
@@ -219,18 +211,23 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
      * @return null|RatepayInvoiceTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
+        $context = \Context::getContext();
+        $cart = $context->cart;
         $ident = '';
-        if (isset($module->context->cookie->wirecardDeviceIdent)) {
-            $ident = $module->context->cookie->wirecardDeviceIdent;
-            unset($module->context->cookie->wcsConsumerDeviceId);
+
+        if (isset($context->cookie->wirecardDeviceIdent)) {
+            $ident = $context->cookie->wirecardDeviceIdent;
+            unset($context->cookie->wcsConsumerDeviceId);
         }
-        $transaction = new RatepayInvoiceTransaction();
+
+        $transaction = $this->createTransactionInstance($operation);
 
         $additionalInformation = new AdditionalInformationBuilder();
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setOrderNumber($cart->id);
+
         $device = new Device();
         $transaction->setDevice($device->setFingerPrint($ident));
 
@@ -238,91 +235,29 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     }
 
     /**
-     * Create cancel transaction
+     * Get a clean transaction instance for this payment type.
      *
-     * @param Transaction $transactionData
+     * @param string $operation
      * @return RatepayInvoiceTransaction
-     * @since 1.0.0
+     * @since 2.4.0
+     * @SuppressWarnings(PHPMD)
+     * @TODO refactor the $operation out of the abstract payment
      */
-    public function createCancelTransaction($transactionData)
+    public function createTransactionInstance($operation = null)
     {
-        $cart = new \Cart($transactionData->cart_id);
-        $currency = $transactionData->currency;
-
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-        $transaction->setAmount(
-            $this->currencyHelper->getAmount(
-                $cart->getOrderTotal(),
-                $currency
-            )
-        );
-
-        return $transaction;
+        return new RatepayInvoiceTransaction();
     }
 
     /**
-     * Create pay transaction
-     *
-     * @param Transaction $transactionData
-     * @return RatepayInvoiceTransaction
-     * @since 1.0.0
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $cart = new \Cart($transactionData->cart_id);
-        $currency = $transactionData->currency;
-
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        $additionalHelper = new AdditionalInformationBuilder();
-        $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
-        $transaction->setAmount(
-            $this->currencyHelper->getAmount(
-                $cart->getOrderTotal(),
-                $currency
-            )
-        );
-
-        return $transaction;
-    }
-
-    /**
-     * Create refund transaction
-     *
-     * @param Transaction $transactionData
-     * @return RatepayInvoiceTransaction
-     * @since 1.0.0
-     */
-    public function createRefundTransaction($transactionData, $module)
-    {
-        $cart = new \Cart($transactionData->cart_id);
-        $currency = $transactionData->currency;
-
-        $transaction = new RatepayInvoiceTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        $additionalHelper = new AdditionalInformationBuilder();
-        $transaction->setBasket($additionalHelper->createBasket($cart, $transaction, $currency));
-        $transaction->setAmount(
-            $this->currencyHelper->getAmount(
-                $cart->getOrderTotal(),
-                $currency
-            )
-        );
-
-        return $transaction;
-    }
-
-    /**
-     * @param \WirecardPaymentGateway $module
      * @param \Cart $cart
+     * @throws \Exception
      * @return bool
      * @since 1.0.0
      */
-    public function isAvailable($module, $cart)
+    public function isAvailable()
     {
+        $cart = $this->getCartFromContext();
+
         /** @var \Customer $customer */
         $customer = new \Customer($cart->id_customer);
 
@@ -335,42 +270,25 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         /** @var \Currency $currency */
         $currency = new \Currency($cart->id_currency);
 
-        $birthDay = new \DateTime($customer->birthday);
-        $difference = $birthDay->diff(new \DateTime());
-        $age = $difference->format('%y');
-
-        if ($cart->isVirtualCart()) {
-            return false;
-        };
-
-        if ($age < self::MIN_AGE) {
+        if ($cart->isVirtualCart() ||
+            !$this->isAboveAgeLimit($customer->birthday) ||
+            !$this->isInLimit($cart->getOrderTotal()) ||
+            !$this->isValidAddress($shippingAddress, $billingAddress) ||
+            !in_array($currency->iso_code, $this->getAllowedCurrencies())
+        ) {
             return false;
         }
-
-        if (!$this->isInLimit($module, $cart->getOrderTotal())) {
-            return false;
-        }
-
-        if (! $this->isValidAddress($module, $shippingAddress, $billingAddress)) {
-            return false;
-        }
-
-        if (! in_array($currency->iso_code, $this->getAllowedCurrencies($module))) {
-            return false;
-        }
-
         return true;
     }
 
     /**
      * Check if total amount is in limit minimum and maximum amount
      *
-     * @param \WirecardPaymentGateway $module
      * @param float $total
      * @return bool
      * @since 1.0.0
      */
-    private function isInLimit($module, $total)
+    private function isInLimit($total)
     {
         $currencyConverter = new CurrencyHelper();
         $currency = \Context::getContext()->currency;
@@ -395,17 +313,17 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Validate address information (shipping, billing)
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Address $shipping
-     * @param \Address $billing
+     * @param \Address $shippingAddress
+     * @param \Address $billingAddress
      * @return bool
      * @since 1.0.0
      */
-    private function isValidAddress($module, $shipping, $billing)
+    private function isValidAddress($shippingAddress, $billingAddress)
     {
         $isSame = $this->configuration->getField('billingshipping_same');
-        if ($isSame && $shipping->id != $billing->id) {
-            $fields = array(
+        //@TODO refactor this complicated block
+        if ($isSame && $shippingAddress->id != $billingAddress->id) {
+            $fieldsToCompare = array(
                 'country',
                 'company',
                 'firstname',
@@ -414,25 +332,16 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
                 'postcode',
                 'city'
             );
-            foreach ($fields as $f) {
-                if ($billing->$f != $shipping->$f) {
+            foreach ($fieldsToCompare as $field) {
+                if ($billingAddress->$field != $shippingAddress->$field) {
                     return false;
                 }
             }
         }
 
-        if (count($this->getAllowedCountries($module, 'shipping'))) {
-            $c = new \Country($shipping->id_country);
-            if (!in_array($c->iso_code, $this->getAllowedCountries($module, 'shipping'))) {
-                return false;
-            }
-        }
-
-        if (count($this->getAllowedCountries($module, 'billing'))) {
-            $c = new \Country($shipping->id_country);
-            if (!in_array($c->iso_code, $this->getAllowedCountries($module, 'billing'))) {
-                return false;
-            }
+        if (!$this->isCountryAllowed($shippingAddress, 'shipping') ||
+            !$this->isCountryAllowed($billingAddress, 'billing')) {
+            return false;
         }
 
         return true;
@@ -441,12 +350,11 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Get array with allowed countries per address type
      *
-     * @param \WirecardPaymentGateway $module
      * @param string $type
      * @return array
      * @since 1.0.0
      */
-    private function getAllowedCountries($module, $type)
+    private function getAllowedCountries($type)
     {
         $val = $this->configuration->getField($type . '_countries');
         if (!\Tools::strlen($val)) {
@@ -464,11 +372,10 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
     /**
      * Get array with allowed currencies
      *
-     * @param \WirecardPaymentGateway $module
      * @return array
      * @since 1.0.0
      */
-    private function getAllowedCurrencies($module)
+    private function getAllowedCurrencies()
     {
         $val = $this->configuration->getField('allowed_currencies');
 
@@ -489,5 +396,70 @@ class PaymentGuaranteedInvoiceRatepay extends Payment
         return array(
           'device_identification' => DeviceIdentificationHelper::generateFingerprint()
         );
+    }
+
+    /**
+     * @param string $birthDate
+     * @param int $ageLimit
+     * @return bool
+     * @throws \Exception
+     *
+     * @since 2.5.0
+     */
+    private function isAboveAgeLimit($birthDate, $ageLimit = self::MIN_AGE)
+    {
+        $birthDay = new \DateTime($birthDate);
+        $difference = $birthDay->diff(new \DateTime());
+        $age = $difference->format('%y');
+
+        return $age > $ageLimit;
+    }
+
+    /**
+     * Return Guaranteed Invoice Ratepay post processing mandatory entities
+     *
+     * @return array
+     * @since 2.4.0
+     */
+    public function getPostProcessingMandatoryEntities()
+    {
+        return [
+            EntityBuilderList::BASKET
+        ];
+    }
+
+    /**
+     * @return \Cart
+     * @since 2.5.0
+     */
+    protected function getCartFromContext()
+    {
+        $context = \Context::getContext();
+        return $context->cart;
+    }
+
+    /**
+     * Checks if the address country is valid for the merchant configuration
+     * as $type you can set 'shipping' or 'billing'
+     *
+     * @param \Address $address
+     * @param string $type
+     * @return bool
+     * @since 2.5.0
+     */
+    private function isCountryAllowed($address, $type)
+    {
+        $configuredCountries = $this->getAllowedCountries($type);
+        //if empty no countries are allowed
+        if (empty($configuredCountries)) {
+            return false;
+        }
+
+        $addressCountry = new \Country($address->id_country);
+        if (!in_array($addressCountry->iso_code, $configuredCountries)) {
+            return false;
+        }
+
+        return true;
     }
 }

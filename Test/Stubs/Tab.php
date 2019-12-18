@@ -9,7 +9,7 @@
 
 class Tab
 {
-    public function __construct()
+    public function __construct($id)
     {
     }
 
@@ -17,7 +17,18 @@ class Tab
     {
     }
 
-    public static function findOneIdByClassName()
+    public static function getIdFromClassName($className)
     {
+        return 1;
+    }
+
+    public function save()
+    {
+        return;
+    }
+
+    public function delete()
+    {
+        return;
     }
 }

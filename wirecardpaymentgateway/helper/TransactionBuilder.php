@@ -12,6 +12,7 @@ namespace WirecardEE\Prestashop\Helper;
 use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
 use Wirecard\PaymentSdk\Entity\Redirect;
+use WirecardEE\Prestashop\Helper\PaymentProvider;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
@@ -61,19 +62,16 @@ class TransactionBuilder
 
     /**
      * TransactionBuilder constructor.
-     * @param \WirecardPaymentGateway $module
-     * @param \Context $context
-     * @param int $cartId
      * @param string $paymentType
      * @since 2.0.0
      */
-    public function __construct($module, $context, $cartId, $paymentType)
+    public function __construct($paymentType)
     {
-        $this->module = $module;
-        $this->context = $context;
+        $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
+        $this->context = \Context::getContext();
+        $this->cart = $this->context->cart;
         $this->paymentType = $paymentType;
         $this->shopConfigService = new ShopConfigurationService($paymentType);
-        $this->cart = new \Cart((int) $cartId);
         $this->currency = new \Currency($this->cart->id_currency);
         $this->customFields = new CustomFieldCollection();
         $this->additionalInformationBuilder = new AdditionalInformationBuilder();
@@ -102,15 +100,10 @@ class TransactionBuilder
     public function buildTransaction()
     {
         /** @var Payment $payment */
-        $payment = $this->module->getPaymentFromType($this->paymentType);
+        $payment = PaymentProvider::getPayment($this->paymentType);
 
         /** @var Transaction $transaction */
-        $this->transaction = $payment->createTransaction(
-            $this->module,
-            $this->cart,
-            \Tools::getAllValues(),
-            $this->orderId
-        );
+        $this->transaction = $payment->createTransaction();
 
         $this->addLocale();
         $this->addAmount();

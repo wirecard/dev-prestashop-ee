@@ -10,8 +10,6 @@
 namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
-use Wirecard\PaymentSdk\Config\PaymentMethodConfig;
-use Wirecard\PaymentSdk\Entity\Amount;
 use WirecardEE\Prestashop\Helper\AdditionalInformationBuilder;
 
 /**
@@ -47,10 +45,6 @@ class PaymentPaypal extends Payment
         $this->type = self::TYPE;
         $this->name = 'Wirecard PayPal';
         $this->formFields = $this->createFormFields();
-
-        $this->cancel  = array( 'authorization' );
-        $this->capture = array( 'authorization' );
-        $this->refund  = array( 'debit', 'capture-authorization' );
     }
 
     /**
@@ -169,11 +163,13 @@ class PaymentPaypal extends Payment
      * @return null|PayPalTransaction
      * @since 1.0.0
      */
-    public function createTransaction($module, $cart, $values, $orderId)
+    public function createTransaction($operation = null)
     {
+        $context = \Context::getContext();
+        $cart = $context->cart;
         $additionalInformation = new AdditionalInformationBuilder();
 
-        $transaction = new PayPalTransaction();
+        $transaction = $this->createTransactionInstance($operation);
         $transaction->setAccountHolder($additionalInformation->createAccountHolder($cart, 'billing'));
         $transaction->setShipping($additionalInformation->createAccountHolder($cart, 'shipping'));
 
@@ -181,32 +177,14 @@ class PaymentPaypal extends Payment
     }
 
     /**
-     * Create cancel transaction
+     * Get a clean transaction instance for this payment type.
      *
-     * @param Transaction $transactionData
+     * @param string $operation
      * @return PayPalTransaction
-     * @since 1.0.0
+     * @since 2.4.0
      */
-    public function createCancelTransaction($transactionData)
+    public function createTransactionInstance($operation = null)
     {
-        $transaction = new PayPalTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $transaction;
-    }
-
-    /**
-     * Create pay transaction
-     *
-     * @param Transaction $transactionData
-     * @return PayPalTransaction
-     * @since 1.0.0
-     */
-    public function createPayTransaction($transactionData)
-    {
-        $transaction = new PayPalTransaction();
-        $transaction->setParentTransactionId($transactionData->transaction_id);
-
-        return $transaction;
+        return new PayPalTransaction();
     }
 }

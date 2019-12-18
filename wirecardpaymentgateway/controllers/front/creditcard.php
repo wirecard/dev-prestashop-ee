@@ -106,7 +106,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $payment = new PaymentCreditCard();
 
         try {
-            $request_data = $payment->getRequestData($this->module, $this->context, $cart_id);
+            $request_data = $payment->getRequestData($this->context, $cart_id);
             $response = JsonResponse::fromJsonString($request_data);
         } catch (\Exception $exception) {
             $response = new JsonResponse(null);

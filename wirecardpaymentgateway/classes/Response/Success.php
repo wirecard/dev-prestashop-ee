@@ -14,37 +14,29 @@ use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\DBTransactionManager;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Class Success
  * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-final class Success implements ProcessablePaymentResponse
+abstract class Success implements ProcessablePaymentResponse
 {
+    use TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = 'success';
+
     /** @var \Order  */
-    private $order;
+    protected $order;
 
     /** @var SuccessResponse  */
-    private $response;
+    protected $response;
 
     /** @var OrderService */
-    private $order_service;
-
-    /** @var \Cart */
-    private $cart;
-
-    /** @var \Customer */
-    private $customer;
-
-    /** @var \WirecardPaymentGateway */
-    private $module;
-
-    /** @var ContextService  */
-    private $context_service;
-
-    /** @var ShopConfigurationService */
-    private $configuration_service;
+    protected $order_service;
   
     /**
      * SuccessResponseProcessing constructor.
@@ -57,12 +49,8 @@ final class Success implements ProcessablePaymentResponse
     {
         $this->order = $order;
         $this->response = $response;
+
         $this->order_service = new OrderService($order);
-        $this->cart = $this->order_service->getOrderCart();
-        $this->customer = new \Customer((int) $this->cart->id_customer);
-        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
-        $this->context_service = new ContextService(\Context::getContext());
-        $this->configuration_service = new ShopConfigurationService('wiretransfer');
     }
 
     /**
@@ -76,18 +64,5 @@ final class Success implements ProcessablePaymentResponse
 
             $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
         }
-
-        if ($this->response->getPaymentMethod() === 'wiretransfer' &&
-            $this->configuration_service->getField('payment_type') === 'pia') {
-            $this->context_service->setPiaCookie($this->response);
-        }
-
-        \Tools::redirect(
-            'index.php?controller=order-confirmation&id_cart='
-            .$this->cart->id.'&id_module='
-            .$this->module->id.'&id_order='
-            .$this->order->id.'&key='
-            .$this->customer->secure_key
-        );
     }
 }

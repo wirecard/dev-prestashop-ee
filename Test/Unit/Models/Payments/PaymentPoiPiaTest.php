@@ -63,11 +63,13 @@ class PaymentPoiPiaTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual::NAME);
     }
 
-    public function testCreateCancelTransaction()
+    public function testGetPostProcessingMandatoryEntities()
     {
-        $actual = new \Wirecard\PaymentSdk\Transaction\PoiPiaTransaction();
-        $actual->setParentTransactionId('my_secret_id');
+        $expected = [];
 
-        $this->assertEquals($actual, $this->payment->createCancelTransaction($this->transactionData));
+        $this->assertEquals(
+            $expected,
+            $this->payment->getPostProcessingMandatoryEntities()
+        );
     }
 }

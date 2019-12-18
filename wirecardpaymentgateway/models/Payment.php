@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Models;
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TemplateHelper;
@@ -57,31 +58,7 @@ abstract class Payment extends PaymentOption
      * @var array
      * @since 1.0.0
      */
-    protected $transactionTypes;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
     protected $formFields;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $cancel;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $refund;
-
-    /**
-     * @var array
-     * @since 1.0.0
-     */
-    protected $capture;
 
     /**
      * @var bool
@@ -126,11 +103,6 @@ abstract class Payment extends PaymentOption
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->getTranslatedString($this->configuration->getField('title')));
-
-        //Default back-end operation possibilities
-        $this->cancel = array('authorization');
-        $this->refund = array('capture-authorization');
-        $this->capture = array('authorization');
     }
 
     /**
@@ -153,17 +125,6 @@ abstract class Payment extends PaymentOption
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * Get transaction types
-     *
-     * @return array
-     * @since 1.0.0
-     */
-    public function getTransactionTypes()
-    {
-        return $this->transactionTypes;
     }
 
     /**
@@ -239,62 +200,12 @@ abstract class Payment extends PaymentOption
     }
 
     /**
-     * Check if payment method can use capture
-     *
-     * @param string $type
-     * @return bool
-     * @since 1.0.0
-     */
-    public function canCapture($type)
-    {
-        if ($this->capture && in_array($type, $this->capture)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if payment method can use cancel
-     *
-     * @param string $type
-     * @return boolean
-     * @since 1.0.0
-     */
-    public function canCancel($type)
-    {
-        if ($this->cancel && in_array($type, $this->cancel)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if payment method can use refund
-     *
-     * @param string $type
-     * @return boolean
-     * @since 1.0.0
-     */
-    public function canRefund($type)
-    {
-        if ($this->refund && in_array($type, $this->refund)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Check if payment is available for specific cart content default true
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
      * @return bool
      * @since 1.0.0
      */
-    public function isAvailable($module, $cart)
+    public function isAvailable()
     {
         return true;
     }
@@ -336,11 +247,26 @@ abstract class Payment extends PaymentOption
     /**
      * Create Default Transaction
      *
-     * @param \WirecardPaymentGateway $module
-     * @param \Cart $cart
-     * @param array $values
-     * @param int $orderId
+     * @param string $operation
      * @since 1.0.0
      */
-    abstract public function createTransaction($module, $cart, $values, $orderId);
+    abstract public function createTransaction($operation = null);
+
+    /**
+     * @param string $operation
+     * @return \Wirecard\PaymentSdk\Transaction\Transaction
+     * @since 2.4.0
+     */
+    abstract public function createTransactionInstance($operation = null);
+
+    /**
+     * Returns an array of Entities that are mandatory for the payment method post processing transactions
+     *
+     * @return array
+     * @since 2.5.0
+     */
+    public function getPostProcessingMandatoryEntities()
+    {
+        return [];
+    }
 }

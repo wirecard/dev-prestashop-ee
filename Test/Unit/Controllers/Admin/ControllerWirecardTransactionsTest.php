@@ -7,44 +7,93 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+use Wirecard\PaymentSdk\BackendService;
+use Wirecard\PaymentSdk\Transaction\Operation;
+use WirecardEE\Prestashop\Models\Transaction;
+
 require_once __DIR__ . '/../../../../wirecardpaymentgateway/controllers/admin/WirecardTransactions.php';
 
 class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
 {
-    public $transactions;
+    /**
+     * @var WirecardTransactionsController
+     */
+    public $wirecardTransactionsController;
 
     public function setUp()
     {
-        $this->transactions = new WirecardTransactionsController();
+        $beckendService = \Mockery::mock('overload:' . BackendService::class);
+        $beckendService->shouldReceive('retrieveBackendOperations')
+            ->andReturn(
+                [
+                    Operation::REFUND => 'Refund',
+                    Operation::CANCEL => 'Cancel',
+                    Operation::PAY => 'Capture'
+                ]
+            );
+
+        $this->wirecardTransactionsController = new WirecardTransactionsController();
+
+        $this->wirecardTransactionsController->object = $this->getTestTransaction();
+    }
+
+    /**
+     * @return Transaction
+     */
+    protected function getTestTransaction()
+    {
+        $transaction = new Transaction();
+        $transaction->setPaymentMethod('creditcard');
+        $transaction->setTxId(11);
+        $transaction->setAmount(20);
+        $transaction->setCurrency('EUR');
+        $transaction->setOrderNumber(12);
+        $transaction->setTransactionType('authorization');
+        $transaction->setTransactionState('success');
+        $transaction->setTransactionId('QWERTY123XYZAABB1122');
+        return $transaction;
     }
 
     public function testConstructor()
     {
-        $this->assertNotNull($this->transactions);
+        $this->assertNotNull($this->wirecardTransactionsController);
     }
 
     public function testRenderView()
     {
-        $this->transactions->renderView();
-        $expected = array(
+        $this->wirecardTransactionsController->renderView();
+        $transaction = $this->getTestTransaction();
+
+        $expected = [
             'current_index' => '1',
-            'transaction_id' => '12l3j123kjg12kj3g123',
             'payment_method' => 'Wirecard Credit Card',
-            'transaction_type' => 'authorization',
-            'status' => 'success',
-            'amount' => '20',
-            'currency' => 'EUR',
-            'response_data' => null,
-            'canCancel' => true,
-            'canCapture' => true,
-            'canRefund' => false,
-            'cancelLink' => 'WirecardTransactions',
-            'captureLink' => 'WirecardTransactions',
-            'refundLink' => 'WirecardTransactions',
-            'backButton' => 'WirecardTransactions'
+            'possible_operations' => [
+                [
+                    'action' => 'refund',
+                    'name' => 'Refund transaction'
+                ], [
+                    'action' => 'cancel',
+                    'name' => 'Cancel transaction'
+                ], [
+                    'action' => 'pay',
+                    'name' => 'Capture transaction'
+                ],
+            ],
+            'back_link' => 'WirecardTransactions',
+            'transaction' => [
+                'tx' => $transaction->getTxId(),
+                'id' => $transaction->getTransactionId(),
+                'type' => $transaction->getTransactionType(),
+                'status' => $transaction->getTransactionState(),
+                'amount' => $transaction->getAmount(),
+                'currency' => $transaction->getCurrency(),
+                'response' => null,
+                'payment_method' => $transaction->getPaymentMethod(),
+                'order' => $transaction->getOrderNumber(),
+                'badge' => 'red'
+            ]
+        ];
 
-        );
-
-        $this->assertEquals($expected, $this->transactions->tpl_view_vars);
+        $this->assertEquals($expected, $this->wirecardTransactionsController->tpl_view_vars);
     }
 }

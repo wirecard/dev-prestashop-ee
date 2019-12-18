@@ -42,15 +42,6 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testTransactionTypes()
-    {
-        $actual = $this->payment->getTransactionTypes();
-
-        $expected =  array('authorization','capture');
-
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testFormFields()
     {
         $actual = $this->payment->getFormFields();
@@ -73,20 +64,5 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
         $actual = $this->payment->createTransaction($this->paymentModule, new Cart(), array(), 'ADB123');
 
         $this->assertInstanceOf(\Wirecard\PaymentSdk\Transaction\PayPalTransaction::class, $actual);
-    }
-
-    public function testCanCancel()
-    {
-        $this->assertEquals(false, $this->payment->canCancel('test'));
-    }
-
-    public function testCanCapture()
-    {
-        $this->assertEquals(false, $this->payment->canCapture('test'));
-    }
-
-    public function testCanRefund()
-    {
-        $this->assertEquals(true, $this->payment->canRefund('capture-authorization'));
     }
 }

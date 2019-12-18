@@ -94,7 +94,8 @@ class Configuration
                 return 0;
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_REQUESTOR_CHALLENGE':
                 return '02';
-
+            case 'PS_PRICE_DISPLAY_PRECISION':
+                return 2;
             default:
                 return $param;
         }
