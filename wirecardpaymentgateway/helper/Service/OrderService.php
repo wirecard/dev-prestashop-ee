@@ -71,18 +71,18 @@ class OrderService
         }
     }
 
-    /**
-     * @param $amount
-     * @param $paymentMethod
-     * @param $transactionId
-     * @return bool
-     * @throws \Exception
-     */
-    public function createOrderPayment($amount, $paymentMethod, $transactionId)
-    {
-        //$now = date("Y-m-d H:i:s");
-        //return $this->order->addOrderPayment($amount, $paymentMethod, $transactionId, null, $now);
-    }
+//    /**
+//     * @param $amount
+//     * @param $paymentMethod
+//     * @param $transactionId
+//     * @return bool
+//     * @throws \Exception
+//     */
+//    public function createOrderPayment($amount, $paymentMethod, $transactionId)
+//    {
+//       // $now = date("Y-m-d H:i:s");
+//       // return $this->order->addOrderPayment($amount, $paymentMethod, $transactionId);
+//    }
 
     /**
      * @param string $order_state
