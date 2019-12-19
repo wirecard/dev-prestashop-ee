@@ -67,7 +67,12 @@ abstract class Success implements ProcessablePaymentResponse
                 $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
                 $this->order->save();
 
-                $this->order_service->updateOrderPayment($this->response->getTransactionId(), 0);
+                $amount = 0;
+                if($this->response->getTransactionType() !== \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION) {
+                    $amount = $this->response->getRequestedAmount();
+                }
+                $this->order_service->updateOrderPayment($this->response->getTransactionId(), $amount);
+
             }
 
             $amount = $this->response->getRequestedAmount();

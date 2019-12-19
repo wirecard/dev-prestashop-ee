@@ -55,6 +55,36 @@ class OrderService
     }
 
     /**
+     * @param string $transaction_id
+     * @param float $amount
+     * @since 2.1.0
+     */
+    public function updateOrderPaymentTwo($transaction_id)
+    {
+        $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
+
+        $last_index = count($order_payments) - 1;
+
+        if (!empty($order_payments)) {
+            $order_payments[$last_index]->transaction_id = $transaction_id;
+            $order_payments[$last_index]->save();
+        }
+    }
+
+    /**
+     * @param $amount
+     * @param $paymentMethod
+     * @param $transactionId
+     * @return bool
+     * @throws \Exception
+     */
+    public function createOrderPayment($amount, $paymentMethod, $transactionId)
+    {
+        //$now = date("Y-m-d H:i:s");
+        //return $this->order->addOrderPayment($amount, $paymentMethod, $transactionId, null, $now);
+    }
+
+    /**
      * @param string $order_state
      *
      * @return boolean

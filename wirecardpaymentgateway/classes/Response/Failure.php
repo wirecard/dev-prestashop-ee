@@ -64,7 +64,7 @@ final class Failure implements ProcessablePaymentResponse
             $this->order->setCurrentState(_PS_OS_ERROR_);
             $this->order->save();
 
-            $this->order_service->updateOrderPayment($this->response->getData()['transaction-id'], 0);
+            $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
         }
 
         if ($this->process_type === ProcessType::PROCESS_BACKEND) {

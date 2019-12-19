@@ -13,6 +13,7 @@ use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Models\Transaction;
 
 class Success extends SuccessAbstract
@@ -52,6 +53,8 @@ class Success extends SuccessAbstract
         $tx_id = \Tools::getValue('tx_id');
         $transaction = new Transaction($tx_id);
         $transaction->markSettledAsClosed();
+        $service = new OrderService($this->order);
+        $service->createOrderPayment($transaction->getAmount(), $transaction->getPaymentMethod(), $transaction->getTransactionId());
 
         $this->context_service->setConfirmations(
             $this->getTranslatedString('success_new_transaction')
