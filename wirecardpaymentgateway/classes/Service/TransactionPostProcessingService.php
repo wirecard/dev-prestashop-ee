@@ -62,13 +62,13 @@ class TransactionPostProcessingService implements ServiceInterface
      */
     public function process($delta_amount)
     {
-        // @TODO: Refactor me :(
-        // $this->buildTransaction()
-        // $this->executeTransaction()
-        // $this->processTransactionResponse()
 
         try {
             $parentTransaction = (new TransactionFinder())->getTransactionById($this->transaction_id);
+            if($delta_amount > $parentTransaction->getAmount() - $parentTransaction->getProcessedAmount()) {
+                $this->errors[] = "Amount too large.";
+                return;
+            }
 
             $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
                 PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),

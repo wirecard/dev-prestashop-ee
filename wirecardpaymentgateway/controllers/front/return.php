@@ -8,6 +8,7 @@
  */
 
 use WirecardEE\Prestashop\Classes\Engine\ReturnResponse;
+use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Response\Cancel;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
@@ -59,7 +60,7 @@ class WirecardPaymentGatewayReturnModuleFrontController extends WirecardFrontCon
             $response_factory = new ProcessablePaymentResponseFactory(
                 $response,
                 $order,
-                ProcessablePaymentResponseFactory::PROCESS_RESPONSE,
+                ProcessType::PROCESS_RESPONSE,
                 $payment_state
             );
 
