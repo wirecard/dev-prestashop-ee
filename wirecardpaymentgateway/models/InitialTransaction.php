@@ -36,7 +36,7 @@ class InitialTransaction implements SettleableTransaction
      */
     public function getRemainingAmount()
     {
-        return $this->amount;
+        return $this->getAmount();
     }
 
     /**
