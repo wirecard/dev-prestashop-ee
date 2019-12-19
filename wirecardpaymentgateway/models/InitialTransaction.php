@@ -52,6 +52,7 @@ class InitialTransaction implements SettleableTransaction
      */
     public function markSettledAsClosed()
     {
+        return false;
     }
 
     /**
