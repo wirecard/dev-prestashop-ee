@@ -65,7 +65,7 @@ abstract class Success implements ProcessablePaymentNotification
         try {
             if (!OrderManager::isIgnorable($this->notification)) {
                 $amount = $this->notification->getRequestedAmount();
-                $newId = Transaction::create(
+                Transaction::create(
                     $this->order->id,
                     $this->order->id_cart,
                     $amount,

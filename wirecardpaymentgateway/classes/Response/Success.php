@@ -75,7 +75,7 @@ abstract class Success implements ProcessablePaymentResponse
             $orderManager = new OrderManager();
             $transactionState = $orderManager->getTransactionState($this->response);
 
-            $newId = Transaction::create(
+            Transaction::create(
                 $this->order->id,
                 $this->order->id_cart,
                 $amount,
