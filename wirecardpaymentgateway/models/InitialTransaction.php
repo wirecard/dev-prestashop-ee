@@ -10,7 +10,7 @@ class InitialTransaction implements SettleableTransaction
 {
 
     /**
-     * @var float
+     * @var float The total amount of the transaction.
      */
     private $amount;
 
