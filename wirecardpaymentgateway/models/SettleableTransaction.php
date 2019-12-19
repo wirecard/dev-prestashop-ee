@@ -3,7 +3,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
@@ -55,5 +54,4 @@ interface SettleableTransaction
      * @return bool
      */
     public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager);
-
 }

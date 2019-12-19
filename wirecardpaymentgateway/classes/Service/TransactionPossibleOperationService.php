@@ -122,7 +122,7 @@ class TransactionPossibleOperationService implements ServiceInterface
      */
     private function disallowCancelIfPartialOperationsDone($possible_operations)
     {
-        if(is_array($possible_operations)) {
+        if (is_array($possible_operations)) {
             if ($this->transaction->getProcessedAmount() > 0) {
                 unset($possible_operations[Operation::CANCEL]);
             }

@@ -78,19 +78,17 @@ abstract class Success implements ProcessablePaymentNotification
                 $parentTransaction->markSettledAsClosed();
                 $order_state = $parentTransaction->updateOrder($this->order, $this->notification, $this->order_manager);
 
-                if($order_state) {
+                if ($order_state) {
                     $this->order_service->updateOrderPayment(
                         $this->notification->getTransactionId(),
                         _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
                     );
                 }
-
             }
         } catch (\Exception $e) {
             error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
             throw $e;
-        } finally
-        {
+        } finally {
             $dbManager->releaseLock($this->notification->getTransactionId());
         }
     }
@@ -105,7 +103,7 @@ abstract class Success implements ProcessablePaymentNotification
         $parentTransactionId = $this->notification->getParentTransactionId();
         $parentTransaction = new Transaction();
         $hydrated = $parentTransaction->hydrateByTransactionId($parentTransactionId);
-        if($hydrated) {
+        if ($hydrated) {
             return $parentTransaction;
         }
         return new InitialTransaction($this->notification->getRequestedAmount()->getValue());

@@ -607,7 +607,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      */
     public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager)
     {
-        if($this->isSettled()) {
+        if ($this->isSettled()) {
             $order_state = $orderManager->orderStateToPrestaShopOrderState($notification, true);
             $order->setCurrentState($order_state);
             $order->save();

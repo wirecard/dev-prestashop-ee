@@ -3,7 +3,6 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-
 use Wirecard\PaymentSdk\Response\SuccessResponse as SuccessResponse;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
@@ -53,7 +52,6 @@ class InitialTransaction implements SettleableTransaction
      */
     public function markSettledAsClosed()
     {
-
     }
 
     /**
@@ -74,7 +72,7 @@ class InitialTransaction implements SettleableTransaction
     public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager)
     {
         $order_state = $orderManager->orderStateToPrestaShopOrderState($notification, false);
-        if($order_state) {
+        if ($order_state) {
             $order->setCurrentState($order_state);
             $order->save();
             return true;

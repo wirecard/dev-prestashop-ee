@@ -162,7 +162,7 @@ class OrderManager
             case BackendService::TYPE_CANCELLED:
                 return _PS_OS_CANCELED_;
             case BackendService::TYPE_REFUNDED:
-                if($childrenEqualParent) {
+                if ($childrenEqualParent) {
                     return _PS_OS_REFUND_;
                 }
                 return false;
