@@ -71,11 +71,11 @@ abstract class Success implements ProcessablePaymentResponse
                 $data = $this->response->getData();
                 error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('data')));
                 $currency = 'EUR';
-                if(key_exists('currency', $this->response->getData())) {
+                if (key_exists('currency', $this->response->getData())) {
                     $currency = $this->response->getData()['currency'];
                 }
                 $amount = new Amount(0, $currency);
-                if($this->response->getTransactionType() !== \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION) {
+                if ($this->response->getTransactionType() !== \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION) {
                     $amount = $this->response->getRequestedAmount();
                 }
                 $this->order_service->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());

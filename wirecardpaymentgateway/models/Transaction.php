@@ -442,7 +442,8 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return true;
     }
 
-    public static function getInitialTransactionForOrder($reference) {
+    public static function getInitialTransactionForOrder($reference)
+    {
         error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('reference')));
         $query = new \DbQuery();
         $query->from('wirecard_payment_gateway_tx')
@@ -654,7 +655,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
     {
         $sum = 0;
         foreach ($childTransactions as $child) {
-            if($child->isCapturing()) {
+            if ($child->isCapturing()) {
                 $sum += $child->getAmount();
             }
         }
@@ -703,7 +704,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
     {
         $sum = 0;
         foreach ($childTransactions as $child) {
-            if($child->isDeducting()) {
+            if ($child->isDeducting()) {
                 $sum += $child->getAmount();
             }
         }
@@ -798,7 +799,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
             $updated = true;
         }
         if (!$updated && $this->isCaptureSettledTransitive()) {
-            if($order_state != _PS_OS_REFUND_) {
+            if ($order_state != _PS_OS_REFUND_) {
                 error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "captured");
                 $order->setCurrentState($order_state);
                 $order->save();

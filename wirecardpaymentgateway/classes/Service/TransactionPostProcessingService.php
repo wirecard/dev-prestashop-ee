@@ -71,12 +71,12 @@ class TransactionPostProcessingService implements ServiceInterface
         try {
             $parentTransaction = (new TransactionFinder())->getTransactionById($this->transaction_id);
             if ($this->operation == Operation::CANCEL) {
-                if(!$this->equals($delta_amount, $parentTransaction->getAmount())) {
+                if (!$this->equals($delta_amount, $parentTransaction->getAmount())) {
                     $this->errors[] = "Cancellation is available only for the whole amount.";
                     return;
                 }
             }
-            if($delta_amount > $parentTransaction->getRemainingAmount()) {
+            if ($delta_amount > $parentTransaction->getRemainingAmount()) {
                 $remaining = $parentTransaction->getRemainingAmount();
                 $amount = $parentTransaction->getAmount();
                 $processed = $parentTransaction->getProcessedAmount();
