@@ -731,11 +731,9 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         }
         elseif ($this->isRefundSettled()) {
             error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "refunded");
-            if ($order_state == _PS_OS_REFUND_) {
-                $order->setCurrentState($order_state);
-                $order->save();
-                $updated = true;
-            }
+            $order->setCurrentState(_PS_OS_REFUND_);
+            $order->save();
+            $updated = true;
         }
 
         if ($updated) {
