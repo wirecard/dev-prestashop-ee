@@ -65,8 +65,11 @@ class TransactionPostProcessingService implements ServiceInterface
 
         try {
             $parentTransaction = (new TransactionFinder())->getTransactionById($this->transaction_id);
-            if($delta_amount > $parentTransaction->getAmount() - $parentTransaction->getProcessedAmount()) {
-                $this->errors[] = "Amount too large.";
+            if($delta_amount > $parentTransaction->getRemainingAmount()) {
+                $remaining = $parentTransaction->getRemainingAmount();
+                $amount = $parentTransaction->getAmount();
+                $processed = $parentTransaction->getProcessedAmount();
+                $this->errors[] = "Amount too large. $delta_amount > $remaining; amount: $amount, processed: $processed";
                 return;
             }
 

@@ -29,4 +29,15 @@ trait NumericHelper
         $difference = abs($firstNumber - $secondNumber);
         return $difference < $threshold;
     }
+
+    private function difference($firstNumber, $secondNumber, $precision = null)
+    {
+        if ($precision === null) {
+            $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
+        $integerCoefficient = pow(10, $precision);
+        $firstNumber *= $integerCoefficient;
+        $secondNumber *= $integerCoefficient;
+        return ($firstNumber - $secondNumber) / $integerCoefficient;
+    }
 }

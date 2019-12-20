@@ -151,7 +151,7 @@ class OrderManager
      * @throws \Exception
      * @since 2.1.0
      */
-    public function orderStateToPrestaShopOrderState($notification, $childrenEqualParent)
+    public function orderStateToPrestaShopOrderState($notification)
     {
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
         $order_state = $backend_service->getOrderState($notification->getTransactionType());
@@ -162,10 +162,7 @@ class OrderManager
             case BackendService::TYPE_CANCELLED:
                 return _PS_OS_CANCELED_;
             case BackendService::TYPE_REFUNDED:
-                if ($childrenEqualParent) {
-                    return _PS_OS_REFUND_;
-                }
-                return false;
+                return _PS_OS_REFUND_;
             case BackendService::TYPE_PROCESSING:
                 return _PS_OS_PAYMENT_;
             case BackendService::TYPE_PENDING:

@@ -5,6 +5,7 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse as SuccessResponse;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class InitialTransaction implements SettleableTransaction
 {
@@ -67,12 +68,13 @@ class InitialTransaction implements SettleableTransaction
      * @param \Order $order
      * @param SuccessResponse $notification
      * @param OrderManager $orderManager
+     * @param OrderService $orderService
      * @return bool
      * @throws \PrestaShopException
      */
-    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager)
+    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager, OrderService $orderService)
     {
-        $order_state = $orderManager->orderStateToPrestaShopOrderState($notification, false);
+        $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
         if ($order_state) {
             $order->setCurrentState($order_state);
             $order->save();

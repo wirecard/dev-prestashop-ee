@@ -74,20 +74,9 @@ abstract class Success implements ProcessablePaymentNotification
                     $this->order->reference
                 );
 
-                // @TODO: If notification->getTransactionType == Transaction::DEDUCTING_TYPES then sum up refunds and set if necessary (e.g. Summed up refunds == initial amount)
-                // @TODO: If notification->getTransactionType == Transaction::CAPTURING_TYPES (not implemented) then sum up captures and set state if necessary.
-                // @TODO: If notification->getTransactionType == TransactionTypes::AUTHORIZATION then order should be "Wirecard payment authorized" WIRECARD_OS_AUTHORIZATION
-
                 $parentTransaction = $this->getParentTransaction();
                 $parentTransaction->markSettledAsClosed();
-                $order_state = $parentTransaction->updateOrder($this->order, $this->notification, $this->order_manager);
-
-                if ($order_state) {
-                    $this->order_service->updateOrderPayment(
-                        $this->notification->getTransactionId(),
-                        _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
-                    );
-                }
+                $parentTransaction->updateOrder($this->order, $this->notification, $this->order_manager, $this->order_service);
             }
         } catch (\Exception $e) {
             error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
@@ -105,8 +94,7 @@ abstract class Success implements ProcessablePaymentNotification
     private function getParentTransaction()
     {
         $transaction = Transaction::getInitialTransactionForOrder($this->order->reference);
-
-        error_log("::::: " . print_r($transaction, true));
+        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('transaction')));
 
         if ($transaction) {
             return $transaction;

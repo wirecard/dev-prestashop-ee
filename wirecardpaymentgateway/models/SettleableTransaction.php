@@ -11,15 +11,23 @@ namespace WirecardEE\Prestashop\Models;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 interface SettleableTransaction
 {
     /**
-     * Get the sum of all child transactions.
+     * Get the sum of all capture child transactions.
      *
      * @return float
      */
-    public function getProcessedAmount();
+    public function getProcessedCaptureAmount();
+
+    /**
+     * The sum of all refund child transactions.
+     *
+     * @return float
+     */
+    public function getProcessedRefundAmount();
 
     /**
      * Get the remaining amount from the already processed amount to the total amount (amount).
@@ -57,7 +65,8 @@ interface SettleableTransaction
      * @param \Order $order
      * @param SuccessResponse $notification
      * @param OrderManager $orderManager
+     * @param OrderService $orderService
      * @return bool
      */
-    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager);
+    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager, OrderService $orderService);
 }

@@ -15,6 +15,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
@@ -442,6 +443,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
     }
 
     public static function getInitialTransactionForOrder($reference) {
+        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('reference')));
         $query = new \DbQuery();
         $query->from('wirecard_payment_gateway_tx')
             ->where('ordernumber = "' . pSQL($reference) . '"')
@@ -449,11 +451,6 @@ class Transaction extends \ObjectModel implements SettleableTransaction
             ->limit(1);
 
         $rows = \Db::getInstance()->executeS($query);
-
-        error_log($query->build());
-        error_log("-----");
-        error_log(json_encode($rows, true));
-        error_log("-----");
 
         if ($rows) {
             return new self($rows[0]['tx_id']);
@@ -562,7 +559,6 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         ];
     }
 
-    // @TODOq
     const DEDUCTING_TYPES = [
         TransactionTypes::TYPE_CREDIT,
         TransactionTypes::TYPE_PENDING_CREDIT,
@@ -585,6 +581,25 @@ class Transaction extends \ObjectModel implements SettleableTransaction
     ];
 
     /**
+     * The transaction is a deduction from the parent transaction.
+     *
+     * @return bool true if th
+     */
+    public function isDeducting()
+    {
+        return in_array($this->getTransactionType(), self::DEDUCTING_TYPES);
+    }
+
+    /**
+     * The transaction is a capture from the parent transaction.
+     * @return bool
+     */
+    public function isCapturing()
+    {
+        return in_array($this->getTransactionType(), self::CAPTURING_TYPES);
+    }
+
+    /**
      * Calculates the sum of all child transactions of this transaction.
      *
      * @return float|int
@@ -598,9 +613,16 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         $processed = 0;
 
         foreach ($childTransactions as $child) {
-            $processed += $child->getAmount();
+            if($child->isCapturing()) {
+                $processed += $child->getAmount();
+            }
         }
         return $processed;
+    }
+
+    public function getProcessedAmount()
+    {
+        return $this->getProcessedRefundAmount() + $this->getProcessedCaptureAmount();
     }
 
 
@@ -618,7 +640,9 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         $processed = 0;
 
         foreach ($childTransactions as $child) {
-            $processed += $child->getAmount();
+            if($child->isDeducting()) {
+                $processed += $child->getAmount();
+            }
         }
         return $processed;
     }
@@ -632,7 +656,9 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      */
     public function getRemainingAmount()
     {
-        return $this->getAmount() - $this->getProcessedAmount();
+        $amount = $this->getAmount();
+        $processedAmount = $this->getProcessedAmount();
+        return $this->difference($amount, $processedAmount);
     }
 
     /**
@@ -657,27 +683,68 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      */
     public function isSettled()
     {
-        $parentTransactionProcessedAmount = $this->getProcessedAmount();
-        $parentTransactionAmount = $this->getAmount();
-        return $this->equals($parentTransactionProcessedAmount, $parentTransactionAmount);
+        return $this->isRefundSettled() || $this->isCaptureSettled();
+    }
+
+    public function isRefundSettled()
+    {
+        return $this->equals($this->getProcessedRefundAmount(), $this->getAmount());
+    }
+
+    public function isCaptureSettled()
+    {
+        return $this->equals($this->getProcessedCaptureAmount(), $this->getAmount());
     }
 
     /**
      * @param \Order $order
      * @param SuccessResponse $notification
      * @param OrderManager $orderManager
+     * @param OrderService $orderService
      * @return bool
-     * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager)
+    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager, OrderService $orderService)
     {
-        if ($this->isSettled()) {
-            $order_state = $orderManager->orderStateToPrestaShopOrderState($notification, true);
+        $updated = false;
+        $amount = $notification->getRequestedAmount();
+        $order_state = null;
+
+        // @TODO: If notification->getTransactionType == Transaction::DEDUCTING_TYPES then sum up refunds and set if necessary (e.g. Summed up refunds == initial amount)
+        // @TODO: If notification->getTransactionType == Transaction::CAPTURING_TYPES (not implemented) then sum up captures and set state if necessary.
+        // @TODO: If notification->getTransactionType == TransactionTypes::AUTHORIZATION then order should be "Wirecard payment authorized" WIRECARD_OS_AUTHORIZATION
+
+        $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
+        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('order_state')));
+
+        if ($notification->getTransactionType() == TransactionTypes::TYPE_AUTHORIZATION) {
+            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "authozisation");
             $order->setCurrentState($order_state);
             $order->save();
-            return true;
+            $updated = true;
         }
-        return false;
+        elseif ($this->isCaptureSettled()) {
+            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "captured");
+            $order->setCurrentState($order_state);
+            $order->save();
+            $updated = true;
+        }
+        elseif ($this->isRefundSettled()) {
+            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "refunded");
+            if ($order_state == _PS_OS_REFUND_) {
+                $order->setCurrentState($order_state);
+                $order->save();
+                $updated = true;
+            }
+        }
+
+        if ($updated) {
+            $orderService->updateOrderPayment(
+                $notification->getTransactionId(),
+                _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
+            );
+        }
+
+        return $updated;
     }
 }
