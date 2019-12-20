@@ -10,12 +10,14 @@
 namespace WirecardEE\Prestashop\Classes\Service;
 
 use Wirecard\PaymentSdk\BackendService;
+use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
 use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
@@ -28,6 +30,9 @@ use Exception;
  */
 class TransactionPostProcessingService implements ServiceInterface
 {
+
+    use NumericHelper;
+
     /** @var string */
     private $operation;
     /** @var int */
@@ -65,6 +70,12 @@ class TransactionPostProcessingService implements ServiceInterface
 
         try {
             $parentTransaction = (new TransactionFinder())->getTransactionById($this->transaction_id);
+            if ($this->operation == Operation::CANCEL) {
+                if(!$this->equals($delta_amount, $parentTransaction->getAmount())) {
+                    $this->errors[] = "Cancellation is available only for the whole amount.";
+                    return;
+                }
+            }
             if($delta_amount > $parentTransaction->getRemainingAmount()) {
                 $remaining = $parentTransaction->getRemainingAmount();
                 $amount = $parentTransaction->getAmount();
