@@ -16,6 +16,7 @@ use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
 /**
  * Basic Transaction class
@@ -440,6 +441,27 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return true;
     }
 
+    public static function getInitialTransactionForOrder($reference) {
+        $query = new \DbQuery();
+        $query->from('wirecard_payment_gateway_tx')
+            ->where('ordernumber = "' . pSQL($reference) . '"')
+            ->orderBy('tx_id ASC')
+            ->limit(1);
+
+        $rows = \Db::getInstance()->executeS($query);
+
+        error_log($query->build());
+        error_log("-----");
+        error_log(json_encode($rows, true));
+        error_log("-----");
+
+        if ($rows) {
+            return new self($rows[0]['tx_id']);
+        }
+
+        return false;
+    }
+
     /**
      * Loads all children of the transaction
      *
@@ -540,6 +562,27 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         ];
     }
 
+    // @TODOq
+    const DEDUCTING_TYPES = [
+        TransactionTypes::TYPE_CREDIT,
+        TransactionTypes::TYPE_PENDING_CREDIT,
+        TransactionTypes::TYPE_REFUND_CAPTURE,
+        TransactionTypes::TYPE_REFUND_DEBIT,
+        TransactionTypes::TYPE_REFUND_PURCHASE,
+        TransactionTypes::TYPE_REFUND_REQUEST,
+        TransactionTypes::TYPE_VOID_AUTHORIZATION,
+        TransactionTypes::TYPE_VOID_CAPTURE,
+        TransactionTypes::TYPE_VOID_CREDIT,
+        TransactionTypes::TYPE_VOID_DEBIT,
+        TransactionTypes::TYPE_VOID_PURCHASE,
+    ];
+
+    const CAPTURING_TYPES = [
+        TransactionTypes::TYPE_CAPTURE_AUTHORIZATION,
+        TransactionTypes::TYPE_PURCHASE,
+        TransactionTypes::TYPE_DEBIT,
+        TransactionTypes::TYPE_DEPOSIT,
+    ];
 
     /**
      * Calculates the sum of all child transactions of this transaction.
@@ -547,11 +590,33 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @return float|int
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
+     * @TODO
      */
-    public function getProcessedAmount()
+    public function getProcessedCaptureAmount()
     {
         $childTransactions = $this->getAllChildTransactions();
         $processed = 0;
+
+        foreach ($childTransactions as $child) {
+            $processed += $child->getAmount();
+        }
+        return $processed;
+    }
+
+
+    /**
+     * Calculates the sum of all child transactions of this transaction.
+     *
+     * @return float|int
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @TODO
+     */
+    public function getProcessedRefundAmount()
+    {
+        $childTransactions = $this->getAllChildTransactions();
+        $processed = 0;
+
         foreach ($childTransactions as $child) {
             $processed += $child->getAmount();
         }
