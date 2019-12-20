@@ -485,6 +485,25 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $children;
     }
 
+    public function getAllTransitiveChildTransactions()
+    {
+        $children = [];
+        $orderNumber = $this->getOrderNumber();
+
+        $query = new \DbQuery();
+        $query->from('wirecard_payment_gateway_tx')
+            ->where('ordernumber="'.pSQL($orderNumber).'"')
+            ->where('LENGTH(parent_transaction_id) = 36');
+
+        $rows = \Db::getInstance()->executeS($query);
+
+        foreach ($rows as $row) {
+            $children[] = new Transaction($row['tx_id']);
+        }
+
+        return $children;
+    }
+
     public function getFieldList()
     {
         return array(
@@ -610,14 +629,36 @@ class Transaction extends \ObjectModel implements SettleableTransaction
     public function getProcessedCaptureAmount()
     {
         $childTransactions = $this->getAllChildTransactions();
-        $processed = 0;
+        return $this->sumCapturingChildren($childTransactions);
+    }
 
+    /**
+     * Calculates the sum of all child transactions of this transaction.
+     *
+     * @return float|int
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @TODO
+     */
+    public function getProcessedCaptureAmountTransitive()
+    {
+        $childTransactions = $this->getAllTransitiveChildTransactions();
+        return $this->sumCapturingChildren($childTransactions);
+    }
+
+    /**
+     * @param $childTransactions Transaction[]
+     * @return float|int
+     */
+    private function sumCapturingChildren($childTransactions)
+    {
+        $sum = 0;
         foreach ($childTransactions as $child) {
             if($child->isCapturing()) {
-                $processed += $child->getAmount();
+                $sum += $child->getAmount();
             }
         }
-        return $processed;
+        return $sum;
     }
 
     public function getProcessedAmount()
@@ -637,14 +678,36 @@ class Transaction extends \ObjectModel implements SettleableTransaction
     public function getProcessedRefundAmount()
     {
         $childTransactions = $this->getAllChildTransactions();
-        $processed = 0;
+        return $this->sumDeductingChildren($childTransactions);
+    }
 
+    /**
+     * Calculates the sum of all child transactions of this transaction.
+     *
+     * @return float|int
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @TODO
+     */
+    public function getProcessedRefundAmountTransitive()
+    {
+        $childTransactions = $this->getAllTransitiveChildTransactions();
+        return $this->sumDeductingChildren($childTransactions);
+    }
+
+    /**
+     * @param $childTransactions Transaction[]
+     * @return int
+     */
+    private function sumDeductingChildren($childTransactions)
+    {
+        $sum = 0;
         foreach ($childTransactions as $child) {
             if($child->isDeducting()) {
-                $processed += $child->getAmount();
+                $sum += $child->getAmount();
             }
         }
-        return $processed;
+        return $sum;
     }
 
     /**
@@ -696,6 +759,17 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $this->equals($this->getProcessedCaptureAmount(), $this->getAmount());
     }
 
+    public function isRefundSettledTransitive()
+    {
+        return $this->equals($this->getProcessedRefundAmountTransitive(), $this->getAmount());
+    }
+
+    public function isCaptureSettledTransitive()
+    {
+        return $this->equals($this->getProcessedCaptureAmountTransitive(), $this->getAmount());
+    }
+
+
     /**
      * @param \Order $order
      * @param SuccessResponse $notification
@@ -718,18 +792,20 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('order_state')));
 
         if ($notification->getTransactionType() == TransactionTypes::TYPE_AUTHORIZATION) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "authozisation");
+            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "authorization");
             $order->setCurrentState($order_state);
             $order->save();
             $updated = true;
         }
-        elseif ($this->isCaptureSettled()) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "captured");
-            $order->setCurrentState($order_state);
-            $order->save();
-            $updated = true;
+        if (!$updated && $this->isCaptureSettledTransitive()) {
+            if($order_state != _PS_OS_REFUND_) {
+                error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "captured");
+                $order->setCurrentState($order_state);
+                $order->save();
+                $updated = true;
+            }
         }
-        elseif ($this->isRefundSettled()) {
+        if (!$updated && $this->isRefundSettledTransitive()) {
             error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "refunded");
             $order->setCurrentState(_PS_OS_REFUND_);
             $order->save();

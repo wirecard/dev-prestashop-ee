@@ -74,6 +74,18 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $transaction_model = new Transaction($this->object->tx_id);
         $remaining_delta_amount = $transaction_model->getRemainingAmount();
+//        $mytemptransaction = Transaction::getInitialTransactionForOrder('ZBUFLUZUN');
+//        $mytempproperties = [
+//            'refund_settled' => $mytemptransaction->isRefundSettled(),
+//            'capture_settled' => $mytemptransaction->isCaptureSettled(),
+//            'refund_settled_transitive' => $mytemptransaction->isRefundSettledTransitive(),
+//            'capture_settled_transitive' => $mytemptransaction->isCaptureSettledTransitive(),
+//            'settled' => $mytemptransaction->isSettled(),
+//            'captured' => $mytemptransaction->getProcessedCaptureAmount(),
+//            'refunded' => $mytemptransaction->getProcessedRefundAmount(),
+//            'captured_transitive' => $mytemptransaction->getProcessedCaptureAmountTransitive(),
+//            'refunded_transitive' => $mytemptransaction->getProcessedRefundAmountTransitive(),
+//        ];
 
         // These variables are available in the Smarty context
         $this->tpl_view_vars = [
@@ -83,6 +95,8 @@ class WirecardTransactionsController extends ModuleAdminController
             'possible_operations' => $possible_operations,
             'transaction'         => $this->object->toViewArray(),
             'remaining_delta_amount' => $remaining_delta_amount,
+            //'mytemptransaction' => $mytemptransaction,
+            //'mytempproperties' => $mytempproperties,
         ];
 
         return parent::renderView();

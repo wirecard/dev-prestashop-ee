@@ -156,6 +156,14 @@ class OrderManager
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
         $order_state = $backend_service->getOrderState($notification->getTransactionType());
 
+        $possible_states = [
+            '_PS_OS_CANCELED_' => _PS_OS_CANCELED_,
+            '_PS_OS_REFUND_' => _PS_OS_REFUND_,
+            '_PS_OS_PAYMENT_' => _PS_OS_PAYMENT_,
+        ];
+
+        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('order_state', 'possible_states')));
+
         switch ($order_state) {
             case BackendService::TYPE_AUTHORIZED:
                 return \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION);
