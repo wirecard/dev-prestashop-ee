@@ -784,10 +784,6 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         $amount = $notification->getRequestedAmount();
         $order_state = null;
 
-        // @TODO: If notification->getTransactionType == Transaction::DEDUCTING_TYPES then sum up refunds and set if necessary (e.g. Summed up refunds == initial amount)
-        // @TODO: If notification->getTransactionType == Transaction::CAPTURING_TYPES (not implemented) then sum up captures and set state if necessary.
-        // @TODO: If notification->getTransactionType == TransactionTypes::AUTHORIZATION then order should be "Wirecard payment authorized" WIRECARD_OS_AUTHORIZATION
-
         $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
 
         if ($notification->getTransactionType() == TransactionTypes::TYPE_AUTHORIZATION) {
