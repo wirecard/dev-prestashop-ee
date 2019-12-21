@@ -444,7 +444,6 @@ class Transaction extends \ObjectModel implements SettleableTransaction
 
     public static function getInitialTransactionForOrder($reference)
     {
-        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('reference')));
         $query = new \DbQuery();
         $query->from('wirecard_payment_gateway_tx')
             ->where('ordernumber = "' . pSQL($reference) . '"')
@@ -790,24 +789,20 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         // @TODO: If notification->getTransactionType == TransactionTypes::AUTHORIZATION then order should be "Wirecard payment authorized" WIRECARD_OS_AUTHORIZATION
 
         $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
-        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('order_state')));
 
         if ($notification->getTransactionType() == TransactionTypes::TYPE_AUTHORIZATION) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "authorization");
             $order->setCurrentState($order_state);
             $order->save();
             $updated = true;
         }
         if (!$updated && $this->isCaptureSettledTransitive()) {
             if ($order_state != _PS_OS_REFUND_) {
-                error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "captured");
                 $order->setCurrentState($order_state);
                 $order->save();
                 $updated = true;
             }
         }
         if (!$updated && $this->isRefundSettledTransitive()) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "refunded");
             $order->setCurrentState(_PS_OS_REFUND_);
             $order->save();
             $updated = true;

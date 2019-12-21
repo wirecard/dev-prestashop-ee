@@ -75,7 +75,6 @@ class InitialTransaction implements SettleableTransaction
     public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager, OrderService $orderService)
     {
         $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
-        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('order_state')));
         if ($order_state) {
             $order->setCurrentState($order_state);
             $order->save();

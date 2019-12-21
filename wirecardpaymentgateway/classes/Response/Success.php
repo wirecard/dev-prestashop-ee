@@ -68,8 +68,6 @@ abstract class Success implements ProcessablePaymentResponse
                 $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
                 $this->order->save();
 
-                $data = $this->response->getData();
-                error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('data')));
                 $currency = 'EUR';
                 if (key_exists('currency', $this->response->getData())) {
                     $currency = $this->response->getData()['currency'];

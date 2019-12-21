@@ -94,7 +94,6 @@ abstract class Success implements ProcessablePaymentNotification
     private function getParentTransaction()
     {
         $transaction = Transaction::getInitialTransactionForOrder($this->order->reference);
-        error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . json_encode(compact('transaction')));
 
         if ($transaction) {
             return $transaction;
