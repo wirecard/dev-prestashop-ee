@@ -54,7 +54,8 @@ class Success extends SuccessAbstract
         $transaction = new Transaction($tx_id);
         $transaction->markSettledAsClosed();
         //$service = new OrderService($this->order);//TODO: bug in presta?
-        //$service->createOrderPayment((string)$transaction->getAmount(), $transaction->getPaymentMethod(), $transaction->getTransactionId());
+        //$service->createOrderPayment((string)$transaction->getAmount(),
+        //$transaction->getPaymentMethod(), $transaction->getTransactionId());
 
         $this->context_service->setConfirmations(
             $this->getTranslatedString('success_new_transaction')

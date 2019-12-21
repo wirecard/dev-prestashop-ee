@@ -11,6 +11,7 @@ namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
@@ -73,7 +74,7 @@ abstract class Success implements ProcessablePaymentResponse
                     $currency = $this->response->getData()['currency'];
                 }
                 $amount = new Amount(0, $currency);
-                if ($this->response->getTransactionType() !== \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_AUTHORIZATION) {
+                if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
                     $amount = $this->response->getRequestedAmount();
                 }
                 $this->order_service->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());

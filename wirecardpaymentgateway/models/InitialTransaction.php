@@ -72,7 +72,11 @@ class InitialTransaction implements SettleableTransaction
      * @return bool
      * @throws \PrestaShopException
      */
-    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager, OrderService $orderService)
+    public function updateOrder(
+        \Order $order,
+        SuccessResponse $notification,
+        OrderManager $orderManager,
+        OrderService $orderService)
     {
         $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
         if ($order_state) {

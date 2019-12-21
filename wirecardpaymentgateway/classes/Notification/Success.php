@@ -76,7 +76,10 @@ abstract class Success implements ProcessablePaymentNotification
 
                 $parentTransaction = $this->getParentTransaction();
                 $parentTransaction->markSettledAsClosed();
-                $parentTransaction->updateOrder($this->order, $this->notification, $this->order_manager, $this->order_service);
+                $parentTransaction->updateOrder($this->order,
+                                                $this->notification,
+                                                $this->order_manager,
+                                                $this->order_service);
             }
         } catch (\Exception $e) {
             error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
