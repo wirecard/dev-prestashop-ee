@@ -68,5 +68,10 @@ interface SettleableTransaction
      * @param OrderService $orderService
      * @return bool
      */
-    public function updateOrder(\Order $order, SuccessResponse $notification, OrderManager $orderManager, OrderService $orderService);
+    public function updateOrder(
+        \Order $order,
+        SuccessResponse $notification,
+        OrderManager $orderManager,
+        OrderService $orderService
+    );
 }

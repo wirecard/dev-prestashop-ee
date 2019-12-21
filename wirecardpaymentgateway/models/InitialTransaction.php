@@ -76,8 +76,8 @@ class InitialTransaction implements SettleableTransaction
         \Order $order,
         SuccessResponse $notification,
         OrderManager $orderManager,
-        OrderService $orderService)
-    {
+        OrderService $orderService
+    ) {
         $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
         if ($order_state) {
             $order->setCurrentState($order_state);

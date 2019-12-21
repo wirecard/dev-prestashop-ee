@@ -778,12 +778,13 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @return bool
      * @throws \PrestaShopException
      */
-    public function updateOrder(
+    public function updateOrder
+    (
         \Order $order,
         SuccessResponse $notification,
         OrderManager $orderManager,
-        OrderService $orderService)
-    {
+        OrderService $orderService
+    ) {
         $updated = false;
         $amount = $notification->getRequestedAmount();
         $order_state = null;
