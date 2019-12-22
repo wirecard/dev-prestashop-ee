@@ -790,11 +790,13 @@ class Transaction extends \ObjectModel implements SettleableTransaction
             $order->save();
             $updated = true;
         }
+        $settled = false;
         if (!$updated && $this->isCaptureSettledTransitive()) {
             if ($order_state != _PS_OS_REFUND_) {
                 $order->setCurrentState($order_state);
                 $order->save();
                 $updated = true;
+                $settled = true;
             }
         }
         if (!$updated && $this->isRefundSettledTransitive()) {
@@ -803,10 +805,12 @@ class Transaction extends \ObjectModel implements SettleableTransaction
             $updated = true;
         }
 
-        if ($updated) {
+        if ($settled) {
+            $parentTransaction = Transaction::getInitialTransactionForOrder($order->reference);
+            $amount = $parentTransaction->getAmount();
             $orderService->updateOrderPayment(
                 $notification->getTransactionId(),
-                _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
+                $amount
             );
         }
 
