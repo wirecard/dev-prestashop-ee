@@ -7,6 +7,7 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 
 class ProcessablePaymentResponseFactoryTest extends \PHPUnit_Framework_TestCase
@@ -34,7 +35,7 @@ class ProcessablePaymentResponseFactoryTest extends \PHPUnit_Framework_TestCase
         $response_factory = new ProcessablePaymentResponseFactory(
             $response,
             $this->order,
-            ProcessablePaymentResponseFactory::PROCESS_RESPONSE,
+            ProcessType::PROCESS_RESPONSE,
             $order_state
         );
 
