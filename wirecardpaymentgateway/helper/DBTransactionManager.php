@@ -74,14 +74,14 @@ class DBTransactionManager
         if (!trim($name)) {
             throw new \RuntimeException("Invalid name for lock: $name");
         }
-        $backoffFactors = $this->getReasonableBackoffFactorsForTimeout2($timeout);
+        $backoffFactors = $this->getReasonableBackoffFactorsForTimeout($timeout);
         $attempts = 0;
         $startTime = microtime(true);
         $sqlTimeout = $timeout;
         if ($maxAttempts == 1) {
             $sqlTimeout = $timeout;
         }
-        if($maxAttempts > count($backoffFactors)) {
+        if ($maxAttempts > count($backoffFactors)) {
             throw new \RuntimeException("maxAttempts of $maxAttempts covers more time than $timeout seconds.");
         }
         while ($attempts < $maxAttempts) {
@@ -137,7 +137,7 @@ class DBTransactionManager
      *
      * @return array intervals in millisecond
      */
-    private function getReasonableBackoffFactorsForTimeout2($timeoutInSeconds)
+    private function getReasonableBackoffFactorsForTimeout($timeoutInSeconds)
     {
         $timeoutInMilliseconds = $timeoutInSeconds * 1000;
         $coveredTime = 0;
@@ -160,7 +160,7 @@ class DBTransactionManager
                 $coveredTime += $sleepDuration;
                 if ($specIndex == count($regularIntervalSpecs) - 1) {
                     $lastIntervalCount++;
-                    if($lastIntervalCount < 10) {
+                    if ($lastIntervalCount < 10) {
                         continue;
                     }
                 }
