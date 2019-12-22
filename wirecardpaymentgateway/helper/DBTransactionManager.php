@@ -77,7 +77,7 @@ class DBTransactionManager
         $backoffFactors = $this->getReasonableBackoffFactorsForTimeout($timeout);
         $attempts = 0;
         $startTime = microtime(true);
-        $sqlTimeout = $timeout;
+        $sqlTimeout = 0;
         if ($maxAttempts == 1) {
             $sqlTimeout = $timeout;
         }
@@ -90,19 +90,28 @@ class DBTransactionManager
             if ($acquired) {
                 return true;
             }
-            if (microtime(true) - $startTime > $timeout) {
+            if ($this->timeoutExpired($startTime, $timeout)) {
                 break;
             }
             $backoffFactorIndex = $attempts;
             if (!isset($backoffFactors[$backoffFactorIndex])) {
                 $backoffFactorIndex = count($backoffFactors) - 1;
             }
-            $backoffFactor = $backoffFactors[$backoffFactorIndex];
-            usleep($backoffFactor * 1000);
+            usleep($this->millisecondsToMicroseconds($backoffFactors[$backoffFactorIndex]));
 
             $attempts++;
         }
         return false;
+    }
+
+    private function timeoutExpired($startTime, $timeout)
+    {
+        return microtime(true) - $startTime > $timeout;
+    }
+
+    private function millisecondsToMicroseconds($milliseconds)
+    {
+        return $milliseconds * 1000;
     }
 
     public function releaseLock($name)

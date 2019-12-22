@@ -25,7 +25,6 @@ use WirecardEE\Prestashop\Models\Transaction;
  */
 abstract class Success implements ProcessablePaymentNotification
 {
-
     /** @var \Order */
     private $order;
 
@@ -60,7 +59,7 @@ abstract class Success implements ProcessablePaymentNotification
     public function process()
     {
         $dbManager = new DBTransactionManager();
-        //outside of the try block. If locking fails, we don't want to attempt to release it
+        //We do this outside of the try block so that if locking fails, we don't attempt to release it
         $dbManager->acquireLock($this->notification->getTransactionId(), 30);
         try {
             if (!OrderManager::isIgnorable($this->notification)) {

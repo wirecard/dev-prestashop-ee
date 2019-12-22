@@ -40,7 +40,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     /**
      * @var float
      */
-    private $delta_amount;
+    private $deltaAmount;
 
     /**
      * PostProcessingTransactionBuilder constructor.
@@ -52,7 +52,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         $this->paymentMethod = $paymentMethod;
         $this->transactionModel = $transaction;
-        $this->delta_amount = $transaction->getAmount();
+        $this->deltaAmount = $transaction->getAmount();
     }
 
     /**
@@ -70,21 +70,21 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     }
 
     /**
-     * @param float $delta_amount
+     * @param float $deltaAmount
      * @return $this
      */
-    public function setDeltaAmount($delta_amount)
+    public function setDeltaAmount($deltaAmount)
     {
-        if (!is_numeric($delta_amount)) {
-            throw new \InvalidArgumentException("Invalid numeric value: $delta_amount");
+        if (!is_numeric($deltaAmount)) {
+            throw new \InvalidArgumentException("Invalid numeric value: $deltaAmount");
         }
-        $delta_amount = (float)$delta_amount;
-        if ($delta_amount <= 0) {
+        $deltaAmount = (float)$deltaAmount;
+        if ($deltaAmount < 0) {
             throw new \RangeException(
-                "Cannot change a transaction by amounts less or equal to zero, got: $delta_amount"
+                "Cannot change a transaction by amounts less or equal to zero, got: $deltaAmount"
             );
         }
-        $this->delta_amount = $delta_amount;
+        $this->deltaAmount = $deltaAmount;
 
         return $this;
     }
@@ -117,7 +117,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         $transaction->setAmount(
             new Amount(
-                (float) $this->delta_amount,
+                (float) $this->deltaAmount,
                 $this->transactionModel->getCurrency()
             )
         );

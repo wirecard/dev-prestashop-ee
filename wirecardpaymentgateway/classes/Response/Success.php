@@ -39,7 +39,7 @@ abstract class Success implements ProcessablePaymentResponse
     protected $response;
 
     /** @var OrderService */
-    protected $order_service;
+    protected $orderService;
   
     /**
      * SuccessResponseProcessing constructor.
@@ -53,7 +53,7 @@ abstract class Success implements ProcessablePaymentResponse
         $this->order = $order;
         $this->response = $response;
 
-        $this->order_service = new OrderService($order);
+        $this->orderService = new OrderService($order);
     }
 
     /**
@@ -62,7 +62,7 @@ abstract class Success implements ProcessablePaymentResponse
     public function process()
     {
         $dbManager = new DBTransactionManager();
-        //outside of the try block. If locking fails, we don't want to attempt to release it
+        //We do this outside of the try block so that if locking fails, we don't attempt to release it
         $dbManager->acquireLock($this->response->getTransactionId(), 30);
         try {
             if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
@@ -77,7 +77,7 @@ abstract class Success implements ProcessablePaymentResponse
                 if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
                     $amount = $this->response->getRequestedAmount();
                 }
-                $this->order_service->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
+                $this->orderService->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
             }
 
             $amount = $this->response->getRequestedAmount();

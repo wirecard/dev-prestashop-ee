@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * Shop System Extensions:
+ * - Terms of Use can be found at:
+ * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
+ * - License can be found under:
+ * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ */
 
 namespace WirecardEE\Prestashop\Models;
 
@@ -9,7 +15,6 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class InitialTransaction implements SettleableTransaction
 {
-
     /**
      * @var float The total amount of the transaction.
      */
@@ -22,14 +27,6 @@ class InitialTransaction implements SettleableTransaction
     public function __construct($amount)
     {
         $this->amount = $amount;
-    }
-
-    /**
-     * @return float
-     */
-    public function getProcessedAmount()
-    {
-        return 0;
     }
 
     /**
@@ -57,14 +54,6 @@ class InitialTransaction implements SettleableTransaction
     }
 
     /**
-     * @return bool
-     */
-    public function isSettled()
-    {
-        return false;
-    }
-
-    /**
      * @param \Order $order
      * @param SuccessResponse $notification
      * @param OrderManager $orderManager
@@ -78,9 +67,9 @@ class InitialTransaction implements SettleableTransaction
         OrderManager $orderManager,
         OrderService $orderService
     ) {
-        $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
-        if ($order_state) {
-            $order->setCurrentState($order_state);
+        $orderState = $orderManager->orderStateToPrestaShopOrderState($notification);
+        if ($orderState) {
+            $order->setCurrentState($orderState);
             $order->save();
             return true;
         }

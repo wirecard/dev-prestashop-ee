@@ -89,55 +89,53 @@ class TransactionPossibleOperationService implements ServiceInterface
      */
     public function getPossibleOperationList($returnTemplateFormat = true)
     {
-        $possible_operations = [];
-        $payment_model = PaymentProvider::getPayment($this->transaction->getPaymentMethod());
+        $possibleOperations = [];
+        $paymentModel = PaymentProvider::getPayment($this->transaction->getPaymentMethod());
         try {
-            $transaction = $payment_model->createTransactionInstance();
+            $transaction = $paymentModel->createTransactionInstance();
             $transaction->setParentTransactionId($this->transaction->getTransactionId());
             $result = $this->getBackendService()->retrieveBackendOperations($transaction, true);
             if (is_array($result)) {
-                $possible_operations = $result;
+                $possibleOperations = $result;
             }
         } catch (Exception $exception) {
             (new Logger())->error($exception->getMessage());
         }
 
-        $possible_operations = $this->disallowCancelIfPartialOperationsDone($possible_operations);
+        $possibleOperations = $this->disallowCancelIfPartialOperationsDone($possibleOperations);
 
         // We no longer support Masterpass
         if ($returnTemplateFormat && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
-            $possible_operations = $this->getOperationsForTemplate($possible_operations);
+            $possibleOperations = $this->getOperationsForTemplate($possibleOperations);
         }
 
-        return $possible_operations;
+        return $possibleOperations;
     }
 
     /**
      * We cannot cancel after making partial refunds / captures.
      *
-     * @param $possible_operations
+     * @param $possibleOperations
      * @return array
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    private function disallowCancelIfPartialOperationsDone($possible_operations)
+    private function disallowCancelIfPartialOperationsDone($possibleOperations)
     {
-        if (is_array($possible_operations)) {
-            if ($this->transaction->getProcessedAmount() > 0) {
-                unset($possible_operations[Operation::CANCEL]);
-            }
+        if (is_array($possibleOperations) && $this->transaction->getProcessedAmount() > 0) {
+            unset($possibleOperations[Operation::CANCEL]);
         }
-        return $possible_operations;
+        return $possibleOperations;
     }
 
     /**
      * Formats the post-processing operations for use in the template.
      *
-     * @param array $possible_operations
+     * @param array $possibleOperations
      * @return array
      * @since 2.5.0
      */
-    private function getOperationsForTemplate(array $possible_operations)
+    private function getOperationsForTemplate(array $possibleOperations)
     {
         $sepaCreditConfig = new ShopConfigurationService(PaymentSepaCreditTransfer::TYPE);
         $operations = [];
@@ -148,11 +146,11 @@ class TransactionPossibleOperationService implements ServiceInterface
             Operation::REFUND => $this->getTranslatedString('text_refund_transaction'),
         ];
 
-        if ($possible_operations === false) {
+        if ($possibleOperations === false) {
             return $operations;
         }
 
-        foreach ($possible_operations as $operation => $key) {
+        foreach ($possibleOperations as $operation => $key) {
             if (!$sepaCreditConfig->getField('enabled') && $operation === Operation::CREDIT) {
                 continue;
             }

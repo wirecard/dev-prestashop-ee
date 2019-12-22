@@ -36,20 +36,20 @@ class TransactionPostProcessingService implements ServiceInterface
     /** @var string */
     private $operation;
     /** @var int */
-    private $transaction_id;
+    private $transactionId;
     /** @var array  */
     private $errors = [];
 
     /**
      * TransactionPostProcessingService constructor.
      * @param string $operation
-     * @param int $transaction_id
+     * @param int $transactionId
      * @since 2.5.0
      */
-    public function __construct($operation, $transaction_id)
+    public function __construct($operation, $transactionId)
     {
         $this->operation = $operation;
-        $this->transaction_id = $transaction_id;
+        $this->transactionId = $transactionId;
     }
 
     /**
@@ -63,20 +63,21 @@ class TransactionPostProcessingService implements ServiceInterface
 
     /**
      * Transaction postprocessing
+     * @param $deltaAmount float
      * @since 2.5.0
      */
-    public function process($delta_amount)
+    public function process($deltaAmount)
     {
 
         try {
-            $parentTransaction = (new TransactionFinder())->getTransactionById($this->transaction_id);
+            $parentTransaction = (new TransactionFinder())->getTransactionById($this->transactionId);
             if ($this->operation == Operation::CANCEL) {
-                if (!$this->equals($delta_amount, $parentTransaction->getAmount())) {
+                if (!$this->equals($deltaAmount, $parentTransaction->getAmount())) {
                     $this->errors[] = "Cancellation is available only for the whole amount.";
                     return;
                 }
             }
-            if ($delta_amount > $parentTransaction->getRemainingAmount()) {
+            if ($deltaAmount > $parentTransaction->getRemainingAmount()) {
                 $this->errors[] = "Amount too large.";
                 return;
             }
@@ -88,7 +89,7 @@ class TransactionPostProcessingService implements ServiceInterface
 
             $transaction = $postProcessingTransactionBuilder
                 ->setOperation($this->operation)
-                ->setDeltaAmount($delta_amount)
+                ->setDeltaAmount($deltaAmount)
                 ->build();
 
             $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
@@ -98,14 +99,14 @@ class TransactionPostProcessingService implements ServiceInterface
             $response = $backend_service->process($transaction, $this->operation);
             $order = (new OrderFinder())->getOrderByReference($parentTransaction->getOrderNumber());
 
-            $response_factory = new ProcessablePaymentResponseFactory(
+            $responseFactory = new ProcessablePaymentResponseFactory(
                 $response,
                 $order,
                 ProcessType::PROCESS_BACKEND
             );
 
-            $processing_strategy = $response_factory->getResponseProcessing();
-            $processing_strategy->process();
+            $processingStrategy = $responseFactory->getResponseProcessing();
+            $processingStrategy->process();
         } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
             $logger = new WirecardLogger();

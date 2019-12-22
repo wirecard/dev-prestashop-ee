@@ -780,20 +780,18 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         OrderService $orderService
     ) {
         $updated = false;
-        $amount = $notification->getRequestedAmount();
-        $order_state = null;
 
-        $order_state = $orderManager->orderStateToPrestaShopOrderState($notification);
+        $orderState = $orderManager->orderStateToPrestaShopOrderState($notification);
 
         if ($notification->getTransactionType() == TransactionTypes::TYPE_AUTHORIZATION) {
-            $order->setCurrentState($order_state);
+            $order->setCurrentState($orderState);
             $order->save();
             $updated = true;
         }
         $settled = false;
         if (!$updated && $this->isCaptureSettledTransitive()) {
-            if ($order_state != _PS_OS_REFUND_) {
-                $order->setCurrentState($order_state);
+            if ($orderState != _PS_OS_REFUND_) {
+                $order->setCurrentState($orderState);
                 $order->save();
                 $updated = true;
                 $settled = true;

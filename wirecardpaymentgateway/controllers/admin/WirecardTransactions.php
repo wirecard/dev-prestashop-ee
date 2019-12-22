@@ -69,34 +69,18 @@ class WirecardTransactionsController extends ModuleAdminController
     {
         $this->validateTransaction($this->object);
         $possibleOperationService = new TransactionPossibleOperationService($this->object);
-        $possible_operations = $possibleOperationService->getPossibleOperationList();
-        $payment_model = PaymentProvider::getPayment($this->object->getPaymentMethod());
+        $paymentModel = PaymentProvider::getPayment($this->object->getPaymentMethod());
 
-        $transaction_model = new Transaction($this->object->tx_id);
-        $remaining_delta_amount = $transaction_model->getRemainingAmount();
-//        $mytemptransaction = Transaction::getInitialTransactionForOrder('ZBUFLUZUN');
-//        $mytempproperties = [
-//            'refund_settled' => $mytemptransaction->isRefundSettled(),
-//            'capture_settled' => $mytemptransaction->isCaptureSettled(),
-//            'refund_settled_transitive' => $mytemptransaction->isRefundSettledTransitive(),
-//            'capture_settled_transitive' => $mytemptransaction->isCaptureSettledTransitive(),
-//            'settled' => $mytemptransaction->isSettled(),
-//            'captured' => $mytemptransaction->getProcessedCaptureAmount(),
-//            'refunded' => $mytemptransaction->getProcessedRefundAmount(),
-//            'captured_transitive' => $mytemptransaction->getProcessedCaptureAmountTransitive(),
-//            'refunded_transitive' => $mytemptransaction->getProcessedRefundAmountTransitive(),
-//        ];
+        $transactionModel = new Transaction($this->object->tx_id);
 
         // These variables are available in the Smarty context
         $this->tpl_view_vars = [
             'current_index'       => self::$currentIndex,
             'back_link'           => (new Link())->getAdminLink('WirecardTransactions', true),
-            'payment_method'      => $payment_model->getName(),
-            'possible_operations' => $possible_operations,
+            'payment_method'      => $paymentModel->getName(),
+            'possible_operations' => $possibleOperationService->getPossibleOperationList(),
             'transaction'         => $this->object->toViewArray(),
-            'remaining_delta_amount' => $remaining_delta_amount,
-            //'mytemptransaction' => $mytemptransaction,
-            //'mytempproperties' => $mytempproperties,
+            'remaining_delta_amount' => $transactionModel->getRemainingAmount(),
         ];
 
         return parent::renderView();
@@ -108,21 +92,22 @@ class WirecardTransactionsController extends ModuleAdminController
      * @throws Exception
      * @since 1.0.0
      * @since 2.4.0 Major refactoring
+     * @return bool|ObjectModel
      */
     public function postProcess()
     {
         $operation = \Tools::getValue('operation');
-        $transaction_id = \Tools::getValue('transaction');
+        $transactionId = \Tools::getValue('transaction');
 
         // This prevents the function from running on the list page
-        if (!$operation || !$transaction_id) {
+        if (!$operation || !$transactionId) {
             return;
         }
 
-        $parentTransaction = new Transaction($transaction_id);
+        $parentTransaction = new Transaction($transactionId);
         $delta_amount = Tools::getValue('partial-delta-amount', $parentTransaction->getAmount());
 
-        $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transaction_id);
+        $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transactionId);
         $transactionPostProcessingService->process($delta_amount);
         $this->errors = $transactionPostProcessingService->getErrors();
 

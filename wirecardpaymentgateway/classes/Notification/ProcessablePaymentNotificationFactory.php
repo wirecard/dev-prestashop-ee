@@ -29,7 +29,7 @@ class ProcessablePaymentNotificationFactory
     private $notification;
 
     /** @var string */
-    private $process_type;
+    private $processType;
 
     /**
      * PaymentProcessingFactory constructor.
@@ -38,11 +38,11 @@ class ProcessablePaymentNotificationFactory
      * @param SuccessResponse|FailureResponse $notification
      * @since 2.1.0
      */
-    public function __construct($order, $notification, $process_type = ProcessType::PROCESS_RESPONSE)
+    public function __construct($order, $notification, $processType = ProcessType::PROCESS_RESPONSE)
     {
         $this->order = $order;
         $this->notification = $notification;
-        $this->process_type = $process_type;
+        $this->processType = $processType;
     }
 
     /**
@@ -52,7 +52,7 @@ class ProcessablePaymentNotificationFactory
     public function getPaymentProcessing()
     {
         if ($this->notification instanceof SuccessResponse) {
-            if ($this->process_type === ProcessType::PROCESS_RESPONSE) {
+            if ($this->processType === ProcessType::PROCESS_RESPONSE) {
                 return new InitialSuccess($this->order, $this->notification);
             }
 

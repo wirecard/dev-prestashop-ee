@@ -13,12 +13,10 @@ use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Models\Transaction;
 
 class Success extends SuccessAbstract
 {
-
     use NumericHelper;
     /**
      * @var DBTransactionManager

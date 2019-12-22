@@ -36,21 +36,21 @@ final class Failure implements ProcessablePaymentResponse
     private $order_service;
 
     /** @var string */
-    private $process_type;
+    private $processType;
 
     /**
      * FailureResponseProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $response
-     * @param string $process_type
+     * @param string $processType
      * @since 2.1.0
      */
-    public function __construct($order, $response, $process_type)
+    public function __construct($order, $response, $processType)
     {
         $this->order = $order;
         $this->response = $response;
-        $this->process_type = $process_type;
+        $this->processType = $processType;
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
     }
@@ -67,7 +67,7 @@ final class Failure implements ProcessablePaymentResponse
             $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
         }
 
-        if ($this->process_type === ProcessType::PROCESS_BACKEND) {
+        if ($this->processType === ProcessType::PROCESS_BACKEND) {
             $this->processBackend();
             return;
         }
