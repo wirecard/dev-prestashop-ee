@@ -15,19 +15,6 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 interface SettleableTransaction
 {
-    /**
-     * Get the sum of all capture child transactions.
-     *
-     * @return float
-     */
-    public function getProcessedCaptureAmount();
-
-    /**
-     * The sum of all refund child transactions.
-     *
-     * @return float
-     */
-    public function getProcessedRefundAmount();
 
     /**
      * Get the remaining amount from the already processed amount to the total amount (amount).
@@ -51,13 +38,6 @@ interface SettleableTransaction
      * @return bool
      */
     public function markSettledAsClosed();
-
-    /**
-     * A transaction is settled if the processed amount is equal to the original (total) amount.
-     *
-     * @return bool
-     */
-    public function isSettled();
 
     /**
      * Update the order according to the newest processed state of the transaction.

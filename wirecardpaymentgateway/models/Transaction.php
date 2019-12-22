@@ -467,7 +467,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @throws \PrestaShopException
      * @since 2.5.0
      */
-    public function getAllChildTransactions()
+    private function getAllChildTransactions()
     {
         $children = [];
         $parent_id = $this->getTransactionId();
@@ -485,7 +485,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $children;
     }
 
-    public function getAllTransitiveChildTransactions()
+    private function getAllTransitiveChildTransactions()
     {
         $children = [];
         $orderNumber = $this->getOrderNumber();
@@ -604,7 +604,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      *
      * @return bool true if th
      */
-    public function isDeducting()
+    private function isDeducting()
     {
         return in_array($this->getTransactionType(), self::DEDUCTING_TYPES);
     }
@@ -613,7 +613,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * The transaction is a capture from the parent transaction.
      * @return bool
      */
-    public function isCapturing()
+    private function isCapturing()
     {
         return in_array($this->getTransactionType(), self::CAPTURING_TYPES);
     }
@@ -624,9 +624,8 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @return float|int
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
-     * @TODO
      */
-    public function getProcessedCaptureAmount()
+    private function getProcessedCaptureAmount()
     {
         $childTransactions = $this->getAllChildTransactions();
         return $this->sumCapturingChildren($childTransactions);
@@ -638,9 +637,8 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @return float|int
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
-     * @TODO
      */
-    public function getProcessedCaptureAmountTransitive()
+    private function getProcessedCaptureAmountTransitive()
     {
         $childTransactions = $this->getAllTransitiveChildTransactions();
         return $this->sumCapturingChildren($childTransactions);
@@ -666,16 +664,14 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $this->getProcessedRefundAmount() + $this->getProcessedCaptureAmount();
     }
 
-
     /**
      * Calculates the sum of all child transactions of this transaction.
      *
      * @return float|int
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
-     * @TODO
      */
-    public function getProcessedRefundAmount()
+    private function getProcessedRefundAmount()
     {
         $childTransactions = $this->getAllChildTransactions();
         return $this->sumDeductingChildren($childTransactions);
@@ -687,9 +683,8 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @return float|int
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
-     * @TODO
      */
-    public function getProcessedRefundAmountTransitive()
+    private function getProcessedRefundAmountTransitive()
     {
         $childTransactions = $this->getAllTransitiveChildTransactions();
         return $this->sumDeductingChildren($childTransactions);
@@ -744,22 +739,22 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    public function isSettled()
+    private function isSettled()
     {
         return $this->isRefundSettled() || $this->isCaptureSettled();
     }
 
-    public function isRefundSettled()
+    private function isRefundSettled()
     {
         return $this->equals($this->getProcessedRefundAmount(), $this->getAmount());
     }
 
-    public function isCaptureSettled()
+    private function isCaptureSettled()
     {
         return $this->equals($this->getProcessedCaptureAmount(), $this->getAmount());
     }
 
-    public function isRefundSettledTransitive()
+    private function isRefundSettledTransitive()
     {
         return $this->equals($this->getProcessedRefundAmountTransitive(), $this->getAmount());
     }
