@@ -47,8 +47,23 @@ class DBTransactionManager
 
     /**
      * Attempts to get a named lock for a period of $timeout seconds and retry $maxAttempts times during this time,
-     * according to a back-off strategy
-     * @param $name
+     * according to a back-off strategy.
+     *
+     * The most reliable way to get a lock is to leave $maxAttempts at its default value and vary only the $timeout.
+     *
+     * If you specify just the $timeout, the call will block until either the lock is acquired, or the timeout is
+     * reached. This means you get a single block of time.
+     *
+     * If for whatever reason, you want to vary the way in which time is split within the $timeout interval, you can
+     * do so via the $maxAttempts parameter. If greater than 1, this will split the timeout in a sensitive way for most
+     * cases.
+     *
+     * Neither the $timeout, nor the $maxAttempts will be exceeded.
+     *
+     * Beware that, if $maxAttempts is > 1, you are not guaranteed to get the lock in the order in which you requested
+     * it. This might be desirable, or not, depending on the circumstances.
+     *
+     * @param $name string Use it to localize the lock.
      * @param $timeout
      * @param int $maxAttempts
      * @return bool
@@ -65,6 +80,9 @@ class DBTransactionManager
         $sqlTimeout = $timeout;
         if ($maxAttempts == 1) {
             $sqlTimeout = $timeout;
+        }
+        if($maxAttempts > count($backoffFactors)) {
+            throw new \RuntimeException("maxAttempts of $maxAttempts covers more time than $timeout seconds.");
         }
         while ($attempts < $maxAttempts) {
             $result = $this->database->query("SELECT GET_LOCK('" . pSQL($name) . "', $sqlTimeout) AS acquired");
@@ -95,8 +113,8 @@ class DBTransactionManager
     }
 
     /**
-     * Splits the timeout duration in reasonable backoff intervals, in milliseconds
-     * @param $timeout timeout in seconds
+     * Splits the timeout duration (seconds) in reasonable back-off intervals, in milliseconds
+     * @param $timeoutInSeconds int timeout in seconds
      *
      * The way it works:
      * During the first second, attempt: 10 times every 10 milliseconds, 9 times every 100 milliseconds; total: 1s
