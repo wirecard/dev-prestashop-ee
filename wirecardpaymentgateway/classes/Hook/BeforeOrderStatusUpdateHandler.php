@@ -95,7 +95,8 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
     protected function handlePostProcessing($operation, $transaction)
     {
         $postProcessingService = new TransactionPostProcessingService($operation, $transaction->getTxId());
-        $postProcessingService->process(0);
+        $parentTransaction = Transaction::getInitialTransactionForOrder($transaction->getOrderNumber());
+        $postProcessingService->process($parentTransaction->getAmount());
     }
 
     /**
