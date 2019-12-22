@@ -48,12 +48,8 @@ class Success extends SuccessAbstract
     public function process()
     {
         parent::process();
-        $tx_id = \Tools::getValue('tx_id');
-        $transaction = new Transaction($tx_id);
+        $transaction = new Transaction(\Tools::getValue('tx_id'));
         $transaction->markSettledAsClosed();
-        //$service = new OrderService($this->order);//TODO: bug in presta?
-        //$service->createOrderPayment((string)$transaction->getAmount(),
-        //$transaction->getPaymentMethod(), $transaction->getTransactionId());
 
         $this->context_service->setConfirmations(
             $this->getTranslatedString('success_new_transaction')
