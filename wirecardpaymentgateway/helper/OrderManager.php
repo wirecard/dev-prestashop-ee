@@ -166,7 +166,7 @@ class OrderManager
             case BackendService::TYPE_PROCESSING:
                 return _PS_OS_PAYMENT_;
             case BackendService::TYPE_PENDING:
-                return __PS_OS_PENDING_;
+                return _PS_OS_PENDING_;//TODO: figure out fix
             default:
                 throw new \Exception('Order state not mappable');
         }
