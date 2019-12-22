@@ -98,10 +98,11 @@ abstract class Success implements ProcessablePaymentNotification
      */
     private function getParentTransaction()
     {
-        $transaction = Transaction::getInitialTransactionForOrder($this->order->reference);
-
-        if ($transaction) {
-            return $transaction;
+        if($this->notification->getTransactionType() != \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_PURCHASE) {
+            $transaction = Transaction::getInitialTransactionForOrder($this->order->reference);
+            if ($transaction) {
+                return $transaction;
+            }
         }
 
         return new InitialTransaction($this->notification->getRequestedAmount()->getValue());
