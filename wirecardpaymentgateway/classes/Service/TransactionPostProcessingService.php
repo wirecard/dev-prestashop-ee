@@ -22,6 +22,7 @@ use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Exception;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Class TransactionPostProcessingService
@@ -32,6 +33,10 @@ class TransactionPostProcessingService implements ServiceInterface
 {
 
     use NumericHelper;
+    use TranslationHelper;
+
+    /** @var string */
+    const TRANSLATION_FILE = "transactionpostprocessingservice";
 
     /** @var string */
     private $operation;
@@ -73,12 +78,12 @@ class TransactionPostProcessingService implements ServiceInterface
             $parentTransaction = (new TransactionFinder())->getTransactionById($this->transactionId);
             if ($this->operation == Operation::CANCEL) {
                 if (!$this->equals($deltaAmount, $parentTransaction->getAmount())) {
-                    $this->errors[] = "Cancellation is available only for the whole amount.";
+                    $this->errors[] = $this->getTranslatedString('postprocessing_error_cancellation');
                     return;
                 }
             }
             if ($deltaAmount > $parentTransaction->getRemainingAmount()) {
-                $this->errors[] = "Amount too large.";
+                $this->errors[] = $this->getTranslatedString('postprocessing_error_amount');
                 return;
             }
 
