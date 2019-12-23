@@ -1,10 +1,10 @@
-Feature: PayPalPurchaseHappyPath
+Feature: PayPalAuthorizationHappyPath
   As a guest user
-  I want to make a purchase with a Pay Pal
+  I want to make a authorization with a Pay Pal
   And to see that transaction was successful
 
   Background:
-    Given I activate "paypal" payment action "pay" in configuration
+    Given I activate "paypal" payment action "reserve" in configuration
     And I prepare checkout
     And I am on "Checkout" page
     And I fill fields with "Customer data"
@@ -14,14 +14,12 @@ Feature: PayPalPurchaseHappyPath
     Then I select "Wirecard PayPal"
 
   @env ui_test @patch @minor @major
-  Scenario: purchase
+  Scenario: authorization
     Given I check "I agree to the terms of service"
     And I click "Order with an obligation to pay"
-    And I am redirected to "Pay Pal Log In" page
-    And I login to Paypal
     When I am redirected to "Pay Pal Review" page
     And I click "Continue"
     And I click "Pay Now"
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
-    And I see "paypal" "debit" in transaction table
+    And I see "paypal" "authorization" in transaction table

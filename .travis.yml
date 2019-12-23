@@ -143,6 +143,24 @@ matrix:
       # if this stage fails, it will not fail the whole build
       - ALLOW_FAIL=1
 
+  - <<: *acceptance-test
+    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
+    env:
+      - GATEWAY=API-WDCEE-TEST
+      - PRESTASHOP_RELEASE_VERSION=1
+
+  - <<: *acceptance-test
+    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
+    env:
+      - GATEWAY=API-WDCEE-TEST
+      - PRESTASHOP_RELEASE_VERSION=2
+
+  - <<: *acceptance-test
+    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
+    env:
+      - GATEWAY=API-WDCEE-TEST
+      - PRESTASHOP_RELEASE_VERSION=3
+
   - stage: deploy
     if: tag IS present AND type = push
     language: php
