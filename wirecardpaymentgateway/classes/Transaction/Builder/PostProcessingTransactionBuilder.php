@@ -38,6 +38,11 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     private $operation;
 
     /**
+     * @var float
+     */
+    private $deltaAmount;
+
+    /**
      * PostProcessingTransactionBuilder constructor.
      * @param Payment $paymentMethod
      * @param TransactionModel $transaction
@@ -47,6 +52,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         $this->paymentMethod = $paymentMethod;
         $this->transactionModel = $transaction;
+        $this->deltaAmount = $transaction->getAmount();
     }
 
     /**
@@ -59,6 +65,26 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     public function setOperation($operation)
     {
         $this->operation = $operation;
+
+        return $this;
+    }
+
+    /**
+     * @param float $deltaAmount
+     * @return $this
+     */
+    public function setDeltaAmount($deltaAmount)
+    {
+        if (!is_numeric($deltaAmount)) {
+            throw new \InvalidArgumentException("Invalid numeric value: $deltaAmount");
+        }
+        $deltaAmount = (float)$deltaAmount;
+        if ($deltaAmount < 0) {
+            throw new \RangeException(
+                "Cannot change a transaction by amounts less or equal to zero, got: $deltaAmount"
+            );
+        }
+        $this->deltaAmount = $deltaAmount;
 
         return $this;
     }
@@ -91,7 +117,7 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         $transaction->setAmount(
             new Amount(
-                (float) $this->transactionModel->getAmount(),
+                (float) $this->deltaAmount,
                 $this->transactionModel->getCurrency()
             )
         );

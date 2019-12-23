@@ -10,11 +10,14 @@
 namespace WirecardEE\Prestashop\Classes\Service;
 
 use Wirecard\PaymentSdk\BackendService;
+use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
+use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
@@ -27,23 +30,26 @@ use Exception;
  */
 class TransactionPostProcessingService implements ServiceInterface
 {
+
+    use NumericHelper;
+
     /** @var string */
     private $operation;
     /** @var int */
-    private $transaction_id;
+    private $transactionId;
     /** @var array  */
     private $errors = [];
 
     /**
      * TransactionPostProcessingService constructor.
      * @param string $operation
-     * @param int $transaction_id
+     * @param int $transactionId
      * @since 2.5.0
      */
-    public function __construct($operation, $transaction_id)
+    public function __construct($operation, $transactionId)
     {
         $this->operation = $operation;
-        $this->transaction_id = $transaction_id;
+        $this->transactionId = $transactionId;
     }
 
     /**
@@ -57,17 +63,24 @@ class TransactionPostProcessingService implements ServiceInterface
 
     /**
      * Transaction postprocessing
+     * @param $deltaAmount float
      * @since 2.5.0
      */
-    public function process()
+    public function process($deltaAmount)
     {
-        // @TODO: Refactor me :(
-        // $this->buildTransaction()
-        // $this->executeTransaction()
-        // $this->processTransactionResponse()
 
         try {
-            $parentTransaction = (new TransactionFinder())->getTransactionById($this->transaction_id);
+            $parentTransaction = (new TransactionFinder())->getTransactionById($this->transactionId);
+            if ($this->operation == Operation::CANCEL) {
+                if (!$this->equals($deltaAmount, $parentTransaction->getAmount())) {
+                    $this->errors[] = "Cancellation is available only for the whole amount.";
+                    return;
+                }
+            }
+            if ($deltaAmount > $parentTransaction->getRemainingAmount()) {
+                $this->errors[] = "Amount too large.";
+                return;
+            }
 
             $postProcessingTransactionBuilder = new PostProcessingTransactionBuilder(
                 PaymentProvider::getPayment($parentTransaction->getPaymentMethod()),
@@ -76,6 +89,7 @@ class TransactionPostProcessingService implements ServiceInterface
 
             $transaction = $postProcessingTransactionBuilder
                 ->setOperation($this->operation)
+                ->setDeltaAmount($deltaAmount)
                 ->build();
 
             $shop_config_service = new ShopConfigurationService($parentTransaction->getPaymentMethod());
@@ -85,14 +99,14 @@ class TransactionPostProcessingService implements ServiceInterface
             $response = $backend_service->process($transaction, $this->operation);
             $order = (new OrderFinder())->getOrderByReference($parentTransaction->getOrderNumber());
 
-            $response_factory = new ProcessablePaymentResponseFactory(
+            $responseFactory = new ProcessablePaymentResponseFactory(
                 $response,
                 $order,
-                ProcessablePaymentResponseFactory::PROCESS_BACKEND
+                ProcessType::PROCESS_BACKEND
             );
 
-            $processing_strategy = $response_factory->getResponseProcessing();
-            $processing_strategy->process();
+            $processingStrategy = $responseFactory->getResponseProcessing();
+            $processingStrategy->process();
         } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
             $logger = new WirecardLogger();

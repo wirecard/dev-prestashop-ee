@@ -91,7 +91,8 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
                 'payment_method' => $transaction->getPaymentMethod(),
                 'order' => $transaction->getOrderNumber(),
                 'badge' => 'red'
-            ]
+            ],
+            'remaining_delta_amount' => 0,
         ];
 
         $this->assertEquals($expected, $this->wirecardTransactionsController->tpl_view_vars);
