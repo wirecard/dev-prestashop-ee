@@ -29,7 +29,6 @@ use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 class Transaction extends \ObjectModel implements SettleableTransaction
 {
     use TranslationHelper;
-
     use NumericHelper;
 
     /** @var string  */
@@ -37,6 +36,29 @@ class Transaction extends \ObjectModel implements SettleableTransaction
 
     /** @var string */
     const TRANSLATION_FILE = "transaction";
+
+    /** @var array */
+    const DEDUCTING_TYPES = [
+        TransactionTypes::TYPE_CREDIT,
+        TransactionTypes::TYPE_PENDING_CREDIT,
+        TransactionTypes::TYPE_REFUND_CAPTURE,
+        TransactionTypes::TYPE_REFUND_DEBIT,
+        TransactionTypes::TYPE_REFUND_PURCHASE,
+        TransactionTypes::TYPE_REFUND_REQUEST,
+        TransactionTypes::TYPE_VOID_AUTHORIZATION,
+        TransactionTypes::TYPE_VOID_CAPTURE,
+        TransactionTypes::TYPE_VOID_CREDIT,
+        TransactionTypes::TYPE_VOID_DEBIT,
+        TransactionTypes::TYPE_VOID_PURCHASE,
+    ];
+
+    /** @var array */
+    const CAPTURING_TYPES = [
+        TransactionTypes::TYPE_CAPTURE_AUTHORIZATION,
+        TransactionTypes::TYPE_PURCHASE,
+        TransactionTypes::TYPE_DEBIT,
+        TransactionTypes::TYPE_DEPOSIT,
+    ];
 
     public $tx_id;
 
@@ -577,27 +599,6 @@ class Transaction extends \ObjectModel implements SettleableTransaction
             'badge'          => $this->isTransactionStateOpen() ? 'green' : 'red',
         ];
     }
-
-    const DEDUCTING_TYPES = [
-        TransactionTypes::TYPE_CREDIT,
-        TransactionTypes::TYPE_PENDING_CREDIT,
-        TransactionTypes::TYPE_REFUND_CAPTURE,
-        TransactionTypes::TYPE_REFUND_DEBIT,
-        TransactionTypes::TYPE_REFUND_PURCHASE,
-        TransactionTypes::TYPE_REFUND_REQUEST,
-        TransactionTypes::TYPE_VOID_AUTHORIZATION,
-        TransactionTypes::TYPE_VOID_CAPTURE,
-        TransactionTypes::TYPE_VOID_CREDIT,
-        TransactionTypes::TYPE_VOID_DEBIT,
-        TransactionTypes::TYPE_VOID_PURCHASE,
-    ];
-
-    const CAPTURING_TYPES = [
-        TransactionTypes::TYPE_CAPTURE_AUTHORIZATION,
-        TransactionTypes::TYPE_PURCHASE,
-        TransactionTypes::TYPE_DEBIT,
-        TransactionTypes::TYPE_DEPOSIT,
-    ];
 
     /**
      * The transaction is a deduction from the parent transaction.
