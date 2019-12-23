@@ -1,5 +1,15 @@
 [
   {
+    "release": "2.6.0",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.6.1",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+        "Implement partial refunds and partial captures",
+        "Improve display of order payments"
+    ]
+  },
+  {
     "release": "2.5.0",
     "shopsystem": "PrestaShop",
     "tested": "1.7.6.1",
