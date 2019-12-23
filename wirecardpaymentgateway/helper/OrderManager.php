@@ -146,6 +146,7 @@ class OrderManager
 
     /**
      * @param SuccessResponse $notification
+     * @param bool $childrenEqualParent true if the sum of children equals to its own sum
      * @return mixed
      * @throws \Exception
      * @since 2.1.0
@@ -165,7 +166,7 @@ class OrderManager
             case BackendService::TYPE_PROCESSING:
                 return _PS_OS_PAYMENT_;
             case BackendService::TYPE_PENDING:
-                return __PS_OS_PENDING_;
+                return _PS_OS_PENDING_;//TODO: figure out fix
             default:
                 throw new \Exception('Order state not mappable');
         }
@@ -179,8 +180,10 @@ class OrderManager
     public function getTransactionState($notification)
     {
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
+        $transactionType = $notification->getTransactionType();
 
-        if ($backend_service->isFinal($notification->getTransactionType())) {
+        //TODO: use just isFinal, once ticket TPWDCEE-5668 is solved in the SDK
+        if ($backend_service->isFinal($transactionType) || $transactionType == Transaction::TYPE_REFUND_PURCHASE) {
             return 'closed';
         }
         return 'open';

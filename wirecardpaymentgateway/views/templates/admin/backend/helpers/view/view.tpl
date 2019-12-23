@@ -31,14 +31,22 @@
             </div>
             <br>
             {if $transaction.status == 'open'}
+                {assign var="disabled" value=""}
+                {if $remaining_delta_amount < 0.0099}
+                    {assign var="disabled" value=" disabled"}
+                {/if}
                 <form method="post" class="post-processing">
                     <input type="hidden" name="transaction" value="{$transaction.tx}" />
 
                     {foreach $possible_operations as $operation}
-                        <button type="submit" name="operation" value="{$operation.action}" class="btn btn-primary pointer">
+                        <button type="submit" name="operation" value="{$operation.action}" class="btn btn-primary pointer"{$disabled}>
                             {$operation.name}
                         </button>
                     {/foreach}
+
+                    {if $transaction.payment_method != "ratepay-invoice"}
+                        <input name="partial-delta-amount" value="{number_format($remaining_delta_amount, 2)}"{$disabled}> {$transaction.currency}
+                    {/if}
                 </form>
             {/if}
 

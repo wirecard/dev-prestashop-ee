@@ -6,6 +6,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>success_6b7c56be83d97c980b58d13304
 $_MODULE['<{wirecardpaymentgateway}prestashop>transactionpossibleoperationservice_f49bca788fe6812d21a25b1389ed2b9f'] = '트랜잭션 캡처';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transactionpossibleoperationservice_1bcdaa7f89a3661e83f85d23320d8d72'] = '트랜잭션 취소';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transactionpossibleoperationservice_d6fc0a7839bc394750357947a6bd286f'] = '트랜잭션 환불';
+$_MODULE['<{wirecardpaymentgateway}prestashop>transactionpostprocessingservice_1bf9aff61e5e7943c052ec33fcdfd261'] = 'It is only allowed to cancel the full transaction.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>transactionpostprocessingservice_fa1dbc8c2f6de95c4997b715ea66a038'] = 'The amount is too high to process this post-processing operation.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_adf26da509e583625c2c43e4be5bbc7a'] = '주의: URL 설정 필드에서 귀하의 로그인 정보를 확인해주십시오. 귀하는 시험용 계정과 실제 사용 계정을 구성/조합하였을 수도 있습니다.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_abfa4ee8f05fae13b8954098fca4f0f4'] = '설정 업데이트 됨';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f9e92a0727609b56780f28afa11da702'] = '활성화됨';

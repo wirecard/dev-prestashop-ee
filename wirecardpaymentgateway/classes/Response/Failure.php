@@ -11,6 +11,7 @@ namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
@@ -35,21 +36,21 @@ final class Failure implements ProcessablePaymentResponse
     private $order_service;
 
     /** @var string */
-    private $process_type;
+    private $processType;
 
     /**
      * FailureResponseProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $response
-     * @param string $process_type
+     * @param string $processType
      * @since 2.1.0
      */
-    public function __construct($order, $response, $process_type)
+    public function __construct($order, $response, $processType)
     {
         $this->order = $order;
         $this->response = $response;
-        $this->process_type = $process_type;
+        $this->processType = $processType;
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
     }
@@ -63,10 +64,10 @@ final class Failure implements ProcessablePaymentResponse
             $this->order->setCurrentState(_PS_OS_ERROR_);
             $this->order->save();
 
-            $this->order_service->updateOrderPayment($this->response->getData()['transaction-id'], 0);
+            $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
         }
 
-        if ($this->process_type === ProcessablePaymentResponseFactory::PROCESS_BACKEND) {
+        if ($this->processType === ProcessType::PROCESS_BACKEND) {
             $this->processBackend();
             return;
         }

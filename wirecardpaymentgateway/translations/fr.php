@@ -6,6 +6,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>success_6b7c56be83d97c980b58d13304
 $_MODULE['<{wirecardpaymentgateway}prestashop>transactionpossibleoperationservice_f49bca788fe6812d21a25b1389ed2b9f'] = 'Capturer la transaction';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transactionpossibleoperationservice_1bcdaa7f89a3661e83f85d23320d8d72'] = 'Annuler la transaction';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transactionpossibleoperationservice_d6fc0a7839bc394750357947a6bd286f'] = 'Transaction de remboursement';
+$_MODULE['<{wirecardpaymentgateway}prestashop>transactionpostprocessingservice_1bf9aff61e5e7943c052ec33fcdfd261'] = 'Il est uniquement permis d\'annuler la transaction complète.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>transactionpostprocessingservice_fa1dbc8c2f6de95c4997b715ea66a038'] = 'Le montant est trop élevé pour traiter cette opération de traitement ultérieur.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_adf26da509e583625c2c43e4be5bbc7a'] = 'Attention: Veuillez vérifier vos données de configuration dans les champs de saisie de l\'URL. Vous avez peut-être combiné un compte réel avec un compte d\'essai.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_abfa4ee8f05fae13b8954098fca4f0f4'] = 'Paramètres mis à jour';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardpaymentgateway_f9e92a0727609b56780f28afa11da702'] = 'Activé';
@@ -192,7 +194,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_36245276e84306a410a4
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_7daacf9143e60bd1d97b926e8d0754d6'] = 'Tester la configuration';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_6dde257f8d241f9979e7e5e3cc07eb79'] = 'Réglages Généraux';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_a3b6d799a2a7cbfe5277db688a4ac477'] = 'Activer capture automatique';
-$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_5f2ba2b0dc612fb9a79fcec2a726c907'] = 'Déclenchez la capture automatique une fois que l\'état de la commande est changé en Expédié.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_5f2ba2b0dc612fb9a79fcec2a726c907'] = 'Capturer automatiquement dès que l\'état de la commande passe à \"Expédié\"';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_2375bbba369e96630b01830f521a39ca'] = 'Enregistrer';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardgeneralsettings_abfa4ee8f05fae13b8954098fca4f0f4'] = 'Paramètres mis à jour';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardtransactions_3bd56bbf8734eb9b2d39537bbbf92cdd'] = 'Aucune transaction trouvée.';

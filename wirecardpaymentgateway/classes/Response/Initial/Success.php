@@ -47,7 +47,7 @@ class Success extends SuccessAbstract
         parent::__construct($order, $response);
 
         $this->context_service = new ContextService(\Context::getContext());
-        $this->cart = $this->order_service->getOrderCart();
+        $this->cart = $this->orderService->getOrderCart();
         $this->customer = new \Customer((int) $this->cart->id_customer);
         $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
     }
