@@ -79,8 +79,12 @@ function initializeForm(tokenId = null)
  */
 function onPaymentMethodSelected()
 {
-    initializeCreditCardEventHandlers();
-    initializeForm();
+    var $container = jQuery("#" + Constants.CONTAINER_ID);
+
+    if ($container.children().length === 0) {
+        initializeCreditCardEventHandlers();
+        initializeForm();
+    }
 }
 
 /**
@@ -119,6 +123,12 @@ function onSeamlessFormSubmit(data)
  */
 function onPaymentFormSubmit(event)
 {
+    var $creditCardRadioButton = jQuery(Constants.CREDITCARD_RADIO_ID);
+
+    if (!$creditCardRadioButton.is(":checked")) {
+        return;
+    }
+
     event.preventDefault();
 
     WPP.seamlessSubmit({
