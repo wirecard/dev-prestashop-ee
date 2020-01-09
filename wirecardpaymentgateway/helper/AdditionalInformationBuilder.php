@@ -180,8 +180,10 @@ class AdditionalInformationBuilder
             $accountHolder->setPhone($address->phone);
         }
 
-        if (\Tools::strlen($address->phone_mobile)) {
-            $accountHolder->setMobilePhone($address->phone_mobile);
+        if ($type === 'billing') {
+            if (\Tools::strlen($address->phone_mobile)) {
+                $accountHolder->setMobilePhone($address->phone_mobile);
+            }
         }
 
         if (isset($customer->birthday) &&
