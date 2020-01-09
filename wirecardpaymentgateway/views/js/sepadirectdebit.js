@@ -12,7 +12,9 @@ var sepaCheck = false;
 $(document).ready(function () {
     function processOrder()
     {
-        form.submit();
+        if ($("#sepaCheck").is(":checked")) {
+            form.submit();
+        }
     }
 
     function checkChange()
