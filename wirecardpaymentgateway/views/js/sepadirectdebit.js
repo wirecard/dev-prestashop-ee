@@ -12,7 +12,9 @@ var sepaCheck = false;
 $(document).ready(function () {
     function processOrder()
     {
-        form.submit();
+        if ($("#sepaCheck").is(":checked")) {
+            form.submit();
+        }
     }
 
     function checkChange()
@@ -24,6 +26,8 @@ $(document).ready(function () {
     {
         $("#sepaMandateModal").modal("hide");
         $("#payment-confirmation button").removeAttr("disabled");
+        $("#sepaCheck").prop("checked", false);
+        $("#sepaConfirmButton").addClass("disabled");
     }
 
     function displayPopup()
