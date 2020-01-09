@@ -26,6 +26,8 @@ $(document).ready(function () {
     {
         $("#sepaMandateModal").modal("hide");
         $("#payment-confirmation button").removeAttr("disabled");
+        $("#sepaCheck").prop("checked", false);
+        $("#sepaConfirmButton").addClass("disabled");
     }
 
     function displayPopup()
