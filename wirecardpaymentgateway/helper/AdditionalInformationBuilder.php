@@ -176,13 +176,13 @@ class AdditionalInformationBuilder
         $accountHolder->setFirstName($customerFirstName);
         $accountHolder->setLastName($customerLastName);
 
-        if (\Tools::strlen($address->phone)) {
-            $accountHolder->setPhone($address->phone);
+        if (\Tools::strlen(trim($address->phone))) {
+            $accountHolder->setPhone(trim($address->phone));
         }
 
         if ($type === 'billing') {
-            if (\Tools::strlen($address->phone_mobile)) {
-                $accountHolder->setMobilePhone($address->phone_mobile);
+            if (\Tools::strlen(trim($address->phone_mobile))) {
+                $accountHolder->setMobilePhone(trim($address->phone_mobile));
             }
         }
 
