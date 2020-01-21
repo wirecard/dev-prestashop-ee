@@ -8,9 +8,9 @@ env:
     - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/.bin/compatible-shop-releases.txt
     - SHOP_SYSTEM_UPDATE_COMMIT="Update latest shop releases"
     - MANUAL_UITEST_TRIGGER_COMMIT="Test my build"
-    - PATCH_RELEASE="patch"
-    - MINOR_RELEASE="minor"
-    - MAJOR_RELEASE="major"
+    - PATCH_RELEASE=patch
+    - MINOR_RELEASE=minor
+    - MAJOR_RELEASE=major
     - PRESTASHOP_COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/.bin/new-shop-releases.txt
 
 matrix:
@@ -142,24 +142,6 @@ matrix:
       - LATEST_EXTENSION_RELEASE=1
       # if this stage fails, it will not fail the whole build
       - ALLOW_FAIL=1
-
-  - <<: *acceptance-test
-    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
-    env:
-      - GATEWAY=API-WDCEE-TEST
-      - PRESTASHOP_RELEASE_VERSION=1
-
-  - <<: *acceptance-test
-    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
-    env:
-      - GATEWAY=API-WDCEE-TEST
-      - PRESTASHOP_RELEASE_VERSION=2
-
-  - <<: *acceptance-test
-    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
-    env:
-      - GATEWAY=API-WDCEE-TEST
-      - PRESTASHOP_RELEASE_VERSION=3
 
   - stage: trigger-white-labelling
     if: tag IS present AND type = push
