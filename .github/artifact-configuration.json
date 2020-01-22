@@ -5,8 +5,8 @@
     "file-blacklist": [
       ".env",
       ".gitignore",
-      ".robocop.yml",
-      ".ruby-version.yml",
+      ".rubocop.yml",
+      ".ruby-version",
       ".travis.yml",
       "CHANGELOG.md",
       "composer.json",
