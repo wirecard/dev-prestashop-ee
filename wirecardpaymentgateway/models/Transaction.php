@@ -795,8 +795,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
             $updated = true;
         }
 
-        if (!$updated && $this->isOrderStateCancel($orderState))
-        {
+        if (!$updated && $this->isOrderStateCancel($orderState)) {
             $order->setCurrentState(_PS_OS_CANCELED_);
             $order->save();
             $updated = true;
