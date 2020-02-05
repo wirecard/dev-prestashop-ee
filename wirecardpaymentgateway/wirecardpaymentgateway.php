@@ -21,9 +21,9 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use \WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
-use \WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
-use \WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
+use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
+use WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
+use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
 
 /**
  * Class WirecardPaymentGateway
