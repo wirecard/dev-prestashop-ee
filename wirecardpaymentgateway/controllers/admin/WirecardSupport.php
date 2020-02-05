@@ -8,7 +8,7 @@
  */
 
 /**
- * @property WirecardTransactionsController module
+ * @property WirecardPaymentGateway module
  */
 class WirecardSupportController extends ModuleAdminController
 {
@@ -120,9 +120,7 @@ class WirecardSupportController extends ModuleAdminController
 
         $message = strip_tags(Tools::getValue('message'));
 
-        $config = $this->module->getConfigFieldsValues();
-        unset($config['WCS_BASICDATA_SECRET']);
-        unset($config['WCS_BASICDATA_BACKENDPW']);
+        $config = $this->module->getNonConfidentialConfigFieldsValues();
 
         $tmpl_vars = array(
             'message' => $message,
