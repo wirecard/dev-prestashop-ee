@@ -18,7 +18,9 @@ Feature: PayPalAuthorizationHappyPath
     Given I check "I agree to the terms of service"
     And I click "Order with an obligation to pay"
     When I am redirected to "Pay Pal Review" page
-    And I click "Pay Now"
+    And I click "Accept Cookies"
+    Then I click "Continue"
+    And I click pay now button
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
     And I see "paypal" "authorization" in transaction table

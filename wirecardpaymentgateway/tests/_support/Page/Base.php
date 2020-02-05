@@ -114,4 +114,14 @@ class Base
     {
         ;
     }
+
+    /**
+     * Method acceptCookies
+     *
+     * @since   4.0.1
+     */
+    public function acceptCookies()
+    {
+        ;
+    }
 }

@@ -340,4 +340,19 @@ class AcceptanceTester extends ActorExtendedWithWrappers
         $this->currentPage->performPaypalPayment();
     }
 
+    /**
+     * @When I accept cookies
+     */
+    public function iAcceptCookies()
+    {
+        $this->currentPage->acceptCookies();
+    }
+
+    /**
+     * @When I click pay now button
+     */
+    public function iClickPayNowButton()
+    {
+        $this->currentPage->payNow();
+    }
 }
