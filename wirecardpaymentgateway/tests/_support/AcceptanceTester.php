@@ -355,4 +355,15 @@ class AcceptanceTester extends ActorExtendedWithWrappers
     {
         $this->currentPage->payNow();
     }
+
+    /**
+     * Method getPageSpecific
+     *
+     * @return string
+     */
+    private function getPageSpecific()
+    {
+        //Returns pageSpecific property of the page
+        return $this->currentPage->getPageSpecific();
+    }
 }

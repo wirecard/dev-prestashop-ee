@@ -30,6 +30,9 @@ class Base
      */
     protected $tester;
 
+    //page specific text that can be found in the URL
+    public $pageSpecific = '';
+
     /**
      * @var AcceptanceTester
      * @since 1.3.4
@@ -123,5 +126,15 @@ class Base
     public function acceptCookies()
     {
         ;
+    }
+
+    /**
+     * Method getPageSpecific
+     *
+     * @return string
+     */
+    public function getPageSpecific()
+    {
+        return $this->pageSpecific;
     }
 }
