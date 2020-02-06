@@ -10,6 +10,7 @@
 namespace Page;
 
 use Facebook\WebDriver\Exception\TimeOutException;
+use Facebook\WebDriver\Exception\NoSuchElementException;
 
 class PayPalReview extends Base
 {
