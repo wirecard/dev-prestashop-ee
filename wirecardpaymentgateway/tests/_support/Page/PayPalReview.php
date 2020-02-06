@@ -21,6 +21,9 @@ class PayPalReview extends Base
      */
     public $URL = 'checkout';
 
+    //page specific text that can be found in the URL
+    public $pageSpecific = 'checkout';
+
     /**
      * @var array
      * @since 2.2.1
