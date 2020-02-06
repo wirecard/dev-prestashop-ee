@@ -20,9 +20,8 @@ Feature: PayPalPurchaseHappyPath
     And I am redirected to "Pay Pal Log In" page
     And I login to Paypal
     When I am redirected to "Pay Pal Review" page
-    And I click "Accept Cookies"
-    And I click "Continue"
-    And I click "Pay Now"
+    And I accept cookies
+    And I click pay now button
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
     And I see "paypal" "debit" in transaction table
