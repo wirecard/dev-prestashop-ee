@@ -20,7 +20,7 @@ Feature: PayPalPurchaseHappyPath
     And I am redirected to "Pay Pal Log In" page
     And I login to Paypal
     When I am redirected to "Pay Pal Review" page
-    And I click "Accept Cookies"
+    And I accept cookies
     Then I click "Continue"
     And I click pay now button
     Then I am redirected to "Order Received" page
