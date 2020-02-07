@@ -1,0 +1,37 @@
+{
+  "package": {
+    "type": "zip",
+    "execution-path": "/github/workspace",
+    "file-blacklist": [
+      ".env",
+      ".gitignore",
+      ".rubocop.yml",
+      ".ruby-version",
+      ".travis.yml",
+      "CHANGELOG.md",
+      "composer.json",
+      "composer.lock",
+      "docker-compose.yml",
+      "Dockerfile",
+      "Gemfile",
+      "Gemfile.lock",
+      "phpcs.xml",
+      "phpunit.xml",
+      "Rakefile",
+      "README.md",
+      "SHOPVERSIONS",
+      "wirecardpaymentgateway/codeception.yml"
+    ],
+    "folder-blacklist": [
+      ".bin",
+      ".bundle",
+      ".git",
+      ".github",
+      "Test",
+      "wirecardpaymentgateway/tests"
+    ]
+  },
+  "composer": {
+    "execution-path": "/github/workspace"
+  }
+}
