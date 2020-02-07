@@ -1,4 +1,3 @@
-sudo: false
 dist: trusty
 language: php
 
@@ -13,7 +12,7 @@ env:
     - MAJOR_RELEASE=major
     - PRESTASHOP_COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/.bin/new-shop-releases.txt
 
-matrix:
+jobs:
   allow_failures:
   - stage: phraseapp-check-if-in-sync
   - stage: acceptance-test
