@@ -434,7 +434,7 @@ function onFormError(error)
     });
 
     cardFailureRequest
-        .done(()=>{
+        .done(()=> {
             location.reload();
         })
         .fail(onError);
