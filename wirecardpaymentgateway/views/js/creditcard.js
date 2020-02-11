@@ -420,7 +420,22 @@ function onError(error)
  */
 function onFormError(error)
 {
-    console.error("Form error:", error);
+    let errorList = [];
+    error.errors.forEach(function(item){
+        errorList.push(item.error.description);
+    });
 
-    initializeForm();
+    let cardFailureRequest =  jQuery.ajax({
+        url: ccControllerUrl,
+        data: {
+            action: "creditCardFailure",
+            "errors": errorList
+        }
+    });
+
+    cardFailureRequest
+        .done(()=>{
+            location.reload();
+        })
+        .fail(onError);
 }

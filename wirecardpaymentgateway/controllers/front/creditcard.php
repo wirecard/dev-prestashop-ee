@@ -114,4 +114,19 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
 
         $response->send();
     }
+
+	/**
+	 * Add proper error message on credit card failed payment
+	 *
+	 * @since 2.7.0
+	 */
+	public function displayAjaxCreditCardFailure()
+	{
+		session_start();
+		$errorList = Tools::getValue('errors');
+		$notification = json_encode([
+			'error' => $errorList
+		]);
+		$_SESSION['notifications'] = $notification;
+	}
 }
