@@ -434,8 +434,10 @@ function onFormError(error)
     });
 
     cardFailureRequest
-        .done(()=> {
-            location.reload();
+        .done(($response)=> {
+            document.open();
+            document.write($response);
+            document.close();
         })
         .fail(onError);
 }

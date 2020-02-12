@@ -9,6 +9,7 @@
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\TemplateHelper;
 use WirecardEE\Prestashop\Models\CreditCardVault;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
@@ -26,13 +27,16 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
      */
     private $credit_card_vault_model;
 
-    public function initContent()
-    {
-        $this->ajax = true;
-        $this->credit_card_vault_model = new CreditCardVault($this->context->customer->id);
+	/** @var ContextService */
+	private $context_service;
 
-        parent::initContent();
-    }
+	public function initContent()
+	{
+		$this->ajax = true;
+		$this->credit_card_vault_model = new CreditCardVault($this->context->customer->id);
+		$this->context_service = new ContextService(\Context::getContext());
+		parent::initContent();
+	}
 
     /**
      * list user credit cards from the vault
@@ -115,18 +119,16 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $response->send();
     }
 
-    /**
-     * Add proper error message on credit card failed payment
-     *
-     * @since 2.7.0
-     */
-    public function displayAjaxCreditCardFailure()
-    {
-        session_start();
-        $errorList = Tools::getValue('errors');
-        $notification = json_encode([
-        	'error' => $errorList
-        ]);
-        $_SESSION['notifications'] = $notification;
-    }
+	/**
+	 * Add proper error message on credit card failed payment
+	 *
+	 * @since 2.7.0
+	 */
+	public function displayAjaxCreditCardFailure()
+	{
+		$errorList = Tools::getValue('errors');
+		$returnHtmlDOM = $this->context_service->redirectWithError($errorList, 'order');
+		$response = new Response($returnHtmlDOM,201);
+		$response->send();
+	}
 }
