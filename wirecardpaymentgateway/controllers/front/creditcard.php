@@ -31,12 +31,12 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     private $context_service;
 
     public function initContent()
-	{
+    {
         $this->ajax = true;
         $this->credit_card_vault_model = new CreditCardVault($this->context->customer->id);
         $this->context_service = new ContextService(\Context::getContext());
         parent::initContent();
-	}
+    }
 
     /**
      * list user credit cards from the vault
