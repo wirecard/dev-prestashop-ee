@@ -434,7 +434,7 @@ function onFormError(error)
     });
 
     cardFailureRequest
-        .done(($response)=> {
+        .done(($response) => {
             document.open();
             document.write($response);
             document.close();

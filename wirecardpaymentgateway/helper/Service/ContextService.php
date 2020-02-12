@@ -57,7 +57,9 @@ class ContextService
     public function redirectWithError($errors, $controller_name)
     {
         $this->context->controller->errors = $errors;
-        return $this->context->controller->redirectWithNotifications($this->context->link->getPageLink($controller_name));
+        return $this->context->controller->redirectWithNotifications(
+        	$this->context->link->getPageLink($controller_name)
+        );
     }
 
     /**
