@@ -61,7 +61,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     }
 
      /**
-     * Check the error notification field to trigger an exception
+     * Check the notification field for an exception trigger
      *
      * @param array $errorNotification
      *
