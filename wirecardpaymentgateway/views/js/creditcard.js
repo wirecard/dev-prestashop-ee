@@ -423,7 +423,7 @@ function onSeamlessFormError(error)
 {
     let $form = jQuery(Constants.PAYMENT_FORM_ID);
     let $errorList = [];
-    error.errors.forEach(function(item){
+    error.errors.forEach((item) => {
         $errorList.push(item.error.description);
     });
     let $input = jQuery("<input>").attr({
