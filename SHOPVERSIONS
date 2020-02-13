@@ -1,5 +1,14 @@
 [
   {
+    "release": "2.6.1",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.6.1",
+    "compatibility": "1.7.2.4",
+    "changelog": [
+        "Update support email form settings, security improvements"
+    ]
+  },
+  {
     "release": "2.6.0",
     "shopsystem": "PrestaShop",
     "tested": "1.7.6.1",
