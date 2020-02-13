@@ -69,11 +69,11 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      * @throws Exception
      * @since 2.7.0
      */
-     private function determineErrorException($errorNotification)
+    private function determineErrorException($errorNotification)
     {
-        if($errorNotification){
+        if($errorNotification) {
             throw new Exception($errorNotification);
-    }
+        }
         return true;
     }
 

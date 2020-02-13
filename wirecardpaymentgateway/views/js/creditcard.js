@@ -26,7 +26,8 @@ var Constants = {
     STORED_CARD_BUTTON_ID: "#stored-card",
     SAVE_CARD_CHECKMARK_ID: "#wirecard-store-card",
     CARD_LIST_ID: "#wd-card-list",
-    CARD_SPINNER_ID: "#card-spinner"
+    CARD_SPINNER_ID: "#card-spinner",
+    NOTIFICATION_ID: "error-notification"
 };
 
 var SpinnerState = {
@@ -428,7 +429,7 @@ function onSeamlessFormError(error)
     let $input = jQuery("<input>").attr({
         type: "hidden",
         value: $errorList,
-        name: 'error-notification',
+        name: Constants.NOTIFICATION_ID,
     });
     $form.append($input);
 
