@@ -36,6 +36,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     public function postProcess()
     {
         $paymentType = \Tools::getValue('payment_type');
+        $errorNotification = \Tools::getValue('error-notification');
+
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
         $shopConfigService = new ShopConfigurationService($paymentType);
@@ -45,6 +47,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $this->transactionBuilder = new TransactionBuilder($paymentType);
 
         try {
+            $this->determineErrorException($errorNotification);
             // Create order and get orderId
             $orderId = $this->determineFinalOrderId();
             $transaction = $this->transactionBuilder->buildTransaction();
@@ -55,6 +58,23 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
             $this->errors[] = $exception->getMessage();
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
+    }
+
+     /**
+     * Check the error notification field to trigger an exception
+     *
+     * @param array $errorNotification
+     *
+     * @return boolean
+     * @throws Exception
+     * @since 2.7.0
+     */
+     private function determineErrorException($errorNotification)
+    {
+        if($errorNotification){
+            throw new Exception($errorNotification);
+    }
+        return true;
     }
 
     /**

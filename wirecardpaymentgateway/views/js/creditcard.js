@@ -134,7 +134,7 @@ function onPaymentFormSubmit(event)
     WPP.seamlessSubmit({
         wrappingDivId: Constants.CONTAINER_ID,
         onSuccess: onSeamlessFormSubmit,
-        onError: onFormError
+        onError: onSeamlessFormError
     });
 }
 
@@ -165,7 +165,7 @@ function onFormDataReceived(formData)
         requestData: formData,
         wrappingDivId: Constants.CONTAINER_ID,
         onSuccess: onFormRendered,
-        onError: onFormError
+        onError: onSeamlessFormError
     });
 }
 
@@ -232,7 +232,7 @@ function getFormData(tokenId = null)
 
     formDataRequest
         .done(onFormDataReceived)
-        .fail(onFormError);
+        .fail(onSeamlessFormError);
 }
 
 /**
@@ -418,26 +418,19 @@ function onError(error)
  * @param error
  * @since 2.4.0
  */
-function onFormError(error)
+function onSeamlessFormError(error)
 {
-    let errorList = [];
+    let $form = jQuery(Constants.PAYMENT_FORM_ID);
+    let $errorList = [];
     error.errors.forEach(function(item){
-        errorList.push(item.error.description);
+        $errorList.push(item.error.description);
     });
-
-    let cardFailureRequest =  jQuery.ajax({
-        url: ccControllerUrl,
-        data: {
-            action: "creditCardFailure",
-            "errors": errorList
-        }
+    let $input = jQuery("<input>").attr({
+        type: "hidden",
+        value: $errorList,
+        name: 'error-notification',
     });
+    $form.append($input);
 
-    cardFailureRequest
-        .done(($response) => {
-            document.open();
-            document.write($response);
-            document.close();
-        })
-        .fail(onError);
+    submitFormToShop();
 }
