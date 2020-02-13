@@ -2,7 +2,7 @@
 
 ## v2.6.1
 
-* Update support email form settings, security improvements
+* Update support email form settings, security improvements 
 
 |  Overview | Prestashop version | PHP 5.6 | PHP 7.0 | PHP 7.1 |  
 |---|---|:---:|:---:|:---:|  
