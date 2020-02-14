@@ -62,15 +62,6 @@ jobs:
       - .bin/rake phraseapp:ci_check_if_in_sync
     after_script: skip
 
-  - stage: get-latest-shop-release-versions
-    if: type = cron
-    php: 7.1
-    install: skip
-    before_script: skip
-    script: bash .bin/get-latest-shop-release-versions.sh
-    after_script: skip
-    after_failure: skip
-
   - &acceptance-test
     stage: acceptance-test
     #   run this stage on pull request if head branch name contains one of these words (patch, major, minor)
