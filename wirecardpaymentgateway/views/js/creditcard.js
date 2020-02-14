@@ -21,7 +21,7 @@ var Constants = {
     CONTAINER_ID: "payment-processing-gateway-credit-card-form",
     PAYMENT_FORM_ID: "form[action*=\"creditcard\"]",
     CREDITCARD_RADIO_ID: "input[name=\"payment-option\"][data-module-name=\"wd-creditcard\"]",
-    USE_CARD_BUTTON_ID: "button[data-tokenid]",
+    USE_CARD_BUTTON_ID: "#use-new-card",
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
     SAVE_CARD_CHECKMARK_ID: "#wirecard-store-card",
@@ -200,8 +200,8 @@ function onCardDeletion()
  */
 function onCardSelected()
 {
-    var $button = jQuery(this);
-    var tokenId = $button.data("tokenid");
+    let $selectedCreditCard = jQuery("#payment-form input[name=cc-reuse]:checked").val();
+    let tokenId = $selectedCreditCard;;
 
     jQuery(Constants.MODAL_ID).modal("hide");
     setSpinnerState(SpinnerState.VISIBLE);

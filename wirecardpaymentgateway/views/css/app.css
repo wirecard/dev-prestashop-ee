@@ -58,6 +58,19 @@ At https://github.com/lukehaas/css-loaders you can find more spinners and change
     justify-content: center;
     font-size: 8px;
 }
+
+#cc-reuse-td #cc-reuse-mask {
+    display: inline-block;
+}
+
+#checkout #cc-reuse-td .custom-radio {
+    margin-right: 0.25rem;
+}
+
+#checkout #payment-form .cc-reuse-modal {
+    padding: 0.4em;
+}
+
 @-webkit-keyframes load4 {
     0%,
     100% {
