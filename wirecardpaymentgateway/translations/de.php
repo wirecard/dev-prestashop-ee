@@ -253,11 +253,10 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_4f75ff5e69e0c6f3dd
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_963781e40052d2e34f572c9f7b66db3f'] = 'Ich habe die Informationen zum SEPA-Lastschriftmandat gelesen und verstanden.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_10aec35353f9c4096a71c38654c3d402'] = 'Abbrechen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_016ee38c4b145a0841684d8b22d3db84'] = 'Bestätigen';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_list_024c0eb2f6a44bd14a71b780cc114723'] = 'Karte nutzen';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_list_3fcc1446b74b3c855555d4331bb7f53f'] = 'Karte löschen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_f0a5e748d9be590b9fc4a956617f3d10'] = 'Schließen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_de1c13a642c022356636de5f2b6ed8c6'] = 'Kreditkartenauswahl';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_10aec35353f9c4096a71c38654c3d402'] = 'Abbrechen';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_024c0eb2f6a44bd14a71b780cc114723'] = 'Karte nutzen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_4eb57eb6288bc1ae4efd419ff4a3b4ca'] = 'Gespeicherte Kreditkarte verwenden';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_dd6655a20f19076c518afd9a4e534da5'] = 'Kreditkarte ausgewählt. Um eine andere Kreditkarte zu verwenden, klicken Sie  \"Neue Kreditkarte verwenden\".';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5809325b75110f574df44ec5eec4032b'] = 'Neue Kreditkarte verwenden';
