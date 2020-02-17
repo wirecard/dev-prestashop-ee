@@ -253,11 +253,10 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_4f75ff5e69e0c6f3dd
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_963781e40052d2e34f572c9f7b66db3f'] = 'Prečítal/-a som si a súhlasím s informáciami k mandátu na inkaso SEPA.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_10aec35353f9c4096a71c38654c3d402'] = 'Zrušiť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>sepadirectdebit_016ee38c4b145a0841684d8b22d3db84'] = 'Potvrdiť';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_list_024c0eb2f6a44bd14a71b780cc114723'] = 'Use card';
-$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_list_3fcc1446b74b3c855555d4331bb7f53f'] = 'Vymazať kartu';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_f0a5e748d9be590b9fc4a956617f3d10'] = 'Zavrieť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_de1c13a642c022356636de5f2b6ed8c6'] = 'Výber kreditnej karty';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_10aec35353f9c4096a71c38654c3d402'] = 'Zrušiť';
+$_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_024c0eb2f6a44bd14a71b780cc114723'] = 'Use card';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_4eb57eb6288bc1ae4efd419ff4a3b4ca'] = 'Použiť uloženú kreditnú kartu';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_dd6655a20f19076c518afd9a4e534da5'] = 'Je zvolená kreditná karta. Ak chcete použiť inú kreditnú kartu, kliknite na \"Použiť novú kreditnú kartu\".';
 $_MODULE['<{wirecardpaymentgateway}prestashop>creditcard_5809325b75110f574df44ec5eec4032b'] = 'Použiť novú kreditnú kartu';
