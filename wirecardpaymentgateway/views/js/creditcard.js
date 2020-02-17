@@ -200,8 +200,7 @@ function onCardDeletion()
  */
 function onCardSelected()
 {
-    let $selectedCreditCard = jQuery("#payment-form input[name=cc-reuse]:checked").val();
-    let tokenId = $selectedCreditCard;
+    let tokenId = jQuery("#payment-form input[name=cc-reuse]:checked").val();
 
     jQuery(Constants.MODAL_ID).modal("hide");
     setSpinnerState(SpinnerState.VISIBLE);
