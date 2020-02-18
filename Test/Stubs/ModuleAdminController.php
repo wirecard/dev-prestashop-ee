@@ -56,4 +56,14 @@ class ModuleAdminController extends Controller
     {
         return;
     }
+
+    public function processResetFilters()
+    {
+        return;
+    }
+
+    public function processFilter()
+    {
+        return;
+    }
 }

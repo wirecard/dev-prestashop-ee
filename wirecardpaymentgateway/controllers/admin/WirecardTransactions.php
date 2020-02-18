@@ -28,6 +28,9 @@ class WirecardTransactionsController extends ModuleAdminController
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
 
+    /** @var string */
+    const BUTTON_RESET = "submitResetwirecard_payment_gateway_tx";
+
     /** @var ContextService */
     protected $context_service;
 
@@ -52,6 +55,11 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->_use_found_rows = true;
 
         $this->fields_list = (new Transaction())->getFieldList();
+
+        if (Tools::isSubmit(self::BUTTON_RESET)) {
+            $this->processResetFilters();
+        }
+        $this->processFilter();
 
         parent::__construct();
         $this->tpl_folder = 'backend/';
