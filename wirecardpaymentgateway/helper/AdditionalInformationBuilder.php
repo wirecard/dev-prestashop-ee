@@ -180,7 +180,7 @@ class AdditionalInformationBuilder
 
         if (\Tools::strlen($customerPhone)) {
             $accountHolder->setPhone($customerPhone);
-        } else if (\Tools::strlen($customerPhoneMobile)) {
+        } elseif (\Tools::strlen($customerPhoneMobile)) {
             $accountHolder->setPhone($customerPhoneMobile);
         }
 
