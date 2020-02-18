@@ -68,7 +68,11 @@ At https://github.com/lukehaas/css-loaders you can find more spinners and change
 }
 
 #checkout #payment-form .cc-reuse-modal {
-    padding: 0.4em;
+    padding: 0;
+}
+
+#checkout .cc-reuse-modal .btn-secondary {
+    font-size: 0.9em;
 }
 
 @-webkit-keyframes load4 {
