@@ -26,7 +26,8 @@ var Constants = {
     STORED_CARD_BUTTON_ID: "#stored-card",
     SAVE_CARD_CHECKMARK_ID: "#wirecard-store-card",
     CARD_LIST_ID: "#wd-card-list",
-    CARD_SPINNER_ID: "#card-spinner"
+    CARD_SPINNER_ID: "#card-spinner",
+    NOTIFICATION_ID: "error-notification"
 };
 
 var SpinnerState = {
@@ -134,7 +135,7 @@ function onPaymentFormSubmit(event)
     WPP.seamlessSubmit({
         wrappingDivId: Constants.CONTAINER_ID,
         onSuccess: onSeamlessFormSubmit,
-        onError: onFormError
+        onError: onSeamlessFormError
     });
 }
 
@@ -165,7 +166,7 @@ function onFormDataReceived(formData)
         requestData: formData,
         wrappingDivId: Constants.CONTAINER_ID,
         onSuccess: onFormRendered,
-        onError: onFormError
+        onError: onSeamlessFormError
     });
 }
 
@@ -232,7 +233,7 @@ function getFormData(tokenId = null)
 
     formDataRequest
         .done(onFormDataReceived)
-        .fail(onFormError);
+        .fail(onSeamlessFormError);
 }
 
 /**
@@ -418,9 +419,19 @@ function onError(error)
  * @param error
  * @since 2.4.0
  */
-function onFormError(error)
+function onSeamlessFormError(error)
 {
-    console.error("Form error:", error);
+    let $form = jQuery(Constants.PAYMENT_FORM_ID);
+    let $errorList = [];
+    error.errors.forEach((item) => {
+        $errorList.push(item.error.description);
+    });
+    let $input = jQuery("<input>").attr({
+        type: "hidden",
+        value: $errorList,
+        name: Constants.NOTIFICATION_ID,
+    });
+    $form.append($input);
 
-    initializeForm();
+    submitFormToShop();
 }

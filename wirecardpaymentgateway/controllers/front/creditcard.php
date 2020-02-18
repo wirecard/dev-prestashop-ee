@@ -30,7 +30,6 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     {
         $this->ajax = true;
         $this->credit_card_vault_model = new CreditCardVault($this->context->customer->id);
-
         parent::initContent();
     }
 
