@@ -2,12 +2,12 @@
 
 ## v2.7.0
 
-* Improve search functionality in transaction table  
-* Improve saved Credit Card selection view on mobile devices  
-* Improve error handling on Credit Card payment failure  
-* Fix Guaranteed Invoice phone data requirements  
-* Fix order state after a canceled authorization  
-* Fix SEPA Direct Debit mandate form confirmation  
+*  Improve search functionality in transaction table  
+*  Improve saved Credit Card selection view on mobile devices  
+*  Improve error handling on Credit Card payment failure  
+*  Fix Guaranteed Invoice phone data requirements  
+*  Fix order state after a canceled authorization  
+*  Fix SEPA Direct Debit mandate form confirmation  
 
 |  Overview             | Prestashop version            | PHP 5.6   | PHP 7.0   | PHP 7.1 |  
 |-----------------------|-------------------------------|:---------:|:---------:|:-------:|  
