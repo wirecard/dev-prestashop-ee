@@ -765,6 +765,11 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $this->equals($this->getProcessedCaptureAmountTransitive(), $this->getAmount());
     }
 
+    private function isOrderStateCancel($orderState)
+    {
+        return intval($orderState) === intval(_PS_OS_CANCELED_);
+    }
+
 
     /**
      * @param \Order $order
@@ -789,6 +794,13 @@ class Transaction extends \ObjectModel implements SettleableTransaction
             $order->save();
             $updated = true;
         }
+
+        if (!$updated && $this->isOrderStateCancel($orderState)) {
+            $order->setCurrentState(_PS_OS_CANCELED_);
+            $order->save();
+            $updated = true;
+        }
+
         $settled = false;
         if (!$updated && $this->isCaptureSettledTransitive()) {
             if ($orderState != _PS_OS_REFUND_) {
@@ -798,6 +810,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
                 $settled = true;
             }
         }
+
         if (!$updated && $this->isRefundSettledTransitive()) {
             $order->setCurrentState(_PS_OS_REFUND_);
             $order->save();

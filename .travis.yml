@@ -1,4 +1,3 @@
-sudo: false
 dist: trusty
 language: php
 
@@ -13,7 +12,7 @@ env:
     - MAJOR_RELEASE=major
     - PRESTASHOP_COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/.bin/new-shop-releases.txt
 
-matrix:
+jobs:
   allow_failures:
   - stage: phraseapp-check-if-in-sync
   - stage: acceptance-test
@@ -28,13 +27,6 @@ matrix:
       - LATEST_EXTENSION_RELEASE=1
       - ALLOW_FAIL=1
   include:
-  - php: 5.6
-    if: env(PHRASEAPP_PULL) != '1' AND type != cron AND commit_message !~ env(SHOP_SYSTEM_UPDATE_COMMIT) AND commit_message !~ env(MANUAL_UITEST_TRIGGER_COMMIT)
-  - php: 7.0
-    if: env(PHRASEAPP_PULL) != '1' AND type != cron AND commit_message !~ env(SHOP_SYSTEM_UPDATE_COMMIT) AND commit_message !~ env(MANUAL_UITEST_TRIGGER_COMMIT)
-  - php: 7.1
-    if: env(PHRASEAPP_PULL) != '1' AND type != cron AND commit_message !~ env(SHOP_SYSTEM_UPDATE_COMMIT) AND commit_message !~ env(MANUAL_UITEST_TRIGGER_COMMIT)
-
   - stage: validator-test
     if: env(VALIDATOR_TEST) = '1'
     php: 7.1
@@ -150,19 +142,6 @@ matrix:
       - cd $TMPDIR && travis_retry bundle install
       - bin/rake trigger_build
     after_script: skip
-
-before_install:
-  - travis_retry composer global require hirak/prestissimo
-install:
-  - travis_retry composer require --dev $COMPOSER_ARGS
-  - travis_retry composer install $COMPOSER_ARGS
-  - composer show
-script:
-  - composer test-coverage
-  - composer cs-check
-
-after_script:
-  - travis_retry composer upload-coverage
 
 notifications:
   email: false

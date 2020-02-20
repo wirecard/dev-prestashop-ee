@@ -169,6 +169,8 @@ class AdditionalInformationBuilder
         $address = new \Address($addressId);
         $customerFirstName = $firstName ?: $address->firstname;
         $customerLastName = $lastName ?: $address->lastname;
+        $customerPhone = trim($address->phone);
+        $customerPhoneMobile = trim($address->phone_mobile);
 
         $accountHolder = new AccountHolder();
         $accountHolder->setAddress($this->createAddressData($address, $type));
@@ -176,12 +178,16 @@ class AdditionalInformationBuilder
         $accountHolder->setFirstName($customerFirstName);
         $accountHolder->setLastName($customerLastName);
 
-        if (\Tools::strlen($address->phone)) {
-            $accountHolder->setPhone($address->phone);
+        if (\Tools::strlen($customerPhone)) {
+            $accountHolder->setPhone($customerPhone);
+        } elseif (\Tools::strlen($customerPhoneMobile)) {
+            $accountHolder->setPhone($customerPhoneMobile);
         }
 
-        if (\Tools::strlen($address->phone_mobile)) {
-            $accountHolder->setMobilePhone($address->phone_mobile);
+        if ($type === 'billing') {
+            if (\Tools::strlen($customerPhoneMobile)) {
+                $accountHolder->setMobilePhone($customerPhoneMobile);
+            }
         }
 
         if (isset($customer->birthday) &&

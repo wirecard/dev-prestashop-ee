@@ -21,12 +21,13 @@ var Constants = {
     CONTAINER_ID: "payment-processing-gateway-credit-card-form",
     PAYMENT_FORM_ID: "form[action*=\"creditcard\"]",
     CREDITCARD_RADIO_ID: "input[name=\"payment-option\"][data-module-name=\"wd-creditcard\"]",
-    USE_CARD_BUTTON_ID: "button[data-tokenid]",
+    USE_CARD_BUTTON_ID: "#use-new-card",
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
     SAVE_CARD_CHECKMARK_ID: "#wirecard-store-card",
     CARD_LIST_ID: "#wd-card-list",
-    CARD_SPINNER_ID: "#card-spinner"
+    CARD_SPINNER_ID: "#card-spinner",
+    NOTIFICATION_ID: "error-notification"
 };
 
 var SpinnerState = {
@@ -134,7 +135,7 @@ function onPaymentFormSubmit(event)
     WPP.seamlessSubmit({
         wrappingDivId: Constants.CONTAINER_ID,
         onSuccess: onSeamlessFormSubmit,
-        onError: onFormError
+        onError: onSeamlessFormError
     });
 }
 
@@ -165,7 +166,7 @@ function onFormDataReceived(formData)
         requestData: formData,
         wrappingDivId: Constants.CONTAINER_ID,
         onSuccess: onFormRendered,
-        onError: onFormError
+        onError: onSeamlessFormError
     });
 }
 
@@ -200,8 +201,7 @@ function onCardDeletion()
  */
 function onCardSelected()
 {
-    var $button = jQuery(this);
-    var tokenId = $button.data("tokenid");
+    let tokenId = jQuery("#payment-form input[name=cc-reuse]:checked").val();
 
     jQuery(Constants.MODAL_ID).modal("hide");
     setSpinnerState(SpinnerState.VISIBLE);
@@ -232,7 +232,7 @@ function getFormData(tokenId = null)
 
     formDataRequest
         .done(onFormDataReceived)
-        .fail(onFormError);
+        .fail(onSeamlessFormError);
 }
 
 /**
@@ -418,9 +418,19 @@ function onError(error)
  * @param error
  * @since 2.4.0
  */
-function onFormError(error)
+function onSeamlessFormError(error)
 {
-    console.error("Form error:", error);
+    let $form = jQuery(Constants.PAYMENT_FORM_ID);
+    let $errorList = [];
+    error.errors.forEach((item) => {
+        $errorList.push(item.error.description);
+    });
+    let $input = jQuery("<input>").attr({
+        type: "hidden",
+        value: $errorList,
+        name: Constants.NOTIFICATION_ID,
+    });
+    $form.append($input);
 
-    initializeForm();
+    submitFormToShop();
 }

@@ -10,7 +10,7 @@
 {if $ccvaultenabled == 'true'}
 <div class="modal fade" id="wirecard-ccvault-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content cc-reuse-modal">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="{lFallback s='text_close' mod='wirecardpaymentgateway'}">
                     <span aria-hidden="true">&times;</span>
@@ -20,7 +20,10 @@
             <div class="modal-body" id="wd-card-list">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{lFallback s='cancel' mod='wirecardpaymentgateway'}</button>
+                <button type="button" class="btn btn-secondary cancel-cc-select" data-dismiss="modal">{lFallback s='cancel' mod='wirecardpaymentgateway'}</button>
+                <button type="button" id="use-new-card" class="btn btn-secondary btn-success" data-dismiss="modal">
+                    {lFallback s='vault_use_card_text' mod='wirecardpaymentgateway'}
+                </button>
             </div>
         </div>
     </div>
