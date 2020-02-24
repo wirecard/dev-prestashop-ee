@@ -47,7 +47,7 @@ class PayPalLogIn extends Base
         } catch (TimeOutException $e) {
             $I->preparedClick($this->getElement('Next'));
         }
-        $I->preparedFillField($this->getElement('Password'), $data_field_values->paypal->password);
+        $I->preparedFillField($this->getElement('Password'), getenv('PAYPAL_PASSWORD'));
         $I->preparedClick($this->getElement('Log In'));
         $I->wait(10);
         if (strpos($I->grabFromCurrentUrl(), "sighin?intent=checkout") !== false) {
