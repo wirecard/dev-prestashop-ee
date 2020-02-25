@@ -144,10 +144,10 @@ function updatePrestashopEeDbConfig($db_config, $payment_method)
 {
     echo 'Configuring ' . $payment_method . " payment method in the shop system \n";
     //DB setup
-    $dbHost = getenv('PRESTASHOP_DB_SERVER');
-    $dbName = getenv('PRESTASHOP_DB_NAME');
+    $dbHost = getenv('PS_DB_SERVER');
+    $dbName = getenv('PS_DB_NAME');
     $dbUser = 'root';
-    $dbPass = getenv('PRESTASHOP_DB_PASSWORD');
+    $dbPass = getenv('PS_DB_PASSWORD');
     $dbPort = getenv('MYSQL_PORT_IN');
     // table name
     $tableName = 'ps_configuration';

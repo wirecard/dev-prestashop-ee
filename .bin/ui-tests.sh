@@ -1,4 +1,4 @@
-                            #!/bin/bash
+#!/bin/bash
 
 set -a
 source .env
@@ -39,11 +39,11 @@ UI_TEST_ENV="-e SHOP_SYSTEM=${SHOP_SYSTEM}
               -e SHOP_URL=${NGROK_URL}
               -e SHOP_VERSION=${SHOP_VERSION}
               -e EXTENSION_VERSION=${GIT_BRANCH}
-              -e DB_HOST=${DB_HOST}
+              -e DB_HOST=${PS_DB_SERVER}
               -e DB_PORT=${MYSQL_PORT_OUT}
-              -e DB_NAME=${PRESTASHOP_DB_NAME}
-              -e DB_USER=${PRESTASHOP_DB_USER}
-              -e DB_PASSWORD=${DB_PASSWORD}"
+              -e DB_NAME=${PS_DB_NAME}
+              -e DB_USER=${PS_DB_USER}
+              -e DB_PASSWORD=${PS_DB_PASSWORD}"
 
 docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-5876-configuration --no-dev
 

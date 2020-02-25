@@ -1,4 +1,4 @@
-                           #!/bin/bash
+#!/bin/bash
 set -e # Exit with nonzero exit code if anything fails
 
 for ARGUMENT in "$@"
@@ -16,13 +16,13 @@ done
 NGROK_ARCHIVE_LINK="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip"
 JQ_LINK="http://stedolan.github.io/jq/download/linux64/jq"
 
-## download and install ngrok
-#curl -s "${NGROK_ARCHIVE_LINK}" > ngrok.zip
-#unzip ngrok.zip
-#chmod +x $PWD/ngrok
-## Download json parser for determining ngrok tunnel
-#curl -sO ${JQ_LINK}
-#chmod +x "${PWD}"/jq
+# download and install ngrok
+curl -s "${NGROK_ARCHIVE_LINK}" > ngrok.zip
+unzip ngrok.zip
+chmod +x $PWD/ngrok
+# Download json parser for determining ngrok tunnel
+curl -sO ${JQ_LINK}
+chmod +x "${PWD}"/jq
 
 # Open ngrok tunnel
 "${PWD}"/ngrok authtoken "${NGROK_TOKEN}"
