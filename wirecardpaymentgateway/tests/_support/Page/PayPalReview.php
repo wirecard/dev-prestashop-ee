@@ -9,7 +9,7 @@
 
 namespace Page;
 
-use Facebook\WebDriver\Exception\TimeoutException;
+use Facebook\WebDriver\Exception\TimeOutException;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 
 class PayPalReview extends Base
@@ -43,7 +43,7 @@ class PayPalReview extends Base
         $I = $this->tester;
         try {
             $I->preparedClick($this->getElement('Pay Now'));
-        } catch (TimeoutException $e) {
+        } catch (TimeOutException $e) {
             $I->preparedClick($this->getElement('Continue'));
             $I->preparedClick($this->getElement('Pay Now'));
         }
