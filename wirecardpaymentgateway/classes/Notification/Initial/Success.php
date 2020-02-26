@@ -16,13 +16,6 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
-    public function __construct($order, $notification)
-    {
-        parent::__construct($order, $notification);
-        $this->order_service = new OrderService($this->order);
-        $this->order_manager = new OrderManager();
-    }
-
     public function process()
     {
         $this->order->getCurrentState();
