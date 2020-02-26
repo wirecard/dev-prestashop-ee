@@ -1,7 +1,10 @@
 #!/bin/bash
 set -e # Exit with nonzero exit code if anything fails
 
-bash .bin/start-ngrok.sh SHOP_VERSION="${PRESTASHOP_VERSION}"
+export NGROK_SUBDOMAIN="${RANDOM}${TIMESTAMP}-presta-${SHOP_VERSION}"
+export NGROK_URL="http://${NGROK_SUBDOMAIN}.ngrok.io"
+
+bash .bin/start-ngrok.sh SUBDOMAIN="${NGROK_SUBDOMAIN}"
 
 echo "NGROK_URL in the run script: ${NGROK_URL}"
 #start shopsystem and demoshop
