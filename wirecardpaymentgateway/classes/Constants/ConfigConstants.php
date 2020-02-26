@@ -22,8 +22,6 @@ class ConfigConstants
     /** @var string */
     const SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED =
         'WIRECARD_PAYMENT_GATEWAY_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED';
-
-
     /** @var array  */
     const SETTING_SUFFIX_WHITELIST = [
         // Default settings used in all payment methods
