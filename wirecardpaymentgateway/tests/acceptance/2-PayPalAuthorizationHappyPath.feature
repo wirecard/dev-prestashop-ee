@@ -19,6 +19,7 @@ Feature: PayPalAuthorizationHappyPath
     And I click "Order with an obligation to pay"
     When I am redirected to "Pay Pal Review" page
     And I accept cookies
+    And I click "Continue"
     And I click pay now button
     Then I am redirected to "Order Received" page
     And I see "YOUR ORDER IS CONFIRMED"
