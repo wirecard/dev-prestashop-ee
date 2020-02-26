@@ -23,6 +23,8 @@ chmod +x $PWD/ngrok
 curl -sO ${JQ_LINK}
 chmod +x "${PWD}"/jq
 
+echo "SUBDOMAIN-${SUBDOMAIN}"
+
 # Open ngrok tunnel
 "${PWD}"/ngrok authtoken "${NGROK_TOKEN}"
 "${PWD}"/ngrok http 8080 -subdomain="${SUBDOMAIN}" > /dev/null &
@@ -32,7 +34,7 @@ NGROK_URL_HTTPS=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-out
 while [ ! "${NGROK_URL_HTTPS}" ] || [ "${NGROK_URL_HTTPS}" = 'null' ];  do
     echo "Waiting for ngrok to initialize"
     NGROK_URL_HTTPS=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
-
+    echo "NGROK_URL_HTTPS=${NGROK_URL_HTTPS}"
     # replace https with http
 #    export NGROK_URL=${NGROK_URL_HTTPS//https/http}
     sleep 1
