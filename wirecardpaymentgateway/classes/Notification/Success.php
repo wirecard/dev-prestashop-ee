@@ -52,50 +52,39 @@ abstract class Success implements ProcessablePaymentNotification
         $this->order_manager = new OrderManager();
     }
 
-    /**
-     * @throws \Exception
-     * @since 2.1.0
-     */
-    public function process()
-    {
-        $dbManager = new DBTransactionManager();
-        //We do this outside of the try block so that if locking fails, we don't attempt to release it
-        $dbManager->acquireLock($this->notification->getTransactionId(), 30);
-        try {
-            if (!OrderManager::isIgnorable($this->notification)) {
-                $amount = $this->notification->getRequestedAmount();
-                Transaction::create(
-                    $this->order->id,
-                    $this->order->id_cart,
-                    $amount,
-                    $this->notification,
-                    $this->order_manager->getTransactionState($this->notification),
-                    $this->order->reference
-                );
-
-                $parentTransaction = $this->getParentTransaction();
-                $parentTransaction->markSettledAsClosed();
-                $parentTransaction->updateOrder(
-                    $this->order,
-                    $this->notification,
-                    $this->order_manager,
-                    $this->order_service
-                );
-            }
-        } catch (\Exception $e) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
-            throw $e;
-        } finally {
-            $dbManager->releaseLock($this->notification->getTransactionId());
-        }
-    }
+	/**
+	 * @throws \Exception
+	 * @since 2.1.0
+	 */
+	public function process()
+	{
+		$dbManager = new DBTransactionManager();
+		//Acquire lock out of the try-catch block to prevent release on locking fail
+		$dbManager->acquireLock($this->notification->getTransactionId(), 30);
+		try {
+			$amount = $this->notification->getRequestedAmount();
+			Transaction::create(
+				$this->order->id,
+				$this->order->id_cart,
+				$amount,
+				$this->notification,
+				$this->order_manager->getTransactionState($this->notification),
+				$this->order->reference
+			);
+		} catch (\Exception $e) {
+			error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
+			throw $e;
+		} finally {
+			$dbManager->releaseLock($this->notification->getTransactionId());
+		}
+	}
 
     /**
      * @return SettleableTransaction
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    private function getParentTransaction()
+    protected function getParentTransaction()
     {
         if ($this->notification->getTransactionType() != \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_PURCHASE) {
             $transaction = Transaction::getInitialTransactionForOrder($this->order->reference);
