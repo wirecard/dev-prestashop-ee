@@ -20,8 +20,6 @@ git clone ${REPO_ADDRESS}
 # get current date to create a folder
 export TODAY=$(date +%Y-%m-%d)
 
-
-
 export PROJECT_FOLDER="prestashop-ee-${PRESTASHOP_VERSION}"
 if [ ! -d "${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}" ]; then
 mkdir -p ${REPO_NAME}/${PROJECT_FOLDER}/${GATEWAY}
@@ -51,7 +49,7 @@ fi
 cp wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite/tests/_output/*.html ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
 cp wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite/tests/_output/*.xml ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
 if [[ $1 == 'fail' ]]; then
-    cp wirecardpaymentgateway/tests/_output/*.fail.png ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
+    cp wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite/tests/_output/*.fail.png ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
 fi
 
 cd ${REPO_NAME}

@@ -34,10 +34,6 @@ NGROK_URL_HTTPS=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-out
 while [ ! "${NGROK_URL_HTTPS}" ] || [ "${NGROK_URL_HTTPS}" = 'null' ];  do
     echo "Waiting for ngrok to initialize"
     NGROK_URL_HTTPS=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
-    echo "NGROK_URL_HTTPS=${NGROK_URL_HTTPS}"
-    # replace https with http
-#    export NGROK_URL=${NGROK_URL_HTTPS//https/http}
     sleep 1
 done
-#export NGROK_URL=${NGROK_URL_HTTPS//https/http}
-echo "NGROK_URL in the ngrok script: ${NGROK_URL}"
+

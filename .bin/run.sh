@@ -7,7 +7,6 @@ export NGROK_URL="http://${NGROK_SUBDOMAIN}.ngrok.io"
 
 bash .bin/start-ngrok.sh SUBDOMAIN="${NGROK_SUBDOMAIN}"
 
-echo "NGROK_URL in the run script: ${NGROK_URL}"
 #start shopsystem and demoshop
 bash .bin/start-shopsystem.sh NGROK_URL="${NGROK_URL}" \
                             SHOP_VERSION="${PRESTASHOP_VERSION}" \

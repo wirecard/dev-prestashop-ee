@@ -40,6 +40,21 @@ fi
 #TODO change branch to master and remove docker composer
 docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-5876-configuration
 
+echo "Checking folders"
+ls -la ${PWD}/wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite
+
+docker-compose run               -e SHOP_SYSTEM="${SHOP_SYSTEM}" \
+              -e SHOP_URL="${NGROK_URL}" \
+              -e SHOP_VERSION="${SHOP_VERSION}" \
+              -e EXTENSION_VERSION="${GIT_BRANCH}" \
+              -e DB_HOST="${PS_DB_SERVER}" \
+              -e DB_NAME="${PS_DB_NAME}" \
+              -e DB_USER="${PS_DB_USER}" \
+              -e DB_PASSWORD="${PS_DB_PASSWORD}" \
+              -e BROWSERSTACK_USER="${BROWSERSTACK_USER}" \
+              -e BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}" \
+              --entrypoint bash -c "ls -la /project" codecept
+
 docker-compose run \
               -e SHOP_SYSTEM="${SHOP_SYSTEM}" \
               -e SHOP_URL="${NGROK_URL}" \
