@@ -9,11 +9,13 @@ for ARGUMENT in "$@"; do
   VALUE=$(echo "${ARGUMENT}" | cut -f2 -d=)
 
   case "${KEY}" in
-  NGROK_URL)            NGROK_URL=${VALUE} ;;
-  GIT_BRANCH)           GIT_BRANCH=${VALUE} ;;
-  TRAVIS_PULL_REQUEST)  TRAVIS_PULL_REQUEST=${VALUE} ;;
-  SHOP_SYSTEM)          SHOP_SYSTEM=${VALUE} ;;
-  SHOP_VERSION)         SHOP_VERSION=${VALUE} ;;
+  NGROK_URL)                NGROK_URL=${VALUE} ;;
+  GIT_BRANCH)               GIT_BRANCH=${VALUE} ;;
+  TRAVIS_PULL_REQUEST)      TRAVIS_PULL_REQUEST=${VALUE} ;;
+  SHOP_SYSTEM)              SHOP_SYSTEM=${VALUE} ;;
+  SHOP_VERSION)             SHOP_VERSION=${VALUE} ;;
+  BROWSERSTACK_USER)        BROWSERSTACK_USER=${VALUE} ;;
+  BROWSERSTACK_ACCESS_KEY)  BROWSERSTACK_ACCESS_KEY=${VALUE} ;;
   *) ;;
   esac
 done
@@ -30,11 +32,13 @@ elif [[ $GIT_BRANCH =~ ${MINOR_RELEASE} ]]; then
   TEST_GROUP="${MINOR_RELEASE}"
 # run all tests in nothing else specified
 else
-#  TEST_GROUP="${MAJOR_RELEASE}"
-  TEST_GROUP="major"
+#TODO use env variable
+  TEST_GROUP="${MAJOR_RELEASE}"
+#  TEST_GROUP="major"
 fi
 
-docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-5876-configuration --no-dev
+#TODO change branch to master and remove docker composer
+docker run --rm -it --volume $(pwd):/app prooph/composer:7.2 require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-5876-configuration
 
 docker-compose run \
               -e SHOP_SYSTEM="${SHOP_SYSTEM}" \

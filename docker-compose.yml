@@ -1,8 +1,7 @@
 version: '3'
 services:
   # Reference: https://hub.docker.com/_/mysql
-  prestashop.database:
-    container_name: prestashop-database
+  db:
     image: mysql
     ports:
       - ${MYSQL_PORT_OUT}:${MYSQL_PORT_IN}
@@ -22,13 +21,12 @@ services:
   # Default admin credentials:
   # demo@prestashop.com ; prestashop_demo
   # Reference: https://hub.docker.com/r/prestashop/prestashop
-  prestashop.web:
-    container_name: "${PS_CONTAINER_NAME}"
+  web:
     build:
       context: .
     environment:
       - PS_VERSION=${PS_VERSION}
-      - DB_SERVER=${PS_DB_SERVER}
+      - DB_SERVER=db
       - DB_PASSWD=${PS_DB_PASSWORD}
       - DB_NAME=${PS_DB_NAME}
       - PS_INSTALL_AUTO=${PS_INSTALL_AUTO}
@@ -45,7 +43,7 @@ services:
     env_file:
       - .env
     depends_on:
-      - prestashop.database
+      - db
   codecept:
     image: codeception/codeception
     build:
@@ -59,6 +57,4 @@ services:
 # Setup container network, this allows for mysql to be unavailable for the www
 networks:
   prestashop-net:
-#volumes:
-#  ui_tests: wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite
 

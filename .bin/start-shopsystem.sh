@@ -18,7 +18,6 @@ do
     esac
 done
 
-
 #set +a
 
 # remove http or https from the link
@@ -34,19 +33,19 @@ fi
 # has to be done before generate-release-package.sh is executed
 replace="s/^\s*\$this->ps_versions_compliancy = array.*$/\$this->ps_versions_compliancy = array('min' => '${PS_VERSION}', 'max' => '${PS_VERSION}');/"
 sed -i -e "$replace" "./wirecardpaymentgateway/wirecardpaymentgateway.php"
-
+#TODO uncomment this
 # generate release package
 .bin/generate-release-package.sh
-docker-compose build --no-cache --build-arg PS_CONTAINER_NAME="${PS_CONTAINER_NAME}" \
-                                --build-arg PS_CONTAINER_DOMAIN="${PS_CONTAINER_DOMAIN}" \
+
+docker-compose build --no-cache --build-arg PS_CONTAINER_DOMAIN="${PS_CONTAINER_DOMAIN}" \
                                 --build-arg PS_CONTAINER_SHOP_URL="${PS_CONTAINER_SHOP_URL}" \
                                 --build-arg PS_VERSION="${PS_VERSION}" \
-                                prestashop.web
+                                web
 
-docker-compose up -d prestashop.database
+docker-compose up -d db
 sleep 15
 docker-compose ps
-docker-compose up -d prestashop.web
+docker-compose up -d web
 docker-compose ps
 
 # wait for the host to startup
@@ -57,14 +56,5 @@ while ! $(curl --output /dev/null --silent  --head --fail "http://${PS_CONTAINER
 done
 
 # install the plugin
-docker exec "${PS_CONTAINER_NAME}" /var/www/html/bin/console prestashop:module install wirecardpaymentgateway
-
-##configure enable payment method settings
-#for paymentMethod in $(jq -r 'keys | .[]' wirecardpaymentgateway/tests/_data/PaymentMethodData.json); do
-#    docker exec --env PS_DB_PASSWORD="${PS_DB_PASSWORD}" \
-#                --env PS_DB_SERVER="${PS_DB_SERVER}" \
-#                --env PS_DB_NAME="${PS_DB_NAME}" \
-#                --env GATEWAY="${GATEWAY}" \
-#                "${PS_CONTAINER_NAME}" bash -c "cd /var/www/html/_data && php configure_payment_method_db.php '$paymentMethod' pay"
-#done
+docker-compose exec web /var/www/html/bin/console prestashop:module install wirecardpaymentgateway
 

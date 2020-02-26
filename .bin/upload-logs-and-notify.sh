@@ -48,8 +48,8 @@ if [ ! -d "${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}" ]; then
 fi
 
 #copy report files
-cp wirecardpaymentgateway/tests/_output/*.html ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
-cp wirecardpaymentgateway/tests/_output/*.xml ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
+cp wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite/tests/_output/*.html ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
+cp wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite/tests/_output/*.xml ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
 if [[ $1 == 'fail' ]]; then
     cp wirecardpaymentgateway/tests/_output/*.fail.png ${REPO_NAME}/${RELATIVE_REPORTS_LOCATION}
 fi
