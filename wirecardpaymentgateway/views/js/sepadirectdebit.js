@@ -47,6 +47,8 @@ $(document).ready(function () {
 
         let checkBox = document.getElementById("sepaCheck");
         checkBox.addEventListener("change", checkChange, false);
+
+        $("#payment-confirmation button").removeAttr("disabled");
     }
 
     function placeOrder(e)
