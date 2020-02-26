@@ -16,24 +16,23 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
 	public function process()
-	{
-		try {
-			if (!OrderManager::isIgnorable($this->notification)) {
+    {
+        try {
+            if (!OrderManager::isIgnorable($this->notification)) {
+                parent::process();
 
-				parent::process();
-
-				$parentTransaction = $this->getParentTransaction();
-				$parentTransaction->markSettledAsClosed();
-				$parentTransaction->updateOrder(
-					$this->order,
-					$this->notification,
-					$this->order_manager,
-					$this->order_service
-				);
-			}
-		} catch (\Exception $e) {
-			error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
-			throw $e;
-		}
-	}
+                $parentTransaction = $this->getParentTransaction();
+                $parentTransaction->markSettledAsClosed();
+                $parentTransaction->updateOrder(
+                    $this->order,
+                    $this->notification,
+                    $this->order_manager,
+                    $this->order_service
+                );
+            }
+        } catch (\Exception $e) {
+            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
+            throw $e;
+        }
+    }
 }
