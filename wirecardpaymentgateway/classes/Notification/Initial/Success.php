@@ -32,7 +32,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
 
         $amount = $this->notification->getRequestedAmount();
         $this->order_service->updateOrderPayment(
-        	$this->notification->getTransactionId(),
+            $this->notification->getTransactionId(),
             _PS_OS_PAYMENT_ === $order_state ? $amount->getValue() : 0
         );
 
