@@ -29,13 +29,13 @@ abstract class Success implements ProcessablePaymentNotification
     protected $order;
 
     /** @var SuccessResponse */
-	protected $notification;
+    protected $notification;
 
     /** @var OrderService */
-	protected $order_service;
+    protected $order_service;
 
     /** @var OrderManager */
-	protected $order_manager;
+    protected $order_manager;
 
     /**
      * SuccessPaymentProcessing constructor.
@@ -52,32 +52,32 @@ abstract class Success implements ProcessablePaymentNotification
         $this->order_manager = new OrderManager();
     }
 
-	/**
-	 * @throws \Exception
-	 * @since 2.1.0
-	 */
-	public function process()
-	{
-		$dbManager = new DBTransactionManager();
-		//Acquire lock out of the try-catch block to prevent release on locking fail
-		$dbManager->acquireLock($this->notification->getTransactionId(), 30);
-		try {
-			$amount = $this->notification->getRequestedAmount();
-			Transaction::create(
-				$this->order->id,
-				$this->order->id_cart,
-				$amount,
-				$this->notification,
-				$this->order_manager->getTransactionState($this->notification),
-				$this->order->reference
-			);
-		} catch (\Exception $e) {
-			error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
-			throw $e;
-		} finally {
-			$dbManager->releaseLock($this->notification->getTransactionId());
-		}
-	}
+    /**
+     * @throws \Exception
+     * @since 2.1.0
+     */
+    public function process()
+    {
+        $dbManager = new DBTransactionManager();
+        //Acquire lock out of the try-catch block to prevent release on locking fail
+        $dbManager->acquireLock($this->notification->getTransactionId(), 30);
+        try {
+            $amount = $this->notification->getRequestedAmount();
+            Transaction::create(
+                $this->order->id,
+                $this->order->id_cart,
+                $amount,
+                $this->notification,
+                $this->order_manager->getTransactionState($this->notification),
+                $this->order->reference
+            );
+        } catch (\Exception $e) {
+            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
+            throw $e;
+        } finally {
+            $dbManager->releaseLock($this->notification->getTransactionId());
+        }
+    }
 
     /**
      * @return SettleableTransaction

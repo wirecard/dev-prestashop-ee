@@ -15,7 +15,7 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
-	public function process()
+    public function process()
     {
         try {
             if (!OrderManager::isIgnorable($this->notification)) {
