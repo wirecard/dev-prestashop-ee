@@ -26,16 +26,16 @@ use WirecardEE\Prestashop\Models\Transaction;
 abstract class Success implements ProcessablePaymentNotification
 {
     /** @var \Order */
-    private $order;
+    protected $order;
 
     /** @var SuccessResponse */
-    private $notification;
+	protected $notification;
 
     /** @var OrderService */
-    private $order_service;
+	protected $order_service;
 
     /** @var OrderManager */
-    private $order_manager;
+	protected $order_manager;
 
     /**
      * SuccessPaymentProcessing constructor.
