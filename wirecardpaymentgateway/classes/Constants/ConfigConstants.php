@@ -23,15 +23,6 @@ class ConfigConstants
     const SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED =
         'WIRECARD_PAYMENT_GATEWAY_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED';
 
-    /** @var array  */
-    const SETTING_SUFFIX_BLACKLIST = [
-        '_HTTP_USER',
-        '_HTTP_PASS',
-        '_SECRET',
-        '_THREE_D_SECRET',
-        '_BASICDATA_SECRET',
-        '_BASICDATA_BACKENDPW'
-    ];
 
     /** @var array  */
     const SETTING_SUFFIX_WHITELIST = [
