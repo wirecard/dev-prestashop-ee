@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e # Exit with nonzero exit code if anything fails
 
-bash .bin/start-ngrok.sh  SHOP_VERSION="${PRESTASHOP_VERSION}" \
-                          GATEWAY="${GATEWAY}"
+bash .bin/start-ngrok.sh  SHOP_VERSION="${PRESTASHOP_VERSION}"
 
 #start shopsystem and demoshop
 bash .bin/start-shopsystem.sh NGROK_URL="${NGROK_URL}" \
@@ -12,6 +11,7 @@ bash .bin/start-shopsystem.sh NGROK_URL="${NGROK_URL}" \
 
 
 bash .bin/ui-tests.sh NGROK_URL="${NGROK_URL}" \
+                      SHOP_SYSTEM="prestashop" \
                       SHOP_VERSION="${PRESTASHOP_VERSION}" \
                       GIT_BRANCH="${TRAVIS_BRANCH}" \
                       TRAVIS_PULL_REQUEST="${TRAVIS_PULL_REQUEST}"

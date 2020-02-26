@@ -48,6 +48,9 @@ services:
       - prestashop.database
   codecept:
     image: codeception/codeception
+    build:
+      context: .
+      dockerfile: Dockerfile_codeception
     volumes:
       - "${PWD}/wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite:/project"
     networks:

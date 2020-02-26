@@ -8,7 +8,6 @@ do
 
     case "${KEY}" in
             SHOP_VERSION)              SHOP_VERSION=${VALUE} ;;
-            GATEWAY)                   GATEWAY=${VALUE} ;;
             *)
     esac
 done
@@ -27,7 +26,7 @@ chmod +x "${PWD}"/jq
 # Open ngrok tunnel
 "${PWD}"/ngrok authtoken "${NGROK_TOKEN}"
 TIMESTAMP=$(date +%s)
-"${PWD}"/ngrok http 8080 -subdomain="${RANDOM}${TIMESTAMP}${GATEWAY}-presta-${SHOP_VERSION}" > /dev/null &
+"${PWD}"/ngrok http 8080 -subdomain="${RANDOM}${TIMESTAMP}-presta-${SHOP_VERSION}" > /dev/null &
 NGROK_URL_HTTPS=$(curl -s localhost:4040/api/tunnels/command_line | jq --raw-output .public_url)
 
 # allow ngrok to initialize

@@ -28,7 +28,7 @@ export PS_CONTAINER_SHOP_URL=${PS_CONTAINER_DOMAIN}
 
 if [[ ${IS_LATEST_EXTENSION_RELEASE}  == "1" ]]; then
     # switch to desired version if we are testing specific release
-    git checkout tags/${LATEST_RELEASED_SHOP_EXTENSION_VERSION}
+    git checkout tags/"${LATEST_RELEASED_SHOP_EXTENSION_VERSION}"
 fi
 # used to change the compatibility version to match the prestashop version
 # has to be done before generate-release-package.sh is executed
