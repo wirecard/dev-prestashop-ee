@@ -12,7 +12,6 @@ namespace WirecardEE\Prestashop\Classes\Notification\Initial;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
 use \WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
