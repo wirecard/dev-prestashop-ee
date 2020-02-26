@@ -19,7 +19,7 @@ do
 done
 
 #set +a
-
+echo "NGROK_URL in the shopsystem script: ${NGROK_URL}"
 # remove http or https from the link
 export PS_CONTAINER_DOMAIN=${NGROK_URL#*//}
 export PS_CONTAINER_SHOP_URL=${PS_CONTAINER_DOMAIN}

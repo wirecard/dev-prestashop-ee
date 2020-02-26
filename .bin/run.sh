@@ -3,6 +3,7 @@ set -e # Exit with nonzero exit code if anything fails
 
 bash .bin/start-ngrok.sh SHOP_VERSION="${PRESTASHOP_VERSION}"
 
+echo "NGROK_URL in the run script: ${NGROK_URL}"
 #start shopsystem and demoshop
 bash .bin/start-shopsystem.sh NGROK_URL="${NGROK_URL}" \
                             SHOP_VERSION="${PRESTASHOP_VERSION}" \

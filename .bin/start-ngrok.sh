@@ -38,3 +38,5 @@ while [ ! "${NGROK_URL_HTTPS}" ] || [ "${NGROK_URL_HTTPS}" = 'null' ];  do
     export NGROK_URL=${NGROK_URL_HTTPS//https/http}
     sleep 1
 done
+
+echo "NGROK_URL in the ngrok script: ${NGROK_URL}"
