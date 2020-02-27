@@ -27,17 +27,6 @@ jobs:
       - LATEST_EXTENSION_RELEASE=1
       - ALLOW_FAIL=1
   include:
-  - stage: validator-test
-    if: env(VALIDATOR_TEST) = '1'
-    php: 7.1
-    before_script:
-      - pip install --user bs4
-      - bash .bin/generate-release-package.sh
-      - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
-    script:
-      - bash .bin/run-validator-test.sh
-    after_script: skip
-
   - stage: phraseapp-pull
     if: env(PHRASEAPP_PULL) = '1'
     language: ruby
