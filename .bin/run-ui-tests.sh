@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e # Exit with nonzero exit code if anything fails
 
 set -a
 source .env
@@ -9,13 +10,13 @@ for ARGUMENT in "$@"; do
   VALUE=$(echo "${ARGUMENT}" | cut -f2 -d=)
 
   case "${KEY}" in
-  NGROK_URL)                NGROK_URL=${VALUE} ;;
-  GIT_BRANCH)               GIT_BRANCH=${VALUE} ;;
-  TRAVIS_PULL_REQUEST)      TRAVIS_PULL_REQUEST=${VALUE} ;;
-  SHOP_SYSTEM)              SHOP_SYSTEM=${VALUE} ;;
-  SHOP_VERSION)             SHOP_VERSION=${VALUE} ;;
-  BROWSERSTACK_USER)        BROWSERSTACK_USER=${VALUE} ;;
-  BROWSERSTACK_ACCESS_KEY)  BROWSERSTACK_ACCESS_KEY=${VALUE} ;;
+  NGROK_URL) NGROK_URL=${VALUE} ;;
+  GIT_BRANCH) GIT_BRANCH=${VALUE} ;;
+  TRAVIS_PULL_REQUEST) TRAVIS_PULL_REQUEST=${VALUE} ;;
+  SHOP_SYSTEM) SHOP_SYSTEM=${VALUE} ;;
+  SHOP_VERSION) SHOP_VERSION=${VALUE} ;;
+  BROWSERSTACK_USER) BROWSERSTACK_USER=${VALUE} ;;
+  BROWSERSTACK_ACCESS_KEY) BROWSERSTACK_ACCESS_KEY=${VALUE} ;;
   *) ;;
   esac
 done
@@ -34,19 +35,20 @@ elif [[ $GIT_BRANCH =~ ${MINOR_RELEASE} ]]; then
 else
   TEST_GROUP="${MAJOR_RELEASE}"
 fi
+#TODO - use master branch after TPWDCEE-5876-configuration is merged to shopsystems-ui-testsuite project
 composer require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-5876-configuration
 
 docker-compose run \
-              -e SHOP_SYSTEM="${SHOP_SYSTEM}" \
-              -e SHOP_URL="${NGROK_URL}" \
-              -e SHOP_VERSION="${SHOP_VERSION}" \
-              -e EXTENSION_VERSION="${GIT_BRANCH}" \
-              -e DB_HOST="${PS_DB_SERVER}" \
-              -e DB_NAME="${PS_DB_NAME}" \
-              -e DB_USER="${PS_DB_USER}" \
-              -e DB_PASSWORD="${PS_DB_PASSWORD}" \
-              -e BROWSERSTACK_USER="${BROWSERSTACK_USER}" \
-              -e BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}" \
-              codecept run acceptance \
-              -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}"  \
-              -vvv --env ci --html --xml
+  -e SHOP_SYSTEM="${SHOP_SYSTEM}" \
+  -e SHOP_URL="${NGROK_URL}" \
+  -e SHOP_VERSION="${SHOP_VERSION}" \
+  -e EXTENSION_VERSION="${GIT_BRANCH}" \
+  -e DB_HOST="${PS_DB_SERVER}" \
+  -e DB_NAME="${PS_DB_NAME}" \
+  -e DB_USER="${PS_DB_USER}" \
+  -e DB_PASSWORD="${PS_DB_PASSWORD}" \
+  -e BROWSERSTACK_USER="${BROWSERSTACK_USER}" \
+  -e BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}" \
+  codecept run acceptance \
+  -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}" \
+  -vvv --env ci --html --xml
