@@ -14,7 +14,7 @@ bash .bin/start-shopsystem.sh NGROK_URL="${NGROK_URL}" \
                             LATEST_RELEASED_SHOP_EXTENSION_VERSION="${LATEST_RELEASED_SHOP_EXTENSION_VERSION}"
 
 
-bash .bin/ui-tests.sh NGROK_URL="${NGROK_URL}" \
+bash .bin/run-ui-tests.sh NGROK_URL="${NGROK_URL}" \
                       SHOP_SYSTEM="${SHOP_SYSTEM}" \
                       SHOP_VERSION="${PRESTASHOP_VERSION}" \
                       GIT_BRANCH="${TRAVIS_BRANCH}" \
