@@ -22,4 +22,3 @@ ENV PS_CONTAINER_SHOP_URL=$PS_CONTAINER_SHOP_URL
 
 COPY --chown=www-data:www-data ./wirecardpaymentgateway.zip /tmp
 RUN unzip -q /tmp/wirecardpaymentgateway.zip -d /var/www/html/modules/
-ADD wirecardpaymentgateway/tests/_data/ /var/www/html/_data
