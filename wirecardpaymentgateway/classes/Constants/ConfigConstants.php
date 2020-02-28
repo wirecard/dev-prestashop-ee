@@ -22,17 +22,6 @@ class ConfigConstants
     /** @var string */
     const SETTING_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED =
         'WIRECARD_PAYMENT_GATEWAY_GENERAL_FORCE_ORDER_STATE_CHANGE_ENABLED';
-
-    /** @var array  */
-    const SETTING_SUFFIX_BLACKLIST = [
-        '_HTTP_USER',
-        '_HTTP_PASS',
-        '_SECRET',
-        '_THREE_D_SECRET',
-        '_BASICDATA_SECRET',
-        '_BASICDATA_BACKENDPW'
-    ];
-
     /** @var array  */
     const SETTING_SUFFIX_WHITELIST = [
         // Default settings used in all payment methods
@@ -55,8 +44,6 @@ class ConfigConstants
 
         '_PAYPAL_SHOPPING_BASKET',
 
-        '_SEPADIRECTDEBIT_CREDITOR_ID',
-        '_SEPADIRECTDEBIT_CREDITOR_NAME',
         '_SEPADIRECTDEBIT_CREDITOR_CITY',
         '_SEPADIRECTDEBIT_SEPADIRECTDEBIT_TEXTEXTRA',
         '_SEPADIRECTDEBIT_ENABLE_BIC',
