@@ -51,4 +51,4 @@ docker-compose run \
   -e BROWSERSTACK_ACCESS_KEY="${BROWSERSTACK_ACCESS_KEY}" \
   codecept run acceptance \
   -g "${TEST_GROUP}" -g "${SHOP_SYSTEM}" \
-  -vvv --env ci --html --xml
+  --env ci --html --xml
