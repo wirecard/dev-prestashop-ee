@@ -35,8 +35,8 @@ elif [[ $GIT_BRANCH =~ ${MINOR_RELEASE} ]]; then
 else
   TEST_GROUP="${MAJOR_RELEASE}"
 fi
-#TODO - use master branch after TPWDCEE-5876-configuration is merged to shopsystems-ui-testsuite project
-composer require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-5876-configuration
+# run tests
+composer require wirecard/shopsystem-ui-testsuite
 
 docker-compose run \
   -e SHOP_SYSTEM="${SHOP_SYSTEM}" \
