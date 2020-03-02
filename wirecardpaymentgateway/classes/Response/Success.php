@@ -27,74 +27,81 @@ use WirecardEE\Prestashop\Models\Transaction;
  */
 abstract class Success implements ProcessablePaymentResponse
 {
-    use TranslationHelper;
+	use TranslationHelper;
 
-    /** @var string */
-    const TRANSLATION_FILE = 'success';
+	/** @var string */
+	const TRANSLATION_FILE = 'success';
 
-    /** @var \Order  */
-    protected $order;
+	/** @var \Order  */
+	protected $order;
 
-    /** @var SuccessResponse  */
-    protected $response;
+	/** @var SuccessResponse  */
+	protected $response;
 
-    /** @var OrderService */
-    protected $orderService;
-  
-    /**
-     * SuccessResponseProcessing constructor.
-     *
-     * @param \Order $order
-     * @param SuccessResponse $response
-     * @since 2.1.0
-     */
-    public function __construct($order, $response)
-    {
-        $this->order = $order;
-        $this->response = $response;
+	/** @var OrderService */
+	protected $orderService;
 
-        $this->orderService = new OrderService($order);
-    }
+	/**
+	 * SuccessResponseProcessing constructor.
+	 *
+	 * @param \Order $order
+	 * @param SuccessResponse $response
+	 * @since 2.1.0
+	 */
+	public function __construct($order, $response)
+	{
+		$this->order = $order;
+		$this->response = $response;
 
-    /**
-     * @since 2.1.0
-     */
-    public function process()
-    {
-        $dbManager = new DBTransactionManager();
-        //We do this outside of the try block so that if locking fails, we don't attempt to release it
-        $dbManager->acquireLock($this->response->getTransactionId(), 30);
-        try {
-            if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-                $this->order->save();
+		$this->orderService = new OrderService($order);
+	}
 
-                $currency = 'EUR';
-                if (key_exists('currency', $this->response->getData())) {
-                    $currency = $this->response->getData()['currency'];
-                }
-                $amount = new Amount(0, $currency);
-                if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
-                    $amount = $this->response->getRequestedAmount();
-                }
-                $this->orderService->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
-            }
+	/**
+	 * @since 2.1.0
+	 */
+	public function process()
+	{
+		$dbManager = new DBTransactionManager();
+		//We do this outside of the try block so that if locking fails, we don't attempt to release it
+		$dbManager->acquireLock($this->response->getTransactionId(), 30);
 
-            $amount = $this->response->getRequestedAmount();
+		$order = new \Order((int) $this->order->id);
+		$lang = \Configuration::get('PS_LANG_DEFAULT');
+		$order_history = $order->getHistory($lang);
+		$order_status_latest = $order_history[0];
+		$order_status = $order_status_latest['id_order_state'];
 
-            $orderManager = new OrderManager();
-            $transactionState = $orderManager->getTransactionState($this->response);
+		try {
+			if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+				$this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+				$this->order->save();
 
-            Transaction::create(
-                $this->order->id,
-                $this->order->id_cart,
-                $amount,
-                $this->response,
-                $transactionState,
-                $this->order->reference
-            );
-        } finally {
-            $dbManager->releaseLock($this->response->getTransactionId());
-        }
-    }
+				$currency = 'EUR';
+				if (key_exists('currency', $this->response->getData())) {
+					$currency = $this->response->getData()['currency'];
+				}
+				$amount = new Amount(0, $currency);
+				if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
+					$amount = $this->response->getRequestedAmount();
+				}
+				$this->orderService->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
+			}
+
+			$amount = $this->response->getRequestedAmount();
+
+			$orderManager = new OrderManager();
+			$transactionState = $orderManager->getTransactionState($this->response);
+
+			Transaction::create(
+				$this->order->id,
+				$this->order->id_cart,
+				$amount,
+				$this->response,
+				$transactionState,
+				$this->order->reference
+			);
+		} finally {
+			$dbManager->releaseLock($this->response->getTransactionId());
+		}
+	}
 }
