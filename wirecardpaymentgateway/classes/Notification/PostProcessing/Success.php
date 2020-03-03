@@ -17,7 +17,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
     public function process()
     {
-        if (OrderManager::isIgnorable($this->notification)){
+        if (OrderManager::isIgnorable($this->notification)) {
             return;
         }
         parent::process();
@@ -30,7 +30,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
                 $this->order_manager,
                 $this->order_service
             );
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
             throw $e;
         }
