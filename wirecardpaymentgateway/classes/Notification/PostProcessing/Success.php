@@ -26,7 +26,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
      */
     public function __construct()
     {
-    	$this->logger = new WirecardLogger();
+        $this->logger = new WirecardLogger();
     }
 
     public function process()

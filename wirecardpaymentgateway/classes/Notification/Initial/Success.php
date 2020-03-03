@@ -18,7 +18,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
     public function process()
     {
         if (OrderManager::isIgnorable($this->notification)) {
-        	return;
+            return;
         }
 
         $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
@@ -36,7 +36,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
 
     /**
      * @param string $order_state
-	 *
+     *
      * @return float|int
      * @since 2.7.0
      */
