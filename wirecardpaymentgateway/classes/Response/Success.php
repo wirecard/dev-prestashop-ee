@@ -46,15 +46,15 @@ abstract class Success implements ProcessablePaymentResponse
      *
      * @param \Order $order
      * @param SuccessResponse $response
-	 * @since 2.1.0
-	 */
+     * @since 2.1.0
+     */
     public function __construct($order, $response)
-	{
+    {
         $this->order = $order;
         $this->response = $response;
 
         $this->orderService = new OrderService($order);
-	}
+    }
 
     /**
      * @since 2.1.0
