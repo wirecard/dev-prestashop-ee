@@ -25,10 +25,9 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
         $this->order->setCurrentState($order_state);
         $this->order->save();
 
-        $amount = $this->getRestAmount($order_state);
         $this->order_service->updateOrderPayment(
             $this->notification->getTransactionId(),
-            $amount
+            $this->getRestAmount($order_state)
         );
 
         parent::process();
