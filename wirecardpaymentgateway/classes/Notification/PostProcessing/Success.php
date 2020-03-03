@@ -16,18 +16,18 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
-	/** @var WirecardLogger  */
-	private $logger;
+    /** @var WirecardLogger  */
+    private $logger;
 
-	/**
-	 * Success constructor.
-	 *
-	 * @since 2.7.0
-	 */
-	public function __construct()
-	{
-		 $this->logger = new WirecardLogger();
-	}
+    /**
+     * Success constructor.
+     *
+     * @since 2.7.0
+     */
+    public function __construct()
+    {
+    	$this->logger = new WirecardLogger();
+    }
 
     public function process()
     {
@@ -45,12 +45,12 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
                 $this->order_service
             );
         } catch (\Exception $exception) {
-	        $this->logger->error(
-		        'Error in class:'. __CLASS__ .
-		        ' method:' . __METHOD__ .
-		        ' exception: ' . $exception->getMessage()
-	        );
-	        throw $exception;
+            $this->logger->error(
+                'Error in class:'. __CLASS__ .
+                ' method:' . __METHOD__ .
+                ' exception: ' . $exception->getMessage()
+            );
+            throw $exception;
         }
     }
 }

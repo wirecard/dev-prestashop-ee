@@ -38,8 +38,8 @@ abstract class Success implements ProcessablePaymentNotification
     /** @var OrderManager */
     protected $order_manager;
 
-	/** @var WirecardLogger  */
-	private $logger;
+    /** @var WirecardLogger  */
+    private $logger;
 
     /**
      * SuccessPaymentProcessing constructor.
@@ -54,7 +54,7 @@ abstract class Success implements ProcessablePaymentNotification
         $this->notification = $notification;
         $this->order_service = new OrderService($order);
         $this->order_manager = new OrderManager();
-	    $this->logger = new WirecardLogger();
+        $this->logger = new WirecardLogger();
     }
 
     /**
@@ -77,11 +77,11 @@ abstract class Success implements ProcessablePaymentNotification
                 $this->order->reference
             );
         } catch (\Exception $exception) {
-	        $this->logger->error(
-		        'Error in class:'. __CLASS__ .
-		        ' method:' . __METHOD__ .
-		        ' exception: ' . $exception->getMessage()
-	        );
+            $this->logger->error(
+                'Error in class:'. __CLASS__ .
+                ' method:' . __METHOD__ .
+                ' exception: ' . $exception->getMessage()
+            );
             throw $exception;
         } finally {
             $dbManager->releaseLock($this->notification->getTransactionId());
