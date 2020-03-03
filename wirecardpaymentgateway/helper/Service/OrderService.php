@@ -115,4 +115,22 @@ class OrderService
         $original_cart = $this->getOrderCart();
         return $original_cart->duplicate()['cart'];
     }
+
+	/**
+	 * @param int $lang
+	 *
+	 * @return string
+	 * @throws \PrestaShopDatabaseException
+	 * @throws \PrestaShopException
+	 * @since 2.7.0
+	 */
+	public function getLatestOrderStatusFromHistory($lang = null) {
+
+		$order = new \Order((int) $this->order->id);
+		$order_history = $order->getHistory($lang);
+		$order_status_latest = array_shift($order_history);
+		$order_status = $order_status_latest['id_order_state'];
+
+		return $order_status;
+	}
 }

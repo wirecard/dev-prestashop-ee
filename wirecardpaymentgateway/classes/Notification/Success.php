@@ -17,6 +17,7 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Models\InitialTransaction;
 use WirecardEE\Prestashop\Models\SettleableTransaction;
 use WirecardEE\Prestashop\Models\Transaction;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class Success
@@ -37,6 +38,9 @@ abstract class Success implements ProcessablePaymentNotification
     /** @var OrderManager */
     protected $order_manager;
 
+	/** @var WirecardLogger  */
+	private $logger;
+
     /**
      * SuccessPaymentProcessing constructor.
      *
@@ -50,6 +54,7 @@ abstract class Success implements ProcessablePaymentNotification
         $this->notification = $notification;
         $this->order_service = new OrderService($order);
         $this->order_manager = new OrderManager();
+	    $this->logger = new WirecardLogger();
     }
 
     /**
@@ -71,9 +76,13 @@ abstract class Success implements ProcessablePaymentNotification
                 $this->order_manager->getTransactionState($this->notification),
                 $this->order->reference
             );
-        } catch (\Exception $e) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
-            throw $e;
+        } catch (\Exception $exception) {
+	        $this->logger->error(
+		        'Error in class:'. __CLASS__ .
+		        ' method:' . __METHOD__ .
+		        ' exception: ' . $exception->getMessage()
+	        );
+            throw $exception;
         } finally {
             $dbManager->releaseLock($this->notification->getTransactionId());
         }

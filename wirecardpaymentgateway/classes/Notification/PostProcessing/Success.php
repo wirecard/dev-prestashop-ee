@@ -12,9 +12,23 @@ namespace WirecardEE\Prestashop\Classes\Notification\PostProcessing;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
 use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
+	/** @var WirecardLogger  */
+	private $logger;
+
+	/**
+	 * Success constructor.
+	 *
+	 * @since 2.7.0
+	 */
+	public function __construct()
+	{
+		 $this->logger = new WirecardLogger();
+	}
+
     public function process()
     {
         if (OrderManager::isIgnorable($this->notification)) {
@@ -30,9 +44,13 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
                 $this->order_manager,
                 $this->order_service
             );
-        } catch (\Exception $e) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
-            throw $e;
+        } catch (\Exception $exception) {
+	        $this->logger->error(
+		        'Error in class:'. __CLASS__ .
+		        ' method:' . __METHOD__ .
+		        ' exception: ' . $exception->getMessage()
+	        );
+	        throw $exception;
         }
     }
 }
