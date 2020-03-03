@@ -26,12 +26,12 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
 
         $this->order_service->updateOrderPayment(
             $this->notification->getTransactionId(),
-	        $has_amount
+            $has_amount
         );
 
-	    if (OrderManager::isIgnorable($this->notification)) {
-	        return;
-	    }
-	    parent::process();
+        if (OrderManager::isIgnorable($this->notification)) {
+            return;
+        }
+        parent::process();
     }
 }
