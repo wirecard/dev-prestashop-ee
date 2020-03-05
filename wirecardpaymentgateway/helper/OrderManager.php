@@ -83,7 +83,7 @@ class OrderManager
             $orderState = new \OrderState();
             $orderState->name = array();
             foreach (\Language::getLanguages() as $language) {
-                $orderState->name[$language['id_lang']] = $orderStateInfo[$language['iso_code']];
+                $orderState->name[$language['id_lang']] = $orderStateInfo;
             }
             $orderState->send_email = false;
             $orderState->color = 'lightblue';
