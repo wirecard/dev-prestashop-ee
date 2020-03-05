@@ -23,6 +23,8 @@ use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
  */
 class OrderManager
 {
+    use TranslationHelper;
+
     const WIRECARD_OS_STARTING = 'WIRECARD_OS_STARTING';
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
@@ -107,28 +109,19 @@ class OrderManager
      * Getter for language texts to specific order state
      *
      * @param $stateName
-     * @return array
+     * @return string
      * @since 1.0.0
      */
     private function getOrderStateInfo($stateName)
     {
         switch ($stateName) {
             case self::WIRECARD_OS_STARTING:
-                return array(
-                    'de' => 'Wirecard Bezahlung started',
-                    'en' => 'Wirecard payment started',
-                );
+                return $this->getTranslatedString('order_state_payment_started');
             case self::WIRECARD_OS_AUTHORIZATION:
-                return array(
-                    'de' => 'Wirecard Bezahlung authorisiert',
-                    'en' => 'Wirecard payment authorized',
-                );
+                return $this->getTranslatedString('order_state_payment_authorized');
             case self::WIRECARD_OS_AWAITING:
             default:
-                return array(
-                    'de' => 'Wirecard Bezahlung ausständig',
-                    'en' => 'Wirecard payment awaiting'
-                );
+                return $this->getTranslatedString('order_state_payment_awaiting');
         }
     }
 
