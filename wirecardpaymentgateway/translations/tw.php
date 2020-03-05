@@ -212,6 +212,9 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c4
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_f9e92a0727609b56780f28afa11da702'] = '已啟用';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_9963e13ca603bfe6f09af5673b058eb7'] = '已停用';
 $_MODULE['<{wirecardpaymentgateway}prestashop>generalsettingsservice_98c717a2e7b0e8ff05988fbf8f5e8b9f'] = '';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_b0ff4ac4438ae8ef3f9883948315cdcf'] = 'Wirecard payment started';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_5b16deb11b7f93bc6d2dfe2e1ca5f4b3'] = 'Wirecard payment authorized';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_8eec2577851ed66a286d224c7270bb15'] = 'Wirecard payment awaiting';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_fbedc569ae12c464ee7929c3d8a1a949'] = 'Back';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_c01d298d870c928aef65a36ed62c30ea'] = '交易明細';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_3e3e086087769006d29d46a8b34264af'] = 'Transaction';
