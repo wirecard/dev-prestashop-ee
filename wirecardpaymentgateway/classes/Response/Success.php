@@ -12,9 +12,7 @@ namespace WirecardEE\Prestashop\Classes\Response;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
-use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
@@ -40,7 +38,7 @@ abstract class Success implements ProcessablePaymentResponse
 
     /** @var OrderService */
     protected $orderService;
-  
+
     /**
      * SuccessResponseProcessing constructor.
      *
@@ -64,8 +62,11 @@ abstract class Success implements ProcessablePaymentResponse
         $dbManager = new DBTransactionManager();
         //We do this outside of the try block so that if locking fails, we don't attempt to release it
         $dbManager->acquireLock($this->response->getTransactionId(), 30);
+
+        $order_status = $this->orderService->getLatestOrderStatusFromHistory();
+
         try {
-            if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
                 $this->order->save();
 

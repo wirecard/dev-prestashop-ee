@@ -17,6 +17,7 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Models\InitialTransaction;
 use WirecardEE\Prestashop\Models\SettleableTransaction;
 use WirecardEE\Prestashop\Models\Transaction;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class Success
@@ -26,16 +27,19 @@ use WirecardEE\Prestashop\Models\Transaction;
 abstract class Success implements ProcessablePaymentNotification
 {
     /** @var \Order */
-    private $order;
+    protected $order;
 
     /** @var SuccessResponse */
-    private $notification;
+    protected $notification;
 
     /** @var OrderService */
-    private $order_service;
+    protected $order_service;
 
     /** @var OrderManager */
-    private $order_manager;
+    protected $order_manager;
+
+    /** @var WirecardLogger  */
+    private $logger;
 
     /**
      * SuccessPaymentProcessing constructor.
@@ -50,6 +54,7 @@ abstract class Success implements ProcessablePaymentNotification
         $this->notification = $notification;
         $this->order_service = new OrderService($order);
         $this->order_manager = new OrderManager();
+        $this->logger = new WirecardLogger();
     }
 
     /**
@@ -59,32 +64,24 @@ abstract class Success implements ProcessablePaymentNotification
     public function process()
     {
         $dbManager = new DBTransactionManager();
-        //We do this outside of the try block so that if locking fails, we don't attempt to release it
+        //Acquire lock out of the try-catch block to prevent release on locking fail
         $dbManager->acquireLock($this->notification->getTransactionId(), 30);
         try {
-            if (!OrderManager::isIgnorable($this->notification)) {
-                $amount = $this->notification->getRequestedAmount();
-                Transaction::create(
-                    $this->order->id,
-                    $this->order->id_cart,
-                    $amount,
-                    $this->notification,
-                    $this->order_manager->getTransactionState($this->notification),
-                    $this->order->reference
-                );
-
-                $parentTransaction = $this->getParentTransaction();
-                $parentTransaction->markSettledAsClosed();
-                $parentTransaction->updateOrder(
-                    $this->order,
-                    $this->notification,
-                    $this->order_manager,
-                    $this->order_service
-                );
-            }
-        } catch (\Exception $e) {
-            error_log("\t\t\t" . __METHOD__ . ' ' . __LINE__ . ' ' . "exception: " . $e->getMessage());
-            throw $e;
+            Transaction::create(
+                $this->order->id,
+                $this->order->id_cart,
+                $this->notification->getRequestedAmount(),
+                $this->notification,
+                $this->order_manager->getTransactionState($this->notification),
+                $this->order->reference
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error(
+                'Error in class:'. __CLASS__ .
+                ' method:' . __METHOD__ .
+                ' exception: ' . $exception->getMessage()
+            );
+            throw $exception;
         } finally {
             $dbManager->releaseLock($this->notification->getTransactionId());
         }
@@ -95,7 +92,7 @@ abstract class Success implements ProcessablePaymentNotification
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    private function getParentTransaction()
+    protected function getParentTransaction()
     {
         if ($this->notification->getTransactionType() != \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_PURCHASE) {
             $transaction = Transaction::getInitialTransactionForOrder($this->order->reference);
