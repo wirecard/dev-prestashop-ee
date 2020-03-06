@@ -25,10 +25,21 @@ class OrderManager
 {
     use TranslationHelper;
 
+    /**
+     * @var string
+     * @since 2.8.0
+     */
+    const TRANSLATION_FILE = "ordermanager";
+
     const WIRECARD_OS_STARTING = 'WIRECARD_OS_STARTING';
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
 
+    const WIRECARD_OS_KEY_STARTED = 'order_state_payment_started';
+    const WIRECARD_OS_KEY_AWAITING = 'order_state_payment_awaiting';
+    const WIRECARD_OS_KEY_AUTHORIZED = 'order_state_payment_authorized';
+
+    /** @var \Module|\WirecardPaymentGateway  */
     private $module;
 
     /**
@@ -73,16 +84,16 @@ class OrderManager
     /**
      * Create a new order state with specific order state name
      *
-     * @param string $stateName
+     * @param string $key
      * @since 1.0.0
      */
-    public function createOrderState($stateName)
+    public function createOrderState($key)
     {
-        if (!\Configuration::get($stateName)) {
-            $orderStateInfo = $this->getOrderStateInfo($stateName);
+        if (!\Configuration::get($key)) {
             $orderState = new \OrderState();
             $orderState->name = array();
-            foreach (\Language::getLanguages() as $language) {
+            foreach (\Language::getLanguages(false) as $language) {
+                $orderStateInfo = $this->module->getTranslationForLanguage($language['iso_code'], $key, self::TRANSLATION_FILE);
                 $orderState->name[$language['id_lang']] = $orderStateInfo;
             }
             $orderState->send_email = false;
@@ -95,29 +106,9 @@ class OrderManager
             $orderState->add();
 
             \Configuration::updateValue(
-                $stateName,
+                $key,
                 (int)($orderState->id)
             );
-        }
-    }
-
-    /**
-     * Getter for language texts to specific order state
-     *
-     * @param $stateName
-     * @return string
-     * @since 1.0.0
-     */
-    private function getOrderStateInfo($stateName)
-    {
-        switch ($stateName) {
-            case self::WIRECARD_OS_STARTING:
-                return $this->getTranslatedString('order_state_payment_started');
-            case self::WIRECARD_OS_AUTHORIZATION:
-                return $this->getTranslatedString('order_state_payment_authorized');
-            case self::WIRECARD_OS_AWAITING:
-            default:
-                return $this->getTranslatedString('order_state_payment_awaiting');
         }
     }
 
