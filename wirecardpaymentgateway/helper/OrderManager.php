@@ -84,16 +84,17 @@ class OrderManager
     /**
      * Create a new order state with specific order state name
      *
-     * @param string $key
+     * @param string $stateName
      * @since 1.0.0
      */
-    public function createOrderState($key)
+    public function createOrderState($stateName)
     {
-        if (!\Configuration::get($key)) {
+        if (!\Configuration::get($stateName)) {
+            $stateKey = $this->getStateKeyFromOrderState($stateName);
             $orderState = new \OrderState();
             $orderState->name = array();
             foreach (\Language::getLanguages(false) as $language) {
-                $orderStateInfo = $this->module->getTranslationForLanguage($language['iso_code'], $key, self::TRANSLATION_FILE);
+                $orderStateInfo = $this->module->getTranslationForLanguage($language['iso_code'], $stateKey, self::TRANSLATION_FILE);
                 $orderState->name[$language['id_lang']] = $orderStateInfo;
             }
             $orderState->send_email = false;
@@ -106,9 +107,28 @@ class OrderManager
             $orderState->add();
 
             \Configuration::updateValue(
-                $key,
+                $stateKey,
                 (int)($orderState->id)
             );
+        }
+    }
+
+    /**
+     * @param $stateName
+     * @return string
+     * @throws Exception
+     */
+    private function getStateKeyFromOrderState($stateName)
+    {
+        switch ($stateName) {
+            case self::WIRECARD_OS_STARTING:
+                return self::WIRECARD_OS_KEY_STARTED;
+            case self::WIRECARD_OS_AUTHORIZATION:
+                return self::WIRECARD_OS_KEY_AUTHORIZED;
+            case self::WIRECARD_OS_AWAITING:
+                return self::WIRECARD_OS_KEY_AWAITING;
+            default:
+                throw new \Exception('Order state not exists');
         }
     }
 
