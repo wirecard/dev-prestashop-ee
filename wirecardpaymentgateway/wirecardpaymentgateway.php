@@ -432,10 +432,9 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      * Update “lang” tables after adding or updating a language
      *
-     * @param $params
      * @since 2.8.0
      */
-    public function hookActionUpdateLangAfter($params)
+    public function hookActionUpdateLangAfter()
     {
         $this->addUpdateOrderStatuses();
     }
