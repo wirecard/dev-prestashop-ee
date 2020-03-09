@@ -95,7 +95,7 @@ class OrderManager
      */
     public function createOrderState($state)
     {
-        if (\Configuration::get($state)) {
+        if (!\Configuration::get($state)) {
             $translationKey = $this->getTranslationKeyForOrderState($state);
             $orderState = new \OrderState();
             $orderState->name = array();
