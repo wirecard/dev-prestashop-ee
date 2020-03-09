@@ -26,4 +26,9 @@ class OrderState
     {
         return;
     }
+
+    public static function update()
+    {
+        return;
+    }
 }

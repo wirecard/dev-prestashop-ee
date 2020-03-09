@@ -97,14 +97,16 @@ class OrderManager
     {
         if (!\Configuration::get($state)) {
             $orderState = $this->createNewOrderState($state);
-            $orderStateId = (int)$orderState->id;
+            $orderState->add();
         } else {
-            $orderStateId = \Configuration::get($state);
+            $orderState = $this->createNewOrderState($state);
+            $orderState->id = \Configuration::get($state);
+            $orderState->update();
         }
 
         \Configuration::updateValue(
             $state,
-            $orderStateId
+            (int)$orderState->id
         );
     }
 
@@ -113,6 +115,7 @@ class OrderManager
      * @return \OrderState
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
+     * @throws \Exception
      * @since 2.8.0
      */
     private function createNewOrderState($state)
@@ -135,7 +138,6 @@ class OrderManager
         $orderState->logable = true;
         $orderState->module_name = 'wirecardpaymentgateway';
         $orderState->invoice = false;
-        $orderState->add();
 
         return $orderState;
     }
