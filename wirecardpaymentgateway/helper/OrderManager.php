@@ -134,7 +134,7 @@ class OrderManager
     private function getTranslationKeyForOrderState($state)
     {
         $translationKeys = self::ORDER_STATE_TRANSLATION_KEY_MAP;
-        if (!isset($keys[$state])) {
+        if (!isset($translationKeys[$state])) {
             throw new \Exception('Order state not exists');
         }
         return $translationKeys[$state];
