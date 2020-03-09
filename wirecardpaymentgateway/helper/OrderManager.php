@@ -117,7 +117,7 @@ class OrderManager
             $orderState->add();
 
             \Configuration::updateValue(
-                $translationKey,
+                $state,
                 (int)($orderState->id)
             );
         }
