@@ -96,31 +96,48 @@ class OrderManager
     public function createOrderState($state)
     {
         if (!\Configuration::get($state)) {
-            $translationKey = $this->getTranslationKeyForOrderState($state);
-            $orderState = new \OrderState();
-            $orderState->name = array();
-            foreach (\Language::getLanguages(false) as $language) {
-                $orderStateInfo = $this->module->getTranslationForLanguage(
-                    $language['iso_code'],
-                    $translationKey,
-                    self::TRANSLATION_FILE
-                );
-                $orderState->name[$language['id_lang']] = $orderStateInfo;
-            }
-            $orderState->send_email = false;
-            $orderState->color = 'lightblue';
-            $orderState->hidden = false;
-            $orderState->delivery = false;
-            $orderState->logable = true;
-            $orderState->module_name = 'wirecardpaymentgateway';
-            $orderState->invoice = false;
-            $orderState->add();
-
-            \Configuration::updateValue(
-                $state,
-                (int)($orderState->id)
-            );
+            $orderState = $this->createNewOrderState($state);
+            $orderStateId = (int)$orderState->id;
+        } else {
+            $orderStateId = \Configuration::get($state);
         }
+
+        \Configuration::updateValue(
+            $state,
+            $orderStateId
+        );
+    }
+
+    /**
+     * @param $state
+     * @return \OrderState
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @since 2.8.0
+     */
+    private function createNewOrderState($state)
+    {
+        $translationKey = $this->getTranslationKeyForOrderState($state);
+        $orderState = new \OrderState();
+        $orderState->name = array();
+        foreach (\Language::getLanguages(false) as $language) {
+            $orderStateInfo = $this->module->getTranslationForLanguage(
+                $language['iso_code'],
+                $translationKey,
+                self::TRANSLATION_FILE
+            );
+            $orderState->name[$language['id_lang']] = $orderStateInfo;
+        }
+        $orderState->send_email = false;
+        $orderState->color = 'lightblue';
+        $orderState->hidden = false;
+        $orderState->delivery = false;
+        $orderState->logable = true;
+        $orderState->module_name = 'wirecardpaymentgateway';
+        $orderState->invoice = false;
+        $orderState->add();
+
+        return $orderState;
     }
 
     /**
