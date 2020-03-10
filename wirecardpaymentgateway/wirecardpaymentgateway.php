@@ -1107,7 +1107,7 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $orderManager = new OrderManager();
         $translationKeys = $orderManager::ORDER_STATE_TRANSLATION_KEY_MAP;
-        foreach ($translationKeys as $translationKey => $orderState) {
+        foreach (array_keys($translationKeys) as $translationKey) {
             $orderManager->createOrderState($translationKey);
         }
     }
