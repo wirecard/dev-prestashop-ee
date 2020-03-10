@@ -1,8 +1,7 @@
 version: '3'
 services:
   # Reference: https://hub.docker.com/_/mysql
-  prestashop.database:
-    container_name: prestashop-database
+  db:
     image: mysql
     ports:
       - ${MYSQL_PORT_OUT}:${MYSQL_PORT_IN}
@@ -10,8 +9,8 @@ services:
     env_file:
       - .env
     environment:
-      - MYSQL_ROOT_PASSWORD=${PRESTASHOP_DB_PASSWORD}
-      - MYSQL_DATABASE=${PRESTASHOP_DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${PS_DB_PASSWORD}
+      - MYSQL_DATABASE=${PS_DB_NAME}
     networks:
       - prestashop-net
     command:
@@ -22,20 +21,21 @@ services:
   # Default admin credentials:
   # demo@prestashop.com ; prestashop_demo
   # Reference: https://hub.docker.com/r/prestashop/prestashop
-  prestashop.web:
-    container_name: "${PRESTASHOP_CONTAINER_NAME}"
+  web:
     build:
       context: .
     environment:
-      - PRESTASHOP_VERSION=${PRESTASHOP_VERSION}
-      - DB_SERVER=${PRESTASHOP_DB_SERVER}
-      - DB_PASSWD=${PRESTASHOP_DB_PASSWORD}
-      - DB_NAME=${PRESTASHOP_DB_NAME}
-      - PS_INSTALL_AUTO=1
-      - PS_FOLDER_ADMIN=backend
-      - PS_DOMAIN=${PRESTASHOP_CONTAINER_DOMAIN}
-      - PS_SHOP_URL=${PRESTASHOP_CONTAINER_SHOP_URL}
-      - PS_FOLDER_INSTALL=removedinstall
+      - PS_VERSION=${PS_VERSION}
+      - DB_SERVER=db
+      - DB_PASSWD=${PS_DB_PASSWORD}
+      - DB_NAME=${PS_DB_NAME}
+      - PS_INSTALL_AUTO=${PS_INSTALL_AUTO}
+      - PS_FOLDER_ADMIN=${PS_FOLDER_ADMIN}
+      - PS_DOMAIN=${PS_CONTAINER_DOMAIN}
+      - PS_SHOP_URL=${PS_CONTAINER_SHOP_URL}
+      - PS_FOLDER_INSTALL=${PS_FOLDER_INSTALL}
+      - ADMIN_MAIL=${ADMIN_MAIL}
+      - ADMIN_PASSWD=${ADMIN_PASSWD}
     networks:
       - prestashop-net
     ports:
@@ -43,8 +43,18 @@ services:
     env_file:
       - .env
     depends_on:
-      - prestashop.database
+      - db
+  codecept:
+    image: codeception/codeception
+    build:
+      context: .
+      dockerfile: Dockerfile_codeception
+    volumes:
+      - "${PWD}/wirecardpaymentgateway/vendor/wirecard/shopsystem-ui-testsuite:/project"
+    networks:
+      - prestashop-net
 
 # Setup container network, this allows for mysql to be unavailable for the www
 networks:
   prestashop-net:
+

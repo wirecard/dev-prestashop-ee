@@ -23,10 +23,27 @@ use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
  */
 class OrderManager
 {
+    use TranslationHelper;
+
+    /**
+     * @var string
+     * @since 2.8.0
+     */
+    const TRANSLATION_FILE = "ordermanager";
+
     const WIRECARD_OS_STARTING = 'WIRECARD_OS_STARTING';
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
 
+    const ORDER_STATE_TRANSLATION_KEY_MAP = [
+        self::WIRECARD_OS_STARTING => 'order_state_payment_started',
+        self::WIRECARD_OS_AWAITING => 'order_state_payment_awaiting',
+        self::WIRECARD_OS_AUTHORIZATION => 'order_state_payment_authorized'
+    ];
+
+    const COLOR_LIGHT_BLUE = 'lightblue';
+
+    /** @var \Module|\WirecardPaymentGateway  */
     private $module;
 
     /**
@@ -71,65 +88,73 @@ class OrderManager
     /**
      * Create a new order state with specific order state name
      *
-     * @param string $stateName
+     * @param string $state
      * @since 1.0.0
      */
-    public function createOrderState($stateName)
+    public function createOrderState($state)
     {
-        if (!\Configuration::get($stateName)) {
-            $orderStateInfo = $this->getOrderStateInfo($stateName);
-            $orderState = new \OrderState();
-            $orderState->name = array();
-            foreach (\Language::getLanguages() as $language) {
-                if (\Tools::strtolower($language['iso_code']) == 'de') {
-                    $orderState->name[$language['id_lang']] = $orderStateInfo['de'];
-                } else {
-                    $orderState->name[$language['id_lang']] = $orderStateInfo['en'];
-                }
-            }
-            $orderState->send_email = false;
-            $orderState->color = 'lightblue';
-            $orderState->hidden = false;
-            $orderState->delivery = false;
-            $orderState->logable = true;
-            $orderState->module_name = 'wirecardpaymentgateway';
-            $orderState->invoice = false;
+        if (!\Configuration::get($state)) {
+            $orderState = $this->initializeOrderState($state);
             $orderState->add();
-
-            \Configuration::updateValue(
-                $stateName,
-                (int)($orderState->id)
-            );
+        } else {
+            $orderState = $this->initializeOrderState($state);
+            $orderState->id = \Configuration::get($state);
+            $orderState->update();
         }
+
+        \Configuration::updateValue(
+            $state,
+            (int)$orderState->id
+        );
     }
 
     /**
-     * Getter for language texts to specific order state
-     *
-     * @param $stateName
-     * @return array
-     * @since 1.0.0
+     * @param string $state
+     * @return \OrderState
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @throws \Exception
+     * @since 2.8.0
      */
-    private function getOrderStateInfo($stateName)
+    private function initializeOrderState($state)
     {
-        switch ($stateName) {
-            case self::WIRECARD_OS_STARTING:
-                return array(
-                    'de' => 'Wirecard Bezahlung started',
-                    'en' => 'Wirecard payment started',
-                );
-            case self::WIRECARD_OS_AUTHORIZATION:
-                return array(
-                    'de' => 'Wirecard Bezahlung authorisiert',
-                    'en' => 'Wirecard payment authorized',
-                );
-            case self::WIRECARD_OS_AWAITING:
-            default:
-                return array(
-                    'de' => 'Wirecard Bezahlung ausständig',
-                    'en' => 'Wirecard payment awaiting'
-                );
+        $translationKey = $this->getTranslationKeyForOrderState($state);
+        $orderState = new \OrderState();
+        $orderState->name = array();
+        foreach (\Language::getLanguages(false) as $language) {
+            $orderStateInfo = $this->module->getTranslationForLanguage(
+                $language['iso_code'],
+                $translationKey,
+                self::TRANSLATION_FILE
+            );
+            $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
+        $orderState->send_email = false;
+        $orderState->color = self::COLOR_LIGHT_BLUE;
+        $orderState->hidden = false;
+        $orderState->delivery = false;
+        $orderState->logable = true;
+        $orderState->module_name = \WirecardPaymentGateway::NAME;
+        $orderState->invoice = false;
+
+        return $orderState;
+    }
+
+    /**
+     * Get translation key for specific order state
+     *
+     * @param $state
+     * @return string
+     * @throws \Exception
+     * @since 2.8.0
+     */
+    private function getTranslationKeyForOrderState($state)
+    {
+        $translationKeys = self::ORDER_STATE_TRANSLATION_KEY_MAP;
+        if (!isset($translationKeys[$state])) {
+            throw new \Exception('Order state not exists');
+        }
+        return $translationKeys[$state];
     }
 
     /**

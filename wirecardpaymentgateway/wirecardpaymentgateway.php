@@ -132,6 +132,7 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('displayPaymentEU')
             || !$this->registerHook('actionFrontControllerSetMedia')
             || !$this->registerHook('actionPaymentConfirmation')
+            || !$this->registerHook('actionUpdateLangAfter')
             || !$this->registerHook('displayOrderConfirmation')
             || !$this->registerHook('postUpdateOrderStatus')
             || !$this->registerHook('updateOrderStatus')
@@ -146,10 +147,7 @@ class WirecardPaymentGateway extends PaymentModule
             return false;
         }
 
-        $orderManager = new OrderManager();
-        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AUTHORIZATION);
-        $orderManager->createOrderState(OrderManager::WIRECARD_OS_AWAITING);
-        $orderManager->createOrderState(OrderManager::WIRECARD_OS_STARTING);
+        $this->addUpdateOrderStatuses();
 
         $this->installTabs();
 
@@ -429,6 +427,16 @@ class WirecardPaymentGateway extends PaymentModule
     {
         $order = new Order($params['id_order']);
         $this->displayName = $order->payment;
+    }
+
+    /**
+     * Update “lang” tables after adding or updating a language
+     *
+     * @since 2.8.0
+     */
+    public function hookActionUpdateLangAfter()
+    {
+        $this->addUpdateOrderStatuses();
     }
 
     /**
@@ -1090,5 +1098,17 @@ class WirecardPaymentGateway extends PaymentModule
         );
 
         return $tabsConfig;
+    }
+
+    /**
+     *  Add or update (if exists) order statuses
+     */
+    private function addUpdateOrderStatuses()
+    {
+        $orderManager = new OrderManager();
+        $translationKeys = $orderManager::ORDER_STATE_TRANSLATION_KEY_MAP;
+        foreach ($translationKeys as $translationKey => $orderState) {
+            $orderManager->createOrderState($translationKey);
+        }
     }
 }
