@@ -2,10 +2,10 @@
 
 ## v2.8.0
 
-* Update license from GPLv3 to MIT
-* Improve SEPA form presentation
-* Improve order state translation
-* Add support for PHP 7.2
+*   Update license from GPLv3 to MIT
+*   Improve SEPA form presentation
+*   Improve order state translation
+*   Add support for PHP 7.2
 
 | Overview              | Prestashop version            | PHP 5.6   | PHP 7.0   | PHP 7.1 | PHP 7.2 |
 |-----------------------|-------------------------------|:---------:|:---------:|:-------:|:-------:|
