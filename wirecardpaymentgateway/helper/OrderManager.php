@@ -35,15 +35,13 @@ class OrderManager
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
 
-    const WIRECARD_OS_TRANSLATION_KEY_STARTED = 'order_state_payment_started';
-    const WIRECARD_OS_TRANSLATION_KEY_AWAITING = 'order_state_payment_awaiting';
-    const WIRECARD_OS_TRANSLATION_KEY_AUTHORIZED = 'order_state_payment_authorized';
-
     const ORDER_STATE_TRANSLATION_KEY_MAP = [
-        self::WIRECARD_OS_STARTING => self::WIRECARD_OS_TRANSLATION_KEY_STARTED,
-        self::WIRECARD_OS_AWAITING => self::WIRECARD_OS_TRANSLATION_KEY_AWAITING,
-        self::WIRECARD_OS_AUTHORIZATION => self::WIRECARD_OS_TRANSLATION_KEY_AUTHORIZED
+        self::WIRECARD_OS_STARTING => 'order_state_payment_started',
+        self::WIRECARD_OS_AWAITING => 'order_state_payment_awaiting',
+        self::WIRECARD_OS_AUTHORIZATION => 'order_state_payment_authorized'
     ];
+
+    const COLOR_LIGHT_BLUE = 'lightblue';
 
     /** @var \Module|\WirecardPaymentGateway  */
     private $module;
@@ -96,10 +94,10 @@ class OrderManager
     public function createOrderState($state)
     {
         if (!\Configuration::get($state)) {
-            $orderState = $this->createNewOrderState($state);
+            $orderState = $this->initializeOrderState($state);
             $orderState->add();
         } else {
-            $orderState = $this->createNewOrderState($state);
+            $orderState = $this->initializeOrderState($state);
             $orderState->id = \Configuration::get($state);
             $orderState->update();
         }
@@ -111,14 +109,14 @@ class OrderManager
     }
 
     /**
-     * @param $state
+     * @param string $state
      * @return \OrderState
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      * @throws \Exception
      * @since 2.8.0
      */
-    private function createNewOrderState($state)
+    private function initializeOrderState($state)
     {
         $translationKey = $this->getTranslationKeyForOrderState($state);
         $orderState = new \OrderState();
@@ -132,11 +130,11 @@ class OrderManager
             $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
         $orderState->send_email = false;
-        $orderState->color = 'lightblue';
+        $orderState->color = self::COLOR_LIGHT_BLUE;
         $orderState->hidden = false;
         $orderState->delivery = false;
         $orderState->logable = true;
-        $orderState->module_name = 'wirecardpaymentgateway';
+        $orderState->module_name = \WirecardPaymentGateway::NAME;
         $orderState->invoice = false;
 
         return $orderState;
