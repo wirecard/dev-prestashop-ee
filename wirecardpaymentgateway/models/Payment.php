@@ -10,11 +10,11 @@
 namespace WirecardEE\Prestashop\Models;
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use Wirecard\PaymentSdk\Transaction\Operation;
-use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TemplateHelper;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Classes\Config\Credentials\CredentialsConfiguration;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Basic Payment class
@@ -76,6 +76,12 @@ abstract class Payment extends PaymentOption
      */
     protected $action_link;
 
+    /** @var CredentialsConfiguration */
+    protected $credentialsConfig;
+
+    /** @var WirecardLogger $logger */
+    protected $logger;
+
     /**
      * WirecardPayment constructor.
      *
@@ -103,6 +109,10 @@ abstract class Payment extends PaymentOption
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->getTranslatedString($this->configuration->getField('title')));
+
+        $this->logger = new WirecardLogger();
+        $this->credentialsConfig = CredentialsConfiguration::getInstance("", $this->logger)
+            ->getConfigByPaymentMethod($this->getType());
     }
 
     /**

@@ -13,9 +13,9 @@ use Psr\Log\LoggerInterface;
 use Wirecard\Credentials\Credentials;
 use Wirecard\Credentials\PaymentMethod;
 
-class Loader
+class CredentialsConfiguration
 {
-    /** @var Loader */
+    /** @var CredentialsConfiguration */
     private static $instance;
 
     /** @var string */
@@ -39,7 +39,7 @@ class Loader
     /**
      * @param string $xmlFilePath
      * @param LoggerInterface $logger
-     * @return Loader
+     * @return CredentialsConfiguration
      */
     public static function getInstance($xmlFilePath, $logger)
     {
@@ -64,7 +64,7 @@ class Loader
      * @return \Wirecard\Credentials\Config\CredentialsConfigInterface|\Wirecard\Credentials\Config\CredentialsCreditCardConfig
      * @since 2.9.0
      */
-    public function getCredentialsConfig($paymentMethodCode)
+    public function getConfigByPaymentMethod($paymentMethodCode)
     {
         $config = null;
         try {
