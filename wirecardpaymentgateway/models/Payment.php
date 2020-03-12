@@ -42,6 +42,8 @@ abstract class Payment extends PaymentOption
         'reserve' => 'authorization',
     ];
 
+    const CREDENTIALS_FILE_NAME = "credentials_config.xml";
+
     /**
      * @var string
      * @since 1.0.0
@@ -90,8 +92,8 @@ abstract class Payment extends PaymentOption
     public function __construct()
     {
         $context = \Context::getContext();
-        $potentialPath = _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME
-                         . '/views/img/paymenttypes/' . static::TYPE . '.png';
+        $modulePath = _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME;
+        $potentialPath = $modulePath . '/views/img/paymenttypes/' . static::TYPE . '.png';
         $logoPath = file_exists($potentialPath) ? \Media::getMediaPath($potentialPath) : '';
       
         $this->action_link = $context->link->getModuleLink(
@@ -111,8 +113,10 @@ abstract class Payment extends PaymentOption
         $this->setCallToActionText($this->getTranslatedString($this->configuration->getField('title')));
 
         $this->logger = new WirecardLogger();
-        $this->credentialsConfig = CredentialsConfiguration::getInstance("", $this->logger)
-            ->getConfigByPaymentMethod($this->getType());
+        $this->credentialsConfig = CredentialsConfiguration::getInstance(
+            $modulePath . DIRECTORY_SEPARATOR . self::CREDENTIALS_FILE_NAME,
+            $this->logger
+        )->getConfigByPaymentMethod($this->getType());
     }
 
     /**
