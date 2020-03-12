@@ -14,7 +14,8 @@
     "wirecard/io-converter": "^1.0",
     "monolog/monolog": "^1.0",
     "ext-json": "*",
-    "symfony/http-foundation": "^3"
+    "symfony/http-foundation": "^3",
+    "wirecard/extension-credentials-module": "dev-TPWDCEE-6187-prepare-release"
   },
   "require-dev": {
     "phpunit/phpunit": "5.7.27",
