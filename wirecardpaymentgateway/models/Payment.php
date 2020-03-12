@@ -104,6 +104,7 @@ abstract class Payment extends PaymentOption
         );
 
         $this->name = 'Wirecard Payment Processing Gateway';
+        $this->type = static::TYPE;
         $this->transactionTypes = array('authorization', 'capture');
         $this->configuration = new ShopConfigurationService(static::TYPE);
 
