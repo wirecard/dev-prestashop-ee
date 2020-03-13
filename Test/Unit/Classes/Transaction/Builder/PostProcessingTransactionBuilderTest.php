@@ -7,8 +7,6 @@
  *  https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-require_once __DIR__ . '/../../../../../wirecardpaymentgateway/wirecardpaymentgateway.php';
-
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
