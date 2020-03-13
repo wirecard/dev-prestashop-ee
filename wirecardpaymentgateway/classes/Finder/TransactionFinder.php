@@ -30,17 +30,18 @@ class TransactionFinder extends DbFinder
         $transaction = null;
         $queryBuilder = $this->getQueryBuilder();
         $query = $queryBuilder->from('wirecard_payment_gateway_tx')
-            ->select('ps_wirecard_payment_gateway_tx.tx_id')
-            ->leftJoin('orders', 'o', 'ps_wirecard_payment_gateway_tx.`order_id` = o.`id_order`')
+            ->select('`' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx`.`tx_id`')
+            ->leftJoin('orders', 'o', '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx`.`order_id` = o.`id_order`')
             ->leftJoin(
                 'order_history',
                 'order_history',
-                'ps_wirecard_payment_gateway_tx.`order_id` = order_history.`id_order`'
+                '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx`.`order_id` = order_history.`id_order`'
             )
             ->where(
-                'ps_wirecard_payment_gateway_tx.`order_id` = ' . pSQL($orderId) .
+                '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx`.`order_id` = ' . pSQL($orderId) .
                 " AND order_history.`id_order_state` = o.`current_state`"
-            );
+        );
+
         if ($result = $this->getDb()->getRow($query)) {
             $transaction = new Transaction(intval($result['tx_id']));
         }
