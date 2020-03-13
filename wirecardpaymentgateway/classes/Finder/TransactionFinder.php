@@ -40,7 +40,7 @@ class TransactionFinder extends DbFinder
             ->where(
                 '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_tx`.`order_id` = ' . pSQL($orderId) .
                 " AND order_history.`id_order_state` = o.`current_state`"
-        );
+            );
 
         if ($result = $this->getDb()->getRow($query)) {
             $transaction = new Transaction(intval($result['tx_id']));
