@@ -9,8 +9,6 @@
 
 namespace WirecardEE\Prestashop\Test\Helper\Form\Element;
 
-require_once __DIR__ . '/../../../../wirecardpaymentgateway/wirecardpaymentgateway.php';
-
 use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\Form\Element\SubmitButton;
 use WirecardEE\Prestashop\Helper\Form\Element\SwitchInput;

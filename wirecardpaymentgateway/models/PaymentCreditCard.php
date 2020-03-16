@@ -14,7 +14,6 @@ use Wirecard\PaymentSdk\Constant\ChallengeInd;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
@@ -41,9 +40,6 @@ class PaymentCreditCard extends Payment
     /** @var CreditCardTransaction */
     protected $transaction;
 
-    /** @var WirecardLogger $logger */
-    protected $logger;
-
     /**
      * PaymentCreditCard constructor.
      *
@@ -53,8 +49,6 @@ class PaymentCreditCard extends Payment
     public function __construct()
     {
         parent::__construct();
-
-        $this->logger = new WirecardLogger();
         $this->type = self::TYPE;
         $this->name = 'Wirecard Credit Card';
         $this->formFields = $this->createFormFields();
@@ -90,28 +84,28 @@ class PaymentCreditCard extends Payment
                     'name' => 'merchant_account_id',
                     'label'   => $this->getTranslatedString('config_merchant_account_id'),
                     'type'    => 'text',
-                    'default' => '53f2895a-e4de-4e82-a813-0d87a10e55e6',
+                    'default' => $this->credentialsConfig->getMerchantAccountId(),
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => $this->getTranslatedString('config_merchant_secret'),
                     'type'    => 'text',
-                    'default' => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default' => $this->credentialsConfig->getSecret(),
                     'required' => true,
                 ),
                 array(
                     'name' => 'three_d_merchant_account_id',
                     'label'    => $this->getTranslatedString('three_d_merchant_account_id'),
                     'type'     => 'text',
-                    'default'  => '508b8896-b37d-4614-845c-26bf8bf2c948',
+                    'default'  => $this->credentialsConfig->getThreeDMerchantAccountId(),
                     'required' => true,
                 ),
                 array(
                     'name' => 'three_d_secret',
                     'label'       => $this->getTranslatedString('config_three_d_merchant_secret'),
                     'type'        => 'text',
-                    'default'     => 'dbc5a498-9a66-43b9-bf1d-a618dd399684',
+                    'default'     => $this->credentialsConfig->getThreeDSecret(),
                     'required' => true,
                 ),
                 array(
@@ -133,7 +127,7 @@ class PaymentCreditCard extends Payment
                     'label'       => $this->getTranslatedString('config_base_url'),
                     'type'        => 'text',
                     'doc' => $this->getTranslatedString('config_base_url_desc'),
-                    'default'     => 'https://api-test.wirecard.com',
+                    'default'     => $this->credentialsConfig->getBaseUrl(),
                     'required' => true,
                 ),
                 array(
@@ -141,21 +135,21 @@ class PaymentCreditCard extends Payment
                     'label'       => $this->getTranslatedString('config_wpp_url'),
                     'type'        => 'text',
                     'doc'         => $this->getTranslatedString('config_wpp_url_desc'),
-                    'default'     => 'https://wpp-test.wirecard.com',
+                    'default'     => $this->credentialsConfig->getWppUrl(),
                     'required'    => true,
                 ),
                 array(
                     'name' => 'http_user',
                     'label'   => $this->getTranslatedString('config_http_user'),
                     'type'    => 'text',
-                    'default' => '70000-APITEST-AP',
+                    'default' => $this->credentialsConfig->getHttpUser(),
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->getTranslatedString('config_http_password'),
                     'type'    => 'text',
-                    'default' => 'qD2wzQ_hrc!8',
+                    'default' => $this->credentialsConfig->getHttpPassword(),
                     'required' => true,
                 ),
                 array(

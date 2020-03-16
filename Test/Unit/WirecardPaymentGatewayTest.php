@@ -7,12 +7,6 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-define('_PS_VERSION_', '9.9.9.9');
-
-use WirecardEE\Prestashop\Models\PaymentPaypal;
-
-require_once __DIR__ . '/../../wirecardpaymentgateway/wirecardpaymentgateway.php';
-
 class WirecardPaymentGatewayTest extends \PHPUnit_Framework_TestCase
 {
     /**
