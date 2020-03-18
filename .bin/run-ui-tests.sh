@@ -36,7 +36,7 @@ else
   TEST_GROUP="${MAJOR_RELEASE}"
 fi
 # run tests
-composer require wirecard/shopsystem-ui-testsuite:dev-master
+composer require wirecard/shopsystem-ui-testsuite:dev-TPWDCEE-5955
 
 docker-compose run \
   -e SHOP_SYSTEM="${SHOP_SYSTEM}" \
