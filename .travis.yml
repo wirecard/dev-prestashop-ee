@@ -5,13 +5,13 @@ env:
   global:
     - SHOP_SYSTEM="prestashop"
     - COMPOSER_ARGS=--no-interaction
-    - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/compatible-shop-releases.txt
+    - RELEASES_FILE=${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/compatible-shop-releases.txt
     - SHOP_SYSTEM_UPDATE_COMMIT=UpdateLatestShopReleases
     - MANUAL_UITEST_TRIGGER_COMMIT=TestMyBuild
     - PATCH_RELEASE=patch
     - MINOR_RELEASE=minor
     - MAJOR_RELEASE=major
-    - PRESTASHOP_COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/new-shop-releases.txt
+    - COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/new-shop-releases.txt
 
 jobs:
   allow_failures:
@@ -69,9 +69,9 @@ jobs:
       - bash shop-extension-versions/.bin/get-latest-shop-release-versions.sh
     install:
       # check if files are same or not
-      - cmp --silent ${PRESTASHOP_RELEASES_FILE} ${PRESTASHOP_COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
+      - cmp --silent ${RELEASES_FILE} ${COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
       # check from which file to take versions
-      - if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_COMPATIBILITY_FILE}); fi
+      - if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${COMPATIBILITY_FILE}); fi
       - export LATEST_RELEASED_SHOP_EXTENSION_VERSION=`jq .[0].release ${TRAVIS_BUILD_DIR}/SHOPVERSIONS | tr -d '"'`
       - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
     script: bash .bin/setup-and-run-ui-tests.sh
