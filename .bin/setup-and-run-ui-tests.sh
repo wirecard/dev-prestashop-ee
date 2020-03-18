@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e # Exit with nonzero exit code if anything fails
 TIMESTAMP=$(date +%s)
-SHOP_SYSTEM="prestashop"
 NGROK_SUBDOMAIN="${RANDOM}${TIMESTAMP}-${SHOP_SYSTEM}-${PRESTASHOP_VERSION}"
 export NGROK_URL="http://${NGROK_SUBDOMAIN}.ngrok.io"
 

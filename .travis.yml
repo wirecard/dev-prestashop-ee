@@ -3,6 +3,7 @@ language: php
 
 env:
   global:
+    - SHOP_SYSTEM="prestashop"
     - COMPOSER_ARGS=--no-interaction
     - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/compatible-shop-releases.txt
     - SHOP_SYSTEM_UPDATE_COMMIT=UpdateLatestShopReleases
