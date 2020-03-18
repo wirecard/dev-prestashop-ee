@@ -4,13 +4,13 @@ language: php
 env:
   global:
     - COMPOSER_ARGS=--no-interaction
-    - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/.bin/compatible-shop-releases.txt
+    - PRESTASHOP_RELEASES_FILE=${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/compatible-shop-releases.txt
     - SHOP_SYSTEM_UPDATE_COMMIT=UpdateLatestShopReleases
     - MANUAL_UITEST_TRIGGER_COMMIT=TestMyBuild
     - PATCH_RELEASE=patch
     - MINOR_RELEASE=minor
     - MAJOR_RELEASE=major
-    - PRESTASHOP_COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/.bin/new-shop-releases.txt
+    - PRESTASHOP_COMPATIBILITY_FILE=${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/new-shop-releases.txt
 
 jobs:
   allow_failures:
@@ -62,7 +62,10 @@ jobs:
     env:
       - GATEWAY=API-TEST
       - PRESTASHOP_RELEASE_VERSION=1
-    before_install: skip
+    before_install:
+      - git clone https://github.com/brkicadis/shop-extension-versions.git
+      - ls
+      - bash shop-extension-versions/.bin/get-latest-shop-release-versions.sh
     install:
       # check if files are same or not
       - cmp --silent ${PRESTASHOP_RELEASES_FILE} ${PRESTASHOP_COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
@@ -74,6 +77,7 @@ jobs:
     after_script: skip
     after_success:
       - bash .bin/upload-logs-and-notify.sh
+      - bash shop-extension-versions/.bin/update-shop-release-versions.sh
     after_failure:
       - bash .bin/upload-logs-and-notify.sh fail
 
