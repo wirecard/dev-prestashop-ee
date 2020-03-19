@@ -65,10 +65,7 @@ jobs:
       - PRESTASHOP_RELEASE_VERSION=1
     before_install:
       - git clone https://github.com/brkicadis/shop-extension-versions.git
-      - echo "Poslije ovoga treba da ispise verziju:"
       - bash shop-extension-versions/.bin/get-latest-shop-release-versions.sh
-      - vim ${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/new-shop-releases.txt
-      - vim ${TRAVIS_BUILD_DIR}/shop-extension-versions/versions/prestashop-ee/compatible-shop-releases.txt
     install:
       - source shop-extension-versions/.bin/check_if_release_exist.sh
     script: bash .bin/setup-and-run-ui-tests.sh
