@@ -65,14 +65,14 @@ jobs:
       - PRESTASHOP_RELEASE_VERSION=1
     before_install:
       - git clone https://github.com/brkicadis/shop-extension-versions.git
-      - ls
       - bash shop-extension-versions/.bin/get-latest-shop-release-versions.sh
     install:
+      - source shop-extension-versions/.bin/check_if_release_exist.sh
       # check if files are same or not
-      - cmp --silent ${RELEASES_FILE} ${COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
+      #- cmp --silent ${RELEASES_FILE} ${COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
       # check from which file to take versions
-      - if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${COMPATIBILITY_FILE}); fi
-      - export LATEST_RELEASED_SHOP_EXTENSION_VERSION=`jq .[0].release ${TRAVIS_BUILD_DIR}/SHOPVERSIONS | tr -d '"'`
+      #- if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${COMPATIBILITY_FILE}); fi
+      #- export LATEST_RELEASED_SHOP_EXTENSION_VERSION=`jq .[0].release ${TRAVIS_BUILD_DIR}/SHOPVERSIONS | tr -d '"'`
       - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
     script: bash .bin/setup-and-run-ui-tests.sh
     after_script: skip
