@@ -285,10 +285,11 @@ class PaymentCreditCard extends Payment
      */
     protected function getFormTemplateData()
     {
-        $ccVaultEnabled = $this->configuration->getField('ccvault_enabled');
+        $ccVaultEnabled = (bool) $this->configuration->getField('ccvault_enabled');
+        $isGuest = (bool) $this->customer->isGuest();
 
         return array(
-            'ccvaultenabled' => (bool) $ccVaultEnabled,
+            'ccvaultenabled' => $ccVaultEnabled && !$isGuest,
         );
     }
 
