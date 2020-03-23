@@ -25,6 +25,7 @@ var Constants = {
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
     SAVE_CARD_CHECKMARK_ID: "#wirecard-store-card",
+    SELECT_TOKEN_RADIO_ID: 'input:radio[name="cc-reuse"]',
     CARD_LIST_ID: "#wd-card-list",
     CARD_SPINNER_ID: "#card-spinner",
     NOTIFICATION_ID: "error-notification"
@@ -179,6 +180,8 @@ function onFormDataReceived(formData)
 function onCardListReceived(cardList)
 {
     jQuery(Constants.CARD_LIST_ID).html(cardList.html);
+    var $tokenRadio = jQuery(Constants.SELECT_TOKEN_RADIO_ID);
+    $tokenRadio.on("change", onTokenSelected);
 }
 
 /**
@@ -192,6 +195,17 @@ function onCardDeletion()
     var cardId = $button.data("cardid");
 
     deleteCard(cardId);
+}
+
+/**
+ * Handles the selection of a card
+ *
+ * @since 2.9.0
+ */
+function onTokenSelected()
+{
+    var $button = jQuery(Constants.USE_CARD_BUTTON_ID);
+    $button.prop("disabled", false);
 }
 
 /**
