@@ -55,6 +55,9 @@ function initializeCreditCardEventHandlers()
     $document.on("click", Constants.DELETE_CARD_BUTTON_ID, onCardDeletion);
     $document.on("click", Constants.USE_CARD_BUTTON_ID, onCardSelected);
     $document.on("submit", Constants.PAYMENT_FORM_ID, onPaymentFormSubmit);
+    $document.on("hidden.bs.modal", Constants.MODAL_ID, onModalHide);
+
+    jQuery(Constants.STORED_CARD_BUTTON_ID).hide();
 }
 
 /**
@@ -178,6 +181,13 @@ function onFormDataReceived(formData)
  */
 function onCardListReceived(cardList)
 {
+    if (cardList.hasOwnProperty("count")) {
+        if (cardList.count > 0) {
+            jQuery(Constants.STORED_CARD_BUTTON_ID).show();
+        } else {
+            jQuery(Constants.STORED_CARD_BUTTON_ID).hide();
+        }
+    }
     jQuery(Constants.CARD_LIST_ID).html(cardList.html);
 }
 
@@ -206,6 +216,16 @@ function onCardSelected()
     jQuery(Constants.MODAL_ID).modal("hide");
     setSpinnerState(SpinnerState.VISIBLE);
     initializeForm(tokenId);
+}
+
+/**
+ * Get list of cards after hiding the modal
+ *
+ * @since 2.9.0
+ */
+function onModalHide()
+{
+    getCardList();
 }
 
 /*
