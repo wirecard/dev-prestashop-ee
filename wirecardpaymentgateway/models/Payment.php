@@ -84,6 +84,9 @@ abstract class Payment extends PaymentOption
     /** @var WirecardLogger $logger */
     protected $logger;
 
+    /** @var \Customer $customer */
+    protected $customer;
+
     /**
      * WirecardPayment constructor.
      *
@@ -112,6 +115,7 @@ abstract class Payment extends PaymentOption
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->getTranslatedString($this->configuration->getField('title')));
+        $this->customer = $context->customer;
 
         $this->logger = new WirecardLogger();
         $this->credentialsConfig = CredentialsConfiguration::getInstance(
