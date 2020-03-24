@@ -25,7 +25,7 @@ var Constants = {
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
     SAVE_CARD_CHECKMARK_ID: "#wirecard-store-card",
-    SELECT_TOKEN_RADIO_ID: 'input:radio[name="cc-reuse"]',
+    SELECT_TOKEN_RADIO_ID: "input:radio[name='cc-reuse']",
     CARD_LIST_ID: "#wd-card-list",
     CARD_SPINNER_ID: "#card-spinner",
     NOTIFICATION_ID: "error-notification"
