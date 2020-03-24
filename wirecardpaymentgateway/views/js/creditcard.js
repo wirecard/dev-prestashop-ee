@@ -187,6 +187,9 @@ function onCardListReceived(cardList)
             jQuery(Constants.STORED_CARD_BUTTON_ID).show();
         } else {
             jQuery(Constants.STORED_CARD_BUTTON_ID).hide();
+            if ($(Constants.MODAL_ID).is(":visible")) {
+                onCardSelected();
+            }
         }
     }
     jQuery(Constants.CARD_LIST_ID).html(cardList.html);
