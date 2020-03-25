@@ -46,7 +46,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $this->context->smarty->assign([ 'cards' => $cards ]);
         $html = $this->context->smarty->fetch($templatePath);
 
-        $response = new JsonResponse([ 'html' => $html ]);
+        $response = new JsonResponse([ 'count' => count($cards), 'html' => $html ]);
         $response->send();
     }
 
