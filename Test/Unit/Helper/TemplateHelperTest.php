@@ -16,7 +16,7 @@ class TemplateHelperTest extends \PHPUnit_Framework_TestCase
         $path = TemplateHelper::getFrontendTemplatePath('creditcard');
 
         $this->assertEquals(
-            'modules/wirecardpaymentgateway/views/templates/front/creditcard.tpl',
+            _PS_MODULE_DIR_ . '/wirecardpaymentgateway/views/templates/front/creditcard.tpl',
             $path
         );
     }

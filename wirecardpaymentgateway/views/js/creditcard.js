@@ -25,6 +25,7 @@ var Constants = {
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
     SAVE_CARD_CHECKMARK_ID: "#wirecard-store-card",
+    SELECT_TOKEN_RADIO_ID: "input:radio[name='cc-reuse']",
     CARD_LIST_ID: "#wd-card-list",
     CARD_SPINNER_ID: "#card-spinner",
     NOTIFICATION_ID: "error-notification"
@@ -55,6 +56,9 @@ function initializeCreditCardEventHandlers()
     $document.on("click", Constants.DELETE_CARD_BUTTON_ID, onCardDeletion);
     $document.on("click", Constants.USE_CARD_BUTTON_ID, onCardSelected);
     $document.on("submit", Constants.PAYMENT_FORM_ID, onPaymentFormSubmit);
+    $document.on("hidden.bs.modal", Constants.MODAL_ID, onModalHide);
+
+    jQuery(Constants.STORED_CARD_BUTTON_ID).hide();
 }
 
 /**
@@ -178,7 +182,19 @@ function onFormDataReceived(formData)
  */
 function onCardListReceived(cardList)
 {
+    if (cardList.hasOwnProperty("count")) {
+        if (cardList.count > 0) {
+            jQuery(Constants.STORED_CARD_BUTTON_ID).show();
+        } else {
+            jQuery(Constants.STORED_CARD_BUTTON_ID).hide();
+            if ($(Constants.MODAL_ID).is(":visible")) {
+                onCardSelected();
+            }
+        }
+    }
     jQuery(Constants.CARD_LIST_ID).html(cardList.html);
+    var $tokenRadio = jQuery(Constants.SELECT_TOKEN_RADIO_ID);
+    $tokenRadio.on("change", onTokenSelected);
 }
 
 /**
@@ -195,6 +211,17 @@ function onCardDeletion()
 }
 
 /**
+ * Handles the selection of a card
+ *
+ * @since 2.9.0
+ */
+function onTokenSelected()
+{
+    var $button = jQuery(Constants.USE_CARD_BUTTON_ID);
+    $button.prop("disabled", false);
+}
+
+/**
  * Reloads the seamless form with a pre-existing token
  *
  * @since 2.4.0
@@ -206,6 +233,16 @@ function onCardSelected()
     jQuery(Constants.MODAL_ID).modal("hide");
     setSpinnerState(SpinnerState.VISIBLE);
     initializeForm(tokenId);
+}
+
+/**
+ * Get list of cards after hiding the modal
+ *
+ * @since 2.9.0
+ */
+function onModalHide()
+{
+    getCardList();
 }
 
 /*
