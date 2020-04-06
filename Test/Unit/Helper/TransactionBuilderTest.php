@@ -11,22 +11,22 @@ use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 class TransactionBuilderTest extends PHPUnit_Framework_TestCase
 {
-	private $transaction;
+    private $transaction;
 
-	private $context;
+    private $context;
 
-	public function setUp()
-	{
-		$this->context = new Context();
-		$this->context->cart->setId(123);
-	}
+    public function setUp()
+    {
+        $this->context = new Context();
+        $this->context->cart->setId(123);
+    }
 
-	public function testCreditCardOrderNumber()
-	{
-		$transactionBuilder = new TransactionBuilder('creditcard');
-		$transactionBuilder->setContext($this->context);
-		$transactionBuilder->setOrderId('321');
-		$this->transaction = $transactionBuilder->buildTransaction();
-		$this->assertEquals($this->transaction->getOrderNumber(), '321');
-	}
+    public function testCreditCardOrderNumber()
+    {
+        $transactionBuilder = new TransactionBuilder('creditcard');
+        $transactionBuilder->setContext($this->context);
+        $transactionBuilder->setOrderId('321');
+        $this->transaction = $transactionBuilder->buildTransaction();
+        $this->assertEquals($this->transaction->getOrderNumber(), '321');
+    }
 }
