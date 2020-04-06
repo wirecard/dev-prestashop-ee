@@ -259,6 +259,9 @@ class TransactionBuilder
                 $lastName
             );
         }
+        else {
+        	$this->transaction->setOrderNumber($this->orderId);
+        }
     }
 
     /**
