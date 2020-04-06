@@ -296,4 +296,13 @@ class TransactionBuilder
 
         return $order->id;
     }
+
+	/**
+	 * Set context for the transaction
+	 * @since 2.10.0
+	 */
+    public function setContext($context) {
+    	$this->context = $context;
+    	$this->cart = $context->cart;
+    }
 }
