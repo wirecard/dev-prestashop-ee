@@ -297,8 +297,8 @@ class TransactionBuilder
         return $order->id;
     }
 
-	/**
-	 * Set context for the transaction
+    /**
+     * Set context for the transaction
      *
      * @param $context
      *
