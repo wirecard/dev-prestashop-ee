@@ -300,7 +300,7 @@ class TransactionBuilder
     /**
      * Set context for the transaction
      *
-     * @param $context
+     * @param Context $context
      *
      * @since 2.10.0
      */
