@@ -21,6 +21,7 @@ var Constants = {
     CONTAINER_ID: "payment-processing-gateway-credit-card-form",
     PAYMENT_FORM_ID: "form[action*=\"creditcard\"]",
     CREDITCARD_RADIO_ID: "input[name=\"payment-option\"][data-module-name=\"wd-creditcard\"]",
+    PAYMENT_METHODS_RADIO_ID: "input[name=\"payment-option\"]",
     USE_CARD_BUTTON_ID: "#use-new-card",
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
@@ -28,7 +29,10 @@ var Constants = {
     SELECT_TOKEN_RADIO_ID: "input:radio[name='cc-reuse']",
     CARD_LIST_ID: "#wd-card-list",
     CARD_SPINNER_ID: "#card-spinner",
-    NOTIFICATION_ID: "error-notification"
+    NOTIFICATION_ID: "error-notification",
+    NOTIFICATIONS_ID: "#notifications",
+    ERROR_ERRORS: "errors",
+    ERROR_PREFIX: "error_"
 };
 
 var SpinnerState = {
@@ -37,6 +41,9 @@ var SpinnerState = {
 };
 
 jQuery(function () {
+    jQuery(document).on("click", Constants.PAYMENT_METHODS_RADIO_ID, function () {
+        jQuery(Constants.NOTIFICATIONS_ID).hide();
+    });
     jQuery(document).on("click", Constants.CREDITCARD_RADIO_ID, onPaymentMethodSelected);
 });
 
@@ -459,7 +466,7 @@ function onSeamlessFormError(error)
 {
     let $form = jQuery(Constants.PAYMENT_FORM_ID);
     let $errorList = [];
-    if (error.hasOwnProperty("errors")) {
+    if (error.hasOwnProperty(Constants.ERROR_ERRORS)) {
         error.errors.forEach((responseKey) => {
             $errorList.push(responseKey.error.description);
         });
@@ -467,7 +474,7 @@ function onSeamlessFormError(error)
     let responseKeys = Object.keys(error);
     responseKeys.forEach(
         function ( responseKey ) {
-            if (responseKey.startsWith("error_")) {
+            if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
                 $errorList.push(error[responseKey]);
             }
         }
