@@ -32,6 +32,7 @@ var Constants = {
     NOTIFICATION_ID: "error-notification",
     NOTIFICATIONS_ID: "#notifications",
     DEFAULT_ERROR_MESSAGE: "Something went wrong!",
+    ERROR_WPP: "errorWPP",
     ERROR_ERRORS: "errors",
     ERROR_PREFIX: "error_"
 };
@@ -183,7 +184,7 @@ function onFormDataReceived(formData)
         });
     } else {
         onSeamlessFormError({
-            error_1: Constants.DEFAULT_ERROR_MESSAGE
+            errorWPP: Constants.DEFAULT_ERROR_MESSAGE
         });
     }
 }
@@ -478,14 +479,14 @@ function onSeamlessFormError(error)
             $errorList.push(responseKey.error.description);
         });
     }
-    let responseKeys = Object.keys(error);
-    responseKeys.forEach(
-        function ( responseKey ) {
-            if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
-                $errorList.push(error[responseKey]);
-            }
+    if (error.hasOwnProperty(Constants.ERROR_WPP)) {
+        $errorList.push(error.errorWPP);
+    }
+    Object.entries(error).forEach(([responseKey, value]) => {
+        if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
+            $errorList.push(value);
         }
-    );
+    });
     let $input = jQuery("<input>").attr({
         type: "hidden",
         value: $errorList,
