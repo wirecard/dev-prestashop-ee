@@ -31,6 +31,7 @@ var Constants = {
     CARD_SPINNER_ID: "#card-spinner",
     NOTIFICATION_ID: "error-notification",
     NOTIFICATIONS_ID: "#notifications",
+    DEFAULT_ERROR_MESSAGE: "Something went wrong!",
     ERROR_ERRORS: "errors",
     ERROR_PREFIX: "error_"
 };
@@ -173,12 +174,18 @@ function onFormDataReceived(formData)
 
     attachFormField($form, "cart_id", formData.field_value_1);
 
-    WPP.seamlessRender({
-        requestData: formData,
-        wrappingDivId: Constants.CONTAINER_ID,
-        onSuccess: onFormRendered,
-        onError: onSeamlessFormError
-    });
+    if (typeof WPP !== "undefined") {
+        WPP.seamlessRender({
+            requestData: formData,
+            wrappingDivId: Constants.CONTAINER_ID,
+            onSuccess: onFormRendered,
+            onError: onSeamlessFormError
+        });
+    } else {
+        onSeamlessFormError({
+            error_1: Constants.DEFAULT_ERROR_MESSAGE
+        });
+    }
 }
 
 /**
