@@ -209,6 +209,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_661a6723d5ca05ecf8
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_2bf596c7158df8d7b10e2318ace1297c'] = 'Test mislukt, gelieve uw gegevens te controleren.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = 'Configuratie handelaar succesvol getest.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = 'Opgelet: Gelieve uw gegevens binnen de URL-instellingsvelden te controleren. U hebt mogelijk een actieve account geconfigureerd/gecombineerd met een testaccount.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>payment_8d6ab051f4baaec8b4b7fd98df75edaf'] = 'Something went wrong. Please try again or use different Payment method.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_f9e92a0727609b56780f28afa11da702'] = 'Ingeschakeld';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_9963e13ca603bfe6f09af5673b058eb7'] = 'Uitgeschakeld';
 $_MODULE['<{wirecardpaymentgateway}prestashop>generalsettingsservice_98c717a2e7b0e8ff05988fbf8f5e8b9f'] = '';

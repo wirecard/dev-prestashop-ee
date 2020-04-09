@@ -209,6 +209,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_661a6723d5ca05ecf8
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_2bf596c7158df8d7b10e2318ace1297c'] = '測試失敗，請檢查您的認證。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = '商戶組態已成功通過測試。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = '注意：請在 URL 設定欄位中檢查您的認證。您可能已將生產帳戶設定/組合到測試帳戶。';
+$_MODULE['<{wirecardpaymentgateway}prestashop>payment_8d6ab051f4baaec8b4b7fd98df75edaf'] = 'Something went wrong. Please try again or use different Payment method.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_f9e92a0727609b56780f28afa11da702'] = '已啟用';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_9963e13ca603bfe6f09af5673b058eb7'] = '已停用';
 $_MODULE['<{wirecardpaymentgateway}prestashop>generalsettingsservice_98c717a2e7b0e8ff05988fbf8f5e8b9f'] = '';

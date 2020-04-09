@@ -209,6 +209,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_661a6723d5ca05ecf8
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_2bf596c7158df8d7b10e2318ace1297c'] = '테스트 실패함, 자격증명을 확인하십시오.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = '상인 구성이 성공적으로 테스트되었습니다.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = '주의: URL 설정 필드에서 귀하의 로그인 정보를 확인해주십시오. 귀하는 시험용 계정과 실제 사용 계정을 구성/조합하였을 수도 있습니다.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>payment_8d6ab051f4baaec8b4b7fd98df75edaf'] = 'Something went wrong. Please try again or use different Payment method.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_f9e92a0727609b56780f28afa11da702'] = '활성화됨';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_9963e13ca603bfe6f09af5673b058eb7'] = '비활성화됨';
 $_MODULE['<{wirecardpaymentgateway}prestashop>generalsettingsservice_98c717a2e7b0e8ff05988fbf8f5e8b9f'] = '';
