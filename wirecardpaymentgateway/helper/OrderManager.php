@@ -118,16 +118,14 @@ class OrderManager
      */
     private function initializeOrderState($state)
     {
-        $translationKey = $this->getTranslationKeyForOrderState($state);
         $orderState = new \OrderState();
         $orderState->name = array();
         foreach (\Language::getLanguages(false) as $language) {
-            $orderStateInfo = $this->module->getTranslationForLanguage(
+            $orderState->name[$language['id_lang']] = $this->getOrderStateTranslation(
                 $language['iso_code'],
-                $translationKey,
+                $state,
                 self::TRANSLATION_FILE
             );
-            $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
         $orderState->send_email = false;
         $orderState->color = self::COLOR_LIGHT_BLUE;
@@ -141,20 +139,24 @@ class OrderManager
     }
 
     /**
-     * Get translation key for specific order state
-     *
-     * @param $state
+     * @param $lang
+     * @param $orderState
+     * @param $file
      * @return string
      * @throws \Exception
-     * @since 2.8.0
      */
-    private function getTranslationKeyForOrderState($state)
+    private function getOrderStateTranslation($lang, $orderState, $file)
     {
-        $translationKeys = self::ORDER_STATE_TRANSLATION_KEY_MAP;
-        if (!isset($translationKeys[$state])) {
-            throw new \Exception('Order state not exists');
+        switch ($orderState) {
+            case self::WIRECARD_OS_STARTING:
+                return $this->module->getTranslationForLanguage($lang, 'order_state_payment_started', $file);
+            case self::WIRECARD_OS_AUTHORIZATION:
+                return $this->module->getTranslationForLanguage($lang, 'order_state_payment_authorized', $file);
+            case self::WIRECARD_OS_AWAITING:
+                return $this->module->getTranslationForLanguage($lang, 'order_state_payment_awaiting', $file);
+            default:
+                throw new \Exception('Order state not exists');
         }
-        return $translationKeys[$state];
     }
 
     /**
