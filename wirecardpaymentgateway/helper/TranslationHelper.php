@@ -40,7 +40,7 @@ trait TranslationHelper
         );
 
         if ($translation === $key) {
-            $translation = \WirecardPaymentGateway::getTranslationForLanguage('en', $key, $specific);
+            $translation = \WirecardPaymentGateway::getTranslationForLanguage($iso_lang, $key, $specific);
         }
 
         return $translation;

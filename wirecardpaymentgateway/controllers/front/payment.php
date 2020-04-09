@@ -35,14 +35,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      */
     const TRANSLATION_FILE = 'payment';
 
-    /** @var string */
-    const ERROR_MESSAGE_GENERIC = 'ERROR_MESSAGE_GENERIC';
-
-    /** @var array */
-    const PAYMENT_TRANSLATION_KEY_MAP = [
-        self::ERROR_MESSAGE_GENERIC => 'error_message_generic'
-    ];
-
     /** @var TransactionBuilder */
     private $transactionBuilder;
 
@@ -164,22 +156,34 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     private function getTranslatedErrorMessages($errorMessages)
     {
         $translatedMessages = array();
-        $translationKeysMap = self::PAYMENT_TRANSLATION_KEY_MAP;
         foreach ($errorMessages as $errorMessage) {
-            $errorMessage = str_replace('"', "'", $errorMessage);
-            if (in_array($errorMessage, $translationKeysMap)) {
-                array_push(
-                    $translatedMessages,
-                    $this->getTranslatedString(
-                        $errorMessage,
-                        $this->getUserFrontendLanguage()
-                    )
-                );
-            } else {
-                array_push($translatedMessages, $errorMessage);
-            }
+            array_push(
+                $translatedMessages,
+                $this->translateErrorMessage(
+                    $errorMessage,
+                    $this->getUserFrontendLanguage()
+                )
+            );
         }
         return $translatedMessages;
+    }
+
+    /**
+     * Translate error message key
+     * @param $errorMessageKey
+     * @param $lang_code
+     * @return string
+     *
+     * @since 2.10.0
+     */
+    private function translateErrorMessage($errorMessageKey, $lang_code)
+    {
+        switch ($errorMessageKey) {
+            case 'error_message_generic':
+                return $this->getTranslatedString('error_message_generic', $lang_code);
+            default:
+                return $errorMessageKey;
+        }
     }
 
     /**
