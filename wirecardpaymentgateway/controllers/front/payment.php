@@ -14,6 +14,7 @@ use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -25,6 +26,23 @@ use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
  */
 class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontController
 {
+    use TranslationHelper;
+
+    /**
+     * @var string
+     *
+     * @since 2.10.0
+     */
+    const TRANSLATION_FILE = 'payment';
+
+    /** @var string */
+    const ERROR_MESSAGE_GENERIC = 'ERROR_MESSAGE_GENERIC';
+
+    /** @var array */
+    const PAYMENT_TRANSLATION_KEY_MAP = [
+        self::ERROR_MESSAGE_GENERIC => 'error_message_generic'
+    ];
+
     /** @var TransactionBuilder */
     private $transactionBuilder;
 
@@ -36,7 +54,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     public function postProcess()
     {
         $paymentType = \Tools::getValue('payment_type');
-        $errorNotification = \Tools::getValue('error-notification');
+        $errorMessages = json_decode(urldecode(\Tools::getValue('error-notification')));
 
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
@@ -47,7 +65,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $this->transactionBuilder = new TransactionBuilder($paymentType);
 
         try {
-            $this->determineErrorException($errorNotification);
+            $this->determineErrorException($this->getTranslatedErrorMessages($errorMessages));
             // Create order and get orderId
             $orderId = $this->determineFinalOrderId();
             $transaction = $this->transactionBuilder->buildTransaction();
@@ -63,16 +81,16 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      /**
      * Check the notification field for an exception trigger
      *
-     * @param array $errorNotification
+     * @param array $errorMessages
      *
      * @return boolean
      * @throws Exception
      * @since 2.7.0
      */
-    private function determineErrorException($errorNotification)
+    private function determineErrorException($errorMessages)
     {
-        if ($errorNotification) {
-            throw new Exception($errorNotification);
+        if (count($errorMessages)) {
+            throw new Exception(implode(", ", $errorMessages));
         }
         return true;
     }
@@ -135,5 +153,50 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $response_factory = new ProcessablePaymentResponseFactory($response, $order);
         $processing_strategy = $response_factory->getResponseProcessing();
         $processing_strategy->process();
+    }
+
+    /**
+     * @param array $errorMessages
+     * @return array
+     *
+     * @since 2.10.0
+     */
+    private function getTranslatedErrorMessages($errorMessages)
+    {
+        $translatedMessages = array();
+        $translationKeysMap = self::PAYMENT_TRANSLATION_KEY_MAP;
+        foreach ($errorMessages as $errorMessage) {
+            $errorMessage = str_replace('"', "'", $errorMessage);
+            if (in_array($errorMessage, $translationKeysMap)) {
+                array_push(
+                    $translatedMessages,
+                    $this->getTranslatedString(
+                        $errorMessage,
+                        $this->getUserFrontendLanguage()
+                    )
+                );
+            } else {
+                array_push($translatedMessages, $errorMessage);
+            }
+        }
+        return $translatedMessages;
+    }
+
+    /**
+     * Get frontend language from current user
+     * @return string
+     *
+     * @since 2.10.0
+     */
+    private function getUserFrontendLanguage()
+    {
+        global $cookie;
+        $id_lang = $cookie->id_lang;
+        foreach (Language::getLanguages() as $language) {
+            if ($id_lang === intval($language["id_lang"])) {
+                return $language['iso_code'];
+            }
+        }
+        return 'en';
     }
 }

@@ -15,6 +15,7 @@ trait TranslationHelper
      * Overwritten translation function, used in the module
      *
      * @param string $key translation key
+     * @param string $iso_lang
      * @param string|bool $specific filename of the translation key
      *
      * @return string translation
@@ -22,7 +23,7 @@ trait TranslationHelper
      *
      * @SuppressWarnings(PHPMD.ShortMethodName)
      */
-    protected function getTranslatedString($key, $specific = false)
+    protected function getTranslatedString($key, $iso_lang = 'en', $specific = false)
     {
         if (!$specific && defined("static::TRANSLATION_FILE")) {
             $specific = static::TRANSLATION_FILE;

@@ -31,7 +31,7 @@ var Constants = {
     CARD_SPINNER_ID: "#card-spinner",
     NOTIFICATION_ID: "error-notification",
     NOTIFICATIONS_ID: "#notifications",
-    DEFAULT_ERROR_MESSAGE: "Something went wrong!",
+    ERROR_MESSAGE_GENERIC: "error_message_generic",
     ERROR_WPP: "errorWPP",
     ERROR_ERRORS: "errors",
     ERROR_PREFIX: "error_"
@@ -184,7 +184,7 @@ function onFormDataReceived(formData)
         });
     } else {
         onSeamlessFormError({
-            errorWPP: Constants.DEFAULT_ERROR_MESSAGE
+            errorWPP: Constants.ERROR_MESSAGE_GENERIC
         });
     }
 }
@@ -489,7 +489,7 @@ function onSeamlessFormError(error)
     });
     let $input = jQuery("<input>").attr({
         type: "hidden",
-        value: $errorList,
+        value: encodeURIComponent(JSON.stringify($errorList)),
         name: Constants.NOTIFICATION_ID,
     });
     $form.append($input);
