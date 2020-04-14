@@ -139,9 +139,9 @@ class OrderManager
     }
 
     /**
-     * @param $lang
-     * @param $orderState
-     * @param $file
+     * @param string $lang
+     * @param string $orderState
+     * @param string $file
      * @return string
      * @throws \Exception
      */
