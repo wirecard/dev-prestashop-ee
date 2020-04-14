@@ -489,7 +489,7 @@ function onSeamlessFormError(error)
     });
     let $input = jQuery("<input>").attr({
         type: "hidden",
-        value: encodeURIComponent(JSON.stringify($errorList)),
+        value: JSON.stringify($errorList),
         name: Constants.NOTIFICATION_ID,
     });
     $form.append($input);
