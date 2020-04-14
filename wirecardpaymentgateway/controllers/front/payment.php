@@ -30,12 +30,6 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      * @var string
      */
     const REDIRECT_LINK_ORDER = 'order';
-    /**
-     * @var string
-     *
-     * @since 2.10.0
-     */
-    const TRANSLATION_FILE = 'payment';
 
     /** @var TransactionBuilder */
     private $transactionBuilder;

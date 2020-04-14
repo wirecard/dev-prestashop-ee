@@ -14,11 +14,19 @@ use Language;
 /**
  * Class PaymentErrorHelper
  * @package WirecardEE\Prestashop\Helper
+ *
  * @since 2.10.0
  */
 class PaymentErrorHelper
 {
     use TranslationHelper;
+
+    /**
+     * @var string
+     *
+     * @since 2.10.0
+     */
+    const TRANSLATION_FILE = 'payment';
 
     /**
      * @param array $errorMessages
