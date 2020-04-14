@@ -43,7 +43,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     {
         $paymentType = \Tools::getValue('payment_type');
         $errorNotification = \Tools::getValue('error-notification');
-        $errorMessages = Tools::jsonDecode($errorNotification);
+        $errorNotifications = Tools::jsonDecode($errorNotification);
 
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
@@ -52,7 +52,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $operation = $shopConfigService->getField('payment_action');
         $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
         $this->transactionBuilder = new TransactionBuilder($paymentType);
-        $this->translateErrorMessages($errorMessages);
+        $this->showErrorMessages($errorNotifications);
 
         try {
             // Create order and get orderId
@@ -68,16 +68,16 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     }
 
     /**
-     * Check if error message exists and redirects if does
+     * Check if error message exists and if yes, redirect page
      * If error message is a key, key is translated first
      *
-     * @param string[] $errorMessages
+     * @param string[] $errorNotifications
      */
-    private function translateErrorMessages($errorMessages)
+    private function showErrorMessages($errorNotifications)
     {
-        if (count($errorMessages)) {
+        if (count($errorNotifications)) {
             $paymentErrorHelper = new PaymentErrorHelper();
-            $translatedErrorMessages = $paymentErrorHelper->getTranslatedErrorMessages($errorMessages);
+            $translatedErrorMessages = $paymentErrorHelper->getTranslatedErrorMessages($errorNotifications);
             foreach ($translatedErrorMessages as $errorMessage) {
                 $this->errors[] = $errorMessage;
             }
