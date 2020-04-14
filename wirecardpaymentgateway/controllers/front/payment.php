@@ -41,8 +41,8 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
      */
     public function postProcess()
     {
-        $paymentType = \Tools::getValue('payment_type');
-        $errorNotification = \Tools::getValue('error-notification');
+        $paymentType = Tools::getValue('payment_type');
+        $errorNotification = Tools::getValue('error-notification');
         $errorNotifications = Tools::jsonDecode($errorNotification);
 
         //remove the cookie if a credit card payment
@@ -95,7 +95,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     private function determineFinalOrderId()
     {
         // $cartId used for cart_id within initial request
-        $cartId = \Tools::getValue('cart_id');
+        $cartId = Tools::getValue('cart_id');
         $orderId = Order::getIdByCartId($cartId);
 
         if ($orderId) {
@@ -121,10 +121,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     private function executeTransaction($transaction, $operation, $config)
     {
         $transactionService = new TransactionService($config, new WirecardLogger());
-        $isSeamlessTransaction = \Tools::getValue('jsresponse');
+        $isSeamlessTransaction = Tools::getValue('jsresponse');
 
         if ($isSeamlessTransaction) {
-            return $transactionService->handleResponse(\Tools::getAllValues());
+            return $transactionService->handleResponse(Tools::getAllValues());
         }
 
         return $transactionService->process($transaction, $operation);
