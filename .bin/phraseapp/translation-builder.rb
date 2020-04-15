@@ -92,6 +92,9 @@ class TranslationBuilder
     file.rewind
     translation_keys += file.read.scan(/\'PHRASEAPP_KEY_.*?\'\s=>\s\'(.*)\'/).uniq
 
+    file.rewind
+    translation_keys += file.read.scan(/self::WIRECARD_OS_.*?\s=>\s\'(.*)\'/).uniq
+
     file.close
 
     translation_keys
