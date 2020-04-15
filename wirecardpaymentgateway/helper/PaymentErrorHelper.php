@@ -43,7 +43,7 @@ class PaymentErrorHelper
         $translatedMessages = [];
         foreach ($errorMessages as $errorMessage) {
             if ($this->isKeyInArray($errorMessage)) {
-                $this->getTranslatedString($errorMessage, $this->getUserFrontendLanguage());
+                $translatedMessages[] = $this->getTranslatedString($errorMessage, $this->getUserFrontendLanguage());
             } else {
                 $translatedMessages[] = $errorMessage;
             }
@@ -51,11 +51,11 @@ class PaymentErrorHelper
         return $translatedMessages;
     }
 
-    private function isKeyInArray($key)
+    private function isKeyInArray($translationKey)
     {
-        $paymentErrorKeys = self::PAYMENT_ERRORS_KEY_MAP;
-        foreach ($paymentErrorKeys as $paymentErrorKey => $paymentErrorKeyValue) {
-            if ($key === $paymentErrorKeyValue) {
+        $paymentErrorKeyMap = self::PAYMENT_ERRORS_KEY_MAP;
+        foreach (array_values($paymentErrorKeyMap) as $paymentErrorKey) {
+            if ($translationKey === $paymentErrorKey) {
                 return true;
             }
         }
