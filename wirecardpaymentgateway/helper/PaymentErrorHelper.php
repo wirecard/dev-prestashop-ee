@@ -21,12 +21,16 @@ class PaymentErrorHelper
 {
     use TranslationHelper;
 
+    const PAYMENT_ERRORS_KEY_MAP = [
+        'PHRASEAPP_KEY_GENERIC_MESSAGE' => 'error_message_generic',
+    ];
+
     /**
      * @var string
      *
      * @since 2.10.0
      */
-    const TRANSLATION_FILE = 'payment';
+    const TRANSLATION_FILE = 'paymenterrorhelper';
 
     /**
      * @param array $errorMessages
@@ -38,30 +42,24 @@ class PaymentErrorHelper
     {
         $translatedMessages = [];
         foreach ($errorMessages as $errorMessage) {
-            $translatedMessages[] = $this->translateErrorMessage(
-                $errorMessage,
-                $this->getUserFrontendLanguage()
-            );
+            if ($this->isKeyInArray($errorMessage)) {
+                $this->getTranslatedString($errorMessage, $this->getUserFrontendLanguage());
+            } else {
+                $translatedMessages[] = $errorMessage;
+            }
         }
         return $translatedMessages;
     }
 
-    /**
-     * Translate error message key
-     * @param string $errorMessageKey
-     * @param string $lang_code
-     * @return string
-     *
-     * @since 2.10.0
-     */
-    private function translateErrorMessage($errorMessageKey, $lang_code)
+    private function isKeyInArray($key)
     {
-        switch ($errorMessageKey) {
-            case 'error_message_generic':
-                return $this->getTranslatedString('error_message_generic', $lang_code);
-            default:
-                return $errorMessageKey;
+        $paymentErrorKeys = self::PAYMENT_ERRORS_KEY_MAP;
+        foreach ($paymentErrorKeys as $paymentErrorKey => $paymentErrorKeyValue) {
+            if ($key === $paymentErrorKeyValue) {
+                return true;
+            }
         }
+        return false;
     }
 
     /**

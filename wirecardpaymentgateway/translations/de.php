@@ -209,13 +209,13 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardsupport_661a6723d5ca05ecf8
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_2bf596c7158df8d7b10e2318ace1297c'] = 'Test fehlgeschlagen. Überprüfen Sie Ihre Zugangsdaten.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a70272b94e66'] = 'Die Konfigurationseinstellungen wurden erfolgreich getestet.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = 'Achtung: Bitte überprüfen Sie Ihre Konfigurationsdaten in den URL-Eingabefeldern. Möglicherweise haben Sie ein Produktivkonto mit einem Testkonto kombiniert.';
-$_MODULE['<{wirecardpaymentgateway}prestashop>payment_8d6ab051f4baaec8b4b7fd98df75edaf'] = 'Something went wrong. Please try again or use different Payment method.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_f9e92a0727609b56780f28afa11da702'] = 'Aktiviert';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_9963e13ca603bfe6f09af5673b058eb7'] = 'Deaktiviert';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymenterrorhelper_8d6ab051f4baaec8b4b7fd98df75edaf'] = 'Something went wrong. Please try again or use different Payment method.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>generalsettingsservice_98c717a2e7b0e8ff05988fbf8f5e8b9f'] = '';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_b0ff4ac4438ae8ef3f9883948315cdcf'] = 'Wirecard Bezahlung gestartet';
-$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_5b16deb11b7f93bc6d2dfe2e1ca5f4b3'] = 'Wirecard Zahlung autorisiert';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_8eec2577851ed66a286d224c7270bb15'] = 'Wirecard Bezahlung ausständig';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_5b16deb11b7f93bc6d2dfe2e1ca5f4b3'] = 'Wirecard Zahlung autorisiert';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_fbedc569ae12c464ee7929c3d8a1a949'] = 'Zurück';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_c01d298d870c928aef65a36ed62c30ea'] = 'Transaktionsdetails';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_3e3e086087769006d29d46a8b34264af'] = 'Transaktion';

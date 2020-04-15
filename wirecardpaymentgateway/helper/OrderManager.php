@@ -36,9 +36,9 @@ class OrderManager
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
 
     const ORDER_STATE_TRANSLATION_KEY_MAP = [
-        self::WIRECARD_OS_STARTING => 'order_state_payment_started',
-        self::WIRECARD_OS_AWAITING => 'order_state_payment_awaiting',
-        self::WIRECARD_OS_AUTHORIZATION => 'order_state_payment_authorized'
+        'PHRASEAPP_KEY_WIRECARD_OS_STARTING' => 'order_state_payment_started',
+        'PHRASEAPP_KEY_WIRECARD_OS_AWAITING' => 'order_state_payment_awaiting',
+        'PHRASEAPP_KEY_WIRECARD_OS_AUTHORIZATION' => 'order_state_payment_authorized'
     ];
 
     const COLOR_LIGHT_BLUE = 'lightblue';
@@ -118,14 +118,16 @@ class OrderManager
      */
     private function initializeOrderState($state)
     {
+        $translationKey = $this->getTranslationKeyForOrderState($state);
         $orderState = new \OrderState();
         $orderState->name = array();
         foreach (\Language::getLanguages(false) as $language) {
-            $orderState->name[$language['id_lang']] = $this->getOrderStateTranslation(
+            $orderStateInfo = $this->module->getTranslationForLanguage(
                 $language['iso_code'],
-                $state,
+                $translationKey,
                 self::TRANSLATION_FILE
             );
+            $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
         $orderState->send_email = false;
         $orderState->color = self::COLOR_LIGHT_BLUE;
@@ -139,24 +141,20 @@ class OrderManager
     }
 
     /**
-     * @param string $lang
-     * @param string $orderState
-     * @param string $file
+     * Get translation key for specific order state
+     *
+     * @param $state
      * @return string
      * @throws \Exception
+     * @since 2.8.0
      */
-    private function getOrderStateTranslation($lang, $orderState, $file)
+    private function getTranslationKeyForOrderState($state)
     {
-        switch ($orderState) {
-            case self::WIRECARD_OS_STARTING:
-                return $this->module->getTranslationForLanguage($lang, 'order_state_payment_started', $file);
-            case self::WIRECARD_OS_AUTHORIZATION:
-                return $this->module->getTranslationForLanguage($lang, 'order_state_payment_authorized', $file);
-            case self::WIRECARD_OS_AWAITING:
-                return $this->module->getTranslationForLanguage($lang, 'order_state_payment_awaiting', $file);
-            default:
-                throw new \Exception('Order state not exists');
+        $translationKeys = self::ORDER_STATE_TRANSLATION_KEY_MAP;
+        if (!isset($translationKeys[$state])) {
+            throw new \Exception('Order state not exists');
         }
+        return $translationKeys[$state];
     }
 
     /**
