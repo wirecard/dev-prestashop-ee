@@ -78,13 +78,7 @@ class TranslationBuilder
     translation_keys = file.read.scan(/->getTranslatedString\(\'(.*)\'\)/).uniq
 
     file.rewind
-    translation_keys += file.read.scan(/->getTranslatedString\(\'(.*)\'\, \$lang_code\)/).uniq
-
-    file.rewind
     translation_keys += file.read.scan(/->getTranslationForLanguage\(\$lang->iso\_code, \'(.*)\', \$this->name\)/).uniq
-
-    file.rewind
-    translation_keys += file.read.scan(/->getTranslationForLanguage\(\$lang, \'(.*)\', \$file\)/).uniq
 
     file.rewind
     translation_keys += file.read.scan(/new\sAdminControllerTabConfig\(\n.*\n.*\'(.*)\'/).uniq
