@@ -21,8 +21,10 @@ class PaymentErrorHelper
 {
     use TranslationHelper;
 
+    const PHRASEAPP_KEY_GENERIC_MESSAGE = 'error_message_generic';
+
     const PAYMENT_ERRORS_KEY_MAP = [
-        'PHRASEAPP_KEY_GENERIC_MESSAGE' => 'error_message_generic',
+        self::PHRASEAPP_KEY_GENERIC_MESSAGE,
     ];
 
     /**
@@ -33,33 +35,33 @@ class PaymentErrorHelper
     const TRANSLATION_FILE = 'paymenterrorhelper';
 
     /**
-     * @param array $errorMessages
+     * Return translated messages
+     * @param $errorMessageKeys
      * @return string[]
      *
      * @since 2.10.0
      */
-    public function getTranslatedErrorMessages($errorMessages)
+    public function getTranslatedErrorMessages($errorMessageKeys)
     {
         $translatedMessages = [];
-        foreach ($errorMessages as $errorMessage) {
-            if ($this->isKeyInArray($errorMessage)) {
-                $translatedMessages[] = $this->getTranslatedString($errorMessage, $this->getUserFrontendLanguage());
-            } else {
-                $translatedMessages[] = $errorMessage;
-            }
+        foreach ($errorMessageKeys as $errorMessageKey) {
+            $translatedMessages[] = $this->getTranslationForKey($errorMessageKey);
         }
         return $translatedMessages;
     }
 
-    private function isKeyInArray($translationKey)
+    /**
+     * If errorMessageKey is in errors key map, than translate, else return original value
+     * @param $errorMessageKey
+     * @return string
+     */
+    private function getTranslationForKey($errorMessageKey)
     {
         $paymentErrorKeyMap = self::PAYMENT_ERRORS_KEY_MAP;
-        foreach (array_values($paymentErrorKeyMap) as $paymentErrorKey) {
-            if ($translationKey === $paymentErrorKey) {
-                return true;
-            }
+        if (in_array($errorMessageKey, $paymentErrorKeyMap)) {
+            return $this->getTranslatedString($errorMessageKey, $this->getUserFrontendLanguage());
         }
-        return false;
+        return $errorMessageKey;
     }
 
     /**

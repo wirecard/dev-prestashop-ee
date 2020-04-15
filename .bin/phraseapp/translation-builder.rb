@@ -84,10 +84,7 @@ class TranslationBuilder
     translation_keys += file.read.scan(/new\sAdminControllerTabConfig\(\n.*\n.*\'(.*)\'/).uniq
 
     file.rewind
-    translation_keys += file.read.scan(/\'PHRASEAPP_KEY_.*?\'\s=>\s\'(.*)\'/).uniq
-
-    file.rewind
-    translation_keys += file.read.scan(/self::WIRECARD_OS_.*?\s=>\s\'(.*)\'/).uniq
+    translation_keys += file.read.scan(/const\sPHRASEAPP_KEY_.*?\s=\s\'(.*)\'/).uniq
 
     file.close
 
