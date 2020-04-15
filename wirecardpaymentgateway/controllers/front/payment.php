@@ -68,7 +68,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     }
 
     /**
-     * Check if error message exists and if yes, redirect page
+     * Check if error messages exists and if yes, redirect with errors to order page
      * If error message is a key, key is translated first
      *
      * @param string[] $errorNotifications

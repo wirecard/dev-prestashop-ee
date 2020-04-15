@@ -36,7 +36,7 @@ class PaymentErrorHelper
 
     /**
      * Return translated messages
-     * @param $errorMessageKeys
+     * @param string[] $errorMessageKeys
      * @return string[]
      *
      * @since 2.10.0
@@ -52,7 +52,7 @@ class PaymentErrorHelper
 
     /**
      * If errorMessageKey is in errors key map, than translate, else return original value
-     * @param $errorMessageKey
+     * @param string $errorMessageKey
      * @return string
      */
     private function getTranslationForKey($errorMessageKey)
