@@ -35,11 +35,16 @@ class OrderManager
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
 
+    const PHRASEAPP_KEY_OS_PAYMENT_STARTED = 'order_state_payment_started';
+    const PHRASEAPP_KEY_OS_PAYMENT_AWAITING = 'order_state_payment_awaiting';
+    const PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED = 'order_state_payment_authorized';
+
     const ORDER_STATE_TRANSLATION_KEY_MAP = [
-        self::WIRECARD_OS_STARTING => 'order_state_payment_started',
-        self::WIRECARD_OS_AWAITING => 'order_state_payment_awaiting',
-        self::WIRECARD_OS_AUTHORIZATION => 'order_state_payment_authorized'
+        self::WIRECARD_OS_STARTING => self::PHRASEAPP_KEY_OS_PAYMENT_STARTED,
+        self::WIRECARD_OS_AWAITING => self::PHRASEAPP_KEY_OS_PAYMENT_AWAITING,
+        self::WIRECARD_OS_AUTHORIZATION => self::PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED
     ];
+
 
     const COLOR_LIGHT_BLUE = 'lightblue';
 

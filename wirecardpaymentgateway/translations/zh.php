@@ -211,10 +211,11 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_569fc81dca0ffb9beeb8a
 $_MODULE['<{wirecardpaymentgateway}prestashop>wirecardajax_adf26da509e583625c2c43e4be5bbc7a'] = '注意：请在 URL 设置字段中检查您的凭据。您可能已将生产账户配置/组合到测试帐户。';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_f9e92a0727609b56780f28afa11da702'] = '已启用';
 $_MODULE['<{wirecardpaymentgateway}prestashop>switchinput_9963e13ca603bfe6f09af5673b058eb7'] = '禁用';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymenterrorhelper_8d6ab051f4baaec8b4b7fd98df75edaf'] = 'Something went wrong. Please try again or use different Payment method.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>generalsettingsservice_98c717a2e7b0e8ff05988fbf8f5e8b9f'] = '';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_b0ff4ac4438ae8ef3f9883948315cdcf'] = 'Wirecard Payment started';
-$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_5b16deb11b7f93bc6d2dfe2e1ca5f4b3'] = 'Wirecard Payment authorized';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_8eec2577851ed66a286d224c7270bb15'] = 'Wirecard Payment awaiting';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_5b16deb11b7f93bc6d2dfe2e1ca5f4b3'] = 'Wirecard Payment authorized';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_fbedc569ae12c464ee7929c3d8a1a949'] = 'Back';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_c01d298d870c928aef65a36ed62c30ea'] = '交易细节';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_3e3e086087769006d29d46a8b34264af'] = 'Transaction';
