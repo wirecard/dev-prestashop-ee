@@ -1,5 +1,13 @@
 [
     {
+    "release": "2.10.0",
+    "shopsystem": "PrestaShop",
+    "tested": "1.7.6.3",
+    "compatibility": "1.7.4.0",
+    "changelog": [
+    ]
+  },
+    {
     "release": "2.9.0",
     "shopsystem": "PrestaShop",
     "tested": "1.7.6.3",
