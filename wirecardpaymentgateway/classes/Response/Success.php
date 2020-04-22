@@ -12,6 +12,7 @@ namespace WirecardEE\Prestashop\Classes\Response;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
@@ -67,6 +68,8 @@ abstract class Success implements ProcessablePaymentResponse
 
         try {
             if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+                // #TEST_STATE_LIBRARY
+                (new Logger())->debug("Set to Pending order state");
                 $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
                 $this->order->save();
 

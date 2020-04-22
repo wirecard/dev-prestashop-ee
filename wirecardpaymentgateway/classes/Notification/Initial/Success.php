@@ -11,12 +11,15 @@ namespace WirecardEE\Prestashop\Classes\Notification\Initial;
 
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\OrderManager;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
     public function process()
     {
+        // #TEST_STATE_LIBRARY
+        (new Logger())->debug("Set order state");
         if (OrderManager::isIgnorable($this->notification)) {
             return;
         }
