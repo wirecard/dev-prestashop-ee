@@ -26,11 +26,11 @@ class OrderStateMappingDefinition implements MappingDefinition
     public function definitions()
     {
         return [
-            _PS_OS_PAYMENT_ => Constant::ORDER_STATE_PROCESSING,
-            _PS_OS_PENDING_ => Constant::ORDER_STATE_PENDING,
             _PS_OS_ERROR_ => Constant::ORDER_STATE_FAILED,
-            OrderManager::WIRECARD_OS_STARTING => Constant::ORDER_STATE_STARTED,
-            OrderManager::WIRECARD_OS_AUTHORIZATION => Constant::ORDER_STATE_AUTHORIZED,
+            _PS_OS_PAYMENT_ => Constant::ORDER_STATE_PROCESSING,
+            \Configuration::get(OrderManager::WIRECARD_OS_STARTING) => Constant::ORDER_STATE_STARTED,
+            \Configuration::get(OrderManager::WIRECARD_OS_AWAITING) => Constant::ORDER_STATE_PENDING,
+            \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION) => Constant::ORDER_STATE_AUTHORIZED,
         ];
     }
 }

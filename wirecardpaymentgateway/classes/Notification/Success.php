@@ -66,7 +66,9 @@ abstract class Success implements ProcessablePaymentNotification
         $dbManager = new DBTransactionManager();
         //Acquire lock out of the try-catch block to prevent release on locking fail
         $dbManager->acquireLock($this->notification->getTransactionId(), 30);
+
         try {
+            $this->beforeProcess();
             Transaction::create(
                 $this->order->id,
                 $this->order->id_cart,
@@ -85,6 +87,7 @@ abstract class Success implements ProcessablePaymentNotification
         } finally {
             $dbManager->releaseLock($this->notification->getTransactionId());
         }
+        $this->afterProcess();
     }
 
     /**
@@ -102,5 +105,19 @@ abstract class Success implements ProcessablePaymentNotification
         }
 
         return new InitialTransaction($this->notification->getRequestedAmount()->getValue());
+    }
+
+    /**
+     * @since 2.10.0
+     */
+    protected function beforeProcess()
+    {
+    }
+
+    /**
+     * @since 2.10.0
+     */
+    protected function afterProcess()
+    {
     }
 }

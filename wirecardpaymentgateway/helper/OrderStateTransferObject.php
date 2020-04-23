@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Contract\InputDataTransferObject;
+use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 
 /**
  * Class OrderStateTransferObject
@@ -18,30 +19,44 @@ use Wirecard\ExtensionOrderStateModule\Domain\Contract\InputDataTransferObject;
  */
 class OrderStateTransferObject implements InputDataTransferObject
 {
-    const FIELD_PROCESS_TYPE = "process_type";
-    const FIELD_TRANSACTION_TYPE = "transaction_type";
-    const FIELD_TRANSACTION_STATE = "transaction_state";
-    const FIELD_CURRENT_ORDER_STATE = "current_order_state";
+    const FIELD_PROCESS_TYPE = "process-type";
+    const FIELD_TRANSACTION_TYPE = "transaction-type";
+    const FIELD_TRANSACTION_STATE = "transaction-state";
+    const FIELD_CURRENT_ORDER_STATE = "current-order-state";
 
     /**
      * @var string
      */
-    private $processType;
+    private $processType = "";
 
     /**
      * @var string
      */
-    private $transactionType;
+    private $transactionType = "";
 
     /**
      * @var string
      */
-    private $transactionState;
+    private $transactionState = "";
 
     /**
-     * @var string
+     * @var int
      */
-    private $currentOrderState;
+    private $currentOrderState = 0;
+
+    /**
+     * OrderStateTransferObject constructor.
+     * @param $currentOrderState
+     * @param $processType
+     * @param array $transactionResponse
+     */
+    public function __construct($currentOrderState, $processType, array $transactionResponse)
+    {
+
+        $this->setCurrentOrderState($currentOrderState);
+        $this->setProcessType($processType);
+        $this->initFromTransactionResponse($transactionResponse);
+    }
 
     /**
      * @return string
@@ -56,7 +71,7 @@ class OrderStateTransferObject implements InputDataTransferObject
      */
     public function setProcessType($processType)
     {
-        $this->processType = $processType;
+        $this->processType = (string) $processType;
     }
 
     /**
@@ -88,11 +103,11 @@ class OrderStateTransferObject implements InputDataTransferObject
      */
     public function setTransactionState($transactionState)
     {
-        $this->transactionState = $transactionState;
+        $this->transactionState = (string) $transactionState;
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getCurrentOrderState()
     {
@@ -100,7 +115,7 @@ class OrderStateTransferObject implements InputDataTransferObject
     }
 
     /**
-     * @param string $currentOrderState
+     * @param int $currentOrderState
      */
     public function setCurrentOrderState($currentOrderState)
     {
@@ -108,24 +123,35 @@ class OrderStateTransferObject implements InputDataTransferObject
     }
 
     /**
-     * @param array $data
+     * @param array $response
      * @return OrderStateTransferObject
      */
-    public function initFromData(array $data)
+    public function initFromTransactionResponse(array $response)
     {
-        if ($data[self::FIELD_PROCESS_TYPE]) {
-            $this->setTransactionType($data[self::FIELD_PROCESS_TYPE]);
+        if (isset($response[self::FIELD_TRANSACTION_TYPE])) {
+            $this->setTransactionType($response[self::FIELD_TRANSACTION_TYPE]);
         }
-        if ($data[self::FIELD_TRANSACTION_TYPE]) {
-            $this->setProcessType($data[self::FIELD_TRANSACTION_TYPE]);
-        }
-        if ($data[self::FIELD_TRANSACTION_STATE]) {
-            $this->setTransactionState($data[self::FIELD_TRANSACTION_STATE]);
-        }
-        if ($data[self::FIELD_CURRENT_ORDER_STATE]) {
-            $this->setCurrentOrderState($data[self::FIELD_CURRENT_ORDER_STATE]);
+        if (isset($response[self::FIELD_TRANSACTION_STATE])) {
+            $this->setTransactionState($response[self::FIELD_TRANSACTION_STATE]);
+            // todo: fix in OS module
+            if ($response[self::FIELD_TRANSACTION_STATE] == "failed") {
+                $this->setTransactionState(Constant::TRANSACTION_STATE_FAILURE);
+            }
         }
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            self::FIELD_CURRENT_ORDER_STATE => $this->getCurrentOrderState(),
+            self::FIELD_TRANSACTION_TYPE => $this->getTransactionType(),
+            self::FIELD_TRANSACTION_STATE => $this->getTransactionState(),
+            self::FIELD_PROCESS_TYPE => $this->getProcessType(),
+        ];
     }
 }
