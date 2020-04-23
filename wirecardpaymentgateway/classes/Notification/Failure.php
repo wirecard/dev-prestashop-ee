@@ -65,7 +65,7 @@ final class Failure implements ProcessablePaymentNotification
         try {
             $nextState = $this->module->orderStateManager()->calculateNextOrderState(
                 $currentState,
-                Constant::PROCESS_TYPE_NOTIFICATION,
+                Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
                 $this->notification->getData()
             );
             $logger->debug("Current State : {$currentState}. Next calculated state is {$nextState}");

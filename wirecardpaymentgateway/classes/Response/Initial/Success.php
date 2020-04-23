@@ -72,7 +72,7 @@ class Success extends SuccessAbstract
         try {
             $nextState = $this->module->orderStateManager()->calculateNextOrderState(
                 $order_status,
-                Constant::PROCESS_TYPE_RETURN,
+                Constant::PROCESS_TYPE_INITIAL_RETURN,
                 $this->response->getData()
             );
             $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");

@@ -133,10 +133,6 @@ class OrderStateTransferObject implements InputDataTransferObject
         }
         if (isset($response[self::FIELD_TRANSACTION_STATE])) {
             $this->setTransactionState($response[self::FIELD_TRANSACTION_STATE]);
-            // todo: fix in OS module
-            if ($response[self::FIELD_TRANSACTION_STATE] == "failed") {
-                $this->setTransactionState(Constant::TRANSACTION_STATE_FAILURE);
-            }
         }
 
         return $this;

@@ -80,7 +80,7 @@ final class Failure implements ProcessablePaymentResponse
         try {
             $nextState = $this->module->orderStateManager()->calculateNextOrderState(
                 $currentState,
-                Constant::PROCESS_TYPE_RETURN,
+                Constant::PROCESS_TYPE_INITIAL_RETURN,
                 $this->response->getData()
             );
             $logger->debug("Current State : {$currentState}. Next calculated state is {$nextState}");

@@ -56,7 +56,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
         try {
             $nextState = $this->module->orderStateManager()->calculateNextOrderState(
                 $order_status,
-                Constant::PROCESS_TYPE_NOTIFICATION,
+                Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
                 $this->notification->getData()
             );
             $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");
