@@ -39,6 +39,11 @@ class Success extends SuccessAbstract
     private $customer;
 
     /**
+     * @var \WirecardPaymentGateway
+     */
+    private $module;
+
+    /**
      * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
     private $orderStateManager;
@@ -57,7 +62,8 @@ class Success extends SuccessAbstract
         $this->context_service = new ContextService(\Context::getContext());
         $this->cart = $this->orderService->getOrderCart();
         $this->customer = new \Customer((int)$this->cart->id_customer);
-        $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
+        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+        $this->orderStateManager = $this->module->orderStateManager();
     }
 
     /**
@@ -99,16 +105,18 @@ class Success extends SuccessAbstract
      */
     protected function afterProcess()
     {
+        // #TEST_STATE_LIBRARY
         (new Logger())->debug("AFTER PROCESS");
         if ($this->isPiaPayment()) {
             $this->context_service->setPiaCookie($this->response);
         }
-
+        // #TEST_STATE_LIBRARY
+        (new Logger())->debug("redirect to success page");
         //redirect to success page
         \Tools::redirect(
             'index.php?controller=order-confirmation&id_cart='
             . $this->cart->id . '&id_module='
-            . $this->orderStateManager->id . '&id_order='
+            . $this->module->id . '&id_order='
             . $this->order->id . '&key='
             . $this->customer->secure_key
         );

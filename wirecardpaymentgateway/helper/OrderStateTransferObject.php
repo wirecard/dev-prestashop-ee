@@ -129,19 +129,19 @@ class OrderStateTransferObject implements InputDataTransferObject
     {
         $result = true;
         $mappingDefinition = new OrderStateMappingDefinition();
-        if (!in_array($this->currentOrderState, array_keys($mappingDefinition->definitions()), true)) {
+        if (!in_array($this->currentOrderState, array_keys($mappingDefinition->definitions()))) {
             throw new InvalidArgumentException("Order state '{$this->currentOrderState}' is invalid");
         }
 
-        if (!in_array($this->transactionState, Constant::getTransactionStates(), true)) {
+        if (!in_array($this->transactionState, Constant::getTransactionStates())) {
             throw new InvalidArgumentException("Transaction state '{$this->transactionState}' is invalid");
         }
 
-        if (!in_array($this->transactionType, Constant::getTransactionTypes(), true)) {
+        if (!in_array($this->transactionType, Constant::getTransactionTypes())) {
             throw new InvalidArgumentException("Transaction type '$this->transactionType' is invalid");
         }
 
-        if (!in_array($this->processType, Constant::getProcessTypes(), true)) {
+        if (!in_array($this->processType, Constant::getProcessTypes())) {
             throw new InvalidArgumentException("Process type '$this->processType' is invalid");
         }
 
