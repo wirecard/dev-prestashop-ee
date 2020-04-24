@@ -12,9 +12,6 @@ namespace WirecardEE\Prestashop\Test\Classes\Service;
 use Wirecard\ExtensionOrderStateModule\Application\Mapper\GenericOrderStateMapper;
 use Wirecard\ExtensionOrderStateModule\Application\Service\OrderState;
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 use WirecardEE\Prestashop\Helper\OrderManager;
@@ -32,7 +29,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @throws \ReflectionException
-     * @throws NotInRegistryException
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
      */
     protected function setUp()
     {
@@ -111,8 +108,8 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
      * @param string $processType
      * @param array $transactionResponse
      * @param int $expectedNextState
-     * @throws IgnorableStateException
-     * @throws OrderStateInvalidArgumentException
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
      */
     public function testCalculateNextOrderState($currentState, $processType, $transactionResponse, $expectedNextState)
     {
