@@ -33,15 +33,16 @@ final class Failure implements ProcessablePaymentNotification
     private $orderService;
 
     /**
-     * @var \WirecardPaymentGateway
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
-    private $module;
+    private $orderStateManager;
 
     /**
      * FailurePaymentProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $notification
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
      * @since 2.1.0
      */
     public function __construct($order, $notification)
@@ -49,7 +50,7 @@ final class Failure implements ProcessablePaymentNotification
         $this->order = $order;
         $this->notification = $notification;
         $this->orderService = new OrderService($order);
-        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+        $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
     }
 
     /**
@@ -58,16 +59,18 @@ final class Failure implements ProcessablePaymentNotification
     public function process()
     {
         $logger = new Logger();
-        $logger->debug("BEFORE PROCESS");
+        // #TEST_STATE_LIBRARY
+        $logger->debug("NOTIFICATION PROCESS");
         $currentState = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
         $logger->debug(print_r($this->notification->getData(), true));
         try {
-            $nextState = $this->module->orderStateManager()->calculateNextOrderState(
+            $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
                 Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
                 $this->notification->getData()
             );
+            // #TEST_STATE_LIBRARY
             $logger->debug("Current State : {$currentState}. Next calculated state is {$nextState}");
             if ($currentState !== $nextState) {
                 $this->order->setCurrentState($nextState);

@@ -57,11 +57,10 @@ abstract class Success implements ProcessablePaymentResponse
      */
     public function process()
     {
+        $this->beforeProcess();
         $dbManager = new DBTransactionManager();
         //We do this outside of the try block so that if locking fails, we don't attempt to release it
         $dbManager->acquireLock($this->response->getTransactionId(), 30);
-        $this->beforeProcess();
-
         try {
             $amount = $this->response->getRequestedAmount();
             $orderManager = new OrderManager();

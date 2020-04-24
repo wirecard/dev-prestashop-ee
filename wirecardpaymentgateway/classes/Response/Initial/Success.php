@@ -39,14 +39,15 @@ class Success extends SuccessAbstract
     private $customer;
 
     /**
-     * @var \WirecardPaymentGateway
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
-    private $module;
+    private $orderStateManager;
 
     /**
      * Success constructor.
      * @param $order
      * @param $response
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
      * @since 2.5.0
      */
     public function __construct($order, $response)
@@ -56,7 +57,7 @@ class Success extends SuccessAbstract
         $this->context_service = new ContextService(\Context::getContext());
         $this->cart = $this->orderService->getOrderCart();
         $this->customer = new \Customer((int)$this->cart->id_customer);
-        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+        $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
     }
 
     /**
@@ -64,17 +65,19 @@ class Success extends SuccessAbstract
      */
     protected function beforeProcess()
     {
+        // #TEST_STATE_LIBRARY
         $logger = new Logger();
         $logger->debug("BEFORE PROCESS");
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
         $logger->debug(print_r($this->response->getData(), true));
         try {
-            $nextState = $this->module->orderStateManager()->calculateNextOrderState(
+            $nextState = $this->orderStateManager->calculateNextOrderState(
                 $order_status,
                 Constant::PROCESS_TYPE_INITIAL_RETURN,
                 $this->response->getData()
             );
+            // #TEST_STATE_LIBRARY
             $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");
             $this->order->setCurrentState($nextState);
             $this->order->save();
@@ -105,7 +108,7 @@ class Success extends SuccessAbstract
         \Tools::redirect(
             'index.php?controller=order-confirmation&id_cart='
             . $this->cart->id . '&id_module='
-            . $this->module->id . '&id_order='
+            . $this->orderStateManager->id . '&id_order='
             . $this->order->id . '&key='
             . $this->customer->secure_key
         );

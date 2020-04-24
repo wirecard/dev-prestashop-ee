@@ -24,9 +24,9 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
     /**
-     * @var \WirecardPaymentGateway
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
-    private $module;
+    private $orderStateManager;
 
     /**
      * @var OrderService
@@ -37,10 +37,11 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
      * Success constructor.
      * @param $order
      * @param $notification
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
      */
     public function __construct($order, $notification)
     {
-        $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+        $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
         $this->orderService = new OrderService($order);
         parent::__construct($order, $notification);
     }
@@ -52,14 +53,17 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
     {
 
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
+        // #TEST_STATE_LIBRARY
         $logger = new Logger();
         try {
-            $nextState = $this->module->orderStateManager()->calculateNextOrderState(
+            $nextState = $this->orderStateManager->calculateNextOrderState(
                 $order_status,
                 Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
                 $this->notification->getData()
             );
-            $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");
+            // #TEST_STATE_LIBRARY
+            $logger->debug("Current State : {$order_status} / {$this->order->current_state}. 
+            Next calculated state is {$nextState}");
             $this->order->setCurrentState($nextState);
             $this->order->save();
 
@@ -73,6 +77,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
         } catch (OrderStateInvalidArgumentException $e) {
             // #TEST_STATE_LIBRARY
             $logger->debug($e->getMessage());
+            throw $e;
         }
     }
 

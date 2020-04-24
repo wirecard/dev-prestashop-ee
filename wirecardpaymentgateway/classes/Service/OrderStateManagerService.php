@@ -25,7 +25,7 @@ class OrderStateManagerService implements ServiceInterface
     /**
      * @var OrderState
      */
-    private $service;
+    protected $service;
 
     /**
      * OrderStateManagerService constructor.
@@ -33,12 +33,13 @@ class OrderStateManagerService implements ServiceInterface
      */
     public function __construct()
     {
-        $this->initialize();
+        $orderStateMapper = new GenericOrderStateMapper(new OrderStateMappingDefinition());
+        $this->service = new OrderState($orderStateMapper);
     }
 
     /**
-     * @param $currentOrderState
-     * @param $processType
+     * @param int $currentOrderState
+     * @param string $processType
      * @param array $transactionResponse
      * @return int|mixed|string
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
@@ -47,17 +48,8 @@ class OrderStateManagerService implements ServiceInterface
     public function calculateNextOrderState($currentOrderState, $processType, array $transactionResponse)
     {
         $input = new OrderStateTransferObject($currentOrderState, $processType, $transactionResponse);
+        // #TEST_STATE_LIBRARY
         (new Logger())->debug(print_r($input, true));
         return $this->service->process($input);
-    }
-
-    /**
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
-     */
-    private function initialize()
-    {
-        $mappingDefinition = new OrderStateMappingDefinition();
-        $orderStateMapper = new GenericOrderStateMapper($mappingDefinition);
-        $this->service = new OrderState($orderStateMapper);
     }
 }

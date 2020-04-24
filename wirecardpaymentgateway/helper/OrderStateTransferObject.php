@@ -11,6 +11,8 @@ namespace WirecardEE\Prestashop\Helper;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Contract\InputDataTransferObject;
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
+use InvalidArgumentException;
 
 /**
  * Class OrderStateTransferObject
@@ -52,10 +54,10 @@ class OrderStateTransferObject implements InputDataTransferObject
      */
     public function __construct($currentOrderState, $processType, array $transactionResponse)
     {
-
-        $this->setCurrentOrderState($currentOrderState);
-        $this->setProcessType($processType);
+        $this->currentOrderState = $currentOrderState;
+        $this->processType = $processType;
         $this->initFromTransactionResponse($transactionResponse);
+        $this->validate();
     }
 
     /**
@@ -67,27 +69,11 @@ class OrderStateTransferObject implements InputDataTransferObject
     }
 
     /**
-     * @param string $processType
-     */
-    public function setProcessType($processType)
-    {
-        $this->processType = (string) $processType;
-    }
-
-    /**
      * @return string
      */
     public function getTransactionType()
     {
         return $this->transactionType;
-    }
-
-    /**
-     * @param string $transactionType
-     */
-    public function setTransactionType($transactionType)
-    {
-        $this->transactionType = $transactionType;
     }
 
     /**
@@ -99,27 +85,11 @@ class OrderStateTransferObject implements InputDataTransferObject
     }
 
     /**
-     * @param string $transactionState
-     */
-    public function setTransactionState($transactionState)
-    {
-        $this->transactionState = (string) $transactionState;
-    }
-
-    /**
      * @return int
      */
     public function getCurrentOrderState()
     {
         return $this->currentOrderState;
-    }
-
-    /**
-     * @param int $currentOrderState
-     */
-    public function setCurrentOrderState($currentOrderState)
-    {
-        $this->currentOrderState = $currentOrderState;
     }
 
     /**
@@ -129,10 +99,10 @@ class OrderStateTransferObject implements InputDataTransferObject
     public function initFromTransactionResponse(array $response)
     {
         if (isset($response[self::FIELD_TRANSACTION_TYPE])) {
-            $this->setTransactionType($response[self::FIELD_TRANSACTION_TYPE]);
+            $this->transactionType = $response[self::FIELD_TRANSACTION_TYPE];
         }
         if (isset($response[self::FIELD_TRANSACTION_STATE])) {
-            $this->setTransactionState($response[self::FIELD_TRANSACTION_STATE]);
+            $this->transactionState = $response[self::FIELD_TRANSACTION_STATE];
         }
 
         return $this;
@@ -149,5 +119,32 @@ class OrderStateTransferObject implements InputDataTransferObject
             self::FIELD_TRANSACTION_STATE => $this->getTransactionState(),
             self::FIELD_PROCESS_TYPE => $this->getProcessType(),
         ];
+    }
+
+    /**
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    public function validate()
+    {
+        $result = true;
+        $mappingDefinition = new OrderStateMappingDefinition();
+        if (!in_array($this->currentOrderState, array_keys($mappingDefinition->definitions()), true)) {
+            throw new InvalidArgumentException("Order state '{$this->currentOrderState}' is invalid");
+        }
+
+        if (!in_array($this->transactionState, Constant::getTransactionStates(), true)) {
+            throw new InvalidArgumentException("Transaction state '{$this->transactionState}' is invalid");
+        }
+
+        if (!in_array($this->transactionType, Constant::getTransactionTypes(), true)) {
+            throw new InvalidArgumentException("Transaction type '$this->transactionType' is invalid");
+        }
+
+        if (!in_array($this->processType, Constant::getProcessTypes(), true)) {
+            throw new InvalidArgumentException("Process type '$this->processType' is invalid");
+        }
+
+        return $result;
     }
 }
