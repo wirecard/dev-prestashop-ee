@@ -49,7 +49,7 @@ class OrderStateManagerService implements ServiceInterface
     {
         $input = new OrderStateTransferObject($currentOrderState, $processType, $transactionResponse);
         // #TEST_STATE_LIBRARY
-        (new Logger())->debug(print_r($input, true));
+        //(new Logger())->debug(print_r($input, true));
         return $this->service->process($input);
     }
 }
