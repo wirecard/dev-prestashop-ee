@@ -9,28 +9,76 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification\Initial;
 
+use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
-use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 
+/**
+ * Class Success
+ * @package WirecardEE\Prestashop\Classes\Notification\Initial
+ */
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
-    public function process()
+    /**
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
+     */
+    private $orderStateManager;
+
+    /**
+     * @var OrderService
+     */
+    private $orderService;
+
+    /**
+     * Success constructor.
+     * @param $order
+     * @param $notification
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     */
+    public function __construct($order, $notification)
     {
-        if (OrderManager::isIgnorable($this->notification)) {
-            return;
+        $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
+        $this->orderService = new OrderService($order);
+        parent::__construct($order, $notification);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function beforeProcess()
+    {
+
+        $order_status = $this->orderService->getLatestOrderStatusFromHistory();
+        // #TEST_STATE_LIBRARY
+        $logger = new Logger();
+        try {
+            $nextState = $this->orderStateManager->calculateNextOrderState(
+                $order_status,
+                Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
+                $this->notification->getData()
+            );
+            // #TEST_STATE_LIBRARY
+            $logger->debug("Current State : {$order_status} / {$this->order->current_state}. 
+            Next calculated state is {$nextState}");
+            $this->order->setCurrentState($nextState);
+            $this->order->save();
+
+            $this->order_service->updateOrderPayment(
+                $this->notification->getTransactionId(),
+                $this->getRestAmount($nextState)
+            );
+        } catch (IgnorableStateException $e) {
+            // #TEST_STATE_LIBRARY
+            $logger->debug($e->getMessage());
+        } catch (OrderStateInvalidArgumentException $e) {
+            // #TEST_STATE_LIBRARY
+            $logger->debug($e->getMessage());
+            throw $e;
         }
-
-        $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
-        $this->order->setCurrentState($order_state);
-        $this->order->save();
-
-        $this->order_service->updateOrderPayment(
-            $this->notification->getTransactionId(),
-            $this->getRestAmount($order_state)
-        );
-
-        parent::process();
     }
 
     /**

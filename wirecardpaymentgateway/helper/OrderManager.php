@@ -185,6 +185,8 @@ class OrderManager
     {
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
         $order_state = $backend_service->getOrderState($notification->getTransactionType());
+        // #TEST_STATE_LIBRARY
+        (new Logger())->debug("Calculated order state from {$notification->getTransactionType()}: {$order_state}");
 
         switch ($order_state) {
             case BackendService::TYPE_AUTHORIZED:

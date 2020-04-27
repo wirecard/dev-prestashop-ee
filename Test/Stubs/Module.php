@@ -23,6 +23,10 @@ class Module
     protected $_path;
     public $active;
 
+    /**
+     * @param $module
+     * @return null|object|WirecardPaymentGateway
+     */
     public static function getInstanceByName($module)
     {
         if (isset(self::$modules[$module])) {
