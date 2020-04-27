@@ -7,7 +7,8 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-const _PS_MODULE_DIR_ = 'modules';
+define("_PS_MODULE_DIR_", dirname(__DIR__) . "/");
+const _PS_VERSION_ = '9.9.9.9';
 const _PS_PRICE_COMPUTE_PRECISION_ = 2;
 const _DB_PREFIX_ = 'Prefix_';
 const _MYSQL_ENGINE_ = 'mysql';
@@ -51,6 +52,8 @@ require __DIR__ . '/Stubs/Validate.php';
 require __DIR__ . '/Stubs/Cookie.php';
 require __DIR__ . '/Stubs/Translate.php';
 require __DIR__ . '/Stubs/DbQuery.php';
+
+require_once __DIR__ . '/../wirecardpaymentgateway/wirecardpaymentgateway.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';

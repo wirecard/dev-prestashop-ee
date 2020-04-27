@@ -1,9 +1,10 @@
 # Wirecard PrestaShop Module
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/wirecard/magento2-ee/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://raw.githubusercontent.com/wirecard/magento2-ee/master/LICENSE)
 [![PHP v5.6](https://img.shields.io/badge/php-v5.6-yellow.svg)](http://www.php.net)
 [![PHP v7.0](https://img.shields.io/badge/php-v7.0-yellow.svg)](http://www.php.net)
 [![PHP v7.1](https://img.shields.io/badge/php-v7.1-yellow.svg)](http://www.php.net)
-[![PrestaShop v1.7.6.1](https://img.shields.io/badge/PrestaShop-v1.7.6.1-green.svg)](https://www.prestashop.com/de)
+[![PHP v7.2](https://img.shields.io/badge/php-v7.2-yellow.svg)](http://www.php.net)
+[![PrestaShop v1.7.6.3](https://img.shields.io/badge/PrestaShop-v1.7.6.3-green.svg)](https://www.prestashop.com/de)
 [![PhraseApp](https://img.shields.io/badge/Using-PhraseApp-blue.svg)](https://phraseapp.com)
 
 ***

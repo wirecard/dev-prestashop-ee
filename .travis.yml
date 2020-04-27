@@ -27,17 +27,6 @@ jobs:
       - LATEST_EXTENSION_RELEASE=1
       - ALLOW_FAIL=1
   include:
-  - stage: validator-test
-    if: env(VALIDATOR_TEST) = '1'
-    php: 7.1
-    before_script:
-      - pip install --user bs4
-      - bash .bin/generate-release-package.sh
-      - travis_retry composer require --dev $COMPOSER_ARGS codeception/codeception:^2.5
-    script:
-      - bash .bin/run-validator-test.sh
-    after_script: skip
-
   - stage: phraseapp-pull
     if: env(PHRASEAPP_PULL) = '1'
     language: ruby
@@ -81,11 +70,10 @@ jobs:
       - if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_COMPATIBILITY_FILE}); fi
       - export LATEST_RELEASED_SHOP_EXTENSION_VERSION=`jq .[0].release ${TRAVIS_BUILD_DIR}/SHOPVERSIONS | tr -d '"'`
       - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
-    script: bash .bin/run-ui-tests.sh
+    script: bash .bin/setup-and-run-ui-tests.sh
     after_script: skip
     after_success:
       - bash .bin/upload-logs-and-notify.sh
-      - bash .bin/update-shop-release-versions.sh
     after_failure:
       - bash .bin/upload-logs-and-notify.sh fail
 
