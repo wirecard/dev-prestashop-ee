@@ -44,6 +44,7 @@ class OrderStateManagerService implements ServiceInterface
      * @return int|mixed|string
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException
      */
     public function calculateNextOrderState($currentOrderState, $processType, array $transactionResponse)
     {

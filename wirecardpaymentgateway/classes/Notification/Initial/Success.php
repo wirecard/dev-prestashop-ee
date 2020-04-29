@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Notification\Initial;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
@@ -78,6 +79,8 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
             // #TEST_STATE_LIBRARY
             $logger->debug($e->getMessage());
             throw $e;
+        } catch (IgnorablePostProcessingFailureException $e) {
+            $logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
     }
 

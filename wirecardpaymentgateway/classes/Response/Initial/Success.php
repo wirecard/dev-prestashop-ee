@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Response\Initial;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\Amount;
@@ -93,6 +94,8 @@ class Success extends SuccessAbstract
         } catch (OrderStateInvalidArgumentException $e) {
             // #TEST_STATE_LIBRARY
             $logger->debug($e->getMessage());
+        } catch (IgnorablePostProcessingFailureException $e) {
+            $logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
 
         if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
