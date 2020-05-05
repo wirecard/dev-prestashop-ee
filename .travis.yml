@@ -68,7 +68,7 @@ jobs:
       - cmp --silent ${PRESTASHOP_RELEASES_FILE} ${PRESTASHOP_COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
       # check from which file to take versions
       - if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_COMPATIBILITY_FILE}); fi
-      - export LATEST_RELEASED_SHOP_EXTENSION_VERSION=`jq .[0].release ${TRAVIS_BUILD_DIR}/SHOPVERSIONS | tr -d '"'`
+      - export LATEST_RELEASED_SHOP_EXTENSION_VERSION=$(git describe --abbrev=0 --tags)
       - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
     script: bash .bin/setup-and-run-ui-tests.sh
     after_script: skip
