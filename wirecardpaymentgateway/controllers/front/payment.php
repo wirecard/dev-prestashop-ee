@@ -44,6 +44,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $paymentType = \Tools::getValue('payment_type');
         $errorNotification = \Tools::getValue('error-notification');
         $errorNotifications = \Tools::jsonDecode($errorNotification);
+        if (!is_array($errorNotifications)) {
+            $errorNotifications = [];
+        }
 
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
