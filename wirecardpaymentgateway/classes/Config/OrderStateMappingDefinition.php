@@ -32,7 +32,7 @@ class OrderStateMappingDefinition implements MappingDefinition
             \Configuration::get(OrderManager::WIRECARD_OS_AWAITING) => Constant::ORDER_STATE_PENDING,
             \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION) => Constant::ORDER_STATE_AUTHORIZED,
             _PS_OS_REFUND_ => Constant::ORDER_STATE_REFUNDED,
-            //add more
+            \Configuration::get(OrderManager::WIRECARD_OS_PARTIALLY_REFUNDED) => Constant::ORDER_STATE_PARTIAL_REFUNDED,
         ];
     }
 }
