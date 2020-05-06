@@ -13,6 +13,7 @@ use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Models\Transaction;
 
 class Success extends SuccessAbstract
@@ -28,31 +29,37 @@ class Success extends SuccessAbstract
      */
     private $context_service;
 
-    /**
-     * Success constructor.
-     * @param $order
-     * @param $response
-     * @since 2.5.0
-     */
-    public function __construct($order, $response)
-    {
-        parent::__construct($order, $response);
+	/**
+	 * @var OrderService
+	 */
+	private $order_service;
 
-        $this->transaction_manager = new DBTransactionManager();
-        $this->context_service = new ContextService(\Context::getContext());
-    }
+	/**
+	 * Success constructor.
+	 * @param $order
+	 * @param $response
+	 * @since 2.5.0
+	 */
+	public function __construct($order, $response)
+	{
+		parent::__construct($order, $response);
 
-    /**
-     * @since 2.5.0
-     */
-    public function process()
-    {
-        parent::process();
-        $transaction = new Transaction(\Tools::getValue('tx_id'));
-        $transaction->markSettledAsClosed();
+		$this->transaction_manager = new DBTransactionManager();
+		$this->context_service = new ContextService(\Context::getContext());
+		$this->order_service = new OrderService($order);
+	}
 
-        $this->context_service->setConfirmations(
-            $this->getTranslatedString('success_new_transaction')
-        );
-    }
+	/**
+	 * @since 2.5.0
+	 */
+	public function process()
+	{
+		parent::process();
+		$transaction = new Transaction(\Tools::getValue('tx_id'));
+		$transaction->markSettledAsClosed();
+		$this->order_service->createOrderPayment($transaction);
+		$this->context_service->setConfirmations(
+			$this->getTranslatedString('success_new_transaction')
+		);
+	}
 }
