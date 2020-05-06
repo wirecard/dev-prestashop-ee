@@ -20,8 +20,8 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
-    /** @var WirecardLogger  */
-    private $logger;
+//    /** @var WirecardLogger  */
+//    private $logger;
 
 //    /**
 //     * Success constructor.
@@ -35,7 +35,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
 //    }
 
     public function process()
-    {
+    {//
         $this->logger->debug(__METHOD__, ['line' => __LINE__]);
         if (OrderManager::isIgnorable($this->notification)) {
             return;
@@ -61,6 +61,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
                 $this->order->setCurrentState($nextState);
                 $this->order->save();
             } catch (IgnorableStateException $exception) {
+                $this->logger->debug();
                 //do nothing, as expected
             } catch(\Exception $exception) {
                 $this->logger->debug('exception in post-processing notification', ['ex' => get_class($exception)]);
