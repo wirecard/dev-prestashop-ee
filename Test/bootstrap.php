@@ -17,6 +17,9 @@ const _PS_USE_SQL_SLAVE_ = 'slave';
 const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 const EXPECTED_SHOP_NAME = 'Prestashop';
 
+const _PS_OS_PAYMENT_ = 111;
+const _PS_OS_ERROR_ = 222;
+
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
 require_once __DIR__ . '/util/functions.php';
 

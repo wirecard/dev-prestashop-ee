@@ -35,7 +35,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends WirecardFrontCon
     public function postProcess()
     {
         $notification = \Tools::file_get_contents('php://input');
-
+        // #TEST_STATE_LIBRARY
+        $this->logger->debug("Notify: ". print_r($notification, true));
         try {
             $order = $this->getOrder();
 

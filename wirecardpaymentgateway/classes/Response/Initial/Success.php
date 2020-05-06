@@ -9,7 +9,14 @@
 
 namespace WirecardEE\Prestashop\Classes\Response\Initial;
 
+use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
+use Wirecard\PaymentSdk\Entity\Amount;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
+use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
@@ -37,9 +44,15 @@ class Success extends SuccessAbstract
     private $module;
 
     /**
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
+     */
+    private $orderStateManager;
+
+    /**
      * Success constructor.
      * @param $order
      * @param $response
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
      * @since 2.5.0
      */
     public function __construct($order, $response)
@@ -48,29 +61,78 @@ class Success extends SuccessAbstract
 
         $this->context_service = new ContextService(\Context::getContext());
         $this->cart = $this->orderService->getOrderCart();
-        $this->customer = new \Customer((int) $this->cart->id_customer);
+        $this->customer = new \Customer((int)$this->cart->id_customer);
         $this->module = \Module::getInstanceByName('wirecardpaymentgateway');
+        $this->orderStateManager = $this->module->orderStateManager();
     }
 
     /**
-     * @since 2.5.0
+     * @since 2.10.0
      */
-    public function process()
+    protected function beforeProcess()
     {
-        parent::process();
+        // #TEST_STATE_LIBRARY
+        $logger = new Logger();
+        $logger->debug("BEFORE PROCESS");
+        $order_status = $this->orderService->getLatestOrderStatusFromHistory();
+        // #TEST_STATE_LIBRARY
+        $logger->debug(print_r($this->response->getData(), true));
+        try {
+            $nextState = $this->orderStateManager->calculateNextOrderState(
+                $order_status,
+                Constant::PROCESS_TYPE_INITIAL_RETURN,
+                $this->response->getData()
+            );
+            // #TEST_STATE_LIBRARY
+            $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");
+            $this->order->setCurrentState($nextState);
+            $this->order->save();
+        } catch (IgnorableStateException $e) {
+            // #TEST_STATE_LIBRARY
+            $logger->debug($e->getMessage());
+        } catch (OrderStateInvalidArgumentException $e) {
+            // #TEST_STATE_LIBRARY
+            $logger->debug($e->getMessage());
+        }
 
+        if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            $this->onOrderStateStarted();
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function afterProcess()
+    {
+        // #TEST_STATE_LIBRARY
+        (new Logger())->debug("AFTER PROCESS");
         if ($this->isPiaPayment()) {
             $this->context_service->setPiaCookie($this->response);
         }
-
+        // #TEST_STATE_LIBRARY
+        (new Logger())->debug("redirect to success page");
         //redirect to success page
         \Tools::redirect(
             'index.php?controller=order-confirmation&id_cart='
-            .$this->cart->id.'&id_module='
-            .$this->module->id.'&id_order='
-            .$this->order->id.'&key='
-            .$this->customer->secure_key
+            . $this->cart->id . '&id_module='
+            . $this->module->id . '&id_order='
+            . $this->order->id . '&key='
+            . $this->customer->secure_key
         );
+    }
+
+    private function onOrderStateStarted()
+    {
+        $currency = 'EUR';
+        if (key_exists('currency', $this->response->getData())) {
+            $currency = $this->response->getData()['currency'];
+        }
+        $amount = new Amount(0, $currency);
+        if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
+            $amount = $this->response->getRequestedAmount();
+        }
+        $this->orderService->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
     }
 
     /**

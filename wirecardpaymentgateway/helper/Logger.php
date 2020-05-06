@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -153,6 +154,12 @@ class Logger implements LoggerInterface
      */
     public function log($level, $message, array $context = array())
     {
+        // #TEST_STATE_LIBRARY
+        $loger= new \Monolog\Logger('wirecard');
+        $loger->pushHandler(new StreamHandler(_PS_ROOT_DIR_ . "/var/logs/wirecard.log", \Monolog\Logger::DEBUG));
+        $loger->debug("--------BEGIN---------");
+        $loger->debug($message);
+        $loger->debug("--------END---------");
         $log= new \PrestaShopLogger();
         $log->error_code = null;
         $log->date_add = date('Y-m-d H:i:s');

@@ -24,6 +24,7 @@ use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
 use WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
 use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
+use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 
 /**
  * Class WirecardPaymentGateway
@@ -77,6 +78,11 @@ class WirecardPaymentGateway extends PaymentModule
      * @var TabManagerService
      */
     private $tabManagerService;
+
+    /**
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
+     */
+    private $orderStateManagerService;
 
     /**
      * WirecardPaymentGateway constructor.
@@ -1110,5 +1116,18 @@ class WirecardPaymentGateway extends PaymentModule
         foreach (array_keys($translationKeys) as $translationKey) {
             $orderManager->createOrderState($translationKey);
         }
+    }
+
+    /**
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @since 2.10.0
+     */
+    public function orderStateManager()
+    {
+        if (is_null($this->orderStateManagerService)) {
+            $this->orderStateManagerService = new OrderStateManagerService();
+        }
+
+        return $this->orderStateManagerService;
     }
 }
