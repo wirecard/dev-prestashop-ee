@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
@@ -50,6 +51,7 @@ abstract class Success implements ProcessablePaymentResponse
         $this->response = $response;
 
         $this->orderService = new OrderService($order);
+        $this->logger = new Logger();
     }
 
     /**
@@ -57,6 +59,7 @@ abstract class Success implements ProcessablePaymentResponse
      */
     public function process()
     {
+        $this->logger->debug('base success, before proess', ['method' => __METHOD__, 'line' => __LINE__]);
         $this->beforeProcess();
         $dbManager = new DBTransactionManager();
         //We do this outside of the try block so that if locking fails, we don't attempt to release it
@@ -85,6 +88,7 @@ abstract class Success implements ProcessablePaymentResponse
      */
     protected function beforeProcess()
     {
+        $this->logger->debug('before base process', ['method' => __METHOD__, 'line' => __LINE__]);
     }
 
     /**
@@ -92,5 +96,6 @@ abstract class Success implements ProcessablePaymentResponse
      */
     protected function afterProcess()
     {
+        $this->logger->debug('after base process', ['method' => __METHOD__, 'line' => __LINE__]);
     }
 }

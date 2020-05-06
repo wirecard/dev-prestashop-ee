@@ -16,6 +16,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumen
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
@@ -74,15 +75,17 @@ class Success extends SuccessAbstract
     {
         // #TEST_STATE_LIBRARY
         $logger = new Logger();
-        $logger->debug("BEFORE PROCESS");
+        $this->logger->debug(__METHOD__, ['line' => __LINE__]);
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
         $logger->debug(print_r($this->response->getData(), true));
         try {
+            $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $order_status,
                 Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData()
+                $this->response->getData(),
+                $numericalValues
             );
             // #TEST_STATE_LIBRARY
             $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");

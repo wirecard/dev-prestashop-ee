@@ -14,6 +14,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingF
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 
@@ -66,10 +67,13 @@ final class Failure implements ProcessablePaymentNotification
         // #TEST_STATE_LIBRARY
         $logger->debug(print_r($this->notification->getData(), true));
         try {
+            $openAmount = $this->order->getTotalProductsWithTaxes();//TODO: check if correct getter
+            $numericalValues = new OrderStateNumericalValues($openAmount);
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
                 Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
-                $this->notification->getData()
+                $this->notification->getData(),
+                $numericalValues
             );
             // #TEST_STATE_LIBRARY
             $logger->debug("Current State : {$currentState}. Next calculated state is {$nextState}");

@@ -14,6 +14,8 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Classes\Notification\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Notification\PostProcessing\Success as PostProcessingSuccess;
 use WirecardEE\Prestashop\Classes\ProcessType;
+use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class ProcessablePaymentNotificationFactory
@@ -30,6 +32,10 @@ class ProcessablePaymentNotificationFactory
 
     /** @var string */
     private $processType;
+    /**
+     * @var WirecardLogger
+     */
+    private $logger;
 
     /**
      * PaymentProcessingFactory constructor.
@@ -43,6 +49,7 @@ class ProcessablePaymentNotificationFactory
         $this->order = $order;
         $this->notification = $notification;
         $this->processType = $processType;
+        $this->logger = new WirecardLogger();
     }
 
     /**
@@ -51,6 +58,7 @@ class ProcessablePaymentNotificationFactory
      */
     public function getPaymentProcessing()
     {
+        //$this->logger->debug(__METHOD__, ['line' => __LINE__]);
         if ($this->notification instanceof SuccessResponse) {
             if ($this->processType === ProcessType::PROCESS_RESPONSE) {
                 return new InitialSuccess($this->order, $this->notification);
