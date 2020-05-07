@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Helper\Service;
 
 use Db;
+use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class OrderService
@@ -37,7 +38,7 @@ class OrderService
     }
 
     /**
-     * @param $transaction
+     * @param Transaction $transaction
      *
      * @return bool
      * @since 2.10.0
@@ -58,7 +59,7 @@ class OrderService
 
     /**
      * @param string $transaction_id
-     * @param $amount
+     * @param float $amount
      *
      * @since 2.1.0
      */
@@ -72,10 +73,11 @@ class OrderService
             $order_payments[$last_index]->transaction_id = $transaction_id;
             $order_payments[$last_index]->save();
         }
+        //todo: $amount will be used in the partial operations
     }
 
     /**
-     * @param $orderReference
+     * @param string $orderReference
      *
      * @return boolean
      * @throws \PrestaShopDatabaseException
