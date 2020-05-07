@@ -143,7 +143,7 @@ class OrderStateTransferObject implements InputDataTransferObject
             if (!isset($response[$fieldName])) {
                 throw new InvalidArgumentException("Required field $fieldName is not set");
             }
-            if(is_array($validValues)) {
+            if (is_array($validValues)) {
                 if (!in_array($response[$fieldName], $validValues)) {
                     throw new InvalidArgumentException("Field '$fieldName' is invalid");
                 }

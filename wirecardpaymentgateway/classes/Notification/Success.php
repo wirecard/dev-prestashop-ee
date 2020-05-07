@@ -61,7 +61,7 @@ abstract class Success implements ProcessablePaymentNotification
      * @throws \Exception
      * @since 2.1.0
      */
-    public abstract function process();
+    abstract public function process();
 
     /**
      * @return SettleableTransaction
