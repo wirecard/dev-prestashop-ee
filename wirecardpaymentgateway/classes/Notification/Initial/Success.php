@@ -52,12 +52,11 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
     /**
      * @throws \Exception
      */
-    public function beforeProcess() {
-        //$this->logger->debug(__METHOD__, ['line' => __LINE__]);
+    public function beforeProcess()
+    {
     }
     public function afterProcess()
     {
-        //$this->logger->debug(__METHOD__, ['line' => __LINE__]);
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
         try {
@@ -70,8 +69,6 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
                 $numericalValues
             );
             // #TEST_STATE_LIBRARY
-            $this->logger->debug("Current State : {$order_status} / {$this->order->current_state}. 
-            Next calculated state is {$nextState}");
             $this->order->setCurrentState($nextState);
             $this->order->save();
 
@@ -84,17 +81,15 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
             $this->logger->debug($e->getMessage(), ['method' => __METHOD__, 'line' => __LINE__]);
         } catch (OrderStateInvalidArgumentException $e) {
             // #TEST_STATE_LIBRARY
-            $this->logger->debug($e->getMessage(), ['method' => __METHOD__, 'line' => __LINE__]);
+            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
             throw $e;
         } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug($e->getMessage(), ['method' => __METHOD__, 'line' => __LINE__]);
         }
     }
 
     public function process()
     {
-        $this->logger->debug(__METHOD__, ['line' => __LINE__]);
-        //$this->beforeProcess();
         $dbManager = new DBTransactionManager();
         //Acquire lock out of the try-catch block to prevent release on locking fail
         $dbManager->acquireLock($this->notification->getTransactionId(), 30);

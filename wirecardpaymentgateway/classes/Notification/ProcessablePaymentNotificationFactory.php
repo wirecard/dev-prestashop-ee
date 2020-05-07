@@ -78,14 +78,8 @@ class ProcessablePaymentNotificationFactory
      */
     public function getPaymentProcessing()
     {
-        $this->logger->debug(__METHOD__, [
-            'line' => __LINE__,
-            'isPostProcessing' => $this->isPostProcessing(),
-            'txtype' => $this->notification->getTransactionType(),
-        ]);
         if ($this->notification instanceof SuccessResponse) {
             if ($this->isPostProcessing()) {
-                $this->logger->debug(__METHOD__, ['line' => __LINE__]);
                 return new PostProcessingSuccess($this->order, $this->notification);
             }
             try {

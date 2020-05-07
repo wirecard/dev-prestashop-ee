@@ -37,7 +37,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends WirecardFrontCon
     {
         $notification = \Tools::file_get_contents('php://input');
         // #TEST_STATE_LIBRARY
-        $this->logger->debug(__METHOD__);
         try {
             $order = $this->getOrder();
 
@@ -46,7 +45,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends WirecardFrontCon
 
             $notify_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
             $payment_processing = $notify_factory->getPaymentProcessing();
-            $this->logger->debug(get_class($payment_processing), ['m' => __METHOD__, 'l' => __LINE__]);
             $payment_processing->process();
         } catch (\Exception $exception) {
             $this->logger->error(

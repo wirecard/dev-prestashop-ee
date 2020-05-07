@@ -55,6 +55,7 @@ class Success extends SuccessAbstract
      * @param $order
      * @param $response
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @throws OrderStateInvalidArgumentException
      * @since 2.5.0
      */
     public function __construct($order, $response)
@@ -74,11 +75,8 @@ class Success extends SuccessAbstract
     protected function beforeProcess()
     {
         // #TEST_STATE_LIBRARY
-        $logger = new Logger();
-        $this->logger->debug(__METHOD__, ['line' => __LINE__]);
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
-        $logger->debug(print_r($this->response->getData(), true));
         try {
             $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $nextState = $this->orderStateManager->calculateNextOrderState(
@@ -88,17 +86,15 @@ class Success extends SuccessAbstract
                 $numericalValues
             );
             // #TEST_STATE_LIBRARY
-            $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");
             $this->order->setCurrentState($nextState);
             $this->order->save();
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (IgnorablePostProcessingFailureException $e) {
-            $logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
 
         if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {

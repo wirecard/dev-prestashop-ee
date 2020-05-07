@@ -48,7 +48,6 @@ class WirecardPaymentGatewayReturnModuleFrontController extends WirecardFrontCon
     {
         $response = \Tools::getAllValues();
         // #TEST_STATE_LIBRARY
-        $this->logger->debug("Return: " . print_r($response, true));
         $cart_id = \Tools::getValue('id_cart');
         $payment_state = \Tools::getValue('payment_state');
 

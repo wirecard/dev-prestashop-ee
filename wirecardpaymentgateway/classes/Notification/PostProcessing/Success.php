@@ -10,7 +10,9 @@
 namespace WirecardEE\Prestashop\Classes\Notification\PostProcessing;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
 use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
@@ -20,23 +22,9 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
-//    /** @var WirecardLogger  */
-//    private $logger;
-
-//    /**
-//     * Success constructor.
-//     *
-//     * @since 2.7.0
-//     */
-//    public function __construct()
-//    {
-//        $this->orderService = new OrderService($order);
-//        $this->logger = new WirecardLogger();
-//    }
 
     public function process()
-    {//
-        $this->logger->debug(__METHOD__, ['line' => __LINE__]);
+    {
         if (OrderManager::isIgnorable($this->notification)) {
             return;
         }
@@ -45,7 +33,6 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
             $parentTransaction->markSettledAsClosed();
             //
             $order_status = (int)$this->order_service->getLatestOrderStatusFromHistory();
-            $this->logger->debug('postprocessing order state', compact('order_status'));
             $numericalValues = new OrderStateNumericalValues($this->order_service->getOrderCart()->getOrderTotal());
             try {
                 $orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
@@ -55,18 +42,18 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
                     $this->notification->getData(),
                     $numericalValues
                 );
-                $this->logger->debug('XXX calculated next state', compact('nextState'));
                 // #TEST_STATE_LIBRARY
-                $this->logger->debug("XXX Current State : {$order_status}. Next calculated state is {$nextState}");
                 $this->order->setCurrentState($nextState);
                 $this->order->save();
-            } catch (IgnorableStateException $exception) {
-                $this->logger->debug();
-                //do nothing, as expected
-            } catch(\Exception $exception) {
-                $this->logger->debug('exception in post-processing notification', ['ex' => get_class($exception)]);
+            } catch (IgnorableStateException $e) {
+                // #TEST_STATE_LIBRARY
+                $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            } catch (OrderStateInvalidArgumentException $e) {
+                $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            } catch (IgnorablePostProcessingFailureException $e) {
+                $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
             }
-            //
+
             $parentTransaction->updateOrder(
                 $this->order,
                 $this->notification,
