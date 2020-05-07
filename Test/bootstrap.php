@@ -20,6 +20,7 @@ const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 const EXPECTED_SHOP_NAME = 'Prestashop';
 define('_PS_OS_PAYMENT_', Configuration::get('PS_OS_PAYMENT'));
 define('_PS_OS_ERROR_', Configuration::get('PS_OS_ERROR'));
+define('_PS_ROOT_DIR_', Configuration::get('PS_ROOT_DIR'));
 
 
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
