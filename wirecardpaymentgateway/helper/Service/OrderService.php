@@ -82,9 +82,9 @@ class OrderService
      * @throws \PrestaShopDatabaseException
      * @since 2.10.0
      */
-	public function deleteOrderPayment($orderReference) {
-        return Db::getInstance()->executeS
-        (
+    public function deleteOrderPayment($orderReference)
+    {
+        return Db::getInstance()->executeS(
             'DELETE
                 FROM `' . _DB_PREFIX_ . 'order_payment`
                 WHERE `order_reference` = \'' . pSQL($orderReference) . '\''
