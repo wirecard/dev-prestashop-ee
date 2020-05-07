@@ -14,6 +14,7 @@ use Wirecard\ExtensionOrderStateModule\Application\Service\OrderState;
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\OrderStateTransferObject;
 
@@ -49,6 +50,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function oneStepScenarioDataProvider()
     {
+        $numericalValues = new OrderStateNumericalValues(42);
         yield [
             \Configuration::get(OrderManager::WIRECARD_OS_STARTING),
             Constant::PROCESS_TYPE_INITIAL_RETURN,
@@ -56,6 +58,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_DEBIT,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_SUCCESS,
             ],
+            $numericalValues,
             \Configuration::get(OrderManager::WIRECARD_OS_AWAITING)
         ];
 
@@ -66,6 +69,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_DEBIT,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_FAILED,
             ],
+            $numericalValues,
             _PS_OS_ERROR_
         ];
 
@@ -76,6 +80,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_DEBIT,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_SUCCESS,
             ],
+            $numericalValues,
             _PS_OS_PAYMENT_
         ];
 
@@ -86,6 +91,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_AUTHORIZE,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_SUCCESS,
             ],
+            $numericalValues,
             \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION)
         ];
 
@@ -96,6 +102,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_AUTHORIZE,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_FAILED,
             ],
+            $numericalValues,
             _PS_OS_ERROR_
         ];
     }
@@ -107,13 +114,25 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
      * @param int $currentState
      * @param string $processType
      * @param array $transactionResponse
+     * @param OrderStateNumericalValues $numericalValues
      * @param int $expectedNextState
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
      */
-    public function testCalculateNextOrderState($currentState, $processType, $transactionResponse, $expectedNextState)
-    {
-        $nextState = $this->object->calculateNextOrderState($currentState, $processType, $transactionResponse);
+    public function testCalculateNextOrderState(
+        $currentState,
+        $processType,
+        $transactionResponse,
+        OrderStateNumericalValues $numericalValues,
+        $expectedNextState
+    ) {
+        $nextState = $this->object->calculateNextOrderState(
+            $currentState,
+            $processType,
+            $transactionResponse,
+            $numericalValues
+        );
         $this->assertEquals($expectedNextState, $nextState);
     }
 }
