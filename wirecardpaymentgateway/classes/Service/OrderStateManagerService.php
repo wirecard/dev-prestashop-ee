@@ -47,7 +47,12 @@ class OrderStateManagerService implements ServiceInterface
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
      */
-    public function calculateNextOrderState($currentOrderState, $processType, array $transactionResponse, OrderStateNumericalValues $numericalValues)
+    public function calculateNextOrderState(
+        $currentOrderState,
+        $processType,
+        array $transactionResponse,
+        OrderStateNumericalValues $numericalValues
+    )
     {
         $input = new OrderStateTransferObject($currentOrderState, $processType, $transactionResponse, $numericalValues);
         // #TEST_STATE_LIBRARY

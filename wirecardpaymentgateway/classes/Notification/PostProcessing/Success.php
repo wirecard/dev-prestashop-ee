@@ -47,11 +47,11 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
                 $this->order->save();
             } catch (IgnorableStateException $e) {
                 // #TEST_STATE_LIBRARY
-                $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+                $this->logger->debug($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);
             } catch (OrderStateInvalidArgumentException $e) {
-                $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+                $this->logger->emergency($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);
             } catch (IgnorablePostProcessingFailureException $e) {
-                $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+                $this->logger->debug($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);
             }
 
             $parentTransaction->updateOrder(
