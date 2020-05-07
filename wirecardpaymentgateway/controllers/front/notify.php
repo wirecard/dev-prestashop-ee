@@ -7,7 +7,6 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Classes\Engine\NotificationResponse;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotificationFactory;

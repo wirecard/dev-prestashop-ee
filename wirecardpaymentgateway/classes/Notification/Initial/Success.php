@@ -40,7 +40,7 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
      * Success constructor.
      * @param $order
      * @param $notification
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @throws OrderStateInvalidArgumentException
      */
     public function __construct($order, $notification)
     {
@@ -55,6 +55,10 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
     public function beforeProcess()
     {
     }
+
+    /**
+     * @throws OrderStateInvalidArgumentException
+     */
     public function afterProcess()
     {
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();

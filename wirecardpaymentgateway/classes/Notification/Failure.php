@@ -49,7 +49,7 @@ final class Failure implements ProcessablePaymentNotification
      *
      * @param \Order $order
      * @param FailureResponse $notification
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
     public function __construct($order, $notification)
@@ -70,8 +70,7 @@ final class Failure implements ProcessablePaymentNotification
         $currentState = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
         try {
-            $openAmount = $this->order->getTotalProductsWithTaxes();
-            $numericalValues = new OrderStateNumericalValues($openAmount);
+            $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
                 Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,

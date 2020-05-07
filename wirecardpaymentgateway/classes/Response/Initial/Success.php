@@ -78,9 +78,6 @@ class Success extends SuccessAbstract
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
         try {
-            $total1 = $this->orderService->getOrderCart()->getOrderTotal();
-            $total2 = $this->order->getTotalProductsWithTaxes();
-            var_dump(compact('total1', 'total2')); exit;
             $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $order_status,

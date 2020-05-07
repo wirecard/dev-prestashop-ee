@@ -15,8 +15,6 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Notification\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Notification\PostProcessing\Success as PostProcessingSuccess;
-use WirecardEE\Prestashop\Classes\ProcessType;
-use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
@@ -51,6 +49,9 @@ class ProcessablePaymentNotificationFactory
         $this->logger = new WirecardLogger();
     }
 
+    /**
+     * @return bool
+     */
     private function isPostProcessing()
     {
         $types = [
@@ -74,6 +75,7 @@ class ProcessablePaymentNotificationFactory
 
     /**
      * @return Failure|Success
+     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
     public function getPaymentProcessing()
@@ -82,11 +84,7 @@ class ProcessablePaymentNotificationFactory
             if ($this->isPostProcessing()) {
                 return new PostProcessingSuccess($this->order, $this->notification);
             }
-            try {
-                return new InitialSuccess($this->order, $this->notification);
-            } catch (OrderStateInvalidArgumentException $e) {
-                return new Failure($this->order, $this->notification);//TODO: review ok?
-            }
+            return new InitialSuccess($this->order, $this->notification);
         }
 
         return new Failure($this->order, $this->notification);
