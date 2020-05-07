@@ -17,8 +17,6 @@ use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
 use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class Success extends AbstractSuccess implements ProcessablePaymentNotification
 {
