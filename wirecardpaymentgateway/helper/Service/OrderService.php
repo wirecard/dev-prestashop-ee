@@ -36,32 +36,32 @@ class OrderService
         $this->order = $order;
     }
 
-	/**
-	 * @param $transaction
-	 *
-	 * @return bool
-	 * @since 2.10.0
-	 */
+    /**
+     * @param $transaction
+     *
+     * @return bool
+     * @since 2.10.0
+     */
 	public function createOrderPayment($transaction)
-	{
-		$transactionId = $transaction->transaction_id;
-		$transactionType = $transaction->getTransactionType();
-		if(($transactionType === self::TRANSACTION_TYPE_PURCHASE)||($transactionType===self::TRANSACTION_TYPE_DEBIT)){
-			$amount = -1 * $this->order->total_paid;
-			return $this->order->addOrderPayment($amount, null, $transactionId);
-		}
-		elseif ($transactionType === self::TRANSACTION_TYPE_CAPTURE_AUTH) {
-			$amount = -1 * $this->order->total_paid;
-			return $this->order->addOrderPayment($amount, null, $transactionId);
-		}
-	}
+    {
+        $transactionId = $transaction->transaction_id;
+        $transactionType = $transaction->getTransactionType();
+        if(($transactionType === self::TRANSACTION_TYPE_PURCHASE)||($transactionType===self::TRANSACTION_TYPE_DEBIT)){
+            $amount = -1 * $this->order->total_paid;
+            return $this->order->addOrderPayment($amount, null, $transactionId);
+        }
+        elseif ($transactionType === self::TRANSACTION_TYPE_CAPTURE_AUTH) {
+            $amount = -1 * $this->order->total_paid;
+            return $this->order->addOrderPayment($amount, null, $transactionId);
+        }
+    }
 
-	/**
-	 * @param string $transaction_id
-	 * @param $amount
-	 *
-	 * @since 2.1.0
-	 */
+    /**
+     * @param string $transaction_id
+     * @param $amount
+     *
+     * @since 2.1.0
+     */
     public function updateOrderPayment($transaction_id, $amount)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
@@ -74,13 +74,13 @@ class OrderService
         }
     }
 
-	/**
-	 * @param $orderReference
-	 *
-	 * @return boolean
-	 * @throws \PrestaShopDatabaseException
-	 * @since 2.10.0
-	 */
+    /**
+     * @param $orderReference
+     *
+     * @return boolean
+     * @throws \PrestaShopDatabaseException
+     * @since 2.10.0
+     */
 	public function deleteOrderPayment($orderReference) {
 		return Db::getInstance()->executeS(
 			'DELETE

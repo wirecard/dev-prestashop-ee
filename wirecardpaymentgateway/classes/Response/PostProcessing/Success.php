@@ -39,27 +39,27 @@ class Success extends SuccessAbstract
 	 * @param $order
 	 * @param $response
 	 * @since 2.5.0
-	 */
+     */
 	public function __construct($order, $response)
-	{
-		parent::__construct($order, $response);
+    {
+        parent::__construct($order, $response);
 
-		$this->transaction_manager = new DBTransactionManager();
-		$this->context_service = new ContextService(\Context::getContext());
-		$this->order_service = new OrderService($order);
-	}
+        $this->transaction_manager = new DBTransactionManager();
+        $this->context_service = new ContextService(\Context::getContext());
+        $this->order_service = new OrderService($order);
+    }
 
-	/**
-	 * @since 2.5.0
-	 */
-	public function process()
-	{
-		parent::process();
-		$transaction = new Transaction(\Tools::getValue('tx_id'));
-		$transaction->markSettledAsClosed();
-		$this->order_service->createOrderPayment($transaction);
-		$this->context_service->setConfirmations(
-			$this->getTranslatedString('success_new_transaction')
+    /**
+     * @since 2.5.0
+     */
+    public function process()
+    {
+        parent::process();
+        $transaction = new Transaction(\Tools::getValue('tx_id'));
+        $transaction->markSettledAsClosed();
+        $this->order_service->createOrderPayment($transaction);
+        $this->context_service->setConfirmations(
+            $this->getTranslatedString('success_new_transaction')
 		);
 	}
 }
