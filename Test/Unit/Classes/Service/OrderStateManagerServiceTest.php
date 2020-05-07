@@ -57,6 +57,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
             [
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_DEBIT,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_SUCCESS,
+                OrderStateTransferObject::FIELD_REQUESTED_AMOUNT => 42,
             ],
             $numericalValues,
             \Configuration::get(OrderManager::WIRECARD_OS_AWAITING)
@@ -68,6 +69,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
             [
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_DEBIT,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_FAILED,
+                OrderStateTransferObject::FIELD_REQUESTED_AMOUNT => 42,
             ],
             $numericalValues,
             _PS_OS_ERROR_
@@ -79,6 +81,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
             [
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_DEBIT,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_SUCCESS,
+                OrderStateTransferObject::FIELD_REQUESTED_AMOUNT => 42,
             ],
             $numericalValues,
             _PS_OS_PAYMENT_
@@ -90,6 +93,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
             [
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_AUTHORIZE,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_SUCCESS,
+                OrderStateTransferObject::FIELD_REQUESTED_AMOUNT => 42,
             ],
             $numericalValues,
             \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION)
@@ -101,6 +105,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
             [
                 OrderStateTransferObject::FIELD_TRANSACTION_TYPE => Constant::TRANSACTION_TYPE_AUTHORIZE,
                 OrderStateTransferObject::FIELD_TRANSACTION_STATE => Constant::TRANSACTION_STATE_FAILED,
+                OrderStateTransferObject::FIELD_REQUESTED_AMOUNT => 42,
             ],
             $numericalValues,
             _PS_OS_ERROR_
