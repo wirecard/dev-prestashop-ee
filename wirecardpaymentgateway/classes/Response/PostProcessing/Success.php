@@ -29,18 +29,18 @@ class Success extends SuccessAbstract
      */
     private $context_service;
 
-	/**
-	 * @var OrderService
-	 */
-	private $order_service;
-
-	/**
-	 * Success constructor.
-	 * @param $order
-	 * @param $response
-	 * @since 2.5.0
+    /**
+     * @var OrderService
      */
-	public function __construct($order, $response)
+    private $order_service;
+
+    /**
+     * Success constructor.
+     * @param $order
+     * @param $response
+     * @since 2.5.0
+     */
+    public function __construct($order, $response)
     {
         parent::__construct($order, $response);
 
@@ -60,6 +60,6 @@ class Success extends SuccessAbstract
         $this->order_service->createOrderPayment($transaction);
         $this->context_service->setConfirmations(
             $this->getTranslatedString('success_new_transaction')
-		);
-	}
+        );
+    }
 }

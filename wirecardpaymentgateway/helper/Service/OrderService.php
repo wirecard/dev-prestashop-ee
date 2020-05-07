@@ -19,9 +19,9 @@ use WirecardEE\Prestashop\Models\Transaction;
  */
 class OrderService
 {
-	const TRANSACTION_TYPE_PURCHASE = "purchase";
-	const TRANSACTION_TYPE_DEBIT = "debit";
-	const TRANSACTION_TYPE_CAPTURE_AUTH = "capture-authroization";
+    const TRANSACTION_TYPE_PURCHASE = "purchase";
+    const TRANSACTION_TYPE_DEBIT = "debit";
+    const TRANSACTION_TYPE_CAPTURE_AUTH = "capture-authroization";
 
     /** @var \Order */
     private $order;
@@ -43,15 +43,14 @@ class OrderService
      * @return bool
      * @since 2.10.0
      */
-	public function createOrderPayment($transaction)
+    public function createOrderPayment($transaction)
     {
         $transactionId = $transaction->transaction_id;
         $transactionType = $transaction->getTransactionType();
-        if(($transactionType === self::TRANSACTION_TYPE_PURCHASE)||($transactionType===self::TRANSACTION_TYPE_DEBIT)){
+        if (($transactionType === self::TRANSACTION_TYPE_PURCHASE)||($transactionType===self::TRANSACTION_TYPE_DEBIT)) {
             $amount = -1 * $this->order->total_paid;
             return $this->order->addOrderPayment($amount, null, $transactionId);
-        }
-        elseif ($transactionType === self::TRANSACTION_TYPE_CAPTURE_AUTH) {
+        } elseif ($transactionType === self::TRANSACTION_TYPE_CAPTURE_AUTH) {
             $amount = -1 * $this->order->total_paid;
             return $this->order->addOrderPayment($amount, null, $transactionId);
         }
@@ -84,12 +83,13 @@ class OrderService
      * @since 2.10.0
      */
 	public function deleteOrderPayment($orderReference) {
-		return Db::getInstance()->executeS(
-			'DELETE
-			    FROM `' . _DB_PREFIX_ . 'order_payment`
-			    WHERE `order_reference` = \'' . pSQL($orderReference) . '\''
-		);
-	}
+        return Db::getInstance()->executeS
+        (
+            'DELETE
+                FROM `' . _DB_PREFIX_ . 'order_payment`
+                WHERE `order_reference` = \'' . pSQL($orderReference) . '\''
+        );
+    }
 
 
     /**

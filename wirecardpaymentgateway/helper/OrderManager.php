@@ -52,8 +52,9 @@ class OrderManager
     /** @var \Module|\WirecardPaymentGateway  */
     private $module;
 
-	/** @var OrderService */
-	private $order_service;
+    /** @var OrderService */
+    private $order_service;
+
     /**
      * OrderManager constructor.
      *
