@@ -9,7 +9,6 @@
 
 namespace WirecardEE\Prestashop\Classes\Service;
 
-
 /**
  * Class OrderStateNumericalValues hold the numerical values needed to calculate the next order state
  * @package WirecardEE\Prestashop\Classes\Service
@@ -39,5 +38,4 @@ class OrderStateNumericalValues
     {
         return $this->orderOpenAmount;
     }
-
 }

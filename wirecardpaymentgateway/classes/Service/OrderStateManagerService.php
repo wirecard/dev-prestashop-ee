@@ -52,8 +52,7 @@ class OrderStateManagerService implements ServiceInterface
         $processType,
         array $transactionResponse,
         OrderStateNumericalValues $numericalValues
-    )
-    {
+    ) {
         $input = new OrderStateTransferObject($currentOrderState, $processType, $transactionResponse, $numericalValues);
         // #TEST_STATE_LIBRARY
         (new Logger())->debug(print_r($input, true), ['method' => __METHOD__, 'line' => __LINE__]);

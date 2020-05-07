@@ -70,8 +70,7 @@ class OrderStateTransferObject implements InputDataTransferObject
         $processType,
         array $transactionResponse,
         OrderStateNumericalValues $numericalValues
-    )
-    {
+    ) {
         $this->validate($processType, $currentOrderState, $transactionResponse);
         $this->currentOrderState = $currentOrderState;
         $this->processType = $processType;
