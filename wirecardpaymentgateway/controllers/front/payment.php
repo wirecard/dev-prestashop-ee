@@ -44,7 +44,7 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $paymentType = \Tools::getValue('payment_type');
         $errorNotification = \Tools::getValue('error-notification');
         $errorNotifications = \Tools::jsonDecode($errorNotification);
-        if(!is_array($errorNotification)) {
+        if (!is_array($errorNotifications)) {
             $errorNotifications = [];
         }
 
