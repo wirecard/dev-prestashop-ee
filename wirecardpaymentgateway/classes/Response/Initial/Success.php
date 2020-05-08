@@ -96,10 +96,6 @@ class Success extends SuccessAbstract
         } catch (IgnorablePostProcessingFailureException $e) {
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
-
-        if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->onOrderStateStarted();
-        }
     }
 
     /**
@@ -122,19 +118,6 @@ class Success extends SuccessAbstract
             . $this->order->id . '&key='
             . $this->customer->secure_key
         );
-    }
-
-    private function onOrderStateStarted()
-    {
-        $currency = 'EUR';
-        if (key_exists('currency', $this->response->getData())) {
-            $currency = $this->response->getData()['currency'];
-        }
-        $amount = new Amount(0, $currency);
-        if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
-            $amount = $this->response->getRequestedAmount();
-        }
-        $this->orderService->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
     }
 
     /**

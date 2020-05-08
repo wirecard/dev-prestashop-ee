@@ -818,11 +818,8 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         }
 
         if ($settled) {
-            $parentTransaction = Transaction::getInitialTransactionForOrder($order->reference);
-            $amount = $parentTransaction->getAmount();
-            $orderService->updateOrderPayment(
-                $notification->getTransactionId(),
-                $amount
+	        $orderService->addTransactionIdToOrderPayment(
+		        $notification->getTransactionId()
             );
         }
 

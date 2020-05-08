@@ -94,7 +94,6 @@ final class Failure implements ProcessablePaymentResponse
             if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
                 $this->order->save();
-                $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
             }
 
             if ($this->processType === ProcessType::PROCESS_BACKEND) {

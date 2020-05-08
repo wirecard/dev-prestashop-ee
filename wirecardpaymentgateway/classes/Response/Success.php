@@ -69,6 +69,10 @@ abstract class Success implements ProcessablePaymentResponse
         //We do this outside of the try block so that if locking fails, we don't attempt to release it
         $dbManager->acquireLock($this->response->getTransactionId(), 30);
         try {
+	        /* if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+				 $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
+				 $this->order->save();
+			 } */
             $amount = $this->response->getRequestedAmount();
             $orderManager = new OrderManager();
             $transactionState = $orderManager->getTransactionState($this->response);

@@ -76,10 +76,9 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
             $this->order->setCurrentState($nextState);
             $this->order->save();
 
-            $this->order_service->updateOrderPayment(
-                $this->notification->getTransactionId(),
-                $this->getRestAmount($nextState)
-            );
+	        $this->order_service->addTransactionIdToOrderPayment(
+		        $this->notification->getTransactionId()
+	        );
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['method' => __METHOD__, 'line' => __LINE__]);
@@ -118,24 +117,5 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
             $dbManager->releaseLock($this->notification->getTransactionId());
         }
         $this->afterProcess();
-    }
-
-    /**
-     * @param string $order_state
-     *
-     * @return float|int
-     * @since 2.7.0
-     */
-    private function getRestAmount($order_state)
-    {
-        $rest_amount = 0;
-        $payment_processing_state = \Configuration::get('PS_OS_PAYMENT');
-        $requested_amount = $this->notification->getRequestedAmount();
-
-        if ($payment_processing_state === $order_state) {
-            $rest_amount = $requested_amount->getValue();
-        }
-
-        return $rest_amount;
     }
 }
