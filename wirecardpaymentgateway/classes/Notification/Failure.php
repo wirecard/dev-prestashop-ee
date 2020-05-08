@@ -81,7 +81,6 @@ final class Failure implements ProcessablePaymentNotification
             if ($currentState !== $nextState) {
                 $this->order->setCurrentState($nextState);
                 $this->order->save();
-                $this->orderService->updateOrderPayment($this->notification->getData()['transaction-id'], 0);
             }
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
