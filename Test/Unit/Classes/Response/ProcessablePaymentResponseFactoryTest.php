@@ -24,6 +24,7 @@ class ProcessablePaymentResponseFactoryTest extends \PHPUnit_Framework_TestCase
      * @param string $response_class_name
      * @param string $order_state
      * @param string $expected
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
      */
     public function testResponseFactory($response_class_name, $order_state, $expected)
     {
@@ -68,7 +69,7 @@ class ProcessablePaymentResponseFactoryTest extends \PHPUnit_Framework_TestCase
                 'success',
                 \WirecardEE\Prestashop\Classes\Response\FormPost::class
             ), array(
-                \WirecardEE\Prestashop\Models\Transaction::class,
+                \Wirecard\PaymentSdk\Response\FailureResponse::class,
                 'success',
                 \WirecardEE\Prestashop\Classes\Response\Failure::class
             )
