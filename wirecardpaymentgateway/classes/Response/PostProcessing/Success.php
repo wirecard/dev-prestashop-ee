@@ -15,10 +15,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
 use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
-use WirecardEE\Prestashop\Helper\DBTransactionManager;
-use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
-use WirecardEE\Prestashop\Models\Transaction;
 
 class Success extends SuccessAbstract
 {
@@ -26,6 +23,9 @@ class Success extends SuccessAbstract
      * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
     private $orderStateManager;
+
+    /** @var ContextService */
+    private $contextService;
 
     /**
      * Success constructor.
@@ -37,6 +37,7 @@ class Success extends SuccessAbstract
     public function __construct($order, $response)
     {
         parent::__construct($order, $response);
+        $this->contextService = new ContextService(\Context::getContext());
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
     }
 
@@ -45,14 +46,9 @@ class Success extends SuccessAbstract
      */
     public function process()
     {
-
-        // todo: Part of notification
-//        $transaction = new Transaction(\Tools::getValue('tx_id'));
-//        $transaction->markSettledAsClosed();
-//
-//        $this->context_service->setConfirmations(
-//            $this->getTranslatedString('success_new_transaction')
-//        );
+        $this->contextService->setConfirmations(
+            $this->getTranslatedString('success_new_transaction')
+        );
         $order_status = (int)$this->orderService->getLatestOrderStatusFromHistory();
         $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
         try {

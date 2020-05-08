@@ -98,9 +98,6 @@ abstract class Success implements ProcessablePaymentNotification
                 //todo: Need to close parent transaction closed depending on order state
                 // 3 Create / update transaction
                 $this->createTransaction();
-                $this->contextService->setConfirmations(
-                    $this->getTranslatedString('success_new_transaction')
-                );
                 // 4 Update payment section
             } catch (IgnorableStateException $e) {
                 // #TEST_STATE_LIBRARY

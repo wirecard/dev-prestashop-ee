@@ -99,17 +99,17 @@ final class Failure implements ProcessablePaymentResponse
             }
             $isPostPorcessing = intval($this->isPostProcessing);
             $this->logger->debug("Is post processing: {$isPostPorcessing}");
-            if ($this->isPostProcessing) {
-                $this->processBackend();
-                return;
-            }
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            if ($this->isPostProcessing) {
+                $this->processBackend();
+                return;
+            }
         }
 
 
@@ -123,11 +123,7 @@ final class Failure implements ProcessablePaymentResponse
     private function processBackend()
     {
         $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->setErrors(
-            \Tools::displayError(
-                join('<br>', $errors)
-            )
-        );
+        $this->context_service->setErrors(\Tools::displayError(implode('<br>', $errors)));
     }
 
     /**
