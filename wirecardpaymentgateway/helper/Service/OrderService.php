@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Helper\Service;
 
 use Db;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -58,10 +59,10 @@ class OrderService
     public function isOrderPaymentCreate($transactionType)
     {
         switch ($transactionType) {
-            case Transaction::TYPE_REFUND_PURCHASE:
-            case Transaction::TYPE_REFUND_CAPTURE:
-            case Transaction::TYPE_REFUND_DEBIT:
-            case Transaction::TYPE_VOID_PURCHASE:
+            case TransactionTypes::TYPE_REFUND_PURCHASE:
+            case TransactionTypes::TYPE_REFUND_CAPTURE:
+            case TransactionTypes::TYPE_REFUND_DEBIT:
+            case TransactionTypes::TYPE_VOID_PURCHASE:
                 return true;
             default:
                 return false;
