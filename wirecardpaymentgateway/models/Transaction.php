@@ -812,9 +812,9 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         }
 
         if (!$updated && $this->isRefundSettledTransitive()) {
-            $order->setCurrentState(_PS_OS_REFUND_);
-            $order->save();
-            $updated = true;
+//            $order->setCurrentState(_PS_OS_REFUND_);
+//            $order->save();
+//            $updated = true;
         }
 
         if ($settled) {
