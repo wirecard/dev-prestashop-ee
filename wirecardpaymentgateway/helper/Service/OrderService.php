@@ -69,12 +69,11 @@ class OrderService
         }
     }
 
-    /**
-     * @param string $transaction_id
-     * @param float $amount
-     *
-     * @since 2.1.0
-     */
+	/**
+	 * @param string $transaction_id
+	 *
+	 * @since 2.1.0
+	 */
     public function addTransactionIdToOrderPayment($transaction_id)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
