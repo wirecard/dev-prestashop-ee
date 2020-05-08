@@ -87,6 +87,6 @@ class ProcessablePaymentNotificationFactory
             return new InitialSuccess($this->order, $this->notification);
         }
 
-        return new Failure($this->order, $this->notification);
+        return new Failure($this->order, $this->notification, $this->isPostProcessing());
     }
 }
