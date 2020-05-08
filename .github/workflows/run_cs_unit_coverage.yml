@@ -23,6 +23,9 @@ jobs:
           coverage: xdebug
           pecl: false
 
+      - name: Check Composer Dependencies Installable
+        run: composer install --dry-run
+
       - name: Install Composer Dependencies
         run:  composer global require hirak/prestissimo && composer install --no-interaction && composer show
 
