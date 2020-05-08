@@ -100,6 +100,12 @@ class Configuration
                 return '02';
             case 'PS_PRICE_DISPLAY_PRECISION':
                 return 2;
+            case 'PS_OS_ERROR':
+                return 222;
+            case 'PS_OS_PAYMENT':
+                return 111;
+            case 'PS_ROOT_DIR':
+                return '.';
             default:
                 return $param;
         }

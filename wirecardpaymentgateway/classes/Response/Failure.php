@@ -10,11 +10,13 @@
 namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use WirecardEE\Prestashop\Classes\ProcessType;
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
@@ -48,6 +50,11 @@ final class Failure implements ProcessablePaymentResponse
     private $orderStateManager;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * FailureResponseProcessing constructor.
      *
      * @param \Order $order
@@ -64,6 +71,7 @@ final class Failure implements ProcessablePaymentResponse
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
+        $this->logger = new Logger();
     }
 
 
@@ -72,21 +80,17 @@ final class Failure implements ProcessablePaymentResponse
      */
     public function process()
     {
-        $logger = new Logger();
-
         $currentState = $this->order_service->getLatestOrderStatusFromHistory();
-        // #TEST_STATE_LIBRARY
-        $logger->debug("Current state is {$currentState}");
-        // #TEST_STATE_LIBRARY
-        $logger->debug(print_r($this->response->getData(), true));
         try {
+            $orderTotal = $this->order_service->getOrderCart()->getOrderTotal();
+            $numericalValues = new OrderStateNumericalValues($orderTotal);
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
                 Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData()
+                $this->response->getData(),
+                $numericalValues
             );
             // #TEST_STATE_LIBRARY
-            $logger->debug("Current State : {$currentState}. Next calculated state is {$nextState}");
             if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
                 $this->order->save();
@@ -99,10 +103,11 @@ final class Failure implements ProcessablePaymentResponse
             }
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        } catch (IgnorablePostProcessingFailureException $e) {
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
 
 

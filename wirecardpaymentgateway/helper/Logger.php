@@ -158,7 +158,7 @@ class Logger implements LoggerInterface
         $loger= new \Monolog\Logger('wirecard');
         $loger->pushHandler(new StreamHandler(_PS_ROOT_DIR_ . "/var/logs/wirecard.log", \Monolog\Logger::DEBUG));
         $loger->debug("--------BEGIN---------");
-        $loger->debug($message);
+        $loger->debug($message, $context);
         $loger->debug("--------END---------");
         $log= new \PrestaShopLogger();
         $log->error_code = null;

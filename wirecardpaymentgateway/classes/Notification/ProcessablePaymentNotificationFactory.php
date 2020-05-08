@@ -9,11 +9,13 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification;
 
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Notification\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Notification\PostProcessing\Success as PostProcessingSuccess;
-use WirecardEE\Prestashop\Classes\ProcessType;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class ProcessablePaymentNotificationFactory
@@ -22,14 +24,16 @@ use WirecardEE\Prestashop\Classes\ProcessType;
  */
 class ProcessablePaymentNotificationFactory
 {
-    /** @var \Order  */
+    /** @var \Order */
     private $order;
 
-    /** @var FailureResponse|SuccessResponse  */
+    /** @var FailureResponse|SuccessResponse */
     private $notification;
 
-    /** @var string */
-    private $processType;
+    /**
+     * @var WirecardLogger
+     */
+    private $logger;
 
     /**
      * PaymentProcessingFactory constructor.
@@ -38,25 +42,49 @@ class ProcessablePaymentNotificationFactory
      * @param SuccessResponse|FailureResponse $notification
      * @since 2.1.0
      */
-    public function __construct($order, $notification, $processType = ProcessType::PROCESS_RESPONSE)
+    public function __construct($order, $notification)
     {
         $this->order = $order;
         $this->notification = $notification;
-        $this->processType = $processType;
+        $this->logger = new WirecardLogger();
+    }
+
+    /**
+     * @return bool
+     */
+    private function isPostProcessing()
+    {
+        $types = [
+            Transaction::TYPE_CAPTURE_AUTHORIZATION,
+            Transaction::TYPE_VOID_AUTHORIZATION,
+            Transaction::TYPE_CREDIT,
+            Transaction::TYPE_REFUND_CAPTURE,
+            Transaction::TYPE_REFUND_DEBIT,
+            Transaction::TYPE_REFUND_REQUEST,
+            Transaction::TYPE_VOID_CAPTURE,
+            Transaction::TYPE_REFUND_PURCHASE,
+            Transaction::TYPE_REFERENCED_PURCHASE,
+            Transaction::TYPE_VOID_PURCHASE,
+            Transaction::TYPE_VOID_DEBIT,
+            Transaction::TYPE_VOID_REFUND_CAPTURE,
+            Transaction::TYPE_VOID_REFUND_PURCHASE,
+            Transaction::TYPE_VOID_CREDIT,
+        ];
+        return in_array($this->notification->getTransactionType(), $types);
     }
 
     /**
      * @return Failure|Success
+     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
     public function getPaymentProcessing()
     {
         if ($this->notification instanceof SuccessResponse) {
-            if ($this->processType === ProcessType::PROCESS_RESPONSE) {
-                return new InitialSuccess($this->order, $this->notification);
+            if ($this->isPostProcessing()) {
+                return new PostProcessingSuccess($this->order, $this->notification);
             }
-
-            return new PostProcessingSuccess($this->order, $this->notification);
+            return new InitialSuccess($this->order, $this->notification);
         }
 
         return new Failure($this->order, $this->notification);

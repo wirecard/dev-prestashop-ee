@@ -10,9 +10,11 @@
 namespace WirecardEE\Prestashop\Classes\Notification;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 
@@ -38,11 +40,16 @@ final class Failure implements ProcessablePaymentNotification
     private $orderStateManager;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * FailurePaymentProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $notification
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
     public function __construct($order, $notification)
@@ -51,6 +58,7 @@ final class Failure implements ProcessablePaymentNotification
         $this->notification = $notification;
         $this->orderService = new OrderService($order);
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
+        $this->logger = new Logger();
     }
 
     /**
@@ -58,20 +66,18 @@ final class Failure implements ProcessablePaymentNotification
      */
     public function process()
     {
-        $logger = new Logger();
         // #TEST_STATE_LIBRARY
-        $logger->debug("NOTIFICATION PROCESS");
         $currentState = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
-        $logger->debug(print_r($this->notification->getData(), true));
         try {
+            $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
                 Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
-                $this->notification->getData()
+                $this->notification->getData(),
+                $numericalValues
             );
             // #TEST_STATE_LIBRARY
-            $logger->debug("Current State : {$currentState}. Next calculated state is {$nextState}");
             if ($currentState !== $nextState) {
                 $this->order->setCurrentState($nextState);
                 $this->order->save();
@@ -79,10 +85,11 @@ final class Failure implements ProcessablePaymentNotification
             }
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        } catch (IgnorablePostProcessingFailureException $e) {
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
     }
 }
