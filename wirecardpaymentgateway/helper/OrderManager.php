@@ -55,10 +55,10 @@ class OrderManager
     /** @var \Module|\WirecardPaymentGateway  */
     private $module;
 
-	/** @var OrderService */
-	private $order_service;
+    /** @var OrderService */
+    private $order_service;
 
-	/**
+    /**
      * OrderManager constructor.
      *
      * @param \PaymentModule $module
@@ -67,7 +67,7 @@ class OrderManager
     public function __construct()
     {
         $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
-	    $this->order_service = new OrderService(null);
+        $this->order_service = new OrderService(null);
     }
 
     /**
@@ -94,8 +94,8 @@ class OrderManager
             false,
             $cart->secure_key
         );
-	    $orderReference = $this->module->currentOrderReference;
-	    $this->order_service->deleteOrderPayment($orderReference);
+        $orderReference = $this->module->currentOrderReference;
+        $this->order_service->deleteOrderPayment($orderReference);
         return $this->module->currentOrder;
     }
 

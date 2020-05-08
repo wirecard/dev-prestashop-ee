@@ -76,9 +76,9 @@ class Success extends AbstractSuccess implements ProcessablePaymentNotification
             $this->order->setCurrentState($nextState);
             $this->order->save();
 
-	        $this->order_service->addTransactionIdToOrderPayment(
-		        $this->notification->getTransactionId()
-	        );
+            $this->order_service->addTransactionIdToOrderPayment(
+                $this->notification->getTransactionId()
+            );
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['method' => __METHOD__, 'line' => __LINE__]);

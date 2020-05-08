@@ -818,8 +818,8 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         }
 
         if ($settled) {
-	        $orderService->addTransactionIdToOrderPayment(
-		        $notification->getTransactionId()
+            $orderService->addTransactionIdToOrderPayment(
+                $notification->getTransactionId()
             );
         }
 
