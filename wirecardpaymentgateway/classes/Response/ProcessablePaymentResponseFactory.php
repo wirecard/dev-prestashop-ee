@@ -18,7 +18,6 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcessingSuccess;
 use WirecardEE\Prestashop\Classes\ProcessType;
-use WirecardEE\Prestashop\Helper\Logger;
 
 /**
  * Class ProcessablePaymentResponseFactory
@@ -61,7 +60,6 @@ class ProcessablePaymentResponseFactory
      */
     private function isPostProcessing()
     {
-        $logger = new Logger();
         $types = [
             Transaction::TYPE_CAPTURE_AUTHORIZATION,
             Transaction::TYPE_VOID_AUTHORIZATION,
@@ -79,7 +77,6 @@ class ProcessablePaymentResponseFactory
             Transaction::TYPE_VOID_CREDIT,
         ];
         $result = in_array($this->response->getData()['transaction-type'], $types);
-        $logger->debug("TT: {$this->response->getData()['transaction-type']}; RESULT: {$result}");
         return $result;
     }
 

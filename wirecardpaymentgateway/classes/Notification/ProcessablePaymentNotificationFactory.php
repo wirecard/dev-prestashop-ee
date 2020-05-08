@@ -15,7 +15,6 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Notification\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Notification\PostProcessing\Success as PostProcessingSuccess;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Class ProcessablePaymentNotificationFactory
@@ -31,11 +30,6 @@ class ProcessablePaymentNotificationFactory
     private $notification;
 
     /**
-     * @var WirecardLogger
-     */
-    private $logger;
-
-    /**
      * PaymentProcessingFactory constructor.
      *
      * @param \Order $order
@@ -46,7 +40,6 @@ class ProcessablePaymentNotificationFactory
     {
         $this->order = $order;
         $this->notification = $notification;
-        $this->logger = new WirecardLogger();
     }
 
     /**
