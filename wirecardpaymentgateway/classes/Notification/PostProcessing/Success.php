@@ -21,4 +21,10 @@ class Success extends AbstractSuccess
     {
         return Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION;
     }
+
+    public function process()
+    {
+        parent::process();
+        // todo: close parent transaction to not allow any post processing any more
+    }
 }

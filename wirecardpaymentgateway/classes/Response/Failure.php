@@ -15,7 +15,6 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
@@ -42,7 +41,7 @@ final class Failure implements ProcessablePaymentResponse
     private $order_service;
 
     /** @var string */
-    private $processType;
+    private $isPostProcessing;
 
     /**
      * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
@@ -59,15 +58,15 @@ final class Failure implements ProcessablePaymentResponse
      *
      * @param \Order $order
      * @param FailureResponse $response
-     * @param string $processType
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @param string $isPostProcessing
+     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
-    public function __construct($order, $response, $processType)
+    public function __construct($order, $response, $isPostProcessing)
     {
         $this->order = $order;
         $this->response = $response;
-        $this->processType = $processType;
+        $this->isPostProcessing = $isPostProcessing;
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
@@ -86,7 +85,9 @@ final class Failure implements ProcessablePaymentResponse
             $numericalValues = new OrderStateNumericalValues($orderTotal);
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
-                Constant::PROCESS_TYPE_INITIAL_RETURN,
+                $this->isPostProcessing ?
+                    Constant::PROCESS_TYPE_POST_PROCESSING_RETURN :
+                    Constant::PROCESS_TYPE_INITIAL_RETURN,
                 $this->response->getData(),
                 $numericalValues
             );
@@ -96,8 +97,9 @@ final class Failure implements ProcessablePaymentResponse
                 $this->order->save();
                 $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
             }
-
-            if ($this->processType === ProcessType::PROCESS_BACKEND) {
+            $isPostPorcessing = intval($this->isPostProcessing);
+            $this->logger->debug("Is post processing: {$isPostPorcessing}");
+            if ($this->isPostProcessing) {
                 $this->processBackend();
                 return;
             }

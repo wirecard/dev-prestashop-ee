@@ -86,17 +86,15 @@ final class Failure implements ProcessablePaymentNotification
                 $this->notification->getData(),
                 $numericalValues
             );
-            // #TEST_STATE_LIBRARY
-            if ($currentState !== $nextState) {
-                $this->order->setCurrentState($nextState);
-                $this->order->save();
-            }
+            $this->order->setCurrentState($nextState);
+            $this->order->save();
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (IgnorablePostProcessingFailureException $e) {
+            $this->logger->debug("IgnorablePostProcessingFailureException");
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
     }

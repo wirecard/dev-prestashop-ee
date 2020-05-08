@@ -70,7 +70,7 @@ class ProcessablePaymentNotificationFactory
             Transaction::TYPE_VOID_REFUND_PURCHASE,
             Transaction::TYPE_VOID_CREDIT,
         ];
-        return in_array($this->notification->getTransactionType(), $types);
+        return in_array($this->notification->getData()['transaction-type'], $types);
     }
 
     /**
