@@ -5,7 +5,6 @@ namespace WirecardEE\Prestashop\Classes\Service;
 
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
-use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
@@ -42,11 +41,6 @@ class OrderAmountCalculatorService implements ServiceInterface
     private $transactionFinder;
 
     /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
      * OrderAmountCalculatorService constructor.
      * @param \Order $order
      */
@@ -55,7 +49,6 @@ class OrderAmountCalculatorService implements ServiceInterface
         $this->orderService = new OrderService($order);
         $this->order = $order;
         $this->transactionFinder = new TransactionFinder();
-        $this->logger = new Logger();
     }
 
 
@@ -65,10 +58,7 @@ class OrderAmountCalculatorService implements ServiceInterface
      */
     public function getOrderOpenAmount()
     {
-        $res = $this->getOrderTotalAmount() - $this->getOrderRefundedAmount();
-        $this->logger->debug("Order Total Amount: {$this->getOrderTotalAmount()}");
-        $this->logger->debug("Open Amount: {$res}");
-        return $res;
+        return $this->getOrderTotalAmount() - $this->getOrderRefundedAmount();
     }
 
     /**
@@ -85,11 +75,7 @@ class OrderAmountCalculatorService implements ServiceInterface
     public function getOrderRefundedAmount()
     {
         $transactionList = $this->transactionFinder->getTransactionListByOrder($this->order->id);
-        $c = count($transactionList);
-        $this->logger->debug("Refunded Item Count: {$c}");
-        $result = $this->sumRefundedTransactions($transactionList);
-        $this->logger->debug("Refunded Amount: {$result}");
-        return $result;
+        return $this->sumRefundedTransactions($transactionList);
     }
 
     /**
@@ -108,7 +94,7 @@ class OrderAmountCalculatorService implements ServiceInterface
     }
 
     /**
-     * @param $transactionId
+     * @param string $transactionId
      */
     public function markParentAsClosedOnFullAmount($transactionId)
     {
