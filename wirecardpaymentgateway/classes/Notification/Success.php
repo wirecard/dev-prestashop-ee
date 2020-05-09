@@ -53,6 +53,11 @@ abstract class Success implements ProcessablePaymentNotification
     protected $contextService;
 
     /**
+     * @var OrderAmountCalculatorService
+     */
+    protected $orderAmountCalculator;
+
+    /**
      * SuccessPaymentProcessing constructor.
      *
      * @param \Order $order
@@ -67,6 +72,7 @@ abstract class Success implements ProcessablePaymentNotification
         $this->order_manager = new OrderManager();
         $this->logger = new WirecardLogger();
         $this->contextService = new ContextService(\Context::getContext());
+        $this->orderAmountCalculator = new OrderAmountCalculatorService($this->order);
     }
 
     /**
@@ -76,9 +82,8 @@ abstract class Success implements ProcessablePaymentNotification
     public function process()
     {
         try {
-            $orderAmountCalculatorService = new OrderAmountCalculatorService($this->order);
             $currentOrderState = (int)$this->order_service->getLatestOrderStatusFromHistory();
-            $numericalValues = new OrderStateNumericalValues($orderAmountCalculatorService->getOrderTotalAmount());
+            $numericalValues = new OrderStateNumericalValues($this->orderAmountCalculator->getOrderOpenAmount());
             try {
                 // 1 Update / ignore order state
                 $orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();

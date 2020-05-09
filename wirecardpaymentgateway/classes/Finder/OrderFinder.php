@@ -32,7 +32,7 @@ class OrderFinder extends DbFinder
 
     /**
      * @param string $reference
-     * @return \ObjectModel|Order
+     * @return \ObjectModel|\Order
      * @since 2.5.0
      */
     public function getOrderByReference($reference)

@@ -4,7 +4,9 @@
 namespace WirecardEE\Prestashop\Classes\Service;
 
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
+use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
@@ -14,6 +16,8 @@ use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
  */
 class OrderAmountCalculatorService implements ServiceInterface
 {
+    use NumericHelper;
+
     /** @var array */
     const REFUND_TYPES = [
         TransactionTypes::TYPE_CREDIT,
@@ -38,6 +42,11 @@ class OrderAmountCalculatorService implements ServiceInterface
     private $transactionFinder;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * OrderAmountCalculatorService constructor.
      * @param \Order $order
      */
@@ -46,38 +55,78 @@ class OrderAmountCalculatorService implements ServiceInterface
         $this->orderService = new OrderService($order);
         $this->order = $order;
         $this->transactionFinder = new TransactionFinder();
+        $this->logger = new Logger();
     }
 
+
+    /**
+     * @return float|int
+     * @todo: delete in US 6245
+     */
+    public function getOrderOpenAmount()
+    {
+        $res = $this->getOrderTotalAmount() - $this->getOrderRefundedAmount();
+        $this->logger->debug("Order Total Amount: {$this->getOrderTotalAmount()}");
+        $this->logger->debug("Open Amount: {$res}");
+        return $res;
+    }
 
     /**
      * @return float|int
      */
     public function getOrderTotalAmount()
     {
-        return $this->orderService->getOrderCart()->getOrderTotal() - $this->getRefundedAmount();
+        return $this->orderService->getOrderCart()->getOrderTotal();
     }
-
 
     /**
      * @return float|int
      */
-    public function getRefundedAmount()
+    public function getOrderRefundedAmount()
     {
-        $amount = 0;
         $transactionList = $this->transactionFinder->getTransactionListByOrder($this->order->id);
+        $c = count($transactionList);
+        $this->logger->debug("Refunded Item Count: {$c}");
+        $result = $this->sumRefundedTransactions($transactionList);
+        $this->logger->debug("Refunded Amount: {$result}");
+        return $result;
+    }
+
+    /**
+     * @param array|\WirecardEE\Prestashop\Models\Transaction[] $transactionList
+     * @return float
+     */
+    private function sumRefundedTransactions($transactionList)
+    {
+        $amount = 0.0;
         foreach ($transactionList as $transaction) {
             if (in_array($transaction->getTransactionType(), self::REFUND_TYPES)) {
-                $amount += $transaction->getAmount();
+                $amount += (float)$transaction->getAmount();
             }
         }
-        $logger = new Logger();
-        $logger->debug("Actual order total: {$this->orderService->getOrderCart()->getOrderTotal()}");
-        $logger->debug("Actual refunded amount: {$amount}");
         return $amount;
     }
 
-    // todo: in authorization US
-    public function getCapturedAmount()
+    /**
+     * @param $transactionId
+     */
+    public function markParentAsClosedOnFullAmount($transactionId)
     {
+        $transactionManager = new DBTransactionManager();
+        $parentTransaction = $this->transactionFinder->getTransactionById($transactionId);
+        if (!is_null($parentTransaction)) {
+            $transactionList = $this->transactionFinder->getAllChildrenByParentTransaction(
+                $transactionId
+            );
+            $refundedAmount = $this->sumRefundedTransactions($transactionList);
+
+            // Amounts from Transaction model always strings (!!!) ...
+            if ($this->equals(
+                (float)$parentTransaction->getAmount(),
+                (float)$refundedAmount
+            )) {
+                $transactionManager->markTransactionClosed($transactionId);
+            }
+        }
     }
 }

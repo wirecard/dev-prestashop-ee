@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Finder;
 
 use WirecardEE\Prestashop\Models\Transaction;
+use DbQuery;
 
 /**
  * Class TransactionFinder
@@ -18,6 +19,15 @@ use WirecardEE\Prestashop\Models\Transaction;
  */
 class TransactionFinder extends DbFinder
 {
+    /**
+     * @return string
+     * @since 2.10.0
+     */
+    protected function getTableName()
+    {
+        return "wirecard_payment_gateway_tx";
+    }
+
     /**
      * @param $orderId
      * @return Transaction|null
@@ -43,44 +53,88 @@ class TransactionFinder extends DbFinder
                 " AND order_history.`id_order_state` = o.`current_state`"
             );
         if ($result = $this->getDb()->getRow($query)) {
-            $transaction = new Transaction(intval($result['tx_id']));
+            $transaction = $this->getTransactionByTxId($result['tx_id']);
         }
 
         return $transaction;
     }
 
     /**
-     * @param $transaction_id
+     * @param $txId
      * @return Transaction
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      * @since 2.5.0
      */
-    public function getTransactionById($transaction_id)
+    public function getTransactionByTxId($txId)
     {
-        return new Transaction($transaction_id);
+        return new Transaction(intval($txId));
     }
 
+    /**
+     * @param $transactionId
+     * @return Transaction|null
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @since 2.5.0
+     */
+    public function getTransactionById($transactionId)
+    {
+        $query = $this->getTransactionBuilder()->where('transaction_id = "' . pSQL($transactionId) . '"');
+        if ($row = $this->getDb()->getRow($query)) {
+            return $this->getTransactionByTxId($row['tx_id']);
+        }
+        return null;
+    }
 
     /**
-     * Loads all children of the transaction
+     * Loads all transactions of the order
      *
      * @param int $orderId
      * @return array|Transaction[]
-     * @since 2.5.0
+     * @since 2.10.0
      */
     public function getTransactionListByOrder($orderId)
     {
+        $query = $this->getTransactionBuilder()->where('order_id = "' . pSQL($orderId) . '"');
+        return $this->fetchTransactionByQuery($query);
+    }
+
+    /**
+     * Loads all children of transaction
+     *
+     * @param int $transactionId
+     * @return array|Transaction[]
+     * @since 2.10.0
+     */
+    public function getAllChildrenByParentTransaction($transactionId)
+    {
+        $query = $this->getTransactionBuilder()
+            ->where('parent_transaction_id = "' . pSQL($transactionId) . '"');
+        return $this->fetchTransactionByQuery($query);
+    }
+
+    /**
+     * @return \DbQuery
+     * @since 2.10.0
+     */
+    private function getTransactionBuilder()
+    {
+        return $this->getQueryBuilder()->from($this->getTableName());
+    }
+
+    /**
+     * @param DbQuery $query
+     * @return array|Transaction[]
+     * @since 2.10.0
+     */
+    private function fetchTransactionByQuery(DbQuery $query)
+    {
         $children = [];
-        $queryBuilder = $this->getQueryBuilder()->from('wirecard_payment_gateway_tx')
-            ->where('order_id = "' . pSQL($orderId) . '"');
-
-        $rows = $this->getDb()->executeS($queryBuilder);
-
+        $rows = $this->getDb()->executeS($query);
         foreach ($rows as $row) {
-            $children[] = new Transaction($row['tx_id']);
+            $children[] = $this->getTransactionByTxId(($row['tx_id']));
         }
-
         return $children;
     }
 }

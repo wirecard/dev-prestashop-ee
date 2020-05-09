@@ -25,6 +25,8 @@ class Success extends AbstractSuccess
     public function process()
     {
         parent::process();
-        // todo: close parent transaction to not allow any post processing any more
+        $this->orderAmountCalculator->markParentAsClosedOnFullAmount(
+            $this->notification->getParentTransactionId()
+        );
     }
 }
