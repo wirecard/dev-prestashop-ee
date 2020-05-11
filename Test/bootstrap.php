@@ -7,6 +7,8 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+require __DIR__ . '/Stubs/Configuration.php';
+
 define("_PS_MODULE_DIR_", dirname(__DIR__) . "/");
 const _PS_VERSION_ = '9.9.9.9';
 const _PS_PRICE_COMPUTE_PRECISION_ = 2;
@@ -16,9 +18,10 @@ const _PS_USE_SQL_SLAVE_ = 'slave';
 
 const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 const EXPECTED_SHOP_NAME = 'Prestashop';
+define('_PS_OS_PAYMENT_', Configuration::get('PS_OS_PAYMENT'));
+define('_PS_OS_ERROR_', Configuration::get('PS_OS_ERROR'));
+define('_PS_ROOT_DIR_', Configuration::get('PS_ROOT_DIR'));
 
-const _PS_OS_PAYMENT_ = 111;
-const _PS_OS_ERROR_ = 222;
 
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
 require_once __DIR__ . '/util/functions.php';
@@ -32,7 +35,6 @@ require __DIR__ . '/Stubs/ModuleAdminController.php';
 require __DIR__ . '/Stubs/Module.php';
 require __DIR__ . '/Stubs/PaymentModule.php';
 require __DIR__ . '/Stubs/Tools.php';
-require __DIR__ . '/Stubs/Configuration.php';
 require __DIR__ . '/Stubs/HelperForm.php';
 require __DIR__ . '/Stubs/Language.php';
 require __DIR__ . '/Stubs/Context.php';

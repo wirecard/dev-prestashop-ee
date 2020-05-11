@@ -13,6 +13,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Contract\InputDataTransferObject;
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use InvalidArgumentException;
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 
 /**
  * Class OrderStateTransferObject
@@ -25,6 +26,7 @@ class OrderStateTransferObject implements InputDataTransferObject
     const FIELD_TRANSACTION_TYPE = "transaction-type";
     const FIELD_TRANSACTION_STATE = "transaction-state";
     const FIELD_CURRENT_ORDER_STATE = "current-order-state";
+    const FIELD_REQUESTED_AMOUNT = "requested-amount";
 
     /**
      * @var string
@@ -47,17 +49,35 @@ class OrderStateTransferObject implements InputDataTransferObject
     private $currentOrderState = 0;
 
     /**
+     * @var OrderStateNumericalValues
+     */
+    private $numericalValues;
+
+    /**
+     * @var float
+     */
+    private $requestedAmount;
+
+    /**
      * OrderStateTransferObject constructor.
      * @param $currentOrderState
      * @param $processType
      * @param array $transactionResponse
+     * @param OrderStateNumericalValues $numericalValues
      */
-    public function __construct($currentOrderState, $processType, array $transactionResponse)
-    {
+    public function __construct(
+        $currentOrderState,
+        $processType,
+        array $transactionResponse,
+        OrderStateNumericalValues $numericalValues
+    ) {
+        $this->validate($processType, $currentOrderState, $transactionResponse);
         $this->currentOrderState = $currentOrderState;
         $this->processType = $processType;
-        $this->initFromTransactionResponse($transactionResponse);
-        $this->validate();
+        $this->transactionState = $transactionResponse[self::FIELD_TRANSACTION_STATE];
+        $this->transactionType = $transactionResponse[self::FIELD_TRANSACTION_TYPE];
+        $this->numericalValues = $numericalValues;
+        $this->requestedAmount = (float)$transactionResponse[self::FIELD_REQUESTED_AMOUNT];
     }
 
     /**
@@ -93,22 +113,6 @@ class OrderStateTransferObject implements InputDataTransferObject
     }
 
     /**
-     * @param array $response
-     * @return OrderStateTransferObject
-     */
-    public function initFromTransactionResponse(array $response)
-    {
-        if (isset($response[self::FIELD_TRANSACTION_TYPE])) {
-            $this->transactionType = $response[self::FIELD_TRANSACTION_TYPE];
-        }
-        if (isset($response[self::FIELD_TRANSACTION_STATE])) {
-            $this->transactionState = $response[self::FIELD_TRANSACTION_STATE];
-        }
-
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function toArray()
@@ -122,29 +126,48 @@ class OrderStateTransferObject implements InputDataTransferObject
     }
 
     /**
-     * @return bool
-     * @throws InvalidArgumentException
+     * @param $processType
+     * @param $currentOrderState
+     * @param $response
      */
-    public function validate()
+    private function validate($processType, $currentOrderState, $response)
     {
-        $result = true;
         $mappingDefinition = new OrderStateMappingDefinition();
-        if (!in_array($this->currentOrderState, array_keys($mappingDefinition->definitions()))) {
-            throw new InvalidArgumentException("Order state '{$this->currentOrderState}' is invalid");
-        }
+        $response[self::FIELD_PROCESS_TYPE] = $processType;
+        $response[self::FIELD_CURRENT_ORDER_STATE] = $currentOrderState;
+        $validationSpecs = [
+            self::FIELD_TRANSACTION_TYPE => Constant::getTransactionTypes(),
+            self::FIELD_TRANSACTION_STATE => Constant::getTransactionStates(),
+            self::FIELD_PROCESS_TYPE => Constant::getProcessTypes(),
+            self::FIELD_CURRENT_ORDER_STATE => array_keys($mappingDefinition->definitions()),
+            self::FIELD_REQUESTED_AMOUNT => null,
+        ];
 
-        if (!in_array($this->transactionState, Constant::getTransactionStates())) {
-            throw new InvalidArgumentException("Transaction state '{$this->transactionState}' is invalid");
+        foreach ($validationSpecs as $fieldName => $validValues) {
+            if (!isset($response[$fieldName])) {
+                throw new InvalidArgumentException("Required field $fieldName is not set");
+            }
+            if (is_array($validValues)) {
+                if (!in_array($response[$fieldName], $validValues)) {
+                    throw new InvalidArgumentException("Field '$fieldName' is invalid");
+                }
+            }
         }
+    }
 
-        if (!in_array($this->transactionType, Constant::getTransactionTypes())) {
-            throw new InvalidArgumentException("Transaction type '$this->transactionType' is invalid");
-        }
+    /**
+     * @return float
+     */
+    public function getOrderOpenAmount()
+    {
+        return $this->numericalValues->getOrderOpenAmount();
+    }
 
-        if (!in_array($this->processType, Constant::getProcessTypes())) {
-            throw new InvalidArgumentException("Process type '$this->processType' is invalid");
-        }
-
-        return $result;
+    /**
+     * @return float
+     */
+    public function getTransactionRequestedAmount()
+    {
+        return $this->requestedAmount;
     }
 }

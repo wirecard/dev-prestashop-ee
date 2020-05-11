@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Classes\Finder;
 
-use PrestaShop\PrestaShop\Adapter\Entity\Db;
-use PrestaShop\PrestaShop\Adapter\Entity\DbQuery;
+use \Db;
+use \DbQuery;
 
 /**
  * Class DbFinder
@@ -19,9 +19,6 @@ use PrestaShop\PrestaShop\Adapter\Entity\DbQuery;
  */
 class DbFinder
 {
-    /** @var DbQuery */
-    private $queryBuilder;
-    
     /**
      * @var array|Db
      */
@@ -34,11 +31,10 @@ class DbFinder
     public function __construct()
     {
         $this->database = Db::getInstance();
-        $this->queryBuilder = new DbQuery();
     }
 
     /**
-     * @return array|\Db|Db
+     * @return array|Db
      * @since 2.5.0
      */
     public function getDb()
@@ -52,6 +48,6 @@ class DbFinder
      */
     public function getQueryBuilder()
     {
-        return $this->queryBuilder;
+        return new DbQuery();
     }
 }

@@ -75,7 +75,7 @@ class TransactionPostProcessingService implements ServiceInterface
     {
 
         try {
-            $parentTransaction = (new TransactionFinder())->getTransactionById($this->transactionId);
+            $parentTransaction = (new TransactionFinder())->getTransactionByTxId($this->transactionId);
             if ($this->operation == Operation::CANCEL) {
                 if (!$this->equals($deltaAmount, $parentTransaction->getAmount())) {
                     $this->errors[] = $this->getTranslatedString('postprocessing_error_cancellation');

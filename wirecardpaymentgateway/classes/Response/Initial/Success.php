@@ -10,11 +10,13 @@
 namespace WirecardEE\Prestashop\Classes\Response\Initial;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
@@ -53,6 +55,7 @@ class Success extends SuccessAbstract
      * @param $order
      * @param $response
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @throws OrderStateInvalidArgumentException
      * @since 2.5.0
      */
     public function __construct($order, $response)
@@ -72,27 +75,26 @@ class Success extends SuccessAbstract
     protected function beforeProcess()
     {
         // #TEST_STATE_LIBRARY
-        $logger = new Logger();
-        $logger->debug("BEFORE PROCESS");
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
         // #TEST_STATE_LIBRARY
-        $logger->debug(print_r($this->response->getData(), true));
         try {
+            $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $order_status,
                 Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData()
+                $this->response->getData(),
+                $numericalValues
             );
             // #TEST_STATE_LIBRARY
-            $logger->debug("Current State : {$order_status}. Next calculated state is {$nextState}");
             $this->order->setCurrentState($nextState);
             $this->order->save();
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            // #TEST_STATE_LIBRARY
-            $logger->debug($e->getMessage());
+            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        } catch (IgnorablePostProcessingFailureException $e) {
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
 
         if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {

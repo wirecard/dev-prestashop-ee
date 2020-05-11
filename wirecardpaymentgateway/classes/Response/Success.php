@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
@@ -38,6 +39,11 @@ abstract class Success implements ProcessablePaymentResponse
     protected $orderService;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * SuccessResponseProcessing constructor.
      *
      * @param \Order $order
@@ -50,6 +56,7 @@ abstract class Success implements ProcessablePaymentResponse
         $this->response = $response;
 
         $this->orderService = new OrderService($order);
+        $this->logger = new Logger();
     }
 
     /**

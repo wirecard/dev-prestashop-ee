@@ -12,6 +12,7 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
 use WirecardEE\Prestashop\Classes\Service\TabManagerService;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
@@ -1119,7 +1120,7 @@ class WirecardPaymentGateway extends PaymentModule
     }
 
     /**
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
      * @since 2.10.0
      */
     public function orderStateManager()
