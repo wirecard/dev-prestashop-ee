@@ -15,7 +15,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
@@ -81,26 +81,20 @@ final class Failure implements ProcessablePaymentResponse
     {
         $currentState = $this->order_service->getLatestOrderStatusFromHistory();
         try {
-            $orderTotal = $this->order_service->getOrderCart()->getOrderTotal();
-            $numericalValues = new OrderStateNumericalValues($orderTotal);
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
                 $this->isPostProcessing ?
                     Constant::PROCESS_TYPE_POST_PROCESSING_RETURN :
                     Constant::PROCESS_TYPE_INITIAL_RETURN,
                 $this->response->getData(),
-                $numericalValues
+                new OrderAmountCalculatorService($this->order)
             );
-            // #TEST_STATE_LIBRARY
             if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
                 $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
                 $this->order->save();
                 $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
             }
-            $isPostPorcessing = intval($this->isPostProcessing);
-            $this->logger->debug("Is post processing: {$isPostPorcessing}");
         } catch (IgnorableStateException $e) {
-            // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
             $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);

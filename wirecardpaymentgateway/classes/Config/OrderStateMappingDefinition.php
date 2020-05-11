@@ -27,12 +27,14 @@ class OrderStateMappingDefinition implements MappingDefinition
     {
         return [
             \Configuration::get('PS_OS_ERROR') => Constant::ORDER_STATE_FAILED,
+            \Configuration::get('PS_OS_REFUND') => Constant::ORDER_STATE_REFUNDED,
+            \Configuration::get('PS_OS_CANCELED') => Constant::ORDER_STATE_CANCELED,
             \Configuration::get('PS_OS_PAYMENT') => Constant::ORDER_STATE_PROCESSING,
             \Configuration::get(OrderManager::WIRECARD_OS_STARTING) => Constant::ORDER_STATE_STARTED,
             \Configuration::get(OrderManager::WIRECARD_OS_AWAITING) => Constant::ORDER_STATE_PENDING,
             \Configuration::get(OrderManager::WIRECARD_OS_AUTHORIZATION) => Constant::ORDER_STATE_AUTHORIZED,
-            \Configuration::get('PS_OS_REFUND') => Constant::ORDER_STATE_REFUNDED,
             \Configuration::get(OrderManager::WIRECARD_OS_PARTIALLY_REFUNDED) => Constant::ORDER_STATE_PARTIAL_REFUNDED,
+            \Configuration::get(OrderManager::WIRECARD_OS_PARTIALLY_CAPTURED) => Constant::ORDER_STATE_PARTIAL_CAPTURED,
         ];
     }
 }

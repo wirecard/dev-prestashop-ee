@@ -13,7 +13,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Contract\InputDataTransferObject;
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use InvalidArgumentException;
-use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 
 /**
  * Class OrderStateTransferObject
@@ -27,6 +27,9 @@ class OrderStateTransferObject implements InputDataTransferObject
     const FIELD_TRANSACTION_STATE = "transaction-state";
     const FIELD_CURRENT_ORDER_STATE = "current-order-state";
     const FIELD_REQUESTED_AMOUNT = "requested-amount";
+    const FIELD_ORDER_TOTAL_AMOUNT = "order-total-amount";
+    const FIELD_ORDER_REFUNDED_AMOUNT = "order-refunded-amount";
+    const FIELD_ORDER_CAPTURED_AMOUNT = "order-captured-amount";
 
     /**
      * @var string
@@ -49,35 +52,36 @@ class OrderStateTransferObject implements InputDataTransferObject
     private $currentOrderState = 0;
 
     /**
-     * @var OrderStateNumericalValues
-     */
-    private $numericalValues;
-
-    /**
      * @var float
      */
     private $requestedAmount;
+
+    /**
+     * @var OrderAmountCalculatorService
+     */
+    private $orderAmountCalculator;
+
 
     /**
      * OrderStateTransferObject constructor.
      * @param $currentOrderState
      * @param $processType
      * @param array $transactionResponse
-     * @param OrderStateNumericalValues $numericalValues
+     * @param OrderAmountCalculatorService $orderAmountCalculator
      */
     public function __construct(
         $currentOrderState,
         $processType,
         array $transactionResponse,
-        OrderStateNumericalValues $numericalValues
+        OrderAmountCalculatorService $orderAmountCalculator
     ) {
         $this->validate($processType, $currentOrderState, $transactionResponse);
         $this->currentOrderState = $currentOrderState;
         $this->processType = $processType;
         $this->transactionState = $transactionResponse[self::FIELD_TRANSACTION_STATE];
         $this->transactionType = $transactionResponse[self::FIELD_TRANSACTION_TYPE];
-        $this->numericalValues = $numericalValues;
         $this->requestedAmount = (float)$transactionResponse[self::FIELD_REQUESTED_AMOUNT];
+        $this->orderAmountCalculator = $orderAmountCalculator;
     }
 
     /**
@@ -122,6 +126,10 @@ class OrderStateTransferObject implements InputDataTransferObject
             self::FIELD_TRANSACTION_TYPE => $this->getTransactionType(),
             self::FIELD_TRANSACTION_STATE => $this->getTransactionState(),
             self::FIELD_PROCESS_TYPE => $this->getProcessType(),
+            self::FIELD_REQUESTED_AMOUNT => $this->getTransactionRequestedAmount(),
+            self::FIELD_ORDER_TOTAL_AMOUNT => $this->getOrderTotalAmount(),
+            self::FIELD_ORDER_CAPTURED_AMOUNT => $this->getOrderCapturedAmount(),
+            self::FIELD_ORDER_REFUNDED_AMOUNT => $this->getOrderRefundedAmount(),
         ];
     }
 
@@ -158,16 +166,32 @@ class OrderStateTransferObject implements InputDataTransferObject
     /**
      * @return float
      */
-    public function getOrderOpenAmount()
+    public function getTransactionRequestedAmount()
     {
-        return $this->numericalValues->getOrderOpenAmount();
+        return $this->requestedAmount;
     }
 
     /**
      * @return float
      */
-    public function getTransactionRequestedAmount()
+    public function getOrderTotalAmount()
     {
-        return $this->requestedAmount;
+        return $this->orderAmountCalculator->getOrderTotalAmount();
+    }
+
+    /**
+     * @return float
+     */
+    public function getOrderRefundedAmount()
+    {
+        return $this->orderAmountCalculator->getOrderRefundedAmount();
+    }
+
+    /**
+     * @return float
+     */
+    public function getOrderCapturedAmount()
+    {
+        return $this->orderAmountCalculator->getOrderCapturedAmount();
     }
 }
