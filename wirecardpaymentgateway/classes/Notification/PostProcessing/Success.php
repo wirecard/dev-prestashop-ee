@@ -28,6 +28,6 @@ class Success extends AbstractSuccess
         $this->orderAmountCalculator->markParentAsClosedOnFullAmount(
             $this->notification->getParentTransactionId()
         );
-        $this->order_service->createOrderPayment();
+        $this->order_service->createOrderPayment($this->notification);
     }
 }
