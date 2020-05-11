@@ -127,7 +127,7 @@ abstract class Success implements ProcessablePaymentNotification
     protected function createTransaction()
     {
         if (!OrderManager::isIgnorable($this->notification)) {
-        	$transactionId = $this->notification->getTransactionId();
+            $transactionId = $this->notification->getTransactionId();
             $dbManager = new DBTransactionManager();
             //Acquire lock out of the try-catch block to prevent release on locking fail
             $dbManager->acquireLock($transactionId, 30);
@@ -142,7 +142,7 @@ abstract class Success implements ProcessablePaymentNotification
                     $this->order->reference
                 );
 
-	            $this->order_service->addTransactionIdToOrderPayment($transactionId);
+                $this->order_service->addTransactionIdToOrderPayment($transactionId);
             } catch (\Exception $exception) {
                 $this->logger->error(
                     'Error in class:' . __CLASS__ .
