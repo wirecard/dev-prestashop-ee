@@ -117,7 +117,9 @@ class WirecardTransactionsController extends ModuleAdminController
 
         $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transactionId);
         $transactionPostProcessingService->process($delta_amount);
-        $this->errors = $transactionPostProcessingService->getErrors();
+        if (!empty($transactionPostProcessingService->getErrors())) {
+            $this->errors[] = implode("<br />", $transactionPostProcessingService->getErrors());
+        }
 
         return parent::postProcess();
     }

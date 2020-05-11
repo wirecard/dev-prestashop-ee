@@ -14,6 +14,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcessingSuccess;
 use WirecardEE\Prestashop\Classes\ProcessType;
@@ -28,7 +29,7 @@ class ProcessablePaymentResponseFactory
     /** @var SuccessResponse|FailureResponse|InteractionResponse|FormInteractionResponse */
     private $response;
 
-    /** @var \Order  */
+    /** @var \Order */
     private $order;
 
     /** @var string */
@@ -55,7 +56,33 @@ class ProcessablePaymentResponseFactory
     }
 
     /**
+     * @return bool
+     */
+    private function isPostProcessing()
+    {
+        $types = [
+            Transaction::TYPE_CAPTURE_AUTHORIZATION,
+            Transaction::TYPE_VOID_AUTHORIZATION,
+            Transaction::TYPE_CREDIT,
+            Transaction::TYPE_REFUND_CAPTURE,
+            Transaction::TYPE_REFUND_DEBIT,
+            Transaction::TYPE_REFUND_REQUEST,
+            Transaction::TYPE_VOID_CAPTURE,
+            Transaction::TYPE_REFUND_PURCHASE,
+            Transaction::TYPE_REFERENCED_PURCHASE,
+            Transaction::TYPE_VOID_PURCHASE,
+            Transaction::TYPE_VOID_DEBIT,
+            Transaction::TYPE_VOID_REFUND_CAPTURE,
+            Transaction::TYPE_VOID_REFUND_PURCHASE,
+            Transaction::TYPE_VOID_CREDIT,
+        ];
+        $result = in_array($this->response->getData()['transaction-type'], $types);
+        return $result;
+    }
+
+    /**
      * @return ProcessablePaymentResponse
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
      * @since 2.1.0
      */
     public function getResponseProcessing()
@@ -66,18 +93,17 @@ class ProcessablePaymentResponseFactory
 
         switch (true) {
             case $this->response instanceof SuccessResponse:
-                if ($this->processType === ProcessType::PROCESS_RESPONSE) {
-                    return new InitialSuccess($this->order, $this->response);
+                if ($this->isPostProcessing()) {
+                    return new PostProcessingSuccess($this->order, $this->response);
                 }
-
-                return new PostProcessingSuccess($this->order, $this->response);
+                return new InitialSuccess($this->order, $this->response);
             case $this->response instanceof InteractionResponse:
                 return new Redirect($this->response);
             case $this->response instanceof FormInteractionResponse:
                 return new FormPost($this->response);
             case $this->response instanceof FailureResponse:
             default:
-                return new Failure($this->order, $this->response, $this->processType);
+                return new Failure($this->order, $this->response, $this->isPostProcessing());
         }
     }
 

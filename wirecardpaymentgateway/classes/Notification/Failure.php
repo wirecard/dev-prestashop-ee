@@ -43,22 +43,28 @@ final class Failure implements ProcessablePaymentNotification
      * @var Logger
      */
     protected $logger;
+    /**
+     * @var bool
+     */
+    private $isPostProcessing = false;
 
     /**
      * FailurePaymentProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $notification
+     * @param bool $isPostProcessing
      * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
-    public function __construct($order, $notification)
+    public function __construct($order, $notification, $isPostProcessing)
     {
         $this->order = $order;
         $this->notification = $notification;
         $this->orderService = new OrderService($order);
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
         $this->logger = new Logger();
+        $this->isPostProcessing = $isPostProcessing;
     }
 
     /**
@@ -71,24 +77,24 @@ final class Failure implements ProcessablePaymentNotification
         // #TEST_STATE_LIBRARY
         try {
             $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
+            $orderStateProcessType = ($this->isPostProcessing) ?
+                Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION :
+                Constant::PROCESS_TYPE_INITIAL_NOTIFICATION;
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
-                Constant::PROCESS_TYPE_INITIAL_NOTIFICATION,
+                $orderStateProcessType,
                 $this->notification->getData(),
                 $numericalValues
             );
-            // #TEST_STATE_LIBRARY
-            if ($currentState !== $nextState) {
-                $this->order->setCurrentState($nextState);
-                $this->order->save();
-                $this->orderService->updateOrderPayment($this->notification->getData()['transaction-id'], 0);
-            }
+            $this->order->setCurrentState($nextState);
+            $this->order->save();
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (IgnorablePostProcessingFailureException $e) {
+            $this->logger->debug("IgnorablePostProcessingFailureException");
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
     }

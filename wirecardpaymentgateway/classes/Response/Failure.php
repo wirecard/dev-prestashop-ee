@@ -15,7 +15,6 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
@@ -42,7 +41,7 @@ final class Failure implements ProcessablePaymentResponse
     private $order_service;
 
     /** @var string */
-    private $processType;
+    private $isPostProcessing;
 
     /**
      * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
@@ -59,15 +58,15 @@ final class Failure implements ProcessablePaymentResponse
      *
      * @param \Order $order
      * @param FailureResponse $response
-     * @param string $processType
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
+     * @param string $isPostProcessing
+     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
-    public function __construct($order, $response, $processType)
+    public function __construct($order, $response, $isPostProcessing)
     {
         $this->order = $order;
         $this->response = $response;
-        $this->processType = $processType;
+        $this->isPostProcessing = $isPostProcessing;
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
@@ -86,7 +85,9 @@ final class Failure implements ProcessablePaymentResponse
             $numericalValues = new OrderStateNumericalValues($orderTotal);
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
-                Constant::PROCESS_TYPE_INITIAL_RETURN,
+                $this->isPostProcessing ?
+                    Constant::PROCESS_TYPE_POST_PROCESSING_RETURN :
+                    Constant::PROCESS_TYPE_INITIAL_RETURN,
                 $this->response->getData(),
                 $numericalValues
             );
@@ -95,18 +96,19 @@ final class Failure implements ProcessablePaymentResponse
                 $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
                 $this->order->save();
             }
-
-            if ($this->processType === ProcessType::PROCESS_BACKEND) {
-                $this->processBackend();
-                return;
-            }
+            $isPostPorcessing = intval($this->isPostProcessing);
+            $this->logger->debug("Is post processing: {$isPostPorcessing}");
         } catch (IgnorableStateException $e) {
             // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            if ($this->isPostProcessing) {
+                $this->processBackend();
+                return;
+            }
         }
 
 
@@ -120,11 +122,7 @@ final class Failure implements ProcessablePaymentResponse
     private function processBackend()
     {
         $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->setErrors(
-            \Tools::displayError(
-                join('<br>', $errors)
-            )
-        );
+        $this->context_service->setErrors(\Tools::displayError(implode('<br>', $errors)));
     }
 
     /**

@@ -9,13 +9,18 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification;
 
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 
+use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Models\InitialTransaction;
-use WirecardEE\Prestashop\Models\SettleableTransaction;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
@@ -26,6 +31,8 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
  */
 abstract class Success implements ProcessablePaymentNotification
 {
+    use TranslationHelper;
+
     /** @var \Order */
     protected $order;
 
@@ -38,8 +45,17 @@ abstract class Success implements ProcessablePaymentNotification
     /** @var OrderManager */
     protected $order_manager;
 
-    /** @var WirecardLogger  */
+    /** @var WirecardLogger */
     protected $logger;
+    /**
+     * @var ContextService
+     */
+    protected $contextService;
+
+    /**
+     * @var OrderAmountCalculatorService
+     */
+    protected $orderAmountCalculator;
 
     /**
      * SuccessPaymentProcessing constructor.
@@ -55,42 +71,91 @@ abstract class Success implements ProcessablePaymentNotification
         $this->order_service = new OrderService($order);
         $this->order_manager = new OrderManager();
         $this->logger = new WirecardLogger();
+        $this->contextService = new ContextService(\Context::getContext());
+        $this->orderAmountCalculator = new OrderAmountCalculatorService($this->order);
     }
 
     /**
      * @throws \Exception
      * @since 2.1.0
      */
-    abstract public function process();
+    public function process()
+    {
+        try {
+            $currentOrderState = (int)$this->order_service->getLatestOrderStatusFromHistory();
+            $numericalValues = new OrderStateNumericalValues($this->orderAmountCalculator->getOrderOpenAmount());
+            try {
+                // 1 Update / ignore order state
+                $orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
+                $nextOrderState = $orderStateManager->calculateNextOrderState(
+                    $currentOrderState,
+                    $this->getOrderStateProcessType(),
+                    $this->notification->getData(),
+                    $numericalValues
+                );
+                $this->logger->debug(
+                    "Current order state: {$currentOrderState}; New order state: {$nextOrderState}"
+                );
+                // #TEST_STATE_LIBRARY
+                $this->order->setCurrentState($nextOrderState);
+                $this->order->save();
+                // 2 Close parent transaction depends on condition
+                //todo: Need to close parent transaction closed depending on order state
+                // 3 Create / update transaction
+                $this->createTransaction();
+                // 4 Update payment section
+            } catch (IgnorableStateException $e) {
+                // #TEST_STATE_LIBRARY
+                $this->logger->debug($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);
+            } catch (OrderStateInvalidArgumentException $e) {
+                $this->logger->emergency($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);
+            } catch (IgnorablePostProcessingFailureException $e) {
+                $this->logger->debug($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);
+            }
+        } catch (\Exception $exception) {
+            $this->logger->error(
+                'Error in class:' . __CLASS__ .
+                ' method:' . __METHOD__ .
+                ' exception: ' . $exception->getMessage()
+            );
+            throw $exception;
+        }
+    }
 
     /**
-     * @return SettleableTransaction
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
+     * @throws \Exception
      */
-    protected function getParentTransaction()
+    protected function createTransaction()
     {
-        if ($this->notification->getTransactionType() != \Wirecard\PaymentSdk\Transaction\Transaction::TYPE_PURCHASE) {
-            $transaction = Transaction::getInitialTransactionForOrder($this->order->reference);
-            if ($transaction) {
-                return $transaction;
+        if (!OrderManager::isIgnorable($this->notification)) {
+            $dbManager = new DBTransactionManager();
+            //Acquire lock out of the try-catch block to prevent release on locking fail
+            $dbManager->acquireLock($this->notification->getTransactionId(), 30);
+
+            try {
+                Transaction::create(
+                    $this->order->id,
+                    $this->order->id_cart,
+                    $this->notification->getRequestedAmount(),
+                    $this->notification,
+                    $this->order_manager->getTransactionState($this->notification),
+                    $this->order->reference
+                );
+            } catch (\Exception $exception) {
+                $this->logger->error(
+                    'Error in class:' . __CLASS__ .
+                    ' method:' . __METHOD__ .
+                    ' exception: ' . $exception->getMessage()
+                );
+                throw $exception;
+            } finally {
+                $dbManager->releaseLock($this->notification->getTransactionId());
             }
         }
-
-        return new InitialTransaction($this->notification->getRequestedAmount()->getValue());
     }
 
     /**
-     * @since 2.10.0
+     * @return string
      */
-    protected function beforeProcess()
-    {
-    }
-
-    /**
-     * @since 2.10.0
-     */
-    protected function afterProcess()
-    {
-    }
+    abstract public function getOrderStateProcessType();
 }
