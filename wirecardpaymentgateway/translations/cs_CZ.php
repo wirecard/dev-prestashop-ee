@@ -217,6 +217,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_b0ff4ac4438ae8ef3f988
 $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_8eec2577851ed66a286d224c7270bb15'] = 'Wirecard Payment awaiting';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_5b16deb11b7f93bc6d2dfe2e1ca5f4b3'] = 'Wirecard Payment authorized';
 $_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_9cea0c8f1167dac69cc1e89c55899493'] = 'Wirecard Payment partially refunded';
+$_MODULE['<{wirecardpaymentgateway}prestashop>ordermanager_1ca107baa7639024ab30703f5be3dfd4'] = 'Wirecard Payment partially captured';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_fbedc569ae12c464ee7929c3d8a1a949'] = 'Zpět';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_c01d298d870c928aef65a36ed62c30ea'] = 'Údaje transakce';
 $_MODULE['<{wirecardpaymentgateway}prestashop>view_3e3e086087769006d29d46a8b34264af'] = 'Transakce';
