@@ -60,7 +60,7 @@ class TransactionFinder extends DbFinder
     }
 
     /**
-     * @param $txId
+     * @param int $txId
      * @return Transaction
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
@@ -91,27 +91,18 @@ class TransactionFinder extends DbFinder
      * Loads all transactions of the order
      *
      * @param int $orderId
+     * @param null|string $forParentTransactionId
      * @return array|Transaction[]
      * @since 2.10.0
      */
-    public function getTransactionListByOrder($orderId)
+    public function getTransactionListByOrder($orderId, $forParentTransactionId = null)
     {
-        $query = $this->getTransactionBuilder()->where('order_id = "' . pSQL($orderId) . '"');
-        return $this->fetchTransactionByQuery($query);
-    }
-
-    /**
-     * Loads all children of transaction
-     *
-     * @param int $transactionId
-     * @return array|Transaction[]
-     * @since 2.10.0
-     */
-    public function getAllChildrenByParentTransaction($transactionId)
-    {
-        $query = $this->getTransactionBuilder()
-            ->where('parent_transaction_id = "' . pSQL($transactionId) . '"');
-        return $this->fetchTransactionByQuery($query);
+        $query = 'order_id = "' . pSQL($orderId) . '"';
+        if (!is_null($forParentTransactionId)) {
+            $query .= ' AND parent_transaction_id = "' . pSQL($forParentTransactionId) . '"';
+        }
+        $queryBuilder = $this->getTransactionBuilder()->where($query);
+        return $this->fetchTransactionByQuery($queryBuilder);
     }
 
     /**

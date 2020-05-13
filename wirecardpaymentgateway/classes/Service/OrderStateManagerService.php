@@ -41,7 +41,7 @@ class OrderStateManagerService implements ServiceInterface
      * @param int $currentOrderState
      * @param string $processType
      * @param array $transactionResponse
-     * @param OrderStateNumericalValues $numericalValues
+     * @param OrderAmountCalculatorService $orderAmountCalculator
      * @return int|mixed|string
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
@@ -51,11 +51,15 @@ class OrderStateManagerService implements ServiceInterface
         $currentOrderState,
         $processType,
         array $transactionResponse,
-        OrderStateNumericalValues $numericalValues
+        OrderAmountCalculatorService $orderAmountCalculator
     ) {
-        $input = new OrderStateTransferObject($currentOrderState, $processType, $transactionResponse, $numericalValues);
-        // #TEST_STATE_LIBRARY
-        (new Logger())->debug(print_r($input, true), ['method' => __METHOD__, 'line' => __LINE__]);
+        $input = new OrderStateTransferObject(
+            $currentOrderState,
+            $processType,
+            $transactionResponse,
+            $orderAmountCalculator
+        );
+        (new Logger())->debug(print_r($input->toArray(), true), ['method' => __METHOD__, 'line' => __LINE__]);
         return $this->service->process($input);
     }
 }

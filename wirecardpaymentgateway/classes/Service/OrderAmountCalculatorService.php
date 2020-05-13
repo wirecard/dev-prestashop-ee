@@ -22,7 +22,14 @@ class OrderAmountCalculatorService implements ServiceInterface
         TransactionTypes::TYPE_CREDIT,
         TransactionTypes::TYPE_REFUND_DEBIT,
         TransactionTypes::TYPE_REFUND_PURCHASE,
+        TransactionTypes::TYPE_REFUND_CAPTURE,
         TransactionTypes::TYPE_VOID_PURCHASE,
+        TransactionTypes::TYPE_VOID_CAPTURE,
+    ];
+
+    /** @var array */
+    const CAPTURE_TYPES = [
+        TransactionTypes::TYPE_CAPTURE_AUTHORIZATION,
     ];
 
     /**
@@ -44,21 +51,11 @@ class OrderAmountCalculatorService implements ServiceInterface
      * OrderAmountCalculatorService constructor.
      * @param \Order $order
      */
-    public function __construct(\Order $order)
+    public function __construct($order)
     {
         $this->orderService = new OrderService($order);
         $this->order = $order;
         $this->transactionFinder = new TransactionFinder();
-    }
-
-
-    /**
-     * @return float|int
-     * @todo: delete in US 6245
-     */
-    public function getOrderOpenAmount()
-    {
-        return $this->getOrderTotalAmount() - $this->getOrderRefundedAmount();
     }
 
     /**
@@ -70,23 +67,41 @@ class OrderAmountCalculatorService implements ServiceInterface
     }
 
     /**
+     * @param null|string $forTransactionId
      * @return float|int
      */
-    public function getOrderRefundedAmount()
+    public function getOrderRefundedAmount($forTransactionId = null)
     {
-        $transactionList = $this->transactionFinder->getTransactionListByOrder($this->order->id);
-        return $this->sumRefundedTransactions($transactionList);
+        $orderTransactionList = $this->transactionFinder->getTransactionListByOrder(
+            $this->order->id,
+            $forTransactionId
+        );
+        return $this->sumByTransactionTypes($orderTransactionList, self::REFUND_TYPES);
     }
 
     /**
-     * @param array|\WirecardEE\Prestashop\Models\Transaction[] $transactionList
+     * @param null|string $forTransactionId
      * @return float
      */
-    private function sumRefundedTransactions($transactionList)
+    public function getOrderCapturedAmount($forTransactionId = null)
+    {
+        $orderTransactionList = $this->transactionFinder->getTransactionListByOrder(
+            $this->order->id,
+            $forTransactionId
+        );
+        return $this->sumByTransactionTypes($orderTransactionList, self::CAPTURE_TYPES);
+    }
+
+    /**
+     * @param array|\WirecardEE\Prestashop\Models\Transaction[] $orderTransactionList
+     * @param array $typeList
+     * @return float
+     */
+    private function sumByTransactionTypes($orderTransactionList, $typeList = [])
     {
         $amount = 0.0;
-        foreach ($transactionList as $transaction) {
-            if (in_array($transaction->getTransactionType(), self::REFUND_TYPES)) {
+        foreach ($orderTransactionList as $transaction) {
+            if (in_array($transaction->getTransactionType(), $typeList)) {
                 $amount += (float)$transaction->getAmount();
             }
         }
@@ -101,16 +116,16 @@ class OrderAmountCalculatorService implements ServiceInterface
         $transactionManager = new DBTransactionManager();
         $parentTransaction = $this->transactionFinder->getTransactionById($transactionId);
         if (!is_null($parentTransaction)) {
-            $transactionList = $this->transactionFinder->getAllChildrenByParentTransaction(
-                $transactionId
-            );
-            $refundedAmount = $this->sumRefundedTransactions($transactionList);
-
-            // Amounts from Transaction model always strings (!!!) ...
-            if ($this->equals(
+            $isFullRefundedTransactionAmount = $this->equals(
                 (float)$parentTransaction->getAmount(),
-                (float)$refundedAmount
-            )) {
+                (float)$this->getOrderRefundedAmount($parentTransaction->getTransactionId())
+            );
+            $isFullCapturedTransactionAmount = $this->equals(
+                (float)$parentTransaction->getAmount(),
+                (float)$this->getOrderCapturedAmount($parentTransaction->getTransactionId())
+            );
+            // Amounts from Transaction model always strings (!!!) ...
+            if ($isFullRefundedTransactionAmount || $isFullCapturedTransactionAmount) {
                 $transactionManager->markTransactionClosed($transactionId);
             }
         }
