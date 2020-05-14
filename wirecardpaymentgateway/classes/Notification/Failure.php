@@ -14,7 +14,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingF
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 
@@ -72,11 +72,8 @@ final class Failure implements ProcessablePaymentNotification
      */
     public function process()
     {
-        // #TEST_STATE_LIBRARY
         $currentState = $this->orderService->getLatestOrderStatusFromHistory();
-        // #TEST_STATE_LIBRARY
         try {
-            $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $orderStateProcessType = ($this->isPostProcessing) ?
                 Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION :
                 Constant::PROCESS_TYPE_INITIAL_NOTIFICATION;
@@ -84,12 +81,11 @@ final class Failure implements ProcessablePaymentNotification
                 $currentState,
                 $orderStateProcessType,
                 $this->notification->getData(),
-                $numericalValues
+                new OrderAmountCalculatorService($this->order)
             );
             $this->order->setCurrentState($nextState);
             $this->order->save();
         } catch (IgnorableStateException $e) {
-            // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);

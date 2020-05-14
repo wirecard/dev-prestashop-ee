@@ -37,17 +37,20 @@ class OrderManager
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
     const WIRECARD_OS_PARTIALLY_REFUNDED = "WIRECARD_OS_PARTIAL_REFUNDED";
+    const WIRECARD_OS_PARTIALLY_CAPTURED = "WIRECARD_OS_PARTIAL_CAPTURED";
 
     const PHRASEAPP_KEY_OS_PAYMENT_STARTED = 'order_state_payment_started';
     const PHRASEAPP_KEY_OS_PAYMENT_AWAITING = 'order_state_payment_awaiting';
     const PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED = 'order_state_payment_authorized';
     const PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED = 'order_state_payment_partially_refunded';
+    const PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED = 'order_state_payment_partially_captured';
 
     const ORDER_STATE_TRANSLATION_KEY_MAP = [
         self::WIRECARD_OS_STARTING => self::PHRASEAPP_KEY_OS_PAYMENT_STARTED,
         self::WIRECARD_OS_AWAITING => self::PHRASEAPP_KEY_OS_PAYMENT_AWAITING,
         self::WIRECARD_OS_AUTHORIZATION => self::PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED,
         self::WIRECARD_OS_PARTIALLY_REFUNDED => self::PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED,
+        self::WIRECARD_OS_PARTIALLY_CAPTURED => self::PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED,
     ];
 
 
@@ -204,8 +207,6 @@ class OrderManager
     {
         $backend_service = new BackendService($this->getConfig($notification), new WirecardLogger());
         $order_state = $backend_service->getOrderState($notification->getTransactionType());
-        // #TEST_STATE_LIBRARY
-        (new Logger())->debug("Calculated order state from {$notification->getTransactionType()}: {$order_state}");
 
         switch ($order_state) {
             case BackendService::TYPE_AUTHORIZED:

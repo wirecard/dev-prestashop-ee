@@ -16,7 +16,7 @@
     "ext-json": "*",
     "symfony/http-foundation": "^3",
     "wirecard/extension-credentials-module": "dev-master",
-    "wirecard/extension-order-state-module": "dev-TPWDCEE-6244-feature"
+    "wirecard/extension-order-state-module": "dev-TPWDCEE-6245-feature"
   },
   "require-dev": {
     "phpunit/phpunit": "5.7.27",

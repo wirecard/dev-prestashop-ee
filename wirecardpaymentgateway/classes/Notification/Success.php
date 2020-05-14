@@ -14,7 +14,6 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 
-use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
@@ -83,28 +82,18 @@ abstract class Success implements ProcessablePaymentNotification
     {
         try {
             $currentOrderState = (int)$this->order_service->getLatestOrderStatusFromHistory();
-            $numericalValues = new OrderStateNumericalValues($this->orderAmountCalculator->getOrderOpenAmount());
             try {
-                // 1 Update / ignore order state
                 $orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
                 $nextOrderState = $orderStateManager->calculateNextOrderState(
                     $currentOrderState,
                     $this->getOrderStateProcessType(),
                     $this->notification->getData(),
-                    $numericalValues
+                    $this->orderAmountCalculator
                 );
-                $this->logger->debug(
-                    "Current order state: {$currentOrderState}; New order state: {$nextOrderState}"
-                );
-                // #TEST_STATE_LIBRARY
                 $this->order->setCurrentState($nextOrderState);
                 $this->order->save();
-                // 2 Close parent transaction depends on condition
-                //todo: Need to close parent transaction closed depending on order state
-                // 3 Create / update transaction
                 $this->createTransaction();
             } catch (IgnorableStateException $e) {
-                // #TEST_STATE_LIBRARY
                 $this->logger->debug($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);
             } catch (OrderStateInvalidArgumentException $e) {
                 $this->logger->emergency($e->getMessage(), ['ex' => get_class($e), 'method' => __METHOD__]);

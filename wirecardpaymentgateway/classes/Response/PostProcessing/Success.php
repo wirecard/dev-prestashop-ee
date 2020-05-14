@@ -14,7 +14,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingF
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
-use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 class Success extends SuccessAbstract
@@ -50,16 +50,14 @@ class Success extends SuccessAbstract
             $this->getTranslatedString('success_new_transaction')
         );
         $order_status = (int)$this->orderService->getLatestOrderStatusFromHistory();
-        $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
         try {
             $this->orderStateManager->calculateNextOrderState(
                 $order_status,
                 Constant::PROCESS_TYPE_POST_PROCESSING_RETURN,
                 $this->response->getData(),
-                $numericalValues
+                new OrderAmountCalculatorService($this->order)
             );
         } catch (IgnorableStateException $e) {
-            // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
             $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);

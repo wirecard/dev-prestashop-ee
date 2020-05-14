@@ -16,8 +16,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumen
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
-use WirecardEE\Prestashop\Classes\Service\OrderStateNumericalValues;
-use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
@@ -74,22 +73,17 @@ class Success extends SuccessAbstract
      */
     protected function beforeProcess()
     {
-        // #TEST_STATE_LIBRARY
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
-        // #TEST_STATE_LIBRARY
         try {
-            $numericalValues = new OrderStateNumericalValues($this->orderService->getOrderCart()->getOrderTotal());
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $order_status,
                 Constant::PROCESS_TYPE_INITIAL_RETURN,
                 $this->response->getData(),
-                $numericalValues
+                new OrderAmountCalculatorService($this->order)
             );
-            // #TEST_STATE_LIBRARY
             $this->order->setCurrentState($nextState);
             $this->order->save();
         } catch (IgnorableStateException $e) {
-            // #TEST_STATE_LIBRARY
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {
             $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
@@ -103,13 +97,9 @@ class Success extends SuccessAbstract
      */
     protected function afterProcess()
     {
-        // #TEST_STATE_LIBRARY
-        (new Logger())->debug("AFTER PROCESS");
         if ($this->isPiaPayment()) {
             $this->context_service->setPiaCookie($this->response);
         }
-        // #TEST_STATE_LIBRARY
-        (new Logger())->debug("redirect to success page");
         //redirect to success page
         \Tools::redirect(
             'index.php?controller=order-confirmation&id_cart='
