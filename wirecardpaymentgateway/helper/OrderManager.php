@@ -67,9 +67,9 @@ class OrderManager
      */
     public function __construct()
     {
+        $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
         $orderFinder = new OrderFinder();
         $order = $orderFinder->getOrderByReference($this->module->currentOrderReference);
-        $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
         $this->order_service = new OrderService($order);
     }
 
