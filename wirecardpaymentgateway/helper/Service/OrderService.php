@@ -9,7 +9,7 @@
 
 namespace WirecardEE\Prestashop\Helper\Service;
 
-use Db;
+use \Db;
 
 /**
  * Class OrderService
@@ -42,7 +42,7 @@ class OrderService
     {
         $orderState = $this->order->current_state;
         if ($this->isOrderPaymentCreate($orderState)) {
-            $amount = -1 * $this->order->total_paid;
+            $amount = -1 * (float) $this->order->total_paid;
             return $this->order->addOrderPayment($amount, null, $transactionId);
         }
     }
@@ -56,7 +56,7 @@ class OrderService
     public function isOrderPaymentCreate($orderState)
     {
         switch ($orderState) {
-            case '7':
+            case \Configuration::get('PS_OS_REFUND'):
                 return true;
             default:
                 return false;

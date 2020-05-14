@@ -16,6 +16,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
 
 /**
  * Class OrderManager
@@ -66,8 +67,10 @@ class OrderManager
      */
     public function __construct()
     {
+        $orderFinder = new OrderFinder();
+        $order = $orderFinder->getOrderByReference($this->module->currentOrderReference);
         $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
-        $this->order_service = new OrderService(null);
+        $this->order_service = new OrderService($order);
     }
 
     /**
