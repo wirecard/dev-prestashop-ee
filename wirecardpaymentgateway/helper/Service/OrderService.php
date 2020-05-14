@@ -71,10 +71,11 @@ class OrderService
     public function addTransactionIdToOrderPayment($transaction_id)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
-
         $last_index = count($order_payments) - 1;
+		$order_current_state = (int) $this->order->getCurrentState();
+		$order_payment_state = (int) \Configuration::get('PS_OS_PAYMENT');
 
-        if (!empty($order_payments)) {
+        if (!empty($order_payments)&&($order_current_state === $order_payment_state)) {
             $order_payments[$last_index]->transaction_id = $transaction_id;
             $order_payments[$last_index]->save();
         }
