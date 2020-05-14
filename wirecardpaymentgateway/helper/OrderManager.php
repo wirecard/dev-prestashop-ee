@@ -68,9 +68,6 @@ class OrderManager
     public function __construct()
     {
         $this->module = \Module::getInstanceByName(\WirecardPaymentGateway::NAME);
-        $orderFinder = new OrderFinder();
-        $order = $orderFinder->getOrderByReference($this->module->currentOrderReference);
-        $this->order_service = new OrderService($order);
     }
 
     /**
@@ -79,12 +76,17 @@ class OrderManager
      * @param \Cart $cart
      * @param string $state
      * @param string $paymentType
-     * @return \Order
+     *
+     * @return int
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      * @since 1.0.0
      */
     public function createOrder($cart, $state, $paymentType)
     {
         $shopConfigService = new ShopConfigurationService($paymentType);
+        $orderFinder = new OrderFinder();
+        $order = $orderFinder->getOrderByReference($this->module->currentOrderReference);
 
         $this->module->validateOrder(
             $cart->id,
@@ -97,7 +99,9 @@ class OrderManager
             false,
             $cart->secure_key
         );
+
         $orderReference = $this->module->currentOrderReference;
+        $this->order_service = new OrderService($order);
         $this->order_service->deleteOrderPayment($orderReference);
         return $this->module->currentOrder;
     }
@@ -106,6 +110,9 @@ class OrderManager
      * Create a new order state with specific order state name
      *
      * @param string $state
+     *
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      * @since 1.0.0
      */
     public function createOrderState($state)
