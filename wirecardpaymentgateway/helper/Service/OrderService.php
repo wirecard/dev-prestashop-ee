@@ -32,27 +32,27 @@ class OrderService
         $this->order = $order;
     }
 
-	/**
-	 * @param string $transactionId
-	 *
-	 * @return bool
-	 * @since 2.10.0
-	 */
+    /**
+     * @param string $transactionId
+     *
+     * @return bool
+     * @since 2.10.0
+     */
     public function createOrderPayment($transactionId)
     {
-	    $orderState = $this->order->current_state;
+        $orderState = $this->order->current_state;
         if ($this->isOrderPaymentCreate($orderState)) {
             $amount = -1 * $this->order->total_paid;
             return $this->order->addOrderPayment($amount, null, $transactionId);
         }
     }
 
-	/**
-	 * @param string $orderState
-	 *
-	 * @return bool
-	 * @since 2.10.0
-	 */
+    /**
+     * @param string $orderState
+     *
+     * @return bool
+     * @since 2.10.0
+     */
     public function isOrderPaymentCreate($orderState)
     {
         switch ($orderState) {
