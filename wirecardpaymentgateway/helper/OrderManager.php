@@ -87,9 +87,10 @@ class OrderManager
      */
     public function createOrder($cart, $state, $paymentType)
     {
+        $orderReference = $this->module->currentOrderReference;
         $shopConfigService = new ShopConfigurationService($paymentType);
         $orderFinder = new OrderFinder();
-        $order = $orderFinder->getOrderByReference($this->module->currentOrderReference);
+        $order = $orderFinder->getOrderByReference($orderReference);
 
         $this->module->validateOrder(
             $cart->id,
@@ -103,7 +104,6 @@ class OrderManager
             $cart->secure_key
         );
 
-        $orderReference = $this->module->currentOrderReference;
         $this->order_service = new OrderService($order);
         $this->order_service->deleteOrderPayment($orderReference);
         return $this->module->currentOrder;
