@@ -10,8 +10,6 @@
 namespace WirecardEE\Prestashop\Helper\Service;
 
 use Db;
-use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
-use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class OrderService
