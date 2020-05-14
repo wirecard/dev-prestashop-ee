@@ -100,9 +100,9 @@ class OrderManager
             false,
             $cart->secure_key
         );
-	    $orderReference = $this->module->currentOrderReference;
-	    $orderFinder = new OrderFinder();
-	    $order = $orderFinder->getOrderByReference($orderReference);
+        $orderReference = $this->module->currentOrderReference;
+        $orderFinder = new OrderFinder();
+        $order = $orderFinder->getOrderByReference($orderReference);
         $this->order_service = new OrderService($order);
         $this->order_service->deleteOrderPayment($orderReference);
         return $this->module->currentOrder;
