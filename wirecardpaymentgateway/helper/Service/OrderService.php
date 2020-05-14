@@ -34,35 +34,31 @@ class OrderService
         $this->order = $order;
     }
 
-    /**
-     * @param Transaction $transaction
-     *
-     * @return bool
-     * @since 2.10.0
-     */
-    public function createOrderPayment($transaction)
+	/**
+	 * @param string $transactionId
+	 *
+	 * @return bool
+	 * @since 2.10.0
+	 */
+    public function createOrderPayment($transactionId)
     {
-        $transactionId = $transaction->getTransactionId();
-        $transactionType = $transaction->getTransactionType();
-        if ($this->isOrderPaymentCreate($transactionType)) {
+	    $orderState = $this->order->current_state;
+        if ($this->isOrderPaymentCreate($orderState)) {
             $amount = -1 * $this->order->total_paid;
             return $this->order->addOrderPayment($amount, null, $transactionId);
         }
     }
 
-    /**
-     * @param string $transactionType
-     *
-     * @return bool
-     * @since 2.10.0
-     */
-    public function isOrderPaymentCreate($transactionType)
+	/**
+	 * @param string $orderState
+	 *
+	 * @return bool
+	 * @since 2.10.0
+	 */
+    public function isOrderPaymentCreate($orderState)
     {
-        switch ($transactionType) {
-            case TransactionTypes::TYPE_REFUND_PURCHASE:
-            case TransactionTypes::TYPE_REFUND_CAPTURE:
-            case TransactionTypes::TYPE_REFUND_DEBIT:
-            case TransactionTypes::TYPE_VOID_PURCHASE:
+        switch ($orderState) {
+            case '7':
                 return true;
             default:
                 return false;
