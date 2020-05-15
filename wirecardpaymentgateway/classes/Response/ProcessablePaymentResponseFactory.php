@@ -15,7 +15,9 @@ use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Classes\Response\Initial\Failure as InitialFailure;
 use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
+use WirecardEE\Prestashop\Classes\Response\PostProcessing\Failure as PostProcessingFailure;
 use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcessingSuccess;
 use WirecardEE\Prestashop\Classes\ProcessType;
 
@@ -103,7 +105,11 @@ class ProcessablePaymentResponseFactory
                 return new FormPost($this->response);
             case $this->response instanceof FailureResponse:
             default:
-                return new Failure($this->order, $this->response, $this->isPostProcessing());
+                if($this->isPostProcessing()) {
+                    return new PostProcessingFailure($this->order, $this->response);
+                }
+                return new InitialFailure($this->order, $this->response);
+
         }
     }
 

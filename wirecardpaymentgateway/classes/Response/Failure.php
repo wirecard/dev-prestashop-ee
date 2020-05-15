@@ -26,99 +26,52 @@ use WirecardEE\Prestashop\Helper\OrderManager;
  * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-final class Failure implements ProcessablePaymentResponse
+abstract class Failure implements ProcessablePaymentResponse
 {
     /** @var \Order */
-    private $order;
+    protected $order;
 
     /** @var FailureResponse */
-    private $response;
+    protected $response;
 
     /** @var ContextService */
-    private $context_service;
+    protected $context_service;
 
     /** @var OrderService */
-    private $order_service;
-
-    /** @var string */
-    private $isPostProcessing;
+    protected $order_service;
 
     /**
      * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
-    private $orderStateManager;
+    protected $orderStateManager;
 
     /**
      * @var Logger
      */
-    private $logger;
+    protected $logger;
 
     /**
      * FailureResponseProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $response
-     * @param string $isPostProcessing
      * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
-    public function __construct($order, $response, $isPostProcessing)
+    public function __construct($order, $response)
     {
         $this->order = $order;
         $this->response = $response;
-        $this->isPostProcessing = $isPostProcessing;
         $this->context_service = new ContextService(\Context::getContext());
         $this->order_service = new OrderService($order);
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
         $this->logger = new Logger();
     }
 
-
     /**
      * @since 2.10.0
      */
-    public function process()
-    {
-        $currentState = $this->order_service->getLatestOrderStatusFromHistory();
-        try {
-            $nextState = $this->orderStateManager->calculateNextOrderState(
-                $currentState,
-                $this->isPostProcessing ?
-                    Constant::PROCESS_TYPE_POST_PROCESSING_RETURN :
-                    Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData(),
-                new OrderAmountCalculatorService($this->order)
-            );
-            if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
-                $this->order->save();
-                $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
-            }
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
-            if ($this->isPostProcessing) {
-                $this->processBackend();
-                return;
-            }
-        }
-
-
-        $cart_clone = $this->order_service->getNewCartDuplicate();
-        $this->context_service->setCart($cart_clone);
-
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->redirectWithError($errors, 'order');
-    }
-
-    private function processBackend()
-    {
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->setErrors(\Tools::displayError(implode('<br>', $errors)));
-    }
+    abstract public function process();
 
     /**
      * @param StatusCollection $statuses
@@ -126,7 +79,7 @@ final class Failure implements ProcessablePaymentResponse
      * @return array
      * @since 2.1.0
      */
-    private function getErrorsFromStatusCollection($statuses)
+    protected function getErrorsFromStatusCollection($statuses)
     {
         $error = array();
 

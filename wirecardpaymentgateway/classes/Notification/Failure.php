@@ -73,25 +73,18 @@ final class Failure implements ProcessablePaymentNotification
     public function process()
     {
         $currentState = $this->orderService->getLatestOrderStatusFromHistory();
-        try {
-            $orderStateProcessType = ($this->isPostProcessing) ?
-                Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION :
-                Constant::PROCESS_TYPE_INITIAL_NOTIFICATION;
-            $nextState = $this->orderStateManager->calculateNextOrderState(
-                $currentState,
-                $orderStateProcessType,
-                $this->notification->getData(),
-                new OrderAmountCalculatorService($this->order)
-            );
+        $orderStateProcessType = ($this->isPostProcessing) ?
+            Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION :
+            Constant::PROCESS_TYPE_INITIAL_NOTIFICATION;
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $currentState,
+            $orderStateProcessType,
+            $this->notification->getData(),
+            new OrderAmountCalculatorService($this->order)
+        );
+        if ($nextState) {
             $this->order->setCurrentState($nextState);
             $this->order->save();
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug("IgnorablePostProcessingFailureException");
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
     }
 }

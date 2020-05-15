@@ -11,6 +11,9 @@ namespace WirecardEE\Prestashop\Classes\Service;
 
 use Wirecard\ExtensionOrderStateModule\Application\Mapper\GenericOrderStateMapper;
 use Wirecard\ExtensionOrderStateModule\Application\Service\OrderState;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\OrderStateTransferObject;
@@ -26,6 +29,10 @@ class OrderStateManagerService implements ServiceInterface
      * @var OrderState
      */
     protected $service;
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * OrderStateManagerService constructor.
@@ -43,23 +50,33 @@ class OrderStateManagerService implements ServiceInterface
      * @param array $transactionResponse
      * @param OrderAmountCalculatorService $orderAmountCalculator
      * @return int|mixed|string
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
      */
     public function calculateNextOrderState(
         $currentOrderState,
         $processType,
         array $transactionResponse,
         OrderAmountCalculatorService $orderAmountCalculator
-    ) {
+    )
+    {
         $input = new OrderStateTransferObject(
             $currentOrderState,
             $processType,
             $transactionResponse,
             $orderAmountCalculator
         );
+        $this->logger = new Logger();
+        //TODO: catch
         (new Logger())->debug(print_r($input->toArray(), true), ['method' => __METHOD__, 'line' => __LINE__]);
-        return $this->service->process($input);
+        try {
+            return $this->service->process($input);
+        } catch (IgnorableStateException $e) {
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        } catch (OrderStateInvalidArgumentException $e) {
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        } catch (IgnorablePostProcessingFailureException $e) {
+            $this->logger->debug("IgnorablePostProcessingFailureException");
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        }
+        return null;
     }
 }

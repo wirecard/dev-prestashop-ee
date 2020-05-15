@@ -120,8 +120,6 @@ class OrderService
      * @param int $lang
      *
      * @return string
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
      * @since 2.7.0
      */
     public function getLatestOrderStatusFromHistory($lang = null)
