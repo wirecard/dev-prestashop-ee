@@ -258,7 +258,9 @@ class TransactionBuilder
                 $firstName,
                 $lastName
             );
+            return;
         }
+        $this->transaction->setOrderNumber($this->orderId);
     }
 
     /**
@@ -293,5 +295,18 @@ class TransactionBuilder
         $this->orderId = $order->id;
 
         return $order->id;
+    }
+
+    /**
+     * Set context for the transaction
+     *
+     * @param Context $context
+     *
+     * @since 2.10.0
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+        $this->cart = $context->cart;
     }
 }
