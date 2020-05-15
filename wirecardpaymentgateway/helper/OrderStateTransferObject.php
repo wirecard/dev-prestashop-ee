@@ -140,26 +140,18 @@ class OrderStateTransferObject implements InputDataTransferObject
      */
     private function validate($processType, $currentOrderState, $response)
     {
-        $mappingDefinition = new OrderStateMappingDefinition();
         $response[self::FIELD_PROCESS_TYPE] = $processType;
         $response[self::FIELD_CURRENT_ORDER_STATE] = $currentOrderState;
-        $validationSpecs = [
-            self::FIELD_TRANSACTION_TYPE => Constant::getTransactionTypes(),
-            self::FIELD_TRANSACTION_STATE => Constant::getTransactionStates(),
-            self::FIELD_PROCESS_TYPE => Constant::getProcessTypes(),
-            self::FIELD_CURRENT_ORDER_STATE => array_keys($mappingDefinition->definitions()),
-            self::FIELD_REQUESTED_AMOUNT => null,
-        ];
+        $validationSpecs = $this->getRequiredFields();
 
-        foreach ($validationSpecs as $fieldName => $validValues) {
+        $previousException = null;
+        foreach ($validationSpecs as $fieldName) {
             if (!isset($response[$fieldName])) {
-                throw new InvalidArgumentException("Required field $fieldName is not set");
+                $previousException = new InvalidArgumentException("Required field $fieldName is not set", 0, $previousException);
             }
-            if (is_array($validValues)) {
-                if (!in_array($response[$fieldName], $validValues)) {
-                    throw new InvalidArgumentException("Field '$fieldName' is invalid");
-                }
-            }
+        }
+        if($previousException) {
+            throw $previousException;
         }
     }
 
@@ -193,5 +185,20 @@ class OrderStateTransferObject implements InputDataTransferObject
     public function getOrderCapturedAmount()
     {
         return $this->orderAmountCalculator->getOrderCapturedAmount();
+    }
+
+    /**
+     * @return array
+     */
+    private function getRequiredFields()
+    {
+        $validationSpecs = [
+            self::FIELD_TRANSACTION_TYPE,
+            self::FIELD_TRANSACTION_STATE,
+            self::FIELD_PROCESS_TYPE,
+            self::FIELD_CURRENT_ORDER_STATE,
+            self::FIELD_REQUESTED_AMOUNT,
+        ];
+        return $validationSpecs;
     }
 }
