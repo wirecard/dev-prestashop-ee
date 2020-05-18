@@ -116,7 +116,8 @@ class Success extends SuccessAbstract
         if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
             $amount = $this->response->getRequestedAmount();
         }
-        $this->orderService->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
+        //TODO: integrate feature
+        //$this->orderService->addTransactionIdToOrderPayment($this->response->getTransactionId());
     }
 
     /**

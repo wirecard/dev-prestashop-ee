@@ -1110,7 +1110,7 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      *  Add or update (if exists) order statuses
      */
-    private function addUpdateOrderStatuses()
+    public function addUpdateOrderStatuses()
     {
         $orderManager = new OrderManager();
         $translationKeys = $orderManager::ORDER_STATE_TRANSLATION_KEY_MAP;
