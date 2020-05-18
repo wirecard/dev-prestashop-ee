@@ -34,32 +34,36 @@ class OrderService
 
     /**
      * @param string $transactionId
+     * @param float $amount
      *
      * @return bool
      * @since 2.10.0
      */
-    public function createOrderPayment($transactionId)
+    public function createOrderPayment($transactionId, $amount)
     {
-        $orderState = $this->order->current_state;
-        if ($this->isOrderPaymentCreate($orderState)) {
-            $amount = -1 * (float) $this->order->total_paid;
-            return $this->order->addOrderPayment($amount, null, $transactionId);
+        $flownAmount = $this->flownAmount($amount);
+        if ($flownAmount) {
+            return $this->order->addOrderPayment((float)$flownAmount, null, $transactionId);
         }
     }
 
     /**
-     * @param string $orderState
+     * @param float $amount
      *
-     * @return bool
+     * @return float|null
      * @since 2.10.0
      */
-    public function isOrderPaymentCreate($orderState)
+    public function flownAmount($amount)
     {
+        $orderState = $this->order->current_state;
         switch ($orderState) {
             case \Configuration::get('PS_OS_REFUND'):
-                return true;
+            case \Configuration::get('WIRECARD_OS_PARTIAL_REFUNDED'):
+                return $amount * -1;
+            case \Configuration::get('WIRECARD_OS_PARTIAL_CAPTURED'):
+                return $amount;
             default:
-                return false;
+                return null;
         }
     }
 
