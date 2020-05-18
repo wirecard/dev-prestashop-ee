@@ -131,4 +131,12 @@ class OrderService
 
         return $order_status;
     }
+
+    /**
+     * @return \Order
+     */
+    public function getOrder(): \Order
+    {
+        return $this->order;
+    }
 }

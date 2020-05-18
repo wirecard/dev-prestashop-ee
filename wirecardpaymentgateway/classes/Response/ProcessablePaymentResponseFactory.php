@@ -14,7 +14,7 @@ use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Response\InteractionResponse;
 use Wirecard\PaymentSdk\Response\FormInteractionResponse;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Classes\ProcessablePaymentFactory;
 use WirecardEE\Prestashop\Classes\Response\Initial\Failure as InitialFailure;
 use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Response\PostProcessing\Failure as PostProcessingFailure;
@@ -26,7 +26,7 @@ use WirecardEE\Prestashop\Classes\ProcessType;
  * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-class ProcessablePaymentResponseFactory
+class ProcessablePaymentResponseFactory extends ProcessablePaymentFactory
 {
     /** @var SuccessResponse|FailureResponse|InteractionResponse|FormInteractionResponse */
     private $response;
@@ -57,30 +57,7 @@ class ProcessablePaymentResponseFactory
         $this->response = $response;
     }
 
-    /**
-     * @return bool
-     */
-    private function isPostProcessing()
-    {
-        $types = [
-            Transaction::TYPE_CAPTURE_AUTHORIZATION,
-            Transaction::TYPE_VOID_AUTHORIZATION,
-            Transaction::TYPE_CREDIT,
-            Transaction::TYPE_REFUND_CAPTURE,
-            Transaction::TYPE_REFUND_DEBIT,
-            Transaction::TYPE_REFUND_REQUEST,
-            Transaction::TYPE_VOID_CAPTURE,
-            Transaction::TYPE_REFUND_PURCHASE,
-            Transaction::TYPE_REFERENCED_PURCHASE,
-            Transaction::TYPE_VOID_PURCHASE,
-            Transaction::TYPE_VOID_DEBIT,
-            Transaction::TYPE_VOID_REFUND_CAPTURE,
-            Transaction::TYPE_VOID_REFUND_PURCHASE,
-            Transaction::TYPE_VOID_CREDIT,
-        ];
-        $result = in_array($this->response->getData()['transaction-type'], $types);
-        return $result;
-    }
+
 
     /**
      * @return ProcessablePaymentResponse
@@ -95,7 +72,7 @@ class ProcessablePaymentResponseFactory
 
         switch (true) {
             case $this->response instanceof SuccessResponse:
-                if ($this->isPostProcessing()) {
+                if ($this->isPostProcessing($this->response)) {
                     return new PostProcessingSuccess($this->order, $this->response);
                 }
                 return new InitialSuccess($this->order, $this->response);
@@ -105,7 +82,7 @@ class ProcessablePaymentResponseFactory
                 return new FormPost($this->response);
             case $this->response instanceof FailureResponse:
             default:
-                if($this->isPostProcessing()) {
+                if($this->isPostProcessing($this->response)) {
                     return new PostProcessingFailure($this->order, $this->response);
                 }
                 return new InitialFailure($this->order, $this->response);

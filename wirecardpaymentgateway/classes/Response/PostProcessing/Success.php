@@ -43,6 +43,8 @@ class Success extends SuccessAbstract
 
     /**
      * @since 2.5.0
+     *
+     * Do not update the order state, as this is done in the notification handling later on.
      */
     public function process()
     {
@@ -51,12 +53,13 @@ class Success extends SuccessAbstract
         );
         $order_status = (int)$this->orderService->getLatestOrderStatusFromHistory();
         try {
-            $this->orderStateManager->calculateNextOrderState(//TODO: why don't we use the retval?
+            $nextState = $this->orderStateManager->calculateNextOrderState(
                 $order_status,
                 Constant::PROCESS_TYPE_POST_PROCESSING_RETURN,
                 $this->response->getData(),
                 new OrderAmountCalculatorService($this->order)
             );
+            $this->logger->debug(__METHOD__, compact('order_status', 'nextState'));
         } catch (IgnorableStateException $e) {
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (OrderStateInvalidArgumentException $e) {

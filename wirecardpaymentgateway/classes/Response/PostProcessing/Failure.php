@@ -16,6 +16,7 @@ class Failure extends \WirecardEE\Prestashop\Classes\Response\Failure
     public function process()
     {
         $currentState = $this->order_service->getLatestOrderStatusFromHistory();
+        $nextState = null;
         try {
             $nextState = $this->orderStateManager->calculateNextOrderState(
                 $currentState,
@@ -38,11 +39,13 @@ class Failure extends \WirecardEE\Prestashop\Classes\Response\Failure
             return;
         }
 
-        $cart_clone = $this->order_service->getNewCartDuplicate();
-        $this->context_service->setCart($cart_clone);
+        if (!$nextState) {
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
 
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->redirectWithError($errors, 'order');
+            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+            $this->context_service->redirectWithError($errors, 'order');
+        }
     }
 
     private function processBackend()

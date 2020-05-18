@@ -9,17 +9,12 @@
 
 namespace WirecardEE\Prestashop\Classes\Response;
 
-use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class Failure

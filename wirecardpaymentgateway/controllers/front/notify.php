@@ -43,6 +43,8 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends WirecardFrontCon
 
             $notify_factory = new ProcessablePaymentNotificationFactory($order, $processed_notify);
             $payment_processing = $notify_factory->getPaymentProcessing();
+            $class = get_class($payment_processing);
+            $this->logger->debug(__METHOD__, compact('class'));
             $payment_processing->process();
         } catch (\Exception $exception) {
             $this->logger->error(

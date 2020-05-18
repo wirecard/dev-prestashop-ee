@@ -10,8 +10,6 @@
 namespace WirecardEE\Prestashop\Classes\Response\Initial;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;

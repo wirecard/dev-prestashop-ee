@@ -10,8 +10,6 @@
 namespace WirecardEE\Prestashop\Classes\Notification;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
@@ -23,10 +21,8 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
  * @since 2.1.0
  * @package WirecardEE\Prestashop\Classes\Notification
  */
-final class Failure implements ProcessablePaymentNotification
+abstract class Failure
 {
-    /** @var \Order */
-    private $order;
 
     /** @var FailureResponse */
     private $notification;
@@ -43,10 +39,6 @@ final class Failure implements ProcessablePaymentNotification
      * @var Logger
      */
     protected $logger;
-    /**
-     * @var bool
-     */
-    private $isPostProcessing = false;
 
     /**
      * FailurePaymentProcessing constructor.
@@ -57,34 +49,32 @@ final class Failure implements ProcessablePaymentNotification
      * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
-    public function __construct($order, $notification, $isPostProcessing)
+    public function __construct($order, $notification)
     {
-        $this->order = $order;
         $this->notification = $notification;
         $this->orderService = new OrderService($order);
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
         $this->logger = new Logger();
-        $this->isPostProcessing = $isPostProcessing;
     }
 
     /**
+     * @param $orderStateProcessType
+     * @throws \PrestaShopException
      * @since 2.1.0
      */
-    public function process()
+    protected function processForType($orderStateProcessType)
     {
         $currentState = $this->orderService->getLatestOrderStatusFromHistory();
-        $orderStateProcessType = ($this->isPostProcessing) ?
-            Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION :
-            Constant::PROCESS_TYPE_INITIAL_NOTIFICATION;
+        $order = $this->orderService->getOrder();
         $nextState = $this->orderStateManager->calculateNextOrderState(
             $currentState,
             $orderStateProcessType,
             $this->notification->getData(),
-            new OrderAmountCalculatorService($this->order)
+            new OrderAmountCalculatorService($order)
         );
         if ($nextState) {
-            $this->order->setCurrentState($nextState);
-            $this->order->save();
+            $order->setCurrentState($nextState);
+            $order->save();
         }
     }
 }

@@ -17,6 +17,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumen
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\OrderStateTransferObject;
+use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 /**
  * Class OrderStateManagerService
@@ -29,10 +30,16 @@ class OrderStateManagerService implements ServiceInterface
      * @var OrderState
      */
     protected $service;
+
     /**
      * @var Logger
      */
     private $logger;
+
+    /**
+     * @var ContextService
+     */
+    private $context_service;
 
     /**
      * OrderStateManagerService constructor.
@@ -50,6 +57,9 @@ class OrderStateManagerService implements ServiceInterface
      * @param array $transactionResponse
      * @param OrderAmountCalculatorService $orderAmountCalculator
      * @return int|mixed|string
+     * @throws IgnorablePostProcessingFailureException
+     * @throws IgnorableStateException
+     * @throws OrderStateInvalidArgumentException
      */
     public function calculateNextOrderState(
         $currentOrderState,
@@ -64,21 +74,9 @@ class OrderStateManagerService implements ServiceInterface
             $transactionResponse,
             $orderAmountCalculator
         );
-        $this->logger = new Logger();
-        //TODO: catch
-        (new Logger())->debug(print_r($input->toArray(), true), ['method' => __METHOD__, 'line' => __LINE__]);
-        try {
-            return $this->service->process($input);
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug("IgnorablePostProcessingFailureException");
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-            $this->processBackend();//TODO: ????
-        }
-        return null;
+        $nextState = $this->service->process($input);
+        (new Logger())->debug(print_r($input->toArray(), true), ['method' => __METHOD__, 'line' => __LINE__, 'nextState' => $nextState]);
+        return $nextState;
     }
 
     private function processBackend()
