@@ -23,7 +23,7 @@ class Failure extends \WirecardEE\Prestashop\Classes\Response\Failure
                 $this->response->getData(),
                 new OrderAmountCalculatorService($this->order)
             );
-            if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+            if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
                 $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
                 $this->order->save();
                 $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
@@ -34,8 +34,8 @@ class Failure extends \WirecardEE\Prestashop\Classes\Response\Failure
             $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (IgnorablePostProcessingFailureException $e) {
             $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
-                $this->processBackend();
-                return;
+            $this->processBackend();//TODO: ????
+            return;
         }
 
         $cart_clone = $this->order_service->getNewCartDuplicate();

@@ -155,6 +155,7 @@ class Logger implements LoggerInterface
     public function log($level, $message, array $context = array())
     {
         // #TEST_STATE_LIBRARY
+        //TODO
         $loger= new \Monolog\Logger('wirecard');
         $loger->pushHandler(new StreamHandler(_PS_ROOT_DIR_ . "/var/logs/wirecard.log", \Monolog\Logger::DEBUG));
         $loger->debug("--------BEGIN---------");

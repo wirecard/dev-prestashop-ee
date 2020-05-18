@@ -74,24 +74,18 @@ class Success extends SuccessAbstract
     protected function beforeProcess()
     {
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
-        try {
-            $nextState = $this->orderStateManager->calculateNextOrderState(
-                $order_status,
-                Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData(),
-                new OrderAmountCalculatorService($this->order)
-            );
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $order_status,
+            Constant::PROCESS_TYPE_INITIAL_RETURN,
+            $this->response->getData(),
+            new OrderAmountCalculatorService($this->order)
+        );
+        if ($nextState) {
             $this->order->setCurrentState($nextState);
             $this->order->save();
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
 
-        if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
+        if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
             $this->onOrderStateStarted();
         }
     }

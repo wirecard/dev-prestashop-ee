@@ -51,7 +51,7 @@ class Success extends SuccessAbstract
         );
         $order_status = (int)$this->orderService->getLatestOrderStatusFromHistory();
         try {
-            $this->orderStateManager->calculateNextOrderState(
+            $this->orderStateManager->calculateNextOrderState(//TODO: why don't we use the retval?
                 $order_status,
                 Constant::PROCESS_TYPE_POST_PROCESSING_RETURN,
                 $this->response->getData(),

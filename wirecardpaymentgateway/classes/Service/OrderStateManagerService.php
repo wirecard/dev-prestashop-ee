@@ -76,7 +76,15 @@ class OrderStateManagerService implements ServiceInterface
         } catch (IgnorablePostProcessingFailureException $e) {
             $this->logger->debug("IgnorablePostProcessingFailureException");
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->processBackend();//TODO: ????
         }
         return null;
     }
+
+    private function processBackend()
+    {
+        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+        $this->context_service->setErrors(\Tools::displayError(implode('<br>', $errors)));
+    }
+
 }

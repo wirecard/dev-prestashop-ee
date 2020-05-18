@@ -17,24 +17,16 @@ class Failure extends  \WirecardEE\Prestashop\Classes\Response\Failure
     public function process()
     {
         $currentState = $this->order_service->getLatestOrderStatusFromHistory();
-        try {
-            $nextState = $this->orderStateManager->calculateNextOrderState(
-                $currentState,
-                Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData(),
-                new OrderAmountCalculatorService($this->order)
-            );
-            if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
-                $this->order->save();
-                $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
-            }
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $currentState,
+            Constant::PROCESS_TYPE_INITIAL_RETURN,
+            $this->response->getData(),
+            new OrderAmountCalculatorService($this->order)
+        );
+        if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
+            $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
+            $this->order->save();
+            $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
         }
 
 
