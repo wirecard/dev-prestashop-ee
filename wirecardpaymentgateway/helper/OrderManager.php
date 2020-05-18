@@ -15,6 +15,8 @@ use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
 
 /**
  * Class OrderManager
@@ -57,6 +59,9 @@ class OrderManager
     /** @var \Module|\WirecardPaymentGateway  */
     private $module;
 
+    /** @var OrderService */
+    private $order_service;
+
     /**
      * OrderManager constructor.
      *
@@ -74,7 +79,10 @@ class OrderManager
      * @param \Cart $cart
      * @param string $state
      * @param string $paymentType
-     * @return \Order
+     *
+     * @return int
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      * @since 1.0.0
      */
     public function createOrder($cart, $state, $paymentType)
@@ -92,7 +100,11 @@ class OrderManager
             false,
             $cart->secure_key
         );
-
+        $orderReference = $this->module->currentOrderReference;
+        $orderFinder = new OrderFinder();
+        $order = $orderFinder->getOrderByReference($orderReference);
+        $this->order_service = new OrderService($order);
+        $this->order_service->deleteOrderPayment($orderReference);
         return $this->module->currentOrder;
     }
 
@@ -100,6 +112,9 @@ class OrderManager
      * Create a new order state with specific order state name
      *
      * @param string $state
+     *
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      * @since 1.0.0
      */
     public function createOrderState($state)
