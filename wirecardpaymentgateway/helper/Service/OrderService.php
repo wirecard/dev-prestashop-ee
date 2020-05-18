@@ -9,6 +9,8 @@
 
 namespace WirecardEE\Prestashop\Helper\Service;
 
+use \Db;
+
 /**
  * Class OrderService
  * @package WirecardEE\Prestashop\Helper\Service
@@ -31,59 +33,72 @@ class OrderService
     }
 
     /**
+     * @param string $transactionId
+     *
+     * @return bool
+     * @since 2.10.0
+     */
+    public function createOrderPayment($transactionId)
+    {
+        $orderState = $this->order->current_state;
+        if ($this->isOrderPaymentCreate($orderState)) {
+            $amount = -1 * (float) $this->order->total_paid;
+            return $this->order->addOrderPayment($amount, null, $transactionId);
+        }
+    }
+
+    /**
+     * @param string $orderState
+     *
+     * @return bool
+     * @since 2.10.0
+     */
+    public function isOrderPaymentCreate($orderState)
+    {
+        switch ($orderState) {
+            case \Configuration::get('PS_OS_REFUND'):
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * @param string $transaction_id
-     * @param float $amount
+     *
      * @since 2.1.0
      */
-    public function updateOrderPayment($transaction_id, $amount)
+    public function addTransactionIdToOrderPayment($transaction_id)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
-
         $last_index = count($order_payments) - 1;
+        $order_current_state = (int) $this->order->getCurrentState();
+        $order_payment_state = (int) \Configuration::get('PS_OS_PAYMENT');
 
-        if (!empty($order_payments)) {
+        if (!empty($order_payments)&&($order_current_state === $order_payment_state)) {
             $order_payments[$last_index]->transaction_id = $transaction_id;
-            $order_payments[$last_index]->amount = $amount;
             $order_payments[$last_index]->save();
         }
-
-        //prevent issue with double amount being paid
-        if ($amount > 0) {
-            $order_payments[0]->amount = 0;
-            $order_payments[0]->save();
-        }
+        //todo: $amount will be used in the partial operations
     }
 
 
     /**
-     * @param string $transaction_id
-     * @param float $amount
-     * @since 2.1.0
+     * @param string $orderReference
+     *
+     * @return boolean
+     * @throws \PrestaShopDatabaseException
+     * @since 2.10.0
      */
-    public function updateOrderPaymentTwo($transaction_id)
+    public function deleteOrderPayment($orderReference)
     {
-        $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
-
-        $last_index = count($order_payments) - 1;
-
-        if (!empty($order_payments)) {
-            $order_payments[$last_index]->transaction_id = $transaction_id;
-            $order_payments[$last_index]->save();
-        }
+        return Db::getInstance()->executeS(
+            'DELETE
+                FROM `' . _DB_PREFIX_ . 'order_payment`
+                WHERE `order_reference` = \'' . pSQL($orderReference) . '\''
+        );
     }
 
-//    /**
-//     * @param $amount
-//     * @param $paymentMethod
-//     * @param $transactionId
-//     * @return bool
-//     * @throws \Exception
-//     */
-//    public function createOrderPayment($amount, $paymentMethod, $transactionId)
-//    {
-//       // $now = date("Y-m-d H:i:s");
-//       // return $this->order->addOrderPayment($amount, $paymentMethod, $transactionId);
-//    }
 
     /**
      * @param string $order_state
