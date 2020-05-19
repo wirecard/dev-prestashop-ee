@@ -65,9 +65,12 @@ class OrderService
             case \Configuration::get('WIRECARD_OS_PARTIAL_CAPTURED'):
                 $orderAmountCalculatorService = new OrderAmountCalculatorService($this->order);
                 $refundedAmount = $orderAmountCalculatorService->getOrderRefundedAmount();
+	            $capturedAmount = $orderAmountCalculatorService->getOrderCapturedAmount();
 				$latestOrderStatus = $this->getLatestOrderStatusFromHistory();
 
-                if($refundedAmount == 0 || $latestOrderStatus == \Configuration::get('WIRECARD_OS_PARTIAL_REFUNDED')){
+                if ($refundedAmount == 0
+                   || $latestOrderStatus == \Configuration::get('WIRECARD_OS_PARTIAL_REFUNDED')
+                   || $refundedAmount < $capturedAmount - $requestedAmount){
 	                return $requestedAmount;
                 }
                 return $requestedAmount * -1;
