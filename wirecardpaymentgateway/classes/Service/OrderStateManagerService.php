@@ -43,6 +43,7 @@ class OrderStateManagerService implements ServiceInterface
     {
         $orderStateMapper = new GenericOrderStateMapper(new OrderStateMappingDefinition());
         $this->service = new OrderState($orderStateMapper);
+        $this->logger = new Logger();
     }
 
     /**
@@ -57,8 +58,7 @@ class OrderStateManagerService implements ServiceInterface
         $processType,
         array $transactionResponse,
         OrderAmountCalculatorService $orderAmountCalculator
-    )
-    {
+    ) {
         try {
             $input = new OrderStateTransferObject(
                 $currentOrderState,

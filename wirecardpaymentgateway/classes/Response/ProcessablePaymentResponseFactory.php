@@ -82,7 +82,7 @@ class ProcessablePaymentResponseFactory extends ProcessablePaymentFactory
                 return new FormPost($this->response);
             case $this->response instanceof FailureResponse:
             default:
-                if($this->isPostProcessing($this->response)) {
+                if ($this->isPostProcessing($this->response)) {
                     return new PostProcessingFailure($this->order, $this->response);
                 }
                 return new InitialFailure($this->order, $this->response);

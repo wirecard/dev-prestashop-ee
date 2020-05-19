@@ -148,7 +148,7 @@ class OrderStateTransferObject implements InputDataTransferObject
                 $previousException = new InvalidArgumentException("Required field $fieldName is not set", 0, $previousException);
             }
         }
-        if($previousException) {
+        if ($previousException) {
             throw $previousException;
         }
     }

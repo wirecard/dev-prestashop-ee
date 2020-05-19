@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Doctrine\Common\Annotations\IndexedReader;
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
 use Wirecard\PaymentSdk\Transaction\Transaction;
@@ -127,11 +128,44 @@ class OrderManager
             $orderState->id = \Configuration::get($state);
             $orderState->update();
         }
+        $id = $orderState->id;
+
+        $fromId = $this->getCopyLogoId($id);
+        if ($fromId) {
+            $fromPath = $this->getPaymendLogoPath($fromId);
+
+            if (is_readable($fromPath)) {
+                $toPath = $this->getPaymendLogoPath($id);
+                copy($fromPath, $toPath);
+            }
+        }
 
         \Configuration::updateValue(
             $state,
             (int)$orderState->id
         );
+    }
+
+    private function getPaymendLogoPath($id)
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        return _PS_ROOT_DIR_ . $ds . 'img' . $ds . 'os' . $ds . $id . '.gif';
+    }
+
+    private function getCopyLogoId($fromId)
+    {
+        $fromId = (int)$fromId;
+        if (!$fromId) {
+            return 0;
+        }
+        $logo_mapping = [
+            (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_REFUNDED) => (int)\Configuration::get('PS_OS_REFUND'),
+            (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_CAPTURED) => (int)\Configuration::get('PS_OS_PAYMENT'),
+        ];
+        if(isset($logo_mapping[$fromId])) {
+            return (int)$logo_mapping[$fromId];
+        }
+        return 0;
     }
 
     /**
