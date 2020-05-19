@@ -10,11 +10,11 @@
 namespace WirecardEE\Prestashop\Models;
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use WirecardEE\Prestashop\Classes\Config\Credentials\CredentialsConfiguration;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TemplateHelper;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Classes\Config\Credentials\CredentialsConfiguration;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 /**
  * Basic Payment class

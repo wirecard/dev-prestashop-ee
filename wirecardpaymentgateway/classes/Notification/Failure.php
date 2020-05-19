@@ -9,7 +9,6 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification;
 
-use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;

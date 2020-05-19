@@ -3,11 +3,11 @@
 
 namespace WirecardEE\Prestashop\Classes\Service;
 
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
 /**
  * Class OrderAmountCalculatorService

@@ -9,10 +9,8 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use Wirecard\ExtensionOrderStateModule\Domain\Contract\InputDataTransferObject;
-use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use InvalidArgumentException;
+use Wirecard\ExtensionOrderStateModule\Domain\Contract\InputDataTransferObject;
 use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 
 /**

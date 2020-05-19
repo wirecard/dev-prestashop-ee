@@ -9,13 +9,12 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\AccountHolder;
 use Wirecard\PaymentSdk\Entity\Address;
+use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
 use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
  * Class AdditionalInformation

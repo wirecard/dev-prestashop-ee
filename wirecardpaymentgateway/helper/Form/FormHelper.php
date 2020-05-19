@@ -9,12 +9,12 @@
 
 namespace WirecardEE\Prestashop\Helper\Form;
 
+use Configuration;
+use Exception;
+use HelperForm;
 use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\Form\Element\SubmitButton;
 use WirecardEE\Prestashop\Helper\Form\Element\SwitchInput;
-use Exception;
-use HelperForm;
-use Configuration;
 
 /**
  * Class FormHelper

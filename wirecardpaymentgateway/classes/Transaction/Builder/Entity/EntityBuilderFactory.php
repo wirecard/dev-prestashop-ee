@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Classes\Transaction\Builder\Entity;
 
-use WirecardEE\Prestashop\Classes\Transaction\Entity\Cart\TransactionCart;
 use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\Basket\BasketBuilder;
+use WirecardEE\Prestashop\Classes\Transaction\Entity\Cart\TransactionCart;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**

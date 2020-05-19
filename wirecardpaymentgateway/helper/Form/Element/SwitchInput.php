@@ -9,9 +9,9 @@
 
 namespace WirecardEE\Prestashop\Helper\Form\Element;
 
+use Exception;
 use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use Exception;
 
 /**
  * Class SwitchInput

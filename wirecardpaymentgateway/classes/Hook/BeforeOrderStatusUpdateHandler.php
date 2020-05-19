@@ -9,15 +9,15 @@
 
 namespace WirecardEE\Prestashop\Classes\Hook;
 
-use Wirecard\PaymentSdk\Transaction\Operation;
-use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
-use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
 use Configuration;
-use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
-use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
+use Exception;
 use PrestaShopDatabaseException;
 use PrestaShopException;
-use Exception;
+use Wirecard\PaymentSdk\Transaction\Operation;
+use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
+use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
+use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
+use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**

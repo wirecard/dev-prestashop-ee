@@ -9,7 +9,7 @@
 
 namespace WirecardEE\Prestashop\Helper\Service;
 
-use \Db;
+use Db;
 
 /**
  * Class OrderService

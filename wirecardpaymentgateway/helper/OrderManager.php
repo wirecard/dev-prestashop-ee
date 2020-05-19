@@ -10,13 +10,13 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use Wirecard\PaymentSdk\BackendService;
-use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class OrderManager

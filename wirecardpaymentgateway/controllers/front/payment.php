@@ -8,13 +8,13 @@
  */
 
 use Wirecard\PaymentSdk\TransactionService;
+use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
+use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\PaymentErrorHelper;
-use WirecardEE\Prestashop\Helper\TransactionBuilder;
-use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
-use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
+use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController

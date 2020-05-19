@@ -4,9 +4,8 @@
 namespace WirecardEE\Prestashop\Classes\Notification\PostProcessing;
 
 
-use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
-
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
 
 class Failure extends \WirecardEE\Prestashop\Classes\Notification\Failure implements ProcessablePaymentNotification
 {

@@ -10,8 +10,8 @@
 
 namespace WirecardEE\Prestashop\Helper\Form\Element;
 
-use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
 use Exception;
+use WirecardEE\Prestashop\Helper\Form\FormElementInterface;
 use WirecardEE\Prestashop\Helper\OptionHelper;
 
 /**

@@ -7,12 +7,12 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
+use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
-use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
-use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
+use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class WirecardTransactions

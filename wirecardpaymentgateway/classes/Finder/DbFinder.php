@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Classes\Finder;
 
-use \Db;
-use \DbQuery;
+use Db;
+use DbQuery;
 
 /**
  * Class DbFinder
