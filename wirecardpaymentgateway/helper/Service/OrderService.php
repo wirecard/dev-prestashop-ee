@@ -76,12 +76,14 @@ class OrderService
         }
     }
 
-    /**
-     * @param string $transaction_id
-     *
-     * @since 2.1.0
-     */
-    public function addTransactionIdToOrderPayment($transaction_id)
+	/**
+	 * @param string $transaction_id
+	 *
+	 * @param $amount
+	 *
+	 * @since 2.1.0
+	 */
+    public function addTransactionIdToOrderPayment($transaction_id, $amount)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
         $last_index = count($order_payments) - 1;
@@ -90,6 +92,7 @@ class OrderService
 
         if (!empty($order_payments)&&($order_current_state === $order_payment_state)) {
             $order_payments[$last_index]->transaction_id = $transaction_id;
+	        $order_payments[$last_index]->amount = $amount;
             $order_payments[$last_index]->save();
         }
         //todo: $amount will be used in the partial operations
