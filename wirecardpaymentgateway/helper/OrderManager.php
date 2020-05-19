@@ -128,14 +128,14 @@ class OrderManager
             $orderState->id = \Configuration::get($state);
             $orderState->update();
         }
-        $id = $orderState->id;
+        $toId = $orderState->id;
 
-        $fromId = $this->getCopyLogoId($id);
+        $fromId = $this->getCopyLogoId($toId);
         if ($fromId) {
             $fromPath = $this->getPaymendLogoPath($fromId);
 
             if (is_readable($fromPath)) {
-                $toPath = $this->getPaymendLogoPath($id);
+                $toPath = $this->getPaymendLogoPath($toId);
                 copy($fromPath, $toPath);
             }
         }
