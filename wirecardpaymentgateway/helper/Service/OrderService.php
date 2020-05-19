@@ -10,6 +10,7 @@
 namespace WirecardEE\Prestashop\Helper\Service;
 
 use \Db;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 
 /**
  * Class OrderService
@@ -45,23 +46,31 @@ class OrderService
         if ($flownAmount) {
             return $this->order->addOrderPayment((float)$flownAmount, null, $transactionId);
         }
+        return false;
     }
 
     /**
-     * @param float $amount
+     * @param $requestedAmount
      *
      * @return float|null
      * @since 2.10.0
      */
-    public function flownAmount($amount)
+    public function flownAmount($requestedAmount)
     {
         $orderState = $this->order->current_state;
         switch ($orderState) {
             case \Configuration::get('PS_OS_REFUND'):
             case \Configuration::get('WIRECARD_OS_PARTIAL_REFUNDED'):
-                return $amount * -1;
+                return $requestedAmount * -1;
             case \Configuration::get('WIRECARD_OS_PARTIAL_CAPTURED'):
-                return $amount;
+                $orderAmountCalculatorService = new OrderAmountCalculatorService($this->order);
+                $refundedAmount = $orderAmountCalculatorService->getOrderRefundedAmount();
+                $capturedAmount = $orderAmountCalculatorService->getOrderCapturedAmount();
+
+                if ($capturedAmount == $requestedAmount + $refundedAmount) {
+                    return $requestedAmount;
+                }
+                return $requestedAmount * -1;
             default:
                 return null;
         }
