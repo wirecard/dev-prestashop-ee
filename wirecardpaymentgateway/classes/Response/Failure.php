@@ -9,7 +9,6 @@
 
 namespace WirecardEE\Prestashop\Classes\Response;
 
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\Status;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
@@ -26,8 +25,6 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
  */
 abstract class Failure implements ProcessablePaymentResponse
 {
-    /** @var \Order */
-    protected $order;
 
     /** @var FailureResponse */
     protected $response;
@@ -51,17 +48,15 @@ abstract class Failure implements ProcessablePaymentResponse
     /**
      * FailureResponseProcessing constructor.
      *
-     * @param \Order $order
+     * @param OrderService $order_service
      * @param FailureResponse $response
-     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
-    public function __construct($order, $response)
+    public function __construct(OrderService $order_service, $response)
     {
-        $this->order = $order;
         $this->response = $response;
         $this->context_service = new ContextService(\Context::getContext());
-        $this->order_service = new OrderService($order);
+        $this->order_service = $order_service;
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
         $this->logger = new Logger();
     }
@@ -104,8 +99,9 @@ abstract class Failure implements ProcessablePaymentResponse
             new OrderAmountCalculatorService($this->order)
         );
         if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
-            $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
-            $this->order->save();
+            $order = $this->order_service->getOrder();
+            $order->setCurrentState($nextState);
+            $order->save();
             $this->order_service->addTransactionIdToOrderPayment($this->response->getData()['transaction-id']);
         }
 

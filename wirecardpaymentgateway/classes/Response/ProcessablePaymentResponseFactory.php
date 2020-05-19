@@ -20,6 +20,7 @@ use WirecardEE\Prestashop\Classes\Response\Initial\Failure as InitialFailure;
 use WirecardEE\Prestashop\Classes\Response\Initial\Success as InitialSuccess;
 use WirecardEE\Prestashop\Classes\Response\PostProcessing\Failure as PostProcessingFailure;
 use WirecardEE\Prestashop\Classes\Response\PostProcessing\Success as PostProcessingSuccess;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 /**
  * Class ProcessablePaymentResponseFactory
@@ -82,10 +83,11 @@ class ProcessablePaymentResponseFactory extends ProcessablePaymentFactory
                 return new FormPost($this->response);
             case $this->response instanceof FailureResponse:
             default:
+                $order_service = new OrderService($this->order);
                 if ($this->isPostProcessing($this->response)) {
-                    return new PostProcessingFailure($this->order, $this->response);
+                    return new PostProcessingFailure($order_service, $this->response);
                 }
-                return new InitialFailure($this->order, $this->response);
+                return new InitialFailure($order_service, $this->response);
         }
     }
 
