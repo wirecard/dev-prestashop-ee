@@ -116,7 +116,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $delta_amount = Tools::getValue('partial-delta-amount', $parentTransaction->getAmount());
 
         $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transactionId);
-        $transactionPostProcessingService->process($delta_amount);
+        $transactionPostProcessingService->process((float)$delta_amount);
         if (!empty($transactionPostProcessingService->getErrors())) {
             $this->errors[] = implode("<br />", $transactionPostProcessingService->getErrors());
         }
