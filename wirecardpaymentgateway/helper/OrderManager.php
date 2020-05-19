@@ -146,10 +146,10 @@ class OrderManager
         );
     }
 
-    private function getPaymendLogoPath($id)
+    private function getPaymendLogoPath($orderStateId)
     {
-        $ds = DIRECTORY_SEPARATOR;
-        return _PS_ROOT_DIR_ . $ds . 'img' . $ds . 'os' . $ds . $id . '.gif';
+        $dirSep = DIRECTORY_SEPARATOR;
+        return _PS_ROOT_DIR_ . $dirSep . 'img' . $dirSep . 'os' . $dirSep . $orderStateId . '.gif';
     }
 
     private function getCopyLogoId($fromId)
