@@ -75,5 +75,4 @@ class OrderStateManagerService implements ServiceInterface
             $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
     }
-
 }

@@ -39,5 +39,4 @@ abstract class ProcessablePaymentFactory
         ];
         return in_array($response->getData()[ResponseMappingXmlFields::TRANSACTION_TYPE], $types);
     }
-
 }

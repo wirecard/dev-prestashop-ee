@@ -162,7 +162,7 @@ class OrderManager
             (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_REFUNDED) => (int)\Configuration::get('PS_OS_REFUND'),
             (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_CAPTURED) => (int)\Configuration::get('PS_OS_PAYMENT'),
         ];
-        if(isset($logo_mapping[$fromId])) {
+        if (isset($logo_mapping[$fromId])) {
             return (int)$logo_mapping[$fromId];
         }
         return 0;

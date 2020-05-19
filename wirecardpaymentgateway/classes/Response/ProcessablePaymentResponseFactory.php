@@ -86,7 +86,6 @@ class ProcessablePaymentResponseFactory extends ProcessablePaymentFactory
                     return new PostProcessingFailure($this->order, $this->response);
                 }
                 return new InitialFailure($this->order, $this->response);
-
         }
     }
 
