@@ -10,9 +10,12 @@
 namespace WirecardEE\Prestashop\Classes\Response;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
+use Wirecard\PaymentSdk\Entity\Status;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 
@@ -78,10 +81,40 @@ abstract class Failure implements ProcessablePaymentResponse
     {
         $error = array();
 
+        /** @var $status Status */
         foreach ($statuses->getIterator() as $status) {
             array_push($error, $status->getDescription());
         }
 
         return $error;
+    }
+
+    /**
+     * @param $processType
+     * @throws \PrestaShopException
+     * @since 2.10.0
+     */
+    protected function processForType($processType)
+    {
+        $currentState = $this->order_service->getLatestOrderStatusFromHistory();
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $currentState,
+            $processType,
+            $this->response->getData(),
+            new OrderAmountCalculatorService($this->order)
+        );
+        if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
+            $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
+            $this->order->save();
+            $this->order_service->addTransactionIdToOrderPayment($this->response->getData()['transaction-id']);
+        }
+
+        if (!$nextState) {
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
+
+            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+            $this->context_service->redirectWithError($errors, 'order');
+        }
     }
 }
