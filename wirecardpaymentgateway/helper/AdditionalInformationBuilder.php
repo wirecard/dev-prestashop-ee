@@ -20,6 +20,7 @@ use Wirecard\PaymentSdk\Transaction\Transaction;
  * Class AdditionalInformation
  *
  * @since 1.0.0
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class AdditionalInformationBuilder
 {

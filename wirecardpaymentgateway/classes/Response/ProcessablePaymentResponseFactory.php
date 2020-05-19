@@ -26,6 +26,7 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
  * Class ProcessablePaymentResponseFactory
  * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ProcessablePaymentResponseFactory extends ProcessablePaymentFactory
 {
