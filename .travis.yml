@@ -58,17 +58,13 @@ jobs:
     #   tests will use extension version = branch which originated pull request
     #   or branch which was defined in ad-hoc trigger in Travis UI
     if: (type = pull_request AND (head_branch =~ env(PATCH_RELEASE) OR head_branch =~ env(MINOR_RELEASE) OR head_branch =~ env(MAJOR_RELEASE))) OR (commit_message =~ env(MANUAL_UITEST_TRIGGER_COMMIT))
-    php: 7.1
+    php: 7.2
     env:
       - GATEWAY=API-TEST
       - PRESTASHOP_RELEASE_VERSION=1
     before_install: skip
     install:
-      # check if files are same or not
-      - cmp --silent ${PRESTASHOP_RELEASES_FILE} ${PRESTASHOP_COMPATIBILITY_FILE} && export COMPATIBILITY_CHECK=0 || export COMPATIBILITY_CHECK=1
-      # check from which file to take versions
-      - if [[ ${COMPATIBILITY_CHECK}  == "0" ]]; then export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_RELEASES_FILE}); else export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_COMPATIBILITY_FILE}); fi
-      - export LATEST_RELEASED_SHOP_EXTENSION_VERSION=$(git describe --abbrev=0 --tags)
+      - export PRESTASHOP_VERSION=$(awk "NR==${PRESTASHOP_RELEASE_VERSION} {print; exit}" ${PRESTASHOP_RELEASES_FILE})
       - echo "Testing with Prestashop version ${PRESTASHOP_VERSION}"
     script: bash .bin/setup-and-run-ui-tests.sh
     after_script: skip
@@ -76,43 +72,6 @@ jobs:
       - bash .bin/upload-logs-and-notify.sh
     after_failure:
       - bash .bin/upload-logs-and-notify.sh fail
-
-    # run this stage on pull request if head branch name contains major (on major release)
-    # tests will use branch which originated pull request
-  - <<: *acceptance-test
-    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
-    env:
-      - GATEWAY=API-TEST
-      - PRESTASHOP_RELEASE_VERSION=2
-
-  # run this stage on pull request if head branch name contains major (on major release)
-  # tests will use branch which originated pull request
-  - <<: *acceptance-test
-    if: type = pull_request AND head_branch =~ env(MAJOR_RELEASE)
-    env:
-      - GATEWAY=API-TEST
-      - PRESTASHOP_RELEASE_VERSION=3
-
-  # run this stage when shop system updated with latest shop extension release version
-  # tests will use tip of master branch
-  - <<: *acceptance-test
-    if: commit_message =~ env(SHOP_SYSTEM_UPDATE_COMMIT)
-    env:
-      - GATEWAY=API-TEST
-      - PRESTASHOP_RELEASE_VERSION=1
-      # if this stage fails, it will not fail the whole build
-      - ALLOW_FAIL=1
-
-  # run this stage when shop system updated with latest shop extension release version
-  # tests will use latest released extension version
-  - <<: *acceptance-test
-    if: commit_message =~ env(SHOP_SYSTEM_UPDATE_COMMIT)
-    env:
-      - GATEWAY=API-TEST
-      - PRESTASHOP_RELEASE_VERSION=1
-      - LATEST_EXTENSION_RELEASE=1
-      # if this stage fails, it will not fail the whole build
-      - ALLOW_FAIL=1
 
   - stage: trigger-white-labelling
     if: tag IS present AND type = push
