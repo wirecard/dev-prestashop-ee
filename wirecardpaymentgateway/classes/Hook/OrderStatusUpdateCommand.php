@@ -10,7 +10,7 @@
 namespace WirecardEE\Prestashop\Classes\Hook;
 
 use Exception;
-use OrderState;
+use \OrderState;
 
 /**
  * class OrderStatusUpdateCommand

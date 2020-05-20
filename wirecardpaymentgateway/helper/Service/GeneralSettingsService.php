@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Helper\Service;
 
-use Configuration;
-use Tools;
+use \Configuration;
+use \Tools;
 use WirecardEE\Prestashop\Helper\ArrayHelper;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 

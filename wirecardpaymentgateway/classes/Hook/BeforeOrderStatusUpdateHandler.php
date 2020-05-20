@@ -9,10 +9,10 @@
 
 namespace WirecardEE\Prestashop\Classes\Hook;
 
-use Configuration;
-use Exception;
-use PrestaShopDatabaseException;
-use PrestaShopException;
+use \Configuration;
+use \Exception;
+use \PrestaShopDatabaseException;
+use \PrestaShopException;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
 use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;

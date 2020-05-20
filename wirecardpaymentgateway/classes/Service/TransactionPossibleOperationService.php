@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Classes\Service;
 
-use Exception;
-use Tools;
+use \Exception;
+use \Tools;
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
