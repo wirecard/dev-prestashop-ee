@@ -46,7 +46,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.14.0';
+    const VERSION = '2.10.0';
 
     /**
      * @var string

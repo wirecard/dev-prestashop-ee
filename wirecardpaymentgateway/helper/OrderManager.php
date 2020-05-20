@@ -161,6 +161,7 @@ class OrderManager
         $logo_mapping = [
             (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_REFUNDED) => (int)\Configuration::get('PS_OS_REFUND'),
             (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_CAPTURED) => (int)\Configuration::get('PS_OS_PAYMENT'),
+            (int)\Configuration::get(self::WIRECARD_OS_AUTHORIZATION) => (int)\Configuration::get('PS_OS_BANKWIRE'),
         ];
         if (isset($logo_mapping[$fromId])) {
             return (int)$logo_mapping[$fromId];
