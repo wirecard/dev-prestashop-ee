@@ -20,12 +20,6 @@ jobs:
       - GATEWAY=API-TEST
       - PRESTASHOP_RELEASE_VERSION=1
       - ALLOW_FAIL=1
-  - stage: acceptance-test
-    env:
-      - GATEWAY=API-TEST
-      - PRESTASHOP_RELEASE_VERSION=1
-      - LATEST_EXTENSION_RELEASE=1
-      - ALLOW_FAIL=1
   include:
   - stage: phraseapp-pull
     if: env(PHRASEAPP_PULL) = '1'
