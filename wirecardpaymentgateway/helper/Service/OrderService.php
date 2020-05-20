@@ -11,6 +11,7 @@ namespace WirecardEE\Prestashop\Helper\Service;
 
 use \Db;
 use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
+use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class OrderService
@@ -34,15 +35,17 @@ class OrderService
     }
 
     /**
-     * @param string $transactionId
+     * @param Transaction $transaction
      * @param float $amount
      *
      * @return bool
      * @since 2.10.0
      */
-    public function createOrderPayment($transactionId, $amount)
+    public function createOrderPayment($transaction, $amount)
     {
-        $flownAmount = $this->flownAmount($amount);
+        $transactionId = $transaction->getTransactionId();
+        $parentTransactionId = $transaction->getParentTransactionId();
+        $flownAmount = $this->flownAmount($amount, $parentTransactionId);
         if ($flownAmount) {
             return $this->order->addOrderPayment((float)$flownAmount, null, $transactionId);
         }
@@ -51,11 +54,11 @@ class OrderService
 
     /**
      * @param $requestedAmount
-     *
-     * @return float|null
+     * @param $parentTransactionId
+     * @return float|bool
      * @since 2.10.0
      */
-    public function flownAmount($requestedAmount)
+    public function flownAmount($requestedAmount, $parentTransactionId)
     {
         $orderState = $this->order->current_state;
         switch ($orderState) {
@@ -64,28 +67,24 @@ class OrderService
                 return $requestedAmount * -1;
             case \Configuration::get('WIRECARD_OS_PARTIAL_CAPTURED'):
                 $orderAmountCalculatorService = new OrderAmountCalculatorService($this->order);
-                $refundedAmount = $orderAmountCalculatorService->getOrderRefundedAmount();
-	            $capturedAmount = $orderAmountCalculatorService->getOrderCapturedAmount();
-				$latestOrderStatus = $this->getLatestOrderStatusFromHistory();
-
-                if ($refundedAmount == 0
-                   || $latestOrderStatus == \Configuration::get('WIRECARD_OS_PARTIAL_REFUNDED')
-                   || $refundedAmount < $capturedAmount - $requestedAmount){
-	                return $requestedAmount;
+                $refundedAmount = $orderAmountCalculatorService->getOrderRefundedAmount($parentTransactionId);
+                $amount = $requestedAmount;
+                if ($refundedAmount > 0) {
+                    $amount =  $requestedAmount * -1;
                 }
-                return $requestedAmount * -1;
+                return $amount;
             default:
-                return null;
+                return false;
         }
     }
 
-	/**
-	 * @param string $transaction_id
-	 *
-	 * @param $amount
-	 *
-	 * @since 2.1.0
-	 */
+    /**
+     * @param string $transaction_id
+     *
+     * @param $amount
+     *
+     * @since 2.1.0
+     */
     public function addTransactionIdToOrderPayment($transaction_id, $amount)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
@@ -95,7 +94,7 @@ class OrderService
 
         if (!empty($order_payments)&&($order_current_state === $order_payment_state)) {
             $order_payments[$last_index]->transaction_id = $transaction_id;
-	        $order_payments[$last_index]->amount = $amount;
+            $order_payments[$last_index]->amount = $amount;
             $order_payments[$last_index]->save();
         }
         //todo: $amount will be used in the partial operations

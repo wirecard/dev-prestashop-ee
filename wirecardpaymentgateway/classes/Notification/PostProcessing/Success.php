@@ -29,7 +29,7 @@ class Success extends AbstractSuccess
             $this->notification->getParentTransactionId()
         );
         $this->order_service->createOrderPayment(
-            $this->notification->getTransactionId(),
+            $this->notification,
             $this->notification->getRequestedAmount()->getValue()
         );
     }
