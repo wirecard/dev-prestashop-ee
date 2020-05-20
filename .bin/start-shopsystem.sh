@@ -33,7 +33,7 @@ sed -i -e "$replace" "./wirecardpaymentgateway/wirecardpaymentgateway.php"
 
 .bin/generate-release-package.sh
 
-docker-compose build --no-cache --build-ard PHP_VERSION="${PHP_VERSION}" --build-arg PS_CONTAINER_DOMAIN="${PS_CONTAINER_DOMAIN}" \
+docker-compose build --no-cache --build-arg PHP_VERSION="${PHP_VERSION}" --build-arg PS_CONTAINER_DOMAIN="${PS_CONTAINER_DOMAIN}" \
   --build-arg PS_CONTAINER_SHOP_URL="${PS_CONTAINER_SHOP_URL}" \
   --build-arg PS_VERSION="${PS_VERSION}" \
   web
