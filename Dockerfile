@@ -1,4 +1,5 @@
-FROM prestashop/base:7.2-apache
+ARG PHP_VERSION
+FROM prestashop/base:${PHP_VERSION}-apache
 
 # Set default value in case there is not any available version in release file, if there is, this value will be overwritten
 ARG PS_VERSION=1.7.5.2
