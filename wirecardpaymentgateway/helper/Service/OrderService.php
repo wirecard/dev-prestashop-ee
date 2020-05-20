@@ -55,6 +55,7 @@ class OrderService
     /**
      * @param $requestedAmount
      * @param $parentTransactionId
+     *
      * @return float|bool
      * @since 2.10.0
      */
@@ -66,16 +67,31 @@ class OrderService
             case \Configuration::get('WIRECARD_OS_PARTIAL_REFUNDED'):
                 return $requestedAmount * -1;
             case \Configuration::get('WIRECARD_OS_PARTIAL_CAPTURED'):
-                $orderAmountCalculatorService = new OrderAmountCalculatorService($this->order);
-                $refundedAmount = $orderAmountCalculatorService->getOrderRefundedAmount($parentTransactionId);
                 $amount = $requestedAmount;
-                if ($refundedAmount > 0) {
+                if ($this->isTransactionRefund($parentTransactionId)) {
                     $amount =  $requestedAmount * -1;
                 }
                 return $amount;
             default:
                 return false;
         }
+    }
+
+    /**
+     * @param $transactionId
+     *
+     * @return bool
+     * @since 2.10.0
+     */
+    private function isTransactionRefund($transactionId)
+    {
+        $isRefund = false;
+        $orderAmountCalculatorService = new OrderAmountCalculatorService($this->order);
+        $refundedAmount = $orderAmountCalculatorService->getOrderRefundedAmount($transactionId);
+        if ($refundedAmount > 0) {
+            $isRefund = true;
+        }
+        return $isRefund;
     }
 
     /**
