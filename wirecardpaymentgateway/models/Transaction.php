@@ -12,12 +12,12 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\Response;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
 /**
  * Basic Transaction class

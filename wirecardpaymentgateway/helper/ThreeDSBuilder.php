@@ -9,13 +9,11 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use Wirecard\PaymentSdk\Transaction\Transaction;
 use Wirecard\PaymentSdk\Constant\AuthMethod;
+use Wirecard\PaymentSdk\Constant\IsoTransactionType;
 use Wirecard\PaymentSdk\Entity\AccountInfo;
 use Wirecard\PaymentSdk\Entity\RiskInfo;
-use Wirecard\PaymentSdk\Constant\IsoTransactionType;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 
 /**
  * Class ThreeDSBuilder

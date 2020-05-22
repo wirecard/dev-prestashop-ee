@@ -12,16 +12,18 @@ namespace WirecardEE\Prestashop\Classes\Notification;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Transaction\Transaction;
+use WirecardEE\Prestashop\Classes\Notification\Initial\Failure as InitialFailure;
 use WirecardEE\Prestashop\Classes\Notification\Initial\Success as InitialSuccess;
+use WirecardEE\Prestashop\Classes\Notification\PostProcessing\Failure as PostProcessingFailure;
 use WirecardEE\Prestashop\Classes\Notification\PostProcessing\Success as PostProcessingSuccess;
+use WirecardEE\Prestashop\Classes\ProcessablePaymentFactory;
 
 /**
  * Class ProcessablePaymentNotificationFactory
  * @since 2.1.0
  * @package WirecardEE\Prestashop\Classes\Notification
  */
-class ProcessablePaymentNotificationFactory
+class ProcessablePaymentNotificationFactory extends ProcessablePaymentFactory
 {
     /** @var \Order */
     private $order;
@@ -43,30 +45,6 @@ class ProcessablePaymentNotificationFactory
     }
 
     /**
-     * @return bool
-     */
-    private function isPostProcessing()
-    {
-        $types = [
-            Transaction::TYPE_CAPTURE_AUTHORIZATION,
-            Transaction::TYPE_VOID_AUTHORIZATION,
-            Transaction::TYPE_CREDIT,
-            Transaction::TYPE_REFUND_CAPTURE,
-            Transaction::TYPE_REFUND_DEBIT,
-            Transaction::TYPE_REFUND_REQUEST,
-            Transaction::TYPE_VOID_CAPTURE,
-            Transaction::TYPE_REFUND_PURCHASE,
-            Transaction::TYPE_REFERENCED_PURCHASE,
-            Transaction::TYPE_VOID_PURCHASE,
-            Transaction::TYPE_VOID_DEBIT,
-            Transaction::TYPE_VOID_REFUND_CAPTURE,
-            Transaction::TYPE_VOID_REFUND_PURCHASE,
-            Transaction::TYPE_VOID_CREDIT,
-        ];
-        return in_array($this->notification->getData()['transaction-type'], $types);
-    }
-
-    /**
      * @return Failure|Success
      * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
@@ -74,12 +52,14 @@ class ProcessablePaymentNotificationFactory
     public function getPaymentProcessing()
     {
         if ($this->notification instanceof SuccessResponse) {
-            if ($this->isPostProcessing()) {
+            if ($this->isPostProcessing($this->notification)) {
                 return new PostProcessingSuccess($this->order, $this->notification);
             }
             return new InitialSuccess($this->order, $this->notification);
         }
-
-        return new Failure($this->order, $this->notification, $this->isPostProcessing());
+        if ($this->isPostProcessing($this->notification)) {
+            return new PostProcessingFailure($this->order, $this->notification);
+        }
+        return new InitialFailure($this->order, $this->notification);
     }
 }

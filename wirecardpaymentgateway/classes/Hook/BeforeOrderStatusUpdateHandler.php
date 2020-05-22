@@ -9,15 +9,15 @@
 
 namespace WirecardEE\Prestashop\Classes\Hook;
 
+use \Configuration;
+use \Exception;
+use \PrestaShopDatabaseException;
+use \PrestaShopException;
 use Wirecard\PaymentSdk\Transaction\Operation;
-use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
 use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
-use Configuration;
+use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
 use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
 use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
-use PrestaShopDatabaseException;
-use PrestaShopException;
-use Exception;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -96,7 +96,7 @@ class BeforeOrderStatusUpdateHandler implements CommandHandlerInterface
     {
         $postProcessingService = new TransactionPostProcessingService($operation, $transaction->getTxId());
         $parentTransaction = Transaction::getInitialTransactionForOrder($transaction->getOrderNumber());
-        $postProcessingService->process($parentTransaction->getAmount());
+        $postProcessingService->process((float)$parentTransaction->getAmount());
     }
 
     /**

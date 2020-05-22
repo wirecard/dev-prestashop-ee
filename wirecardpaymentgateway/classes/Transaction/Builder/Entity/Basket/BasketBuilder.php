@@ -11,9 +11,9 @@ namespace WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\Basket;
 
 use Wirecard\PaymentSdk\Entity\Basket;
 use Wirecard\PaymentSdk\Entity\Item;
+use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderInterface;
 use WirecardEE\Prestashop\Classes\Transaction\Entity\Cart\CartItemInterface;
 use WirecardEE\Prestashop\Classes\Transaction\Entity\Cart\TransactionCart;
-use WirecardEE\Prestashop\Classes\Transaction\Builder\Entity\EntityBuilderInterface;
 
 /**
  * Class BasketBuilder

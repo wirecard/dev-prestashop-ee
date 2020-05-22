@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Classes\Finder;
 
-use WirecardEE\Prestashop\Models\Transaction;
-use DbQuery;
+use \DbQuery;
+use \WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class TransactionFinder

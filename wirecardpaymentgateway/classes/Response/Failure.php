@@ -9,115 +9,62 @@
 
 namespace WirecardEE\Prestashop\Classes\Response;
 
-use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
+use Wirecard\PaymentSdk\Entity\Status;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
 use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class Failure
  * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-final class Failure implements ProcessablePaymentResponse
+abstract class Failure implements ProcessablePaymentResponse
 {
-    /** @var \Order */
-    private $order;
 
     /** @var FailureResponse */
-    private $response;
+    protected $response;
 
     /** @var ContextService */
-    private $context_service;
+    protected $context_service;
 
     /** @var OrderService */
-    private $order_service;
-
-    /** @var string */
-    private $isPostProcessing;
+    protected $order_service;
 
     /**
      * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
-    private $orderStateManager;
+    protected $orderStateManager;
 
     /**
      * @var Logger
      */
-    private $logger;
+    protected $logger;
 
     /**
      * FailureResponseProcessing constructor.
      *
-     * @param \Order $order
+     * @param OrderService $order_service
      * @param FailureResponse $response
-     * @param string $isPostProcessing
-     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
-    public function __construct($order, $response, $isPostProcessing)
+    public function __construct(OrderService $order_service, $response)
     {
-        $this->order = $order;
         $this->response = $response;
-        $this->isPostProcessing = $isPostProcessing;
         $this->context_service = new ContextService(\Context::getContext());
-        $this->order_service = new OrderService($order);
+        $this->order_service = $order_service;
         $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
         $this->logger = new Logger();
     }
 
-
     /**
      * @since 2.10.0
      */
-    public function process()
-    {
-        $currentState = $this->order_service->getLatestOrderStatusFromHistory();
-        try {
-            $nextState = $this->orderStateManager->calculateNextOrderState(
-                $currentState,
-                $this->isPostProcessing ?
-                    Constant::PROCESS_TYPE_POST_PROCESSING_RETURN :
-                    Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData(),
-                new OrderAmountCalculatorService($this->order)
-            );
-            if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $this->order->setCurrentState($nextState); // _PS_OS_ERROR_
-                $this->order->save();
-            }
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug('$e->getMessage()', ['exception_class' => get_class($e), 'method' => __METHOD__]);
-            if ($this->isPostProcessing) {
-                $this->processBackend();
-                return;
-            }
-        }
-
-
-        $cart_clone = $this->order_service->getNewCartDuplicate();
-        $this->context_service->setCart($cart_clone);
-
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->redirectWithError($errors, 'order');
-    }
-
-    private function processBackend()
-    {
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->setErrors(\Tools::displayError(implode('<br>', $errors)));
-    }
+    abstract public function process();
 
     /**
      * @param StatusCollection $statuses
@@ -125,14 +72,45 @@ final class Failure implements ProcessablePaymentResponse
      * @return array
      * @since 2.1.0
      */
-    private function getErrorsFromStatusCollection($statuses)
+    protected function getErrorsFromStatusCollection($statuses)
     {
         $error = array();
 
+        /** @var $status Status */
         foreach ($statuses->getIterator() as $status) {
             array_push($error, $status->getDescription());
         }
 
         return $error;
+    }
+
+    /**
+     * @param $processType
+     * @throws \PrestaShopException
+     * @since 2.10.0
+     */
+    protected function processForType($processType)
+    {
+        $currentState = $this->order_service->getLatestOrderStatusFromHistory();
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $currentState,
+            $processType,
+            $this->response->getData(),
+            new OrderAmountCalculatorService($this->order)
+        );
+        if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
+            $order = $this->order_service->getOrder();
+            $order->setCurrentState($nextState);
+            $order->save();
+            $this->order_service->addTransactionIdToOrderPayment($this->response->getData()['transaction-id']);
+        }
+
+        if (!$nextState) {
+            $cart_clone = $this->order_service->getNewCartDuplicate();
+            $this->context_service->setCart($cart_clone);
+
+            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+            $this->context_service->redirectWithError($errors, 'order');
+        }
     }
 }

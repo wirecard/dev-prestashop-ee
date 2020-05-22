@@ -10,9 +10,8 @@
 namespace WirecardEE\Prestashop\Helper;
 
 use DateTime;
-use Order;
-use WirecardEE\Prestashop\Models\CreditCardVault;
 use Wirecard\PaymentSdk\Constant\ChallengeInd;
+use WirecardEE\Prestashop\Models\CreditCardVault;
 
 /**
  * Class CustomerHelper

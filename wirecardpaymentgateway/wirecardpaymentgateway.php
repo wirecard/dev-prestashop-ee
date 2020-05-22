@@ -12,20 +12,19 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
+use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
+use WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
+use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
+use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 use WirecardEE\Prestashop\Classes\Service\TabManagerService;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
-use WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
-use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
-use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 
 /**
  * Class WirecardPaymentGateway
@@ -1110,7 +1109,7 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      *  Add or update (if exists) order statuses
      */
-    private function addUpdateOrderStatuses()
+    public function addUpdateOrderStatuses()
     {
         $orderManager = new OrderManager();
         $translationKeys = $orderManager::ORDER_STATE_TRANSLATION_KEY_MAP;

@@ -11,6 +11,9 @@ namespace WirecardEE\Prestashop\Classes\Service;
 
 use Wirecard\ExtensionOrderStateModule\Application\Mapper\GenericOrderStateMapper;
 use Wirecard\ExtensionOrderStateModule\Application\Service\OrderState;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\OrderStateTransferObject;
@@ -28,6 +31,11 @@ class OrderStateManagerService implements ServiceInterface
     protected $service;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * OrderStateManagerService constructor.
      * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\NotInRegistryException
      */
@@ -35,6 +43,7 @@ class OrderStateManagerService implements ServiceInterface
     {
         $orderStateMapper = new GenericOrderStateMapper(new OrderStateMappingDefinition());
         $this->service = new OrderState($orderStateMapper);
+        $this->logger = new Logger();
     }
 
     /**
@@ -42,10 +51,7 @@ class OrderStateManagerService implements ServiceInterface
      * @param string $processType
      * @param array $transactionResponse
      * @param OrderAmountCalculatorService $orderAmountCalculator
-     * @return int|mixed|string
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException
-     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
+     * @return null|string
      */
     public function calculateNextOrderState(
         $currentOrderState,
@@ -53,13 +59,20 @@ class OrderStateManagerService implements ServiceInterface
         array $transactionResponse,
         OrderAmountCalculatorService $orderAmountCalculator
     ) {
-        $input = new OrderStateTransferObject(
-            $currentOrderState,
-            $processType,
-            $transactionResponse,
-            $orderAmountCalculator
-        );
-        (new Logger())->debug(print_r($input->toArray(), true), ['method' => __METHOD__, 'line' => __LINE__]);
-        return $this->service->process($input);
+        try {
+            $input = new OrderStateTransferObject(
+                $currentOrderState,
+                $processType,
+                $transactionResponse,
+                $orderAmountCalculator
+            );
+            return $this->service->process($input);
+        } catch (IgnorableStateException $e) {
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        } catch (OrderStateInvalidArgumentException $e) {
+            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        } catch (IgnorablePostProcessingFailureException $e) {
+            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        }
     }
 }

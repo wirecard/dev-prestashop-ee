@@ -11,7 +11,6 @@ namespace WirecardEE\Prestashop\Classes\Service;
 
 use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
 use WirecardEE\Prestashop\Classes\Config\Tab\TabConfigInterface;
-use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Class TabManagerService

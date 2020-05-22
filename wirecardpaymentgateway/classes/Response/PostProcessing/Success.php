@@ -10,17 +10,16 @@
 namespace WirecardEE\Prestashop\Classes\Response\PostProcessing;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Response\Success as SuccessAbstract;
 use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
+use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 
 class Success extends SuccessAbstract
 {
     /**
-     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
+     * @var OrderStateManagerService
      */
     private $orderStateManager;
 
@@ -43,6 +42,10 @@ class Success extends SuccessAbstract
 
     /**
      * @since 2.5.0
+     *
+     * Do not update the order state, as this is done in the notification handling later on.
+     *
+     * We do this to as a sanity check.
      */
     public function process()
     {
@@ -50,19 +53,11 @@ class Success extends SuccessAbstract
             $this->getTranslatedString('success_new_transaction')
         );
         $order_status = (int)$this->orderService->getLatestOrderStatusFromHistory();
-        try {
-            $this->orderStateManager->calculateNextOrderState(
-                $order_status,
-                Constant::PROCESS_TYPE_POST_PROCESSING_RETURN,
-                $this->response->getData(),
-                new OrderAmountCalculatorService($this->order)
-            );
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        }
+        $this->orderStateManager->calculateNextOrderState(
+            $order_status,
+            Constant::PROCESS_TYPE_POST_PROCESSING_RETURN,
+            $this->response->getData(),
+            new OrderAmountCalculatorService($this->order)
+        );
     }
 }

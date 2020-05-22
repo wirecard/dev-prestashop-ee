@@ -12,16 +12,13 @@ namespace WirecardEE\Prestashop\Helper\Form;
 use WirecardEE\Prestashop\Classes\Constants\FormConstants;
 use WirecardEE\Prestashop\Helper\Form\Element\SubmitButton;
 use WirecardEE\Prestashop\Helper\Form\Element\SwitchInput;
-use Exception;
-use HelperForm;
-use Configuration;
 
 /**
  * Class FormHelper
  * @since 2.5.0
  * @package WirecardEE\Prestashop\Helper\Form
  */
-class FormHelper extends HelperForm
+class FormHelper extends \HelperForm
 {
     /** @var array|FormElementInterface[] */
     private $elements = [];
@@ -53,7 +50,7 @@ class FormHelper extends HelperForm
      * @param array $values
      * @param array $options
      * @return FormHelper
-     * @throws Exception
+     * @throws \Exception
      * @since 2.5.0
      */
     public function addSwitchInput($fieldName, $label, $values = [], $options = [])
@@ -65,7 +62,7 @@ class FormHelper extends HelperForm
     /**
      * @param string $fieldName
      * @param string $label
-     * @throws Exception
+     * @throws \Exception
      * @since 2.5.0
      */
     public function addSubmitButton($fieldName, $label)
@@ -114,6 +111,6 @@ class FormHelper extends HelperForm
      */
     protected function getValueByElementName($name)
     {
-        return Configuration::get($name);
+        return \Configuration::get($name);
     }
 }
