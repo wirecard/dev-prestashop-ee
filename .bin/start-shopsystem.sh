@@ -11,6 +11,7 @@ for ARGUMENT in "$@"; do
   case "${KEY}" in
   NGROK_URL) NGROK_URL=${VALUE} ;;
   SHOP_VERSION) PS_VERSION=${VALUE} ;;
+  PHP_VERSION) PHP_VERSION=${VALUE} ;;
   IS_LATEST_EXTENSION_RELEASE) IS_LATEST_EXTENSION_RELEASE=${VALUE} ;;
   LATEST_RELEASED_SHOP_EXTENSION_VERSION) LATEST_RELEASED_SHOP_EXTENSION_VERSION=${VALUE} ;;
   *) ;;
@@ -32,7 +33,7 @@ sed -i -e "$replace" "./wirecardpaymentgateway/wirecardpaymentgateway.php"
 
 .bin/generate-release-package.sh
 
-docker-compose build --no-cache --build-arg PS_CONTAINER_DOMAIN="${PS_CONTAINER_DOMAIN}" \
+docker-compose build --no-cache --build-arg PHP_VERSION="${PHP_VERSION}" --build-arg PS_CONTAINER_DOMAIN="${PS_CONTAINER_DOMAIN}" \
   --build-arg PS_CONTAINER_SHOP_URL="${PS_CONTAINER_SHOP_URL}" \
   --build-arg PS_VERSION="${PS_VERSION}" \
   web
