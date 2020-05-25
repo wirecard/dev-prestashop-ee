@@ -131,7 +131,7 @@ class OrderService
      */
     public function deleteOrderPayment($orderReference)
     {
-        return Db::getInstance()->executeS(
+        return Db::getInstance()->execute(
             'DELETE
                 FROM `' . _DB_PREFIX_ . 'order_payment`
                 WHERE `order_reference` = \'' . pSQL($orderReference) . '\''
