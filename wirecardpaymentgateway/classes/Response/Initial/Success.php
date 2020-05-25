@@ -10,8 +10,6 @@
 namespace WirecardEE\Prestashop\Classes\Response\Initial;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorablePostProcessingFailureException;
-use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
@@ -74,21 +72,19 @@ class Success extends SuccessAbstract
     protected function beforeProcess()
     {
         $order_status = $this->orderService->getLatestOrderStatusFromHistory();
-        try {
-            $nextState = $this->orderStateManager->calculateNextOrderState(
-                $order_status,
-                Constant::PROCESS_TYPE_INITIAL_RETURN,
-                $this->response->getData(),
-                new OrderAmountCalculatorService($this->order)
-            );
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $order_status,
+            Constant::PROCESS_TYPE_INITIAL_RETURN,
+            $this->response->getData(),
+            new OrderAmountCalculatorService($this->order)
+        );
+        if ($nextState) {
             $this->order->setCurrentState($nextState);
             $this->order->save();
-        } catch (IgnorableStateException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (OrderStateInvalidArgumentException $e) {
-            $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
-        } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+        }
+
+        if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
+            $this->onOrderStateStarted();
         }
     }
 
@@ -108,6 +104,20 @@ class Success extends SuccessAbstract
             . $this->order->id . '&key='
             . $this->customer->secure_key
         );
+    }
+
+    private function onOrderStateStarted()
+    {
+        $currency = 'EUR';
+        if (key_exists('currency', $this->response->getData())) {
+            $currency = $this->response->getData()['currency'];
+        }
+        $amount = new Amount(0, $currency);
+        if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
+            $amount = $this->response->getRequestedAmount();
+        }
+        //TODO: integrate feature
+        //$this->orderService->addTransactionIdToOrderPayment($this->response->getTransactionId());
     }
 
     /**

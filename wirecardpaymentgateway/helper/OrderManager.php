@@ -9,14 +9,15 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Doctrine\Common\Annotations\IndexedReader;
 use Wirecard\PaymentSdk\BackendService;
-use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
  * Class OrderManager
@@ -127,11 +128,45 @@ class OrderManager
             $orderState->id = \Configuration::get($state);
             $orderState->update();
         }
+        $toId = $orderState->id;
+
+        $fromId = $this->getCopyLogoId($toId);
+        if ($fromId) {
+            $fromPath = $this->getPaymendLogoPath($fromId);
+
+            if (is_readable($fromPath)) {
+                $toPath = $this->getPaymendLogoPath($toId);
+                copy($fromPath, $toPath);
+            }
+        }
 
         \Configuration::updateValue(
             $state,
             (int)$orderState->id
         );
+    }
+
+    private function getPaymendLogoPath($orderStateId)
+    {
+        $dirSep = DIRECTORY_SEPARATOR;
+        return _PS_ROOT_DIR_ . $dirSep . 'img' . $dirSep . 'os' . $dirSep . $orderStateId . '.gif';
+    }
+
+    private function getCopyLogoId($fromId)
+    {
+        $fromId = (int)$fromId;
+        if (!$fromId) {
+            return 0;
+        }
+        $logo_mapping = [
+            (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_REFUNDED) => (int)\Configuration::get('PS_OS_REFUND'),
+            (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_CAPTURED) => (int)\Configuration::get('PS_OS_PAYMENT'),
+            (int)\Configuration::get(self::WIRECARD_OS_AUTHORIZATION) => (int)\Configuration::get('PS_OS_BANKWIRE'),
+        ];
+        if (isset($logo_mapping[$fromId])) {
+            return (int)$logo_mapping[$fromId];
+        }
+        return 0;
     }
 
     /**

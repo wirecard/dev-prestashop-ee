@@ -30,6 +30,14 @@ trait NumericHelper
         return $difference < $threshold;
     }
 
+    /**
+     * @param float $firstNumber
+     * @param float $secondNumber
+     * @param null $precision If null, use prestashop's default
+     * @return float|int
+     *
+     * Work with integers instead of floats, which makes rounding a safe operation, and thus the final division.
+     */
     private function difference($firstNumber, $secondNumber, $precision = null)
     {
         if ($precision === null) {
@@ -38,6 +46,7 @@ trait NumericHelper
         $integerCoefficient = pow(10, $precision);
         $firstNumber *= $integerCoefficient;
         $secondNumber *= $integerCoefficient;
-        return ($firstNumber - $secondNumber) / $integerCoefficient;
+        $diff = round($firstNumber - $secondNumber);
+        return $diff / $integerCoefficient;
     }
 }

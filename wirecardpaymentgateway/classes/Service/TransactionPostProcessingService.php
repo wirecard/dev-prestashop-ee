@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Classes\Service;
 
+use Exception;
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
@@ -17,11 +18,10 @@ use WirecardEE\Prestashop\Classes\Finder\TransactionFinder;
 use WirecardEE\Prestashop\Classes\ProcessType;
 use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Transaction\Builder\PostProcessingTransactionBuilder;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use Exception;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
