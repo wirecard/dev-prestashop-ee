@@ -11,6 +11,7 @@ namespace WirecardEE\Prestashop\Classes\Notification\PostProcessing;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 
 class Success extends AbstractSuccess
 {
@@ -30,7 +31,8 @@ class Success extends AbstractSuccess
         );
         $this->order_service->createOrderPayment(
             $this->notification,
-            $this->notification->getRequestedAmount()->getValue()
+            $this->notification->getRequestedAmount()->getValue(),
+            new OrderAmountCalculatorService($this->order)
         );
     }
 }

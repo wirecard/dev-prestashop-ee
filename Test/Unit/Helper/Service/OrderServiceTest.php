@@ -1,6 +1,7 @@
 <?php
 
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 
@@ -35,12 +36,17 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
     {
         $this->order->setCurrentState($orderState);
         $successResponse = $this->getTransaction();
-        $transactionId = $successResponse->getTransactionId();
+
+        $orderAmountCalculatorService = $this->getMockBuilder(OrderAmountCalculatorService::class)
+            ->disableOriginalConstructor()
+            ->setMethods(["getOrderRefundedAmount"])
+            ->getMock();
+        $orderAmountCalculatorService->method("getOrderRefundedAmount")
+            ->willReturn((float)5);
 
         $orderService = new OrderService($this->order);
-        $result = $orderService->createOrderPayment($successResponse, self::AMOUNT);
+        $result = $orderService->createOrderPayment($successResponse, self::AMOUNT, $orderAmountCalculatorService);
 
-        $this->assertEquals(self::TRANSACTION_ID, $transactionId);
         $this->assertEquals($expectedValue, $result);
     }
 

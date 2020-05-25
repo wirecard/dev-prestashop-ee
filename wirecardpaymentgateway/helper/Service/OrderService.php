@@ -24,6 +24,9 @@ class OrderService
     /** @var \Order */
     private $order;
 
+    /** @var OrderAmountCalculatorService $orderAmountCalculatorService */
+    private $orderAmountCalculatorService;
+
     /**
      * OrderService constructor.
      *
@@ -39,11 +42,13 @@ class OrderService
      * @param Transaction $transaction
      * @param float $amount
      *
+     * @param null $orderAmountCalculatorService
      * @return bool
      * @since 2.10.0
      */
-    public function createOrderPayment($transaction, $amount)
+    public function createOrderPayment($transaction, $amount, $orderAmountCalculatorService)
     {
+        $this->orderAmountCalculatorService = $orderAmountCalculatorService;
         $transactionId = $transaction->getTransactionId();
         $parentTransactionId = $transaction->getParentTransactionId();
         $flownAmount = $this->flownAmount($amount, $parentTransactionId);
@@ -87,8 +92,7 @@ class OrderService
     private function isTransactionRefund($transactionId)
     {
         $isRefund = false;
-        $orderAmountCalculatorService = new OrderAmountCalculatorService($this->order);
-        $refundedAmount = $orderAmountCalculatorService->getOrderRefundedAmount($transactionId);
+        $refundedAmount = $this->orderAmountCalculatorService->getOrderRefundedAmount($transactionId);
         if ($refundedAmount > 0) {
             $isRefund = true;
         }
