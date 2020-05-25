@@ -22,6 +22,7 @@ use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\Transaction;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
 /**
  * Class TransactionPossibleOperationService
@@ -102,6 +103,7 @@ class TransactionPossibleOperationService implements ServiceInterface
         }
 
         $possibleOperations = $this->disallowCancelIfPartialOperationsDone($possibleOperations);
+        $possibleOperations = $this->filterBasedOnType($possibleOperations);
 
         // We no longer support Masterpass
         if ($returnTemplateFormat && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
@@ -173,5 +175,24 @@ class TransactionPossibleOperationService implements ServiceInterface
     {
         $operations = $this->getPossibleOperationList(false);
         return in_array($operation, array_keys($operations), true);
+    }
+
+    /**
+     * @param $possibleOperations string[]
+     * @return string[]
+     * @since 2.10.0
+     */
+    private function filterBasedOnType($possibleOperations)
+    {
+        $type = $this->transaction->getTransactionType();
+        $noCancelTypes = [
+            TransactionTypes::TYPE_PURCHASE,
+            TransactionTypes::TYPE_CAPTURE_AUTHORIZATION
+        ];
+
+        if (in_array($type, $noCancelTypes, true)) {
+            unset($possibleOperations[Operation::CANCEL]);
+        }
+        return $possibleOperations;
     }
 }
