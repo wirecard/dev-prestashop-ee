@@ -106,7 +106,7 @@ class OrderService
      *
      * @since 2.1.0
      */
-    public function addTransactionIdToOrderPayment($transaction_id, $amount)
+    public function updateOrderPayment($transaction_id, $amount)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
         $last_index = count($order_payments) - 1;
@@ -118,7 +118,6 @@ class OrderService
             $order_payments[$last_index]->amount = $amount;
             $order_payments[$last_index]->save();
         }
-        //todo: $amount will be used in the partial operations
     }
 
 
