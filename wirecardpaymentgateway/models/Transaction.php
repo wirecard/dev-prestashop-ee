@@ -720,6 +720,12 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $this->difference($amount, $processedAmount);
     }
 
+    public function isZeroRemaining()
+    {
+        $remainingAmount = $this->getRemainingAmount();
+        return $this->equals($remainingAmount, 0);
+    }
+
     /**
      * @return bool
      * @throws \PrestaShopDatabaseException
