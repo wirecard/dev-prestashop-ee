@@ -110,7 +110,11 @@ abstract class Failure implements ProcessablePaymentResponse
             $this->context_service->setCart($cart_clone);
 
             $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-            $this->context_service->redirectWithError($errors, 'order');
+            $this->context_service->setErrors(
+                \Tools::displayError(
+                    join('<br>', $errors)
+                )
+            );
         }
     }
 }
