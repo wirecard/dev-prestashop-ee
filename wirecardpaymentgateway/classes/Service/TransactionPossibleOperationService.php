@@ -203,6 +203,10 @@ class TransactionPossibleOperationService implements ServiceInterface
             PayPalTransaction::NAME,
         ];
 
+        $noCancelTypes = [
+            TransactionTypes::TYPE_CAPTURE_AUTHORIZATION,
+        ];
+
         if ($isParent) {
             $noCancelTypes = [
                 TransactionTypes::TYPE_PURCHASE,
@@ -210,11 +214,8 @@ class TransactionPossibleOperationService implements ServiceInterface
             $noRefundTypes = [
                 TransactionTypes::TYPE_CAPTURE_AUTHORIZATION
             ];
-        } else {
-            $noCancelTypes = [
-                TransactionTypes::TYPE_CAPTURE_AUTHORIZATION,
-            ];
         }
+
         if (in_array($type, $noCancelTypes, true)) {
             if (!in_array($paymentMethod, $whitelistedCancelPaymentMethods)) {
                 unset($possibleOperations[Operation::CANCEL]);
