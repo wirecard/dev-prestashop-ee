@@ -96,7 +96,7 @@ abstract class Failure implements ProcessablePaymentResponse
             $currentState,
             $processType,
             $this->response->getData(),
-            new OrderAmountCalculatorService($this->order)
+            new OrderAmountCalculatorService($this->order_service->getOrder())
         );
         if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
             $order = $this->order_service->getOrder();
