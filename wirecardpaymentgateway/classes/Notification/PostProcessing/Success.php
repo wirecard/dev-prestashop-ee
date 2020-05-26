@@ -11,7 +11,6 @@ namespace WirecardEE\Prestashop\Classes\Notification\PostProcessing;
 
 use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
-use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 
 class Success extends AbstractSuccess
 {
@@ -29,10 +28,12 @@ class Success extends AbstractSuccess
         $this->orderAmountCalculator->markParentAsClosedOnFullAmount(
             $this->notification->getParentTransactionId()
         );
+        $this->order_service->setOrderAmountCalculatorService(
+            $this->orderAmountCalculator
+        );
         $this->order_service->createOrderPayment(
             $this->notification,
-            $this->notification->getRequestedAmount()->getValue(),
-            new OrderAmountCalculatorService($this->order)
+            $this->notification->getRequestedAmount()->getValue()
         );
     }
 }

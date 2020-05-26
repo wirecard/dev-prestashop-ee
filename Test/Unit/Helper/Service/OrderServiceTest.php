@@ -15,7 +15,7 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 class OrderServiceTest extends \PHPUnit_Framework_TestCase
 {
-    const TRANSACTION_ID = '12345678asdfgh';
+    const TRANSACTION_ID = '0696a9fb-8c2a-4466-9436-6955bbf569d2';
     const AMOUNT = 12.34;
     /**
      * @var Order
@@ -29,31 +29,35 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider getOrderStatesAndExpectedValues
-     * @param $orderState
-     * @param $expectedValue
+     * @param string $orderState
+     * @param bool $expectedValue
+     * @throws ReflectionException
      */
     public function testCreateOrderPayment($orderState, $expectedValue)
     {
+        //@todo do refactoring
         $this->order->setCurrentState($orderState);
-        $successResponse = $this->getTransaction();
 
+        /** @var OrderAmountCalculatorService $orderAmountCalculatorService */
         $orderAmountCalculatorService = $this->getMockBuilder(OrderAmountCalculatorService::class)
             ->disableOriginalConstructor()
             ->setMethods(["getOrderRefundedAmount"])
             ->getMock();
         $orderAmountCalculatorService->method("getOrderRefundedAmount")
-            ->willReturn((float)5);
+            ->willReturn(self::AMOUNT);
 
         $orderService = new OrderService($this->order);
-        $result = $orderService->createOrderPayment($successResponse, self::AMOUNT, $orderAmountCalculatorService);
+        $orderService->setOrderAmountCalculatorService($orderAmountCalculatorService);
+        $result = $orderService->createOrderPayment($this->getResponse(), self::AMOUNT);
 
         $this->assertEquals($expectedValue, $result);
     }
 
     /**
      * @return SuccessResponse
+     * @throws ReflectionException
      */
-    private function getTransaction()
+    private function getResponse()
     {
         /** @var SuccessResponse $response */
         $response = $this->getMockBuilder(SuccessResponse::class)
@@ -70,6 +74,9 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
         return $response;
     }
 
+    /**
+     * @return array
+     */
     public function getOrderStatesAndExpectedValues()
     {
         return [
@@ -80,7 +87,13 @@ class OrderServiceTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function setProperties($class, $object, $properties)
+    /**
+     * @param mixed $class
+     * @param $object
+     * @param $properties
+     * @throws ReflectionException
+     */
+    private function setProperties($class, $object, $properties)
     {
         $reflection = new ReflectionClass($class);
         foreach ($properties as $name => $value) {

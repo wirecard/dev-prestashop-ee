@@ -10,9 +10,9 @@
 namespace WirecardEE\Prestashop\Helper\Service;
 
 use \Db;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
 use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class OrderService
@@ -39,30 +39,44 @@ class OrderService
     }
 
     /**
-     * @param Transaction $transaction
+     * @param OrderAmountCalculatorService $orderAmountCalculatorService
+     */
+    public function setOrderAmountCalculatorService(OrderAmountCalculatorService $orderAmountCalculatorService)
+    {
+        $this->orderAmountCalculatorService = $orderAmountCalculatorService;
+    }
+
+    /**
+     * @param SuccessResponse $response
      * @param float $amount
      *
-     * @param null $orderAmountCalculatorService
      * @return bool
      * @since 2.10.0
      */
-    public function createOrderPayment($transaction, $amount, $orderAmountCalculatorService)
+    public function createOrderPayment(SuccessResponse $response, $amount)
     {
-        $this->orderAmountCalculatorService = $orderAmountCalculatorService;
-        $transactionId = $transaction->getTransactionId();
-        $parentTransactionId = $transaction->getParentTransactionId();
-        $flownAmount = $this->flownAmount($amount, $parentTransactionId);
+        if (!$this->orderAmountCalculatorService) {
+            return false;
+        }
+        $flownAmount = $this->flownAmount(
+            $amount,
+            $response->getParentTransactionId()
+        );
         if ($flownAmount) {
-            return $this->order->addOrderPayment((float)$flownAmount, null, $transactionId);
+            return $this->order->addOrderPayment(
+                (float)$flownAmount,
+                null,
+                $response->getTransactionId()
+            );
         }
         return false;
     }
 
     /**
-     * @param $requestedAmount
-     * @param $parentTransactionId
+     * @param float $requestedAmount
+     * @param string $parentTransactionId
      *
-     * @return float|bool
+     * @return float
      * @since 2.10.0
      */
     private function flownAmount($requestedAmount, $parentTransactionId)
@@ -75,16 +89,16 @@ class OrderService
             case \Configuration::get(OrderManager::WIRECARD_OS_PARTIALLY_CAPTURED):
                 $amount = $requestedAmount;
                 if ($this->isTransactionRefund($parentTransactionId)) {
-                    $amount =  $requestedAmount * -1;
+                    $amount = $requestedAmount * -1;
                 }
                 return $amount;
             default:
-                return false;
+                return 0.0;
         }
     }
 
     /**
-     * @param $transactionId
+     * @param string $transactionId
      *
      * @return bool
      * @since 2.10.0
@@ -92,8 +106,7 @@ class OrderService
     private function isTransactionRefund($transactionId)
     {
         $isRefund = false;
-        $refundedAmount = $this->orderAmountCalculatorService->getOrderRefundedAmount($transactionId);
-        if ($refundedAmount > 0) {
+        if ($this->orderAmountCalculatorService->getOrderRefundedAmount($transactionId) > 0) {
             $isRefund = true;
         }
         return $isRefund;
@@ -102,7 +115,7 @@ class OrderService
     /**
      * @param string $transaction_id
      *
-     * @param $amount
+     * @param float $amount
      *
      * @since 2.1.0
      */
