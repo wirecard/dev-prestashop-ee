@@ -67,6 +67,17 @@ class TransactionPostProcessingService implements ServiceInterface
     }
 
     /**
+     * @param Transaction $parentTransaction
+     * @return bool
+     * @since 2.10.0
+     */
+    private function isPurchaseRefund(Transaction $parentTransaction)
+    {
+        return $this->operation == Operation::REFUND &&
+            $parentTransaction->getTransactionType() == TransactionTypes::TYPE_PURCHASE;
+    }
+
+    /**
      * Transaction postprocessing
      * @param $deltaAmount float
      * @since 2.5.0
@@ -81,6 +92,9 @@ class TransactionPostProcessingService implements ServiceInterface
                     $this->errors[] = $this->getTranslatedString('postprocessing_error_cancellation');
                     return;
                 }
+            }
+            if ($this->isPurchaseRefund($parentTransaction)) {
+                $deltaAmount = $parentTransaction->getAmount();
             }
             if ($deltaAmount > $parentTransaction->getRemainingAmount()) {
                 $this->errors[] = $this->getTranslatedString('postprocessing_error_amount');

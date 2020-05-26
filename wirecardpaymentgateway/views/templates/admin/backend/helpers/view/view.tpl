@@ -43,8 +43,15 @@
                             {$operation.name}
                         </button>
                     {/foreach}
+                    {assign var="displayInput" value=true}
+                    {if $transaction.payment_method == "ratepay-invoice"}
+                        {assign var="displayInput" value=false}
+                    {/if}
+                    {if $transaction.type == "purchase"}
+                        {assign var="displayInput" value=false}
+                    {/if}
 
-                    {if $transaction.payment_method != "ratepay-invoice"}
+                    {if $displayInput}
                         <input name="partial-delta-amount" value="{number_format($remaining_delta_amount, 2, '.', '')}"{$disabled}> {$transaction.currency}
                     {/if}
                 </form>
