@@ -52,6 +52,8 @@ class OrderStateManagerService implements ServiceInterface
      * @param array $transactionResponse
      * @param OrderAmountCalculatorService $orderAmountCalculator
      * @return null|string
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      */
     public function calculateNextOrderState(
         $currentOrderState,
@@ -72,7 +74,7 @@ class OrderStateManagerService implements ServiceInterface
         } catch (OrderStateInvalidArgumentException $e) {
             $this->logger->emergency($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         } catch (IgnorablePostProcessingFailureException $e) {
-            $this->logger->debug($e->getMessage(), ['exception_class' => get_class($e), 'method' => __METHOD__]);
+            $this->logger->debug(get_class($e), ['exception_class' => get_class($e), 'method' => __METHOD__]);
         }
     }
 }
