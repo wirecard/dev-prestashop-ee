@@ -22,8 +22,6 @@ chmod +x $PWD/ngrok
 curl -sO ${JQ_LINK}
 chmod +x "${PWD}"/jq
 
-echo "SUBDOMAIN=${SUBDOMAIN}"
-
 # Open ngrok tunnel
 "${PWD}"/ngrok authtoken "${NGROK_TOKEN}"
 "${PWD}"/ngrok http 8080 -subdomain="${SUBDOMAIN}" >/dev/null &
