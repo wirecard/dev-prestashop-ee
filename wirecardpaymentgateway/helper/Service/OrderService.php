@@ -10,6 +10,9 @@
 namespace WirecardEE\Prestashop\Helper\Service;
 
 use \Db;
+use Wirecard\PaymentSdk\Response\SuccessResponse;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
+use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class OrderService
@@ -20,6 +23,9 @@ class OrderService
 {
     /** @var \Order */
     private $order;
+
+    /** @var OrderAmountCalculatorService $orderAmountCalculatorService */
+    private $orderAmountCalculatorService;
 
     /**
      * OrderService constructor.
@@ -33,42 +39,87 @@ class OrderService
     }
 
     /**
+     * @param OrderAmountCalculatorService $orderAmountCalculatorService
+     */
+    public function setOrderAmountCalculatorService(OrderAmountCalculatorService $orderAmountCalculatorService)
+    {
+        $this->orderAmountCalculatorService = $orderAmountCalculatorService;
+    }
+
+    /**
+     * @param SuccessResponse $response
+     * @param float $amount
+     *
+     * @return bool
+     * @since 2.10.0
+     */
+    public function createOrderPayment(SuccessResponse $response, $amount)
+    {
+        if (!$this->orderAmountCalculatorService) {
+            return false;
+        }
+        $flownAmount = $this->flownAmount(
+            $amount,
+            $response->getParentTransactionId()
+        );
+        if ($flownAmount) {
+            return $this->order->addOrderPayment(
+                (float)$flownAmount,
+                null,
+                $response->getTransactionId()
+            );
+        }
+        return false;
+    }
+
+    /**
+     * @param float $requestedAmount
+     * @param string $parentTransactionId
+     *
+     * @return float
+     * @since 2.10.0
+     */
+    private function flownAmount($requestedAmount, $parentTransactionId)
+    {
+        $orderState = $this->order->current_state;
+        switch ($orderState) {
+            case \Configuration::get('PS_OS_REFUND'):
+            case \Configuration::get(OrderManager::WIRECARD_OS_PARTIALLY_REFUNDED):
+                return $requestedAmount * -1;
+            case \Configuration::get(OrderManager::WIRECARD_OS_PARTIALLY_CAPTURED):
+                $amount = $requestedAmount;
+                if ($this->isTransactionRefund($parentTransactionId)) {
+                    $amount = $requestedAmount * -1;
+                }
+                return $amount;
+            default:
+                return 0.0;
+        }
+    }
+
+    /**
      * @param string $transactionId
      *
      * @return bool
      * @since 2.10.0
      */
-    public function createOrderPayment($transactionId)
+    private function isTransactionRefund($transactionId)
     {
-        $orderState = $this->order->current_state;
-        if ($this->isOrderPaymentCreate($orderState)) {
-            $amount = -1 * (float) $this->order->total_paid;
-            return $this->order->addOrderPayment($amount, null, $transactionId);
+        $isRefund = false;
+        if ($this->orderAmountCalculatorService->getOrderRefundedAmount($transactionId) > 0) {
+            $isRefund = true;
         }
-    }
-
-    /**
-     * @param string $orderState
-     *
-     * @return bool
-     * @since 2.10.0
-     */
-    public function isOrderPaymentCreate($orderState)
-    {
-        switch ($orderState) {
-            case \Configuration::get('PS_OS_REFUND'):
-                return true;
-            default:
-                return false;
-        }
+        return $isRefund;
     }
 
     /**
      * @param string $transaction_id
      *
+     * @param float $amount
+     *
      * @since 2.1.0
      */
-    public function addTransactionIdToOrderPayment($transaction_id)
+    public function updateOrderPayment($transaction_id, $amount)
     {
         $order_payments = \OrderPayment::getByOrderReference($this->order->reference);
         $last_index = count($order_payments) - 1;
@@ -77,9 +128,9 @@ class OrderService
 
         if (!empty($order_payments)&&($order_current_state === $order_payment_state)) {
             $order_payments[$last_index]->transaction_id = $transaction_id;
+            $order_payments[$last_index]->amount = $amount;
             $order_payments[$last_index]->save();
         }
-        //todo: $amount will be used in the partial operations
     }
 
 
@@ -92,7 +143,7 @@ class OrderService
      */
     public function deleteOrderPayment($orderReference)
     {
-        return Db::getInstance()->executeS(
+        return Db::getInstance()->execute(
             'DELETE
                 FROM `' . _DB_PREFIX_ . 'order_payment`
                 WHERE `order_reference` = \'' . pSQL($orderReference) . '\''

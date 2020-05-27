@@ -778,6 +778,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @param OrderService $orderService
      * @return bool
      * @throws \PrestaShopException
+     * @deprecated
      */
     public function updateOrder(
         \Order $order,
@@ -818,8 +819,9 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         }
 
         if ($settled) {
-            $orderService->addTransactionIdToOrderPayment(
-                $notification->getTransactionId()
+            $orderService->updateOrderPayment(
+                $notification->getTransactionId(),
+                $notification->getRequestedAmount()->getValue()
             );
         }
 

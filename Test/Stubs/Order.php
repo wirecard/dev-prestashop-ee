@@ -21,6 +21,10 @@ class Order
         }
     }
 
+    public function addOrderPayment($amount_paid, $payment_method = null, $payment_transaction_id = null) {
+        return true;
+    }
+
     public static function getIdByCartId($cartId) {
         return 102;
     }
