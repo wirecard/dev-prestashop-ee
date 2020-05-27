@@ -191,10 +191,11 @@ class TransactionPossibleOperationService implements ServiceInterface
 
     /**
      * @param $possibleOperations string[]
+     * @param $isParent
      * @return string[]
      * @since 2.10.0
      */
-    private function filterBasedOnType($possibleOperations, $isParent)
+    private function filterBasedOnType(array $possibleOperations, $isParent)
     {
         $type = $this->transaction->getTransactionType();
         $paymentMethod = $this->transaction->getPaymentMethod();
