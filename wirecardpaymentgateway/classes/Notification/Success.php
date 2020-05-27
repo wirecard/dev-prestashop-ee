@@ -133,9 +133,9 @@ abstract class Success implements ProcessablePaymentNotification
                 );
 
                 $this->order_service->addTransactionIdToOrderPayment($transactionId);
-                $inialTransaction = Transaction::getInitialTransactionForOrder($this->order->reference);
-                if ($inialTransaction) {
-                    $inialTransaction->markSettledAsClosed();
+                $initialTransaction = Transaction::getInitialTransactionForOrder($this->order->reference);
+                if ($initialTransaction) {
+                    $this->orderAmountCalculator->markSettledParentAsClosed($initialTransaction->getTransactionId());
                 }
             } catch (\Exception $exception) {
                 $this->logger->error(

@@ -731,21 +731,6 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    public function markSettledAsClosed()
-    {
-        if ($this->isSettled()) {
-            $transactionManager = new DBTransactionManager();
-            $transactionManager->markTransactionClosed($this->getTransactionId());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return bool
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
-     */
     private function isSettled()
     {
         return $this->isRefundSettled() || $this->isCaptureSettled();

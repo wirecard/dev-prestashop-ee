@@ -110,11 +110,17 @@ class OrderAmountCalculatorService implements ServiceInterface
 
     /**
      * @param string $transactionId
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @since 2.10.0
      */
-    public function markParentAsClosedOnFullAmount($transactionId)
+    public function markSettledParentAsClosed($transactionId)
     {
         $transactionManager = new DBTransactionManager();
         $parentTransaction = $this->transactionFinder->getTransactionById($transactionId);
+        if (!empty($parentTransaction->getTransactionId())) {
+            return;
+        }
         if (!is_null($parentTransaction)) {
             $isFullRefundedTransactionAmount = $this->equals(
                 (float)$parentTransaction->getAmount(),
