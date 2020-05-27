@@ -118,9 +118,6 @@ class OrderAmountCalculatorService implements ServiceInterface
     {
         $transactionManager = new DBTransactionManager();
         $parentTransaction = $this->transactionFinder->getTransactionById($transactionId);
-        if (!empty($parentTransaction->getTransactionId())) {
-            return;
-        }
         if (!is_null($parentTransaction)) {
             $isFullRefundedTransactionAmount = $this->equals(
                 (float)$parentTransaction->getAmount(),
