@@ -102,7 +102,10 @@ abstract class Failure implements ProcessablePaymentResponse
             $order = $this->order_service->getOrder();
             $order->setCurrentState($nextState);
             $order->save();
-            $this->order_service->updateOrderPayment($this->response->getData()['transaction-id']);
+            $this->order_service->updateOrderPayment(
+                $this->response->getData()['transaction-id'],
+                $this->response->getRequestedAmount()->getValue()
+            );
         }
 
         if (!$nextState) {
