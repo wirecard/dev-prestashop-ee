@@ -25,6 +25,7 @@ class OrderAmountCalculatorService implements ServiceInterface
         TransactionTypes::TYPE_REFUND_CAPTURE,
         TransactionTypes::TYPE_VOID_PURCHASE,
         TransactionTypes::TYPE_VOID_CAPTURE,
+        TransactionTypes::TYPE_VOID_AUTHORIZATION,
     ];
 
     /** @var array */
