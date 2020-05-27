@@ -107,17 +107,9 @@ abstract class Failure implements ProcessablePaymentResponse
                 $this->response->getRequestedAmount()->getValue()
             );
         }
-
-        if (!$nextState) {
-            $cart_clone = $this->order_service->getNewCartDuplicate();
-            $this->context_service->setCart($cart_clone);
-
-            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-            $this->context_service->setErrors(
-                \Tools::displayError(
-                    join('<br>', $errors)
-                )
-            );
-        }
+        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+        $cart_clone = $this->order_service->getNewCartDuplicate();
+        $this->context_service->setCart($cart_clone);
+        $this->context_service->redirectWithError($errors, 'order');
     }
 }
