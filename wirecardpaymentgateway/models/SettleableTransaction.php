@@ -31,15 +31,6 @@ interface SettleableTransaction
     public function getAmount();
 
     /**
-     * Mark transaction as closed.
-     *
-     * Invariant: is settled.
-     *
-     * @return bool
-     */
-    public function markSettledAsClosed();
-
-    /**
      * Update the order according to the newest processed state of the transaction.
      *
      * @param \Order $order

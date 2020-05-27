@@ -23,6 +23,8 @@ use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
+use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class TransactionPostProcessingService

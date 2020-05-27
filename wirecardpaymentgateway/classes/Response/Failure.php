@@ -96,21 +96,20 @@ abstract class Failure implements ProcessablePaymentResponse
             $currentState,
             $processType,
             $this->response->getData(),
-            new OrderAmountCalculatorService($this->order)
+            new OrderAmountCalculatorService($this->order_service->getOrder())
         );
         if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
             $order = $this->order_service->getOrder();
             $order->setCurrentState($nextState);
             $order->save();
-            $this->order_service->updateOrderPayment($this->response->getData()['transaction-id']);
+            $this->order_service->updateOrderPayment(
+                $this->response->getData()['transaction-id'],
+                $this->response->getRequestedAmount()->getValue()
+            );
         }
-
-        if (!$nextState) {
-            $cart_clone = $this->order_service->getNewCartDuplicate();
-            $this->context_service->setCart($cart_clone);
-
-            $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-            $this->context_service->redirectWithError($errors, 'order');
-        }
+        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+        $cart_clone = $this->order_service->getNewCartDuplicate();
+        $this->context_service->setCart($cart_clone);
+        $this->context_service->redirectWithError($errors, 'order');
     }
 }

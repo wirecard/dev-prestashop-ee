@@ -25,6 +25,7 @@ class OrderAmountCalculatorService implements ServiceInterface
         TransactionTypes::TYPE_REFUND_CAPTURE,
         TransactionTypes::TYPE_VOID_PURCHASE,
         TransactionTypes::TYPE_VOID_CAPTURE,
+        TransactionTypes::TYPE_VOID_AUTHORIZATION,
     ];
 
     /** @var array */
@@ -110,8 +111,11 @@ class OrderAmountCalculatorService implements ServiceInterface
 
     /**
      * @param string $transactionId
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @since 2.10.0
      */
-    public function markParentAsClosedOnFullAmount($transactionId)
+    public function markSettledParentAsClosed($transactionId)
     {
         $transactionManager = new DBTransactionManager();
         $parentTransaction = $this->transactionFinder->getTransactionById($transactionId);

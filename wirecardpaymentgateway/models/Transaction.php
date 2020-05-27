@@ -720,19 +720,10 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $this->difference($amount, $processedAmount);
     }
 
-    /**
-     * @return bool
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
-     */
-    public function markSettledAsClosed()
+    public function isZeroRemaining()
     {
-        if ($this->isSettled()) {
-            $transactionManager = new DBTransactionManager();
-            $transactionManager->markTransactionClosed($this->getTransactionId());
-            return true;
-        }
-        return false;
+        $remainingAmount = $this->getRemainingAmount();
+        return $this->equals($remainingAmount, 0);
     }
 
     /**

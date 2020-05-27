@@ -14,14 +14,17 @@ use \Tools;
 use Wirecard\PaymentSdk\BackendService;
 use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
+use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
 use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\Transaction;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
 /**
  * Class TransactionPossibleOperationService
@@ -31,6 +34,8 @@ use WirecardEE\Prestashop\Models\Transaction;
 class TransactionPossibleOperationService implements ServiceInterface
 {
     use TranslationHelper;
+
+    use NumericHelper;
 
     /** @var string */
     const TRANSLATION_FILE = "transactionpossibleoperationservice";
@@ -101,7 +106,9 @@ class TransactionPossibleOperationService implements ServiceInterface
             (new Logger())->error($exception->getMessage());
         }
 
-        $possibleOperations = $this->disallowCancelIfPartialOperationsDone($possibleOperations);
+        $possibleOperations = $this->disallowOperationsIfPartialOperationsDone($possibleOperations);
+        $isParent = empty($this->transaction->getParentTransactionId());
+        $possibleOperations = $this->filterBasedOnType($possibleOperations, $isParent);
 
         // We no longer support Masterpass
         if ($returnTemplateFormat && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
@@ -114,15 +121,22 @@ class TransactionPossibleOperationService implements ServiceInterface
     /**
      * We cannot cancel after making partial refunds / captures.
      *
+     * We cannot capture if amount left is zero.
+     *
      * @param $possibleOperations
      * @return array
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
      */
-    private function disallowCancelIfPartialOperationsDone($possibleOperations)
+    private function disallowOperationsIfPartialOperationsDone($possibleOperations)
     {
-        if (is_array($possibleOperations) && $this->transaction->getProcessedAmount() > 0) {
-            unset($possibleOperations[Operation::CANCEL]);
+        if (is_array($possibleOperations)) {
+            if ($this->transaction->getProcessedAmount() > 0) {
+                unset($possibleOperations[Operation::CANCEL]);
+            }
+            if ($this->transaction->isZeroRemaining()) {
+                unset($possibleOperations[Operation::PAY]);
+            }
         }
         return $possibleOperations;
     }
@@ -173,5 +187,45 @@ class TransactionPossibleOperationService implements ServiceInterface
     {
         $operations = $this->getPossibleOperationList(false);
         return in_array($operation, array_keys($operations), true);
+    }
+
+    /**
+     * @param $possibleOperations string[]
+     * @param $isParent
+     * @return string[]
+     * @since 2.10.0
+     */
+    private function filterBasedOnType(array $possibleOperations, $isParent)
+    {
+        $type = $this->transaction->getTransactionType();
+        $paymentMethod = $this->transaction->getPaymentMethod();
+        $noRefundTypes = [];
+        $whitelistedCancelPaymentMethods = [
+            PayPalTransaction::NAME,
+        ];
+
+        $noCancelTypes = [
+            TransactionTypes::TYPE_CAPTURE_AUTHORIZATION,
+        ];
+
+        if ($isParent) {
+            $noCancelTypes = [
+                TransactionTypes::TYPE_PURCHASE,
+            ];
+            $noRefundTypes = [
+                TransactionTypes::TYPE_CAPTURE_AUTHORIZATION
+            ];
+        }
+
+        if (in_array($type, $noCancelTypes, true)) {
+            if (!in_array($paymentMethod, $whitelistedCancelPaymentMethods)) {
+                unset($possibleOperations[Operation::CANCEL]);
+            }
+        }
+        if (in_array($type, $noRefundTypes, true)) {
+            unset($possibleOperations[Operation::REFUND]);
+        }
+
+        return $possibleOperations;
     }
 }
