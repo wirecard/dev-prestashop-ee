@@ -65,72 +65,72 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->tpl_folder = 'backend/';
     }
 
-	/**
-	 * Render transaction table view
-	 *
-	 * @return mixed
-	 * @throws Exception
-	 * @since 2.10.0
-	 */
-    public function renderList() {
+    /**
+     * Render transaction table view
+     *
+     * @return mixed
+     * @throws Exception
+     * @since 2.10.0
+     */
+    public function renderList()
+    {
 
-	    if (!($this->fields_list && is_array($this->fields_list))) {
-		    return false;
-	    }
-	    $this->getList($this->context->language->id);
+        if (!($this->fields_list && is_array($this->fields_list))) {
+            return false;
+        }
+        $this->getList($this->context->language->id);
 
-	    // If list has 'active' field, we automatically create bulk action
-	    if (isset($this->fields_list) && is_array($this->fields_list) && array_key_exists('active', $this->fields_list)
-	        && !empty($this->fields_list['active'])) {
-		    if (!is_array($this->bulk_actions)) {
-			    $this->bulk_actions = array();
-		    }
+        // If list has 'active' field, we automatically create bulk action
+        if (isset($this->fields_list) && is_array($this->fields_list) && array_key_exists('active', $this->fields_list)
+            && !empty($this->fields_list['active'])) {
+            if (!is_array($this->bulk_actions)) {
+                $this->bulk_actions = array();
+            }
 
-		    $this->bulk_actions = array_merge(array(
-			    'enableSelection' => array(
-				    'text' => $this->l('Enable selection'),
-				    'icon' => 'icon-power-off text-success',
-			    ),
-			    'disableSelection' => array(
-				    'text' => $this->l('Disable selection'),
-				    'icon' => 'icon-power-off text-danger',
-			    ),
-			    'divider' => array(
-				    'text' => 'divider',
-			    ),
-		    ), $this->bulk_actions);
-	    }
+            $this->bulk_actions = array_merge(array(
+                'enableSelection' => array(
+                    'text' => $this->l('Enable selection'),
+                    'icon' => 'icon-power-off text-success',
+                ),
+                'disableSelection' => array(
+                    'text' => $this->l('Disable selection'),
+                    'icon' => 'icon-power-off text-danger',
+                ),
+                'divider' => array(
+                    'text' => 'divider',
+                ),
+            ), $this->bulk_actions);
+        }
 
-	    $helper = new HelperList();
+        $helper = new HelperList();
 
-	    // Empty list is ok
-	    if (!is_array($this->_list)) {
-		    $this->displayWarning($this->l('Bad SQL query', 'Helper') . '<br />' . htmlspecialchars($this->_list_error));
+        // Empty list is ok
+        if (!is_array($this->_list)) {
+            $this->displayWarning($this->l('Bad SQL query', 'Helper') . '<br />' . htmlspecialchars($this->_list_error));
 
-		    return false;
-	    }
+            return false;
+        }
 
-	    $this->setHelperDisplay($helper);
-	    $helper->_default_pagination = $this->_default_pagination;
-	    $helper->_pagination = $this->_pagination;
-	    $helper->tpl_vars = $this->getTemplateListVars();
-	    $helper->tpl_delete_link_vars = $this->tpl_delete_link_vars;
+        $this->setHelperDisplay($helper);
+        $helper->_default_pagination = $this->_default_pagination;
+        $helper->_pagination = $this->_pagination;
+        $helper->tpl_vars = $this->getTemplateListVars();
+        $helper->tpl_delete_link_vars = $this->tpl_delete_link_vars;
 
-	    // For compatibility reasons, we have to check standard actions in class attributes
-	    foreach ($this->actions_available as $action) {
-		    if (!in_array($action, $this->actions) && isset($this->$action) && $this->$action) {
-			    $this->actions[] = $action;
-		    }
-	    }
-	    $helper->is_cms = $this->is_cms;
-	    $helper->sql = $this->_listsql;
-	    foreach ($this->_list as $index=>$transaction){
-	    	$this->_list[$index]['transaction_type'] = $this->translateTxType($this->_list[$index]['transaction_type']);
-		    $this->_list[$index]['transaction_state'] = $this->translateTxState($this->_list[$index]['transaction_state']);
-	    }
-	    $list = $helper->generateList($this->_list, $this->fields_list);
-	    return $list;
-
+        // For compatibility reasons, we have to check standard actions in class attributes
+        foreach ($this->actions_available as $action) {
+            if (!in_array($action, $this->actions) && isset($this->$action) && $this->$action) {
+                $this->actions[] = $action;
+            }
+        }
+        $helper->is_cms = $this->is_cms;
+        $helper->sql = $this->_listsql;
+        foreach ($this->_list as $index => $transaction) {
+            $this->_list[$index]['transaction_type'] = $this->translateTxType($this->_list[$index]['transaction_type']);
+            $this->_list[$index]['transaction_state'] = $this->translateTxState($this->_list[$index]['transaction_state']);
+        }
+        $list = $helper->generateList($this->_list, $this->fields_list);
+        return $list;
     }
 
     /**
