@@ -9,7 +9,7 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use WirecardEE\Prestashop\Classes\Constants\TxConstants;
+use WirecardEE\Prestashop\Classes\Constants\TxConstants as TxConst;
 
 trait TranslationHelper
 {
@@ -61,61 +61,61 @@ trait TranslationHelper
         $translatedTxType = '';
         switch ($transactionType) {
             case 'check-enrollment':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_CHECK_ENROLLMENT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_CHECK_ENROLLMENT']);
                 break;
             case 'check-payer-response':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_CHECK_PAYER_RESPONSE']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_CHECK_PAYER_RESPONSE']);
                 break;
             case 'authorization':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_AUTHOIRZATION']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_AUTHOIRZATION']);
                 break;
             case 'capture-authorization':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_CAPTURE_AUTHORIZATION']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_CAPTURE_AUTHORIZATION']);
                 break;
             case 'refund-capture':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_REFUND_CAPTURE']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_REFUND_CAPTURE']);
                 break;
             case 'void-authorization':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_VOID_AUTHORIZATION']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_VOID_AUTHORIZATION']);
                 break;
             case 'void-capture':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_VOID_CAPTURE']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_VOID_CAPTURE']);
                 break;
             case 'deposit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_DEPOSIT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_DEPOSIT']);
                 break;
             case 'purchase':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_PURCHASE']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_PURCHASE']);
                 break;
             case 'debit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_DEBIT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_DEBIT']);
                 break;
             case 'refund-purchase':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_REFUND_PURCHASE']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_REFUND_PURCHASE']);
                 break;
             case 'refund-debit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_REFUND_DEBIT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_REFUND_DEBIT']);
                 break;
             case 'debit-return':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_DEBIT_RETURN']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_DEBIT_RETURN']);
                 break;
             case 'void-purchase':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_VOID_PURCHASE']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_VOID_PURCHASE']);
                 break;
             case 'pending-debit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_PENDING_DEBIT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_PENDING_DEBIT']);
                 break;
             case 'void-pending-debit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_VOID_PENDING_DEBIT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_VOID_PENDING_DEBIT']);
                 break;
             case 'pending-credit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_PENDING_CREDIT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_PENDING_CREDIT']);
                 break;
             case 'void-pending-credit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['TX_TYPE_VOID_PENDING_CREDIT']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['TX_TYPE_VOID_PENDING_CREDIT']);
                 break;
             case 'credit':
-                $translatedTxType = $this->getTranslatedString(TxConstants::TX_TYPE_KEYS['tx_type_credit']);
+                $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS['tx_type_credit']);
                 break;
             default:
                 break;
@@ -136,16 +136,16 @@ trait TranslationHelper
         $translatedTxState = '';
         switch ($transactionState) {
             case 'closed':
-                $translatedTxState = $this->getTranslatedString(TxConstants::TX_STATE_KEYS['STATE_CLOSED']);
+                $translatedTxState = $this->getTranslatedString(TxConst::TX_STATE_KEYS['STATE_CLOSED']);
                 break;
             case 'open':
-                $translatedTxState = $this->getTranslatedString(TxConstants::TX_STATE_KEYS['STATE_OPEN']);
+                $translatedTxState = $this->getTranslatedString(TxConst::TX_STATE_KEYS['STATE_OPEN']);
                 break;
             case 'success':
-                $translatedTxState = $this->getTranslatedString(TxConstants::TX_STATE_KEYS['STATE_SUCCESS']);
+                $translatedTxState = $this->getTranslatedString(TxConst::TX_STATE_KEYS['STATE_SUCCESS']);
                 break;
             case 'awaiting':
-                $translatedTxState = $this->getTranslatedString(TxConstants::TX_STATE_KEYS['STATE_AWAITING']);
+                $translatedTxState = $this->getTranslatedString(TxConst::TX_STATE_KEYS['STATE_AWAITING']);
                 break;
             default:
                 break;
