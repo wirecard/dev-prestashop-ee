@@ -93,6 +93,11 @@ class OrderAmountCalculatorService implements ServiceInterface
         return $this->sumByTransactionTypes($orderTransactionList, self::CAPTURE_TYPES);
     }
 
+    public function getLastOrderCaptureAmount()
+    {
+        return $this->transactionFinder->getCurrentTransactionByOrderId($this->order->id)->getAmount();
+    }
+
     /**
      * @param array|\WirecardEE\Prestashop\Models\Transaction[] $orderTransactionList
      * @param array $typeList

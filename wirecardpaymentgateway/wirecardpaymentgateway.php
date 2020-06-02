@@ -16,6 +16,7 @@ use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
 use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
 use WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
+use WirecardEE\Prestashop\Classes\Hook\AfterOrderStatusUpdateHandler;
 use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
 use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 use WirecardEE\Prestashop\Classes\Service\TabManagerService;
@@ -83,6 +84,11 @@ class WirecardPaymentGateway extends PaymentModule
      * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
      */
     private $orderStateManagerService;
+
+    /**
+     * @var array
+     */
+    public $extra_mail_vars = [];
 
     /**
      * WirecardPaymentGateway constructor.
@@ -976,6 +982,14 @@ class WirecardPaymentGateway extends PaymentModule
             $orderStatusUpdateCommand
         );
         $orderStatusPostUpdateHandler->handle();
+    }
+
+    public function hookActionOrderStatusPostUpdate($params) {
+        $orderStatusUpdateCommand = new OrderStatusUpdateCommand(
+            $params['newOrderStatus'],
+            $params['id_order']
+        );
+        (new AfterOrderStatusUpdateHandler($orderStatusUpdateCommand, $this))->handle();
     }
 
     /**

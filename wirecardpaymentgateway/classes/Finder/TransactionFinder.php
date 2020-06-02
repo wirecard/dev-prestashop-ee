@@ -80,7 +80,14 @@ class TransactionFinder extends DbFinder
      */
     public function getTransactionById($transactionId)
     {
-        $query = $this->getTransactionBuilder()->where('transaction_id = "' . pSQL($transactionId) . '"');
+        $condition = 'transaction_id = "' . pSQL($transactionId) . '"';
+//        if (!empty($forTransactionType)) {
+//            $forTransactionType = array_map(function ($i) {
+//                return "'".pSQL($i)."'";
+//            }, $forTransactionType);
+//            $condition .= " AND transaction_type IN (".implode(",", $forTransactionType).")";
+//        }
+        $query = $this->getTransactionBuilder()->where($condition);
         if ($row = $this->getDb()->getRow($query)) {
             return $this->getTransactionByTxId($row['tx_id']);
         }

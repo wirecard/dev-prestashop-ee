@@ -54,10 +54,19 @@ class OrderManager
         self::WIRECARD_OS_PARTIALLY_CAPTURED => self::PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED,
     ];
 
+    const ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_SEND_EMAIL = "send_email";
+    const ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_TEMPLATE = "template";
+
+    const EMAIL_TEMPLATE_NAME_PARTIALLY_REFUNDED = "partially_refunded_template";
+    const EMAIL_TEMPLATE_NAME_PARTIALLY_CAPTURED = "partially_capture_template";
+
+    const EMAIL_TEMPLATE_EXTENSION_TXT = "txt";
+    const EMAIL_TEMPLATE_EXTENSION_HTML = "html";
+
 
     const COLOR_LIGHT_BLUE = 'lightblue';
 
-    /** @var \Module|\WirecardPaymentGateway  */
+    /** @var \Module|\WirecardPaymentGateway */
     private $module;
 
     /** @var OrderService */
@@ -190,15 +199,50 @@ class OrderManager
             );
             $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
-        $orderState->send_email = false;
+        $emailConfig = $this->getEmailConfigForOrderState($state);
+        $orderState->send_email = $emailConfig[self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_SEND_EMAIL];
         $orderState->color = self::COLOR_LIGHT_BLUE;
         $orderState->hidden = false;
         $orderState->delivery = false;
         $orderState->logable = true;
         $orderState->module_name = \WirecardPaymentGateway::NAME;
         $orderState->invoice = false;
+        $emailTemplate = $emailConfig[self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_TEMPLATE];
+        // @todo: Refactor after PrestaShop handle this logic.
+        $this->copyEmailTemplate($emailTemplate);
+        $orderState->template = $emailTemplate;
 
         return $orderState;
+    }
+
+    /**
+     * @param string $path
+     * @param string $template
+     * @param string $extension
+     * @param string $lang
+     * @return string
+     */
+    private function getMailPath($path, $template, $extension = self::EMAIL_TEMPLATE_EXTENSION_HTML, $lang = "en")
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        return $path . $ds . 'mails' . $ds . $lang . $ds . $template . "." . $extension;
+    }
+
+    /**
+     * @param string $template
+     * @param array $extensions
+     */
+    private function copyEmailTemplate(
+        $template,
+        $extensions = [self::EMAIL_TEMPLATE_EXTENSION_HTML, self::EMAIL_TEMPLATE_EXTENSION_TXT]
+    ) {
+        foreach ($extensions as $extension) {
+            $moduleFilePath = $this->getMailPath(_PS_MODULE_DIR_, $template, $extension);
+            if (!file_exists($moduleFilePath)) {
+                continue;
+            }
+            copy($moduleFilePath, $this->getMailPath(_PS_ROOT_DIR_, $template, $extension));
+        }
     }
 
     /**
@@ -285,5 +329,33 @@ class OrderManager
         $payment_type = $notification->getPaymentMethod();
         $shop_config = new ShopConfigurationService($payment_type);
         return (new PaymentConfigurationFactory($shop_config))->createConfig();
+    }
+
+    /**
+     * Returns email config for respective order state
+     *
+     * @param string $orderState
+     * @return array
+     * @since 2.10.0
+     */
+    protected function getEmailConfigForOrderState($orderState)
+    {
+        $emailConfig = [
+            self::WIRECARD_OS_PARTIALLY_CAPTURED => [
+                self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_SEND_EMAIL => true,
+                self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_TEMPLATE => self::EMAIL_TEMPLATE_NAME_PARTIALLY_CAPTURED,
+            ],
+            self::WIRECARD_OS_PARTIALLY_REFUNDED => [
+                self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_SEND_EMAIL => true,
+                self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_TEMPLATE => self::EMAIL_TEMPLATE_NAME_PARTIALLY_REFUNDED,
+            ],
+        ];
+
+        $defaultEmailConfig = [
+            self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_SEND_EMAIL => false,
+            self::ORDER_STATE_EMAIL_CONFIG_ATTRIBUTE_TEMPLATE => null,
+        ];
+
+        return isset($config[$orderState]) ? $emailConfig[$orderState] : $defaultEmailConfig;
     }
 }
