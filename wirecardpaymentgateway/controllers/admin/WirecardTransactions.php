@@ -68,8 +68,8 @@ class WirecardTransactionsController extends ModuleAdminController
     /**
      * Render transaction table view
      *
-     * @return mixed
-     * @throws Exception
+     * @return string|false
+     * @throws PrestaShopException
      * @since 2.10.0
      */
     public function renderList()
