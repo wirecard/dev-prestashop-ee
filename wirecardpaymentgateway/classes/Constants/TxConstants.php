@@ -13,7 +13,7 @@ class TxConstants
     const TX_TYPE = 'TX_TYPE_';
 
     /** @var string */
-    const STATE = 'STATE_';
+    const STATE = 'TX_STATE_';
 
     /** @var array */
     const TX_TYPE_KEYS = [
@@ -39,9 +39,9 @@ class TxConstants
         'TX_TYPE_CREDIT' => 'tx_type_credit',
     ];
     const TX_STATE_KEYS = [
-        'STATE_CLOSED' => 'state_closed',
-        'STATE_OPEN' => 'state_open',
-        'STATE_SUCCESS' => 'state_success',
-        'STATE_AWAITING' => 'state_awaiting',
+        'TX_STATE_CLOSED' => 'state_closed',
+        'TX_STATE_OPEN' => 'state_open',
+        'TX_STATE_SUCCESS' => 'state_success',
+        'TX_STATE_AWAITING' => 'state_awaiting',
     ];
 }
