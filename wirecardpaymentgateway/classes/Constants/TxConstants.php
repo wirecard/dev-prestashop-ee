@@ -9,6 +9,13 @@ class TxConstants
     /** @var string */
     const TRANSLATION_FILE = "txconstants";
 
+    /** @var string */
+    const TX_TYPE = 'TX_TYPE_';
+
+    /** @var string */
+    const STATE = 'STATE_';
+
+    /** @var array */
     const TX_TYPE_KEYS = [
         // Default settings used in all payment methods
         'TX_TYPE_CHECK_ENROLLMENT' => 'tx_type_check_enrollment',
