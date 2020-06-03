@@ -74,6 +74,12 @@ class PaymentCreditCard extends Payment
                     'default' => 0,
                 ),
                 array(
+                    'name' => 'enabled',
+                    'label' => $this->getTranslatedString('config_PSD2_information'),
+                    'type' => 'hint',
+                    'doc' => $this->getTranslatedString('config_PSD2_information_desc_prestashop'),
+                ),
+                array(
                     'name' => 'title',
                     'label' => $this->getTranslatedString('config_title'),
                     'type' => 'text',

@@ -633,7 +633,12 @@ class WirecardPaymentGateway extends PaymentModule
                             $elem['maxlength'] = $elem['maxchar'] = $f['maxchar'];
                         }
                         break;
-
+                    case 'hint':
+                        if (isset($elem["desc"])) {
+                            $style = "font-style: initial; color: initial; font-size: 15px;";
+                            $elem["desc"] = "<span style=\"$style\">" . html_entity_decode($elem["desc"]) . "</span>";
+                        }
+                        break;
                     case 'onoff':
                         $elem['type'] = $radioType;
                         $elem['class'] = 't';
