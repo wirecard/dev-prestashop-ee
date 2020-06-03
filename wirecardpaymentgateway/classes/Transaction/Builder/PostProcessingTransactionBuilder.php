@@ -77,14 +77,12 @@ class PostProcessingTransactionBuilder implements TransactionBuilderInterface
     {
         if (!is_numeric($deltaAmount)) {
             throw new \InvalidArgumentException("Invalid numeric value: $deltaAmount");
-        }
-        $deltaAmount = (float)$deltaAmount;
-        if ($deltaAmount < 0) {
-            throw new \RangeException(
+        } elseif ($deltaAmount <= 0) {
+            throw new \InvalidArgumentException(
                 "Cannot change a transaction by amounts less or equal to zero, got: $deltaAmount"
             );
         }
-        $this->deltaAmount = $deltaAmount;
+        $this->deltaAmount = (float)$deltaAmount;
 
         return $this;
     }
