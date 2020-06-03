@@ -12,6 +12,7 @@ use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Helper\TxTranslationHelper;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -33,6 +34,9 @@ class WirecardTransactionsController extends ModuleAdminController
 
     /** @var ContextService */
     protected $context_service;
+
+    /** @var TxTranslationHelper */
+    protected $tx_translation_helper;
 
     public function __construct()
     {
@@ -63,74 +67,46 @@ class WirecardTransactionsController extends ModuleAdminController
 
         parent::__construct();
         $this->tpl_folder = 'backend/';
+        $this->tx_translation_helper =  new TxTranslationHelper();
     }
 
+
     /**
-     * Render transaction table view
+     * Get the current objects' list form the database and modify it.
      *
-     * @return string|false
+     * @param int $id_lang Language used for display
+     * @param string|null $order_by ORDER BY clause
+     * @param string|null $order_way Order way (ASC, DESC)
+     * @param int $start Offset in LIMIT clause
+     * @param int|null $limit Row count in LIMIT clause
+     * @param int|bool $id_lang_shop
+     *
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 2.10.0
      */
-    public function renderList()
-    {
+    public function getList(
+        $id_lang,
+        $order_by = null,
+        $order_way = null,
+        $start = 0,
+        $limit = null,
+        $id_lang_shop = false
+    ) {
+        parent::getList(
+            $id_lang,
+            $order_by,
+            $order_way,
+            $start,
+            $limit,
+            $id_lang_shop
+        );
 
-        if (!($this->fields_list && is_array($this->fields_list))) {
-            return false;
-        }
-        $this->getList($this->context->language->id);
-
-        // If list has 'active' field, we automatically create bulk action
-        if (isset($this->fields_list) && is_array($this->fields_list) && array_key_exists('active', $this->fields_list)
-            && !empty($this->fields_list['active'])) {
-            if (!is_array($this->bulk_actions)) {
-                $this->bulk_actions = array();
-            }
-
-            $this->bulk_actions = array_merge(array(
-                'enableSelection' => array(
-                    'text' => $this->l('Enable selection'),
-                    'icon' => 'icon-power-off text-success',
-                ),
-                'disableSelection' => array(
-                    'text' => $this->l('Disable selection'),
-                    'icon' => 'icon-power-off text-danger',
-                ),
-                'divider' => array(
-                    'text' => 'divider',
-                ),
-            ), $this->bulk_actions);
-        }
-
-        $helper = new HelperList();
-
-        // Empty list is ok
-        if (!is_array($this->_list)) {
-            $this->displayWarning($this->l('Bad SQL query', 'Helper') . '<br />' . htmlspecialchars($this->_list_error));
-
-            return false;
-        }
-
-        $this->setHelperDisplay($helper);
-        $helper->_default_pagination = $this->_default_pagination;
-        $helper->_pagination = $this->_pagination;
-        $helper->tpl_vars = $this->getTemplateListVars();
-        $helper->tpl_delete_link_vars = $this->tpl_delete_link_vars;
-
-        // For compatibility reasons, we have to check standard actions in class attributes
-        foreach ($this->actions_available as $action) {
-            if (!in_array($action, $this->actions) && isset($this->$action) && $this->$action) {
-                $this->actions[] = $action;
-            }
-        }
-        $helper->is_cms = $this->is_cms;
-        $helper->sql = $this->_listsql;
         foreach ($this->_list as $index => $transaction) {
-            $this->_list[$index]['transaction_type'] = $this->translateTxType($this->_list[$index]['transaction_type']);
-            $this->_list[$index]['transaction_state'] = $this->translateTxState($this->_list[$index]['transaction_state']);
+            $this->_list[$index]['transaction_type'] =
+                $this->tx_translation_helper->translateTxType($this->_list[$index]['transaction_type']);
+            $this->_list[$index]['transaction_state'] =
+                $this->tx_translation_helper->translateTxState($this->_list[$index]['transaction_state']);
         }
-        $list = $helper->generateList($this->_list, $this->fields_list);
-        return $list;
     }
 
     /**
