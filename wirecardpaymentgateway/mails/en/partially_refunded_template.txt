@@ -1,4 +1,12 @@
-test
+{shop_url}
 
-here is my variable: {lastname}
-here is my variable: {my_email_variable}
+Hi {firstname} {lastname},
+
+Thank you for shopping with {shop_name}!
+
+Your refund for order with the reference {order_name} was successfully processed.
+
+Total amount for this order: {currency} {total_amount}
+
+We have now refunded: {currency} {current_amount}
+

@@ -40,6 +40,9 @@ class OrderManager
     const WIRECARD_OS_PARTIALLY_REFUNDED = "WIRECARD_OS_PARTIAL_REFUNDED";
     const WIRECARD_OS_PARTIALLY_CAPTURED = "WIRECARD_OS_PARTIAL_CAPTURED";
 
+    const EMAIL_TEMPLATE_PARTIALLY_CAPTURED = 'partially_captured_template';
+    const EMAIL_TEMPLATE_PARTIALLY_REFUNDED = 'partially_refunded_template';
+
     const PHRASEAPP_KEY_OS_PAYMENT_STARTED = 'order_state_payment_started';
     const PHRASEAPP_KEY_OS_PAYMENT_AWAITING = 'order_state_payment_awaiting';
     const PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED = 'order_state_payment_authorized';
@@ -171,14 +174,17 @@ class OrderManager
 
     /**
      * @param string $state
+     * @param $template
+     *
      * @return \OrderState
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
-     * @throws \Exception
      * @since 2.8.0
      */
     private function initializeOrderState($state)
     {
+        $template = $this->getTemplateFromOrderState($state);
+        $sendEmail = $this->sendOrderStateChangeEmail($state);
         $translationKey = $this->getTranslationKeyForOrderState($state);
         $orderState = new \OrderState();
         $orderState->name = array();
@@ -190,7 +196,8 @@ class OrderManager
             );
             $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
-        $orderState->send_email = false;
+        $orderState->template = $template;
+        $orderState->send_email = $sendEmail;
         $orderState->color = self::COLOR_LIGHT_BLUE;
         $orderState->hidden = false;
         $orderState->delivery = false;
@@ -199,6 +206,45 @@ class OrderManager
         $orderState->invoice = false;
 
         return $orderState;
+    }
+
+    /**
+     * Get template to save in database based on order state
+     *
+     * @param $state
+     * @return string
+     * @since 2.10.0
+     */
+    private function getTemplateFromOrderState($state)
+    {
+        $template = '';
+        if ($state===self::PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED) {
+            $template = self::EMAIL_TEMPLATE_PARTIALLY_REFUNDED;
+        }
+
+        if ($state===self::PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED) {
+            $template = self::EMAIL_TEMPLATE_PARTIALLY_CAPTURED;
+        }
+        return $template;
+    }
+
+
+    /**
+     * Decide if email should be sent
+     *
+     * @param $state
+     * @return string
+     * @since 2.10.0
+     */
+    private function sendOrderStateChangeEmail($state)
+    {
+        $sendEmail = false;
+        if (($state===self::PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED)||
+           ($state===self::PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED)) {
+            $sendEmail = true;
+        }
+
+        return $sendEmail;
     }
 
     /**

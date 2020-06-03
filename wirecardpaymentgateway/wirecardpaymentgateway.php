@@ -21,6 +21,7 @@ use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 use WirecardEE\Prestashop\Classes\Service\TabManagerService;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
@@ -1138,7 +1139,8 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      * @since 2.10.0
      */
-    public function addEmailTemplatesToPrestashop() {
+    public function addEmailTemplatesToPrestashop()
+    {
         $languages = $this->context->controller->getLanguages();
         $fileExtensions = ['html', 'txt'];
         $emailTemplates = ['partially_captured_template', 'partially_refunded_template'];
@@ -1163,10 +1165,33 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      * @param $params
      */
-    public function hookActionGetExtraMailTemplateVars($params) {
-        if ($params['template'] === 'partially_refunded_template') {
+    public function hookActionGetExtraMailTemplateVars($params)
+    {
+        $order = new Order($params['template_vars']['{id_order}']);
+        $totalOrderAmount = $order->total_paid;
+        $orderTotalPaid = $order->total_paid;
+        $orderPayments = $order->getOrderPayments();
+        $currentRefundedAmount = '0';
+        $currentCapturedAmount = '0';
+        foreach ($orderPayments as $orderPayment) {
+            if (($orderPayment->amount > 0)&&($orderPayment->amount != $orderTotalPaid)) {
+                $currentCapturedAmount += $orderPayment->amount;
+            }
+            if ($orderPayment->amount < 0) {
+                $currentRefundedAmount += $orderPayment->amount;
+            }
+        }
+
+        if (($params['template'] === 'partially_refunded_template')||($params['template'] === 'partially_captured_template')) {
             //get the order from session to get the partial payment amount
-            $params['extra_template_vars']['{my_email_variable}'] = '123124123141245124512451245';
+            $params['extra_template_vars']['{total_amount}'] = $totalOrderAmount;
+            $params['extra_template_vars']['{currency}'] = $this->context->currency->getSign();
+        }
+        if ($params['template'] === 'partially_refunded_template') {
+            $params['extra_template_vars']['{current_amount}'] = -1 * $currentRefundedAmount;
+        }
+        if ($params['template'] === 'partially_captured_template') {
+            $params['extra_template_vars']['{current_amount}'] = $currentCapturedAmount;
         }
     }
 }
