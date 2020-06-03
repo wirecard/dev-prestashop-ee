@@ -218,11 +218,11 @@ class OrderManager
     private function getTemplateFromOrderState($state)
     {
         $template = '';
-        if ($state===self::PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED) {
+        if ($state===self::WIRECARD_OS_PARTIALLY_REFUNDED) {
             $template = self::EMAIL_TEMPLATE_PARTIALLY_REFUNDED;
         }
 
-        if ($state===self::PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED) {
+        if ($state===self::WIRECARD_OS_PARTIALLY_CAPTURED) {
             $template = self::EMAIL_TEMPLATE_PARTIALLY_CAPTURED;
         }
         return $template;
@@ -239,8 +239,8 @@ class OrderManager
     private function sendOrderStateChangeEmail($state)
     {
         $sendEmail = false;
-        if (($state===self::PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED)||
-           ($state===self::PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED)) {
+        if (($state===self::WIRECARD_OS_PARTIALLY_REFUNDED)||
+           ($state===self::WIRECARD_OS_PARTIALLY_CAPTURED)) {
             $sendEmail = true;
         }
 
