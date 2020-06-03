@@ -43,8 +43,8 @@ class OrderManager
     const PHRASEAPP_KEY_OS_PAYMENT_STARTED = 'order_state_payment_started';
     const PHRASEAPP_KEY_OS_PAYMENT_AWAITING = 'order_state_payment_awaiting';
     const PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED = 'order_state_payment_authorized';
-    const PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED = 'order_state_payment_partially_refunded';
-    const PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED = 'order_state_payment_partially_captured';
+    const PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED = 'order_state_payment_partially_refunded'; //add email -> partially_refunded_template
+    const PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED = 'order_state_payment_partially_captured'; //add email -> partially_captured_template
 
     const ORDER_STATE_TRANSLATION_KEY_MAP = [
         self::WIRECARD_OS_STARTING => self::PHRASEAPP_KEY_OS_PAYMENT_STARTED,

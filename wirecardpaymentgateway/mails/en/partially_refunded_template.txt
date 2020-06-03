@@ -1,0 +1,4 @@
+test
+
+here is my variable: {lastname}
+here is my variable: {my_email_variable}

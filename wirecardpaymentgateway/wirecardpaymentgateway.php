@@ -142,6 +142,7 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('displayOrderConfirmation')
             || !$this->registerHook('postUpdateOrderStatus')
             || !$this->registerHook('updateOrderStatus')
+            || !$this->registerHook('actionGetExtraMailTemplateVars')
             || !$this->createTable('tx')
             || !$this->createTable('cc')
             || !$this->setDefaults()) {
@@ -1116,6 +1117,7 @@ class WirecardPaymentGateway extends PaymentModule
         $orderManager = new OrderManager();
         $translationKeys = $orderManager::ORDER_STATE_TRANSLATION_KEY_MAP;
         foreach (array_keys($translationKeys) as $translationKey) {
+            //@TODO for partial add email send and template
             $orderManager->createOrderState($translationKey);
         }
     }
@@ -1156,5 +1158,15 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return true;
+    }
+
+    /**
+     * @param $params
+     */
+    public function hookActionGetExtraMailTemplateVars($params) {
+        if ($params['template'] === 'partially_refunded_template') {
+            //get the order from session to get the partial payment amount
+            $params['extra_template_vars']['{my_email_variable}'] = '123124123141245124512451245';
+        }
     }
 }

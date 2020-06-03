@@ -1,0 +1,3 @@
+test
+
+here is my variable: {my_variable}
