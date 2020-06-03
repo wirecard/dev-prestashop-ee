@@ -102,9 +102,9 @@ class WirecardTransactionsController extends ModuleAdminController
         );
 
         foreach ($this->_list as $transaction) {
-	        $transaction['transaction_type'] =
+            $transaction['transaction_type'] =
                 $this->tx_translation_helper->translateTxType($transaction['transaction_type']);
-	        $transaction['transaction_state'] =
+            $transaction['transaction_state'] =
                 $this->tx_translation_helper->translateTxState($transaction['transaction_state']);
         }
     }
