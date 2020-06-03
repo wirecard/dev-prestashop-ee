@@ -157,6 +157,8 @@ class WirecardPaymentGateway extends PaymentModule
 
         $this->installTabs();
 
+        $this->addEmailTemplatesToPrestashop();
+
         return true;
     }
 
@@ -1129,5 +1131,30 @@ class WirecardPaymentGateway extends PaymentModule
         }
 
         return $this->orderStateManagerService;
+    }
+
+    /**
+     * @since 2.10.0
+     */
+    public function addEmailTemplatesToPrestashop() {
+        $languages = $this->context->controller->getLanguages();
+        $fileExtensions = ['html', 'txt'];
+        $emailTemplates = ['partially_captured_template', 'partially_refunded_template'];
+
+        foreach ($emailTemplates as $emailTemplate) {
+            foreach ($languages as $language) {
+                foreach ($fileExtensions as $fileExtension) {
+                    $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $language['iso_code'] . '/' . $emailTemplate . '.' . $fileExtension;
+                    if (file_exists($mailTemplatePath)) {
+                        \Tools::copy(
+                            $mailTemplatePath,
+                            _PS_MAIL_DIR_ . $language['iso_code'] . '/' . $emailTemplate . '.' . $fileExtension
+                        );
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 }
