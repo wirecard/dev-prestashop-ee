@@ -332,4 +332,65 @@ class OrderManager
         $shop_config = new ShopConfigurationService($payment_type);
         return (new PaymentConfigurationFactory($shop_config))->createConfig();
     }
+
+	public function getOrderPaymentAmounts($order) {
+		$orderPayments = $order->getOrderPayments();
+		$arrayOrderPaymentAmounts = [];
+		foreach ($orderPayments as $orderPayment) {
+			array_push($orderPayment->amount, $arrayOrderPaymentAmounts);
+		}
+		return $arrayOrderPaymentAmounts;
+	}
+
+
+	/**
+	 * Get a sum of order payment refund amount
+	 * @param Order $order
+	 *
+	 * @return integer
+	 * @since 2.10.0
+	 */
+	public function getOrderPaymentRefunds($order) {
+		$arrayOrderPaymentAmounts = $this->getOrderPaymentAmounts($order);
+		$sumRefundedAmount = 0;
+		foreach ($arrayOrderPaymentAmounts as $amount){
+			if ($amount < 0) {
+				$sumRefundedAmount += $amount;
+			}
+		}
+		return -1 * $sumRefundedAmount;
+	}
+
+	/**
+	 * Get a sum of order payment capture amount
+	 * @param Order $order
+	 *
+	 * @return integer
+	 * @since 2.10.0
+	 */
+	public function getOrderPaymentCaptures($order) {
+		$arrayOrderPaymentAmounts = $this->getOrderPaymentAmounts($order);
+		$orderTotalPaid = $order->total_paid;
+		$sumCapturedAmount = 0;
+		foreach ($arrayOrderPaymentAmounts as $amount){
+			if (($amount > 0)&&($amount != $orderTotalPaid)) {
+				$sumCapturedAmount += $amount;
+			}
+		}
+		return $sumCapturedAmount;
+	}
+
+	/**
+	 * Round full amount with the shop specific precision
+	 * @param Order $order
+	 *
+	 * @return integer
+	 * @since 2.10.0
+	 */
+	public function roundFullAmount($order) {
+		$precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+		$totalOrderAmount = \Tools::ps_round($order->total_paid, $precision);
+		return $totalOrderAmount;
+	}
+
 }

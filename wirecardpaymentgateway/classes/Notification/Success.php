@@ -91,6 +91,7 @@ abstract class Success implements ProcessablePaymentNotification
                 );
                 $processType = $this->getOrderStateProcessType();
                 $this->logger->debug(__METHOD__ . ' ' . __LINE__, compact('nextOrderState', 'processType'));
+	            $this->contextService->setRequestedAmount($this->notification->getRequestedAmount()->getValue());
                 $this->order->setCurrentState($nextOrderState);
                 $this->order->save();
                 $this->createTransaction();
