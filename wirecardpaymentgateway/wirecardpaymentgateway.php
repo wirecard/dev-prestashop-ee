@@ -1143,27 +1143,47 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function addEmailTemplatesToPrestashop()
     {
-        $languages = $this->context->controller->getLanguages();
-        $fileExtensions = ['html', 'txt'];
         $emailTemplates = ['partially_captured_template', 'partially_refunded_template'];
-
         foreach ($emailTemplates as $emailTemplate) {
-            foreach ($languages as $language) {
-                $isoCode = $language['iso_code'];
-                foreach ($fileExtensions as $fileExtension) {
-                    $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $isoCode .
-                                        '/' . $emailTemplate . '.' . $fileExtension;
-                    if (file_exists($mailTemplatePath)) {
-                        \Tools::copy(
-                            $mailTemplatePath,
-                            _PS_MAIL_DIR_ . $language['iso_code'] . '/' . $emailTemplate . '.' . $fileExtension
-                        );
-                    }
-                }
-            }
+            $this->defineEmailTemplatePathPerLanguage($emailTemplate);
         }
 
         return true;
+    }
+
+    /**
+     * Add email templates for each language
+     * @since 2.10.0
+     */
+    private function defineEmailTemplatePathPerLanguage($emailTemplate)
+    {
+        $languages = $this->context->controller->getLanguages();
+        foreach ($languages as $language) {
+            $this->defineEmailTemplatePath($language, $emailTemplate);
+        }
+    }
+
+    /**
+     * Define the path for the email templates
+     * @since 2.10.0
+     */
+    private function defineEmailTemplatePath($language, $emailTemplate)
+    {
+        $fileExtensions = ['html', 'txt'];
+        $isoCode = 'en';
+        if (isset($language['iso_code'])) {
+            $isoCode = $language['iso_code'];
+        }
+        foreach ($fileExtensions as $fileExtension) {
+            $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $isoCode .
+                                '/' . $emailTemplate . '.' . $fileExtension;
+            if (file_exists($mailTemplatePath)) {
+                \Tools::copy(
+                    $mailTemplatePath,
+                    _PS_MAIL_DIR_ . $language['iso_code'] . '/' . $emailTemplate . '.' . $fileExtension
+                );
+            }
+        }
     }
 
     /**
