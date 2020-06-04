@@ -1149,8 +1149,9 @@ class WirecardPaymentGateway extends PaymentModule
 
         foreach ($emailTemplates as $emailTemplate) {
             foreach ($languages as $language) {
+                $isoCode = $language['iso_code'];
                 foreach ($fileExtensions as $fileExtension) {
-                    $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $language['iso_code'] .
+                    $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $isoCode .
                                         '/' . $emailTemplate . '.' . $fileExtension;
                     if (file_exists($mailTemplatePath)) {
                         \Tools::copy(
