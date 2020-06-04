@@ -1151,28 +1151,28 @@ class WirecardPaymentGateway extends PaymentModule
         return true;
     }
 
-	/**
-	 * Add email templates for each language
-	 *
-	 * @param string $emailTemplate
-	 *
-	 * @since 2.10.0
-	 */
+    /**
+     * Add email templates for each language
+     *
+     * @param string $emailTemplate
+     *
+     * @since 2.10.0
+     */
     private function defineEmailTemplatePathPerLanguage($emailTemplate)
     {
-	    foreach (\Language::getLanguages(false) as $language) {
+        foreach (\Language::getLanguages(false) as $language) {
             $this->defineEmailTemplatePath($language, $emailTemplate);
         }
     }
 
-	/**
-	 * Define the path for the email templates
-	 *
-	 * @param array $language
-	 * @param string $emailTemplate
-	 *
-	 * @since 2.10.0
-	 */
+    /**
+     * Define the path for the email templates
+     *
+     * @param array $language
+     * @param string $emailTemplate
+     *
+     * @since 2.10.0
+     */
     private function defineEmailTemplatePath($language, $emailTemplate)
     {
         $fileExtensions = ['html', 'txt'];
