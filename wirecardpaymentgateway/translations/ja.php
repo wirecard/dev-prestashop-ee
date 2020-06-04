@@ -143,6 +143,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_36245276e84306a410a41
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_7daacf9143e60bd1d97b926e8d0754d6'] = 'テスト構成';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Enable';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_5fa2e5357af104cba88c6720c60d93f8'] = 'Wirecard クレジットカードを有効にする';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_407613f07ed882cecea86325feb941f1'] = 'PSD 2';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_63e9b741aabec947c93795d52fd863f2'] = 'With regard to PSD 2 requirements, you should request certain personal information from your consumers during <a target=\"_blank\" href=\'https://github.com/wirecard/prestashop-ee/wiki/Credit-Card\'>checkout</a> to reduce the risk of transactions being rejected.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_2433374a7348266aa2a46eab61a2fc5b'] = 'タイトル';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_8d423243b839a03c23c5e6fd082f1cee'] = 'Wirecard クレジット カード';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_dcf1eada7b5e21500790ee75ebc2be5b'] = '販売者アカウント ID';
