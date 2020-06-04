@@ -16,24 +16,23 @@ trait NumericHelper
 
     /**
      * Return step for postprocessing amount input field
-     *
      * @return string
      */
     public function getStep()
     {
         $precision = $this->getPsPrecision();
-        $decimals = '1';
+        $step = '1';
         if ($precision > 0) {
-            $decimals = '';
+            $step = '';
             for ($i = 0; $i < $precision; $i++) {
                 if ($i > 0) {
-                    $decimals .= '0';
+                    $step .= '0';
                 }
             }
-            $decimals = '0.' . $decimals . '1';
+            $step = '0.' . $step . '1';
         }
 
-        return $decimals;
+        return $step;
     }
 
     /**
