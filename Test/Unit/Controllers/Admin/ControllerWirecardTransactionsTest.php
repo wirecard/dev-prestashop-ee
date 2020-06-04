@@ -93,7 +93,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
                 'badge' => 'red'
             ],
             'remaining_delta_amount' => 0.0,
-            'decimal_points' => 2,
+            'precision' => 2,
             'step' => '0.01',
             'regex' => '/^[+]?(?=.?\d)\d*(\.\d{0,2})?$/',
         ];

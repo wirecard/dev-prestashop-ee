@@ -91,7 +91,7 @@ class WirecardTransactionsController extends ModuleAdminController
             'possible_operations' => $possibleOperationService->getPossibleOperationList(),
             'transaction'         => $this->object->toViewArray(),
             'remaining_delta_amount' => $transactionModel->getRemainingAmount(),
-            'decimal_points'      => $this->getPsPrecision(),
+            'precision'      => $this->getPsPrecision(),
             'step'                => $this->getStep(),
             'regex'               => '/^[+]?(?=.?\d)\d*(\.\d{0,' . $this->getPsPrecision() . '})?$/',
         ];
