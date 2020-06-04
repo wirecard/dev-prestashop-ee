@@ -1151,31 +1151,33 @@ class WirecardPaymentGateway extends PaymentModule
         return true;
     }
 
-    /**
-     * Add email templates for each language
-     * @since 2.10.0
-     */
+	/**
+	 * Add email templates for each language
+	 *
+	 * @param string $emailTemplate
+	 *
+	 * @since 2.10.0
+	 */
     private function defineEmailTemplatePathPerLanguage($emailTemplate)
     {
-        $languages = $this->context->controller->getLanguages();
-        foreach ($languages as $language) {
+	    foreach (\Language::getLanguages(false) as $language) {
             $this->defineEmailTemplatePath($language, $emailTemplate);
         }
     }
 
-    /**
-     * Define the path for the email templates
-     * @since 2.10.0
-     */
+	/**
+	 * Define the path for the email templates
+	 *
+	 * @param array $language
+	 * @param string $emailTemplate
+	 *
+	 * @since 2.10.0
+	 */
     private function defineEmailTemplatePath($language, $emailTemplate)
     {
         $fileExtensions = ['html', 'txt'];
-        $isoCode = 'en';
-        if (isset($language['iso_code'])) {
-            $isoCode = $language['iso_code'];
-        }
         foreach ($fileExtensions as $fileExtension) {
-            $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $isoCode .
+            $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $language['iso_code'] .
                                 '/' . $emailTemplate . '.' . $fileExtension;
             if (file_exists($mailTemplatePath)) {
                 \Tools::copy(

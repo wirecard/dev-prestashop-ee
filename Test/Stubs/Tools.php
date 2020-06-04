@@ -88,4 +88,9 @@ class Tools
     {
         return round($value, $precision, $mode);
     }
+
+	public static function copy($source, $destination, $stream_context = null)
+	{
+		return;
+	}
 }
