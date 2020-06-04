@@ -1164,36 +1164,32 @@ class WirecardPaymentGateway extends PaymentModule
         return true;
     }
 
-	/**
-	 * Hook into prestashop emails to add new parameters
-	 * @param $params
-	 *
-	 * @throws PrestaShopDatabaseException
-	 * @throws PrestaShopException
-	 */
+    /**
+     * Hook into prestashop emails to add new parameters
+     * @param $params
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     public function hookActionGetExtraMailTemplateVars($params)
     {
         $order = new Order($params['template_vars']['{id_order}']);
         $orderManager = new OrderManager();
-	    $totalOrderAmount = $orderManager->roundFullAmount($order);
-	    $requestedAmount = $this->context->cookie->__get('requested_amount');
+        $totalOrderAmount = $orderManager->roundFullAmount($order);
+        $requestedAmount = $this->context->cookie->__get('requested_amount');
 
-	    $params['extra_template_vars']['{total_amount}'] = $totalOrderAmount;
-	    $params['extra_template_vars']['{currency}'] = $this->context->currency->getSign();
+        $params['extra_template_vars']['{total_amount}'] = $totalOrderAmount;
+        $params['extra_template_vars']['{currency}'] = $this->context->currency->getSign();
 
-        if($requestedAmount){
-	        $params['extra_template_vars']['{current_amount}'] = $requestedAmount;
+        if ($requestedAmount) {
+            $params['extra_template_vars']['{current_amount}'] = $requestedAmount;
+        } else {
+            if (($params['template'] === 'partially_refunded_template')) {
+                $params['extra_template_vars']['{current_amount}'] = $orderManager->getOrderPaymentRefunds($order);
+            }
+            if ($params['template'] === 'partially_captured_template') {
+                $params['extra_template_vars']['{current_amount}'] = $orderManager->getOrderPaymentCaptures($order);
+            }
         }
-
-        else {
-	        if (($params['template'] === 'partially_refunded_template')) {
-		        $params['extra_template_vars']['{current_amount}'] = $orderManager->getOrderPaymentRefunds($order);
-	        }
-	        if ($params['template'] === 'partially_captured_template') {
-		        $params['extra_template_vars']['{current_amount}'] = $orderManager->getOrderPaymentCaptures($order);
-	        }
-        }
-
     }
-
 }

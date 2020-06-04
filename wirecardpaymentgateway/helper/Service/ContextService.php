@@ -49,16 +49,16 @@ class ContextService
         $this->context->cookie->id_cart = $cart->id;
     }
 
-	/**
-	 * @param int $amount
-	 *
-	 * @throws \Exception
-	 * @since 2.10.0
-	 */
-	public function setRequestedAmount($amount)
-	{
-		$this->context->cookie->__set('requested_amount', $amount);
-	}
+    /**
+     * @param int $amount
+     *
+     * @throws \Exception
+     * @since 2.10.0
+     */
+    public function setRequestedAmount($amount)
+    {
+        $this->context->cookie->__set('requested_amount', $amount);
+    }
 
     /**
      * @param array $errors
