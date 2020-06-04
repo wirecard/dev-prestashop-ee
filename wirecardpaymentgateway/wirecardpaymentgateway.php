@@ -634,6 +634,13 @@ class WirecardPaymentGateway extends PaymentModule
                         }
                         break;
 
+                    case 'hint':
+                        if (isset($elem['desc'])) {
+                            $elem['desc'] = '<span style="font-style: initial; font-size: 14px">' .
+                                Tools::htmlentitiesDecodeUTF8($elem['desc']). '</span>';
+                        }
+                        break;
+
                     case 'onoff':
                         $elem['type'] = $radioType;
                         $elem['class'] = 't';

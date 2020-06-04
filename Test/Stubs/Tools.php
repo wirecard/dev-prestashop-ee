@@ -88,4 +88,9 @@ class Tools
     {
         return round($value, $precision, $mode);
     }
+
+    public static function htmlentitiesDecodeUTF8($string)
+    {
+        return html_entity_decode($string);
+    }
 }
