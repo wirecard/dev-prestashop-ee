@@ -338,7 +338,7 @@ class OrderManager
         $orderPayments = $order->getOrderPayments();
         $arrayOrderPaymentAmounts = [];
         foreach ($orderPayments as $orderPayment) {
-            array_push($orderPayment->amount, $arrayOrderPaymentAmounts);
+            array_push($arrayOrderPaymentAmounts, $orderPayment->amount);
         }
         return $arrayOrderPaymentAmounts;
     }
