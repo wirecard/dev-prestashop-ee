@@ -46,8 +46,8 @@ class OrderManager
     const PHRASEAPP_KEY_OS_PAYMENT_STARTED = 'order_state_payment_started';
     const PHRASEAPP_KEY_OS_PAYMENT_AWAITING = 'order_state_payment_awaiting';
     const PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED = 'order_state_payment_authorized';
-    const PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED = 'order_state_payment_partially_refunded'; //add email -> partially_refunded_template
-    const PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED = 'order_state_payment_partially_captured'; //add email -> partially_captured_template
+    const PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED = 'order_state_payment_partially_refunded';
+    const PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED = 'order_state_payment_partially_captured';
 
     const ORDER_STATE_TRANSLATION_KEY_MAP = [
         self::WIRECARD_OS_STARTING => self::PHRASEAPP_KEY_OS_PAYMENT_STARTED,
@@ -331,69 +331,5 @@ class OrderManager
         $payment_type = $notification->getPaymentMethod();
         $shop_config = new ShopConfigurationService($payment_type);
         return (new PaymentConfigurationFactory($shop_config))->createConfig();
-    }
-
-    public function getOrderPaymentAmounts($order)
-    {
-        $orderPayments = $order->getOrderPayments();
-        $arrayOrderPaymentAmounts = [];
-        foreach ($orderPayments as $orderPayment) {
-            array_push($arrayOrderPaymentAmounts, $orderPayment->amount);
-        }
-        return $arrayOrderPaymentAmounts;
-    }
-
-
-    /**
-     * Get a sum of order payment refund amount
-     * @param Order $order
-     *
-     * @return integer
-     * @since 2.10.0
-     */
-    public function getOrderPaymentRefunds($order)
-    {
-        $arrayOrderPaymentAmounts = $this->getOrderPaymentAmounts($order);
-        $sumRefundedAmount = 0;
-        foreach ($arrayOrderPaymentAmounts as $amount) {
-            if ($amount < 0) {
-                $sumRefundedAmount += $amount;
-            }
-        }
-        return -1 * $sumRefundedAmount;
-    }
-
-    /**
-     * Get a sum of order payment capture amount
-     * @param Order $order
-     *
-     * @return integer
-     * @since 2.10.0
-     */
-    public function getOrderPaymentCaptures($order)
-    {
-        $arrayOrderPaymentAmounts = $this->getOrderPaymentAmounts($order);
-        $orderTotalPaid = $order->total_paid;
-        $sumCapturedAmount = 0;
-        foreach ($arrayOrderPaymentAmounts as $amount) {
-            if (($amount > 0)&&($amount != $orderTotalPaid)) {
-                $sumCapturedAmount += $amount;
-            }
-        }
-        return $sumCapturedAmount;
-    }
-
-    /**
-     * Round full amount with the shop specific precision
-     * @param Order $order
-     *
-     * @return integer
-     * @since 2.10.0
-     */
-    public function roundFullAmount($order)
-    {
-        $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-        $totalOrderAmount = \Tools::ps_round($order->total_paid, $precision);
-        return $totalOrderAmount;
     }
 }

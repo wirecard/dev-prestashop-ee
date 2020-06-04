@@ -26,6 +26,7 @@ use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 
 /**
  * Class WirecardPaymentGateway
@@ -1118,7 +1119,6 @@ class WirecardPaymentGateway extends PaymentModule
         $orderManager = new OrderManager();
         $translationKeys = $orderManager::ORDER_STATE_TRANSLATION_KEY_MAP;
         foreach (array_keys($translationKeys) as $translationKey) {
-            //@TODO for partial add email send and template
             $orderManager->createOrderState($translationKey);
         }
     }
@@ -1175,8 +1175,9 @@ class WirecardPaymentGateway extends PaymentModule
     public function hookActionGetExtraMailTemplateVars($params)
     {
         $order = new Order($params['template_vars']['{id_order}']);
+        $orderAmountCalculatorService = new OrderAmountCalculatorService($order);
         $orderManager = new OrderManager();
-        $totalOrderAmount = $orderManager->roundFullAmount($order);
+        $totalOrderAmount = $orderAmountCalculatorService->getOrderTotalAmount();
         $requestedAmount = $this->context->cookie->__get('requested_amount');
 
         $params['extra_template_vars']['{total_amount}'] = $totalOrderAmount;
@@ -1185,11 +1186,13 @@ class WirecardPaymentGateway extends PaymentModule
         if ($requestedAmount) {
             $params['extra_template_vars']['{current_amount}'] = $requestedAmount;
         } else {
-            if (($params['template'] === 'partially_refunded_template')) {
-                $params['extra_template_vars']['{current_amount}'] = $orderManager->getOrderPaymentRefunds($order);
+            if (($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_REFUNDED)) {
+                $params['extra_template_vars']['{current_amount}'] =
+                    $orderAmountCalculatorService->getOrderRefundedAmount();
             }
-            if ($params['template'] === 'partially_captured_template') {
-                $params['extra_template_vars']['{current_amount}'] = $orderManager->getOrderPaymentCaptures($order);
+            if ($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_CAPTURED) {
+                $params['extra_template_vars']['{current_amount}'] =
+                    $orderAmountCalculatorService->getOrderCapturedAmount();
             }
         }
     }
