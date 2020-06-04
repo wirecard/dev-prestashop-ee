@@ -1,8 +1,19 @@
 <?php
-
+/**
+ * Shop System Extensions:
+ * - Terms of Use can be found at:
+ * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
+ * - License can be found under:
+ * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ */
 
 namespace WirecardEE\Prestashop\Classes\Constants;
 
+/**
+ * Class TxConstants
+ * @since 2.10.0
+ * @package WirecardEE\Prestashop\Classes\Constants
+ */
 class TxConstants
 {
 
@@ -13,11 +24,10 @@ class TxConstants
     const TX_TYPE = 'TX_TYPE_';
 
     /** @var string */
-    const STATE = 'TX_STATE_';
+    const TX_STATE = 'TX_STATE_';
 
     /** @var array */
     const TX_TYPE_KEYS = [
-        // Default settings used in all payment methods
         'TX_TYPE_CHECK_ENROLLMENT' => 'tx_type_check_enrollment',
         'TX_TYPE_CHECK_PAYER_RESPONSE' => 'tx_type_check_payer_response',
         'TX_TYPE_AUTHORIZATION' => 'tx_type_authorization',
