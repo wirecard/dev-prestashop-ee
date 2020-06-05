@@ -1218,8 +1218,8 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      * Add partial or accumulative amount to the email parameters
      *
-     * @param $params
-     *
+     * @param array $params
+     * @param OrderAmountCalculatorService $orderAmountCalculatorService
      */
     private function addPartialAmountParamToEmail($params, $orderAmountCalculatorService)
     {
