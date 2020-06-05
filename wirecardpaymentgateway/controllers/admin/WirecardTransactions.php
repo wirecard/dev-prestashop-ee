@@ -12,6 +12,7 @@ use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
+use WirecardEE\Prestashop\Helper\TxTranslationHelper;
 use WirecardEE\Prestashop\Models\Transaction;
 
 /**
@@ -33,6 +34,9 @@ class WirecardTransactionsController extends ModuleAdminController
 
     /** @var ContextService */
     protected $context_service;
+
+    /** @var TxTranslationHelper */
+    protected $tx_translation_helper;
 
     public function __construct()
     {
@@ -63,6 +67,45 @@ class WirecardTransactionsController extends ModuleAdminController
 
         parent::__construct();
         $this->tpl_folder = 'backend/';
+        $this->tx_translation_helper =  new TxTranslationHelper();
+    }
+
+    /**
+     * Get the current objects' list form the database and modify it.
+     *
+     * @param int $id_lang Language used for display
+     * @param string|null $order_by ORDER BY clause
+     * @param string|null $order_way Order way (ASC, DESC)
+     * @param int $start Offset in LIMIT clause
+     * @param int|null $limit Row count in LIMIT clause
+     * @param int|bool $id_lang_shop
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getList(
+        $id_lang,
+        $order_by = null,
+        $order_way = null,
+        $start = 0,
+        $limit = null,
+        $id_lang_shop = false
+    ) {
+        parent::getList(
+            $id_lang,
+            $order_by,
+            $order_way,
+            $start,
+            $limit,
+            $id_lang_shop
+        );
+
+        foreach ($this->_list as $index => $transaction) {
+            $this->_list[$index]['transaction_type'] =
+                $this->tx_translation_helper->translateTxType($transaction['transaction_type']);
+            $this->_list[$index]['transaction_state'] =
+                $this->tx_translation_helper->translateTxState($transaction['transaction_state']);
+        }
     }
 
     /**
@@ -78,7 +121,6 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->validateTransaction($this->object);
         $possibleOperationService = new TransactionPossibleOperationService($this->object);
         $paymentModel = PaymentProvider::getPayment($this->object->getPaymentMethod());
-
         $transactionModel = new Transaction($this->object->tx_id);
 
         // These variables are available in the Smarty context
