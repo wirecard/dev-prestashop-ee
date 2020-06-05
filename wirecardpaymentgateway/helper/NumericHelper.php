@@ -11,7 +11,13 @@ trait NumericHelper
      */
     public function getPsPrecision()
     {
-        return (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        $psPrecision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        $precision = 2;
+        if ($psPrecision < 2) {
+            $precision = $psPrecision;
+        }
+
+        return $precision;
     }
 
     /**
