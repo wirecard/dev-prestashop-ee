@@ -121,16 +121,7 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->validateTransaction($this->object);
         $possibleOperationService = new TransactionPossibleOperationService($this->object);
         $paymentModel = PaymentProvider::getPayment($this->object->getPaymentMethod());
-        $response = json_decode($this->object->response, true);
-        $transactionStateTranslated = $this->tx_translation_helper->translateTxState($response['transaction-state']);
-        $transactionTypeTranslated = $this->tx_translation_helper->translateTxType($response['transaction-type']);
-        $this->object->setTransactionState($transactionStateTranslated);
-        $this->object->setTransactionType($transactionTypeTranslated);
         $transactionModel = new Transaction($this->object->tx_id);
-        $response = json_decode($this->object->response, true);
-        $response['transaction-state'] = $transactionStateTranslated;
-        $response['transaction-type'] = $transactionTypeTranslated;
-        $this->object->response = json_encode($response);
 
         // These variables are available in the Smarty context
         $this->tpl_view_vars = [

@@ -48,10 +48,9 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
         $transaction->setAmount(20);
         $transaction->setCurrency('EUR');
         $transaction->setOrderNumber(12);
-        $transaction->setTransactionType('refund-capture');
+        $transaction->setTransactionType('authorization');
         $transaction->setTransactionState('success');
         $transaction->setTransactionId('QWERTY123XYZAABB1122');
-        $transaction->setResponse('{"transaction-type":"refund-capture","transaction-state":"success"}');
         return $transaction;
     }
 
@@ -88,10 +87,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
                 'status' => $transaction->getTransactionState(),
                 'amount' => $transaction->getAmount(),
                 'currency' => $transaction->getCurrency(),
-                'response' => json_decode(
-                    '{"transaction-type":"refund-capture","transaction-state":"success"}',
-                    false
-                ),
+                'response' => null,
                 'payment_method' => $transaction->getPaymentMethod(),
                 'order' => $transaction->getOrderNumber(),
                 'badge' => 'red'
