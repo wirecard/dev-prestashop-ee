@@ -20,6 +20,8 @@ use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 class TransactionBuilder
 {
+    use NumericHelper;
+
     /** @var \WirecardPaymentGateway */
     private $module;
 
@@ -129,7 +131,7 @@ class TransactionBuilder
     {
         $this->transaction->setAmount(
             $this->currencyHelper->getAmount(
-                $this->cart->getOrderTotal(),
+                \Tools::ps_round($this->cart->getOrderTotal(), $this->getPrecision()),
                 $this->currency->iso_code
             )
         );

@@ -28,6 +28,8 @@ class OrderManager
 {
     use TranslationHelper;
 
+    use NumericHelper;
+
     /**
      * @var string
      * @since 2.8.0
@@ -84,6 +86,7 @@ class OrderManager
      * @return int
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
+     * @throws \Exception
      * @since 1.0.0
      */
     public function createOrder($cart, $state, $paymentType)
@@ -93,7 +96,7 @@ class OrderManager
         $this->module->validateOrder(
             $cart->id,
             \Configuration::get($state),
-            $cart->getOrderTotal(true),
+            \Tools::ps_round($cart->getOrderTotal(true), $this->getPrecision()),
             $shopConfigService->getField('title'),
             null,
             array(),
