@@ -1142,99 +1142,99 @@ class WirecardPaymentGateway extends PaymentModule
         return $this->orderStateManagerService;
     }
 
-	/**
-	 * Add email templates to prestashop list of email templates
-	 * @return boolean
-	 * @since 2.10.0
-	 */
-	public function addEmailTemplatesToPrestashop()
-	{
-		$orderManager = new OrderManager();
-		$emailTemplates = [$orderManager::EMAIL_TEMPLATE_PARTIALLY_CAPTURED,
-			$orderManager::EMAIL_TEMPLATE_PARTIALLY_REFUNDED];
-		foreach ($emailTemplates as $emailTemplate) {
-			$this->defineEmailTemplatePathPerLanguage($emailTemplate);
-		}
+    /**
+     * Add email templates to prestashop list of email templates
+     * @return boolean
+     * @since 2.10.0
+     */
+    public function addEmailTemplatesToPrestashop()
+    {
+        $orderManager = new OrderManager();
+        $emailTemplates = [$orderManager::EMAIL_TEMPLATE_PARTIALLY_CAPTURED,
+            $orderManager::EMAIL_TEMPLATE_PARTIALLY_REFUNDED];
+        foreach ($emailTemplates as $emailTemplate) {
+            $this->defineEmailTemplatePathPerLanguage($emailTemplate);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Add email templates for each language
-	 *
-	 * @param string $emailTemplate
-	 *
-	 * @since 2.10.0
-	 */
-	private function defineEmailTemplatePathPerLanguage($emailTemplate)
-	{
-		foreach (\Language::getLanguages(false) as $language) {
-			$this->defineEmailTemplatePath($language['iso_code'], $emailTemplate);
-		}
-	}
+    /**
+     * Add email templates for each language
+     *
+     * @param string $emailTemplate
+     *
+     * @since 2.10.0
+     */
+    private function defineEmailTemplatePathPerLanguage($emailTemplate)
+    {
+        foreach (\Language::getLanguages(false) as $language) {
+            $this->defineEmailTemplatePath($language['iso_code'], $emailTemplate);
+        }
+    }
 
-	/**
-	 * Define the path for the email templates
-	 *
-	 * @param array $language
-	 * @param string $emailTemplate
-	 *
-	 * @since 2.10.0
-	 */
-	private function defineEmailTemplatePath($languageCode, $emailTemplate)
-	{
-		$fileExtensions = ['html', 'txt'];
-		foreach ($fileExtensions as $fileExtension) {
-			$mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $languageCode .
-			                    '/' . $emailTemplate . '.' . $fileExtension;
-			if (file_exists($mailTemplatePath)) {
-				\Tools::copy(
-					$mailTemplatePath,
-					_PS_MAIL_DIR_ . $languageCode . '/' . $emailTemplate . '.' . $fileExtension
-				);
-			}
-		}
-	}
+    /**
+     * Define the path for the email templates
+     *
+     * @param array $language
+     * @param string $emailTemplate
+     *
+     * @since 2.10.0
+     */
+    private function defineEmailTemplatePath($languageCode, $emailTemplate)
+    {
+        $fileExtensions = ['html', 'txt'];
+        foreach ($fileExtensions as $fileExtension) {
+            $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $languageCode .
+                                '/' . $emailTemplate . '.' . $fileExtension;
+            if (file_exists($mailTemplatePath)) {
+                \Tools::copy(
+                    $mailTemplatePath,
+                    _PS_MAIL_DIR_ . $languageCode . '/' . $emailTemplate . '.' . $fileExtension
+                );
+            }
+        }
+    }
 
-	/**
-	 * Hook into prestashop emails to add new parameters
-	 * @param $params
-	 *
-	 * @throws PrestaShopDatabaseException
-	 * @throws PrestaShopException
-	 */
-	public function hookActionGetExtraMailTemplateVars($params)
-	{
-		if ($params['template_vars']['{id_order}']) {
-			$order = new Order($params['template_vars']['{id_order}']);
-			$orderAmountCalculatorService = new OrderAmountCalculatorService($order);
-			$totalOrderAmount = $orderAmountCalculatorService->getOrderTotalAmount();
-			$params['extra_template_vars']['{total_amount}'] = $totalOrderAmount;
-			$params['extra_template_vars']['{currency}'] = $this->context->currency->getSign();
-			$this->addPartialAmountParamToEmail($params, $orderAmountCalculatorService);
-		}
-	}
+    /**
+     * Hook into prestashop emails to add new parameters
+     * @param $params
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function hookActionGetExtraMailTemplateVars($params)
+    {
+        if ($params['template_vars']['{id_order}']) {
+            $order = new Order($params['template_vars']['{id_order}']);
+            $orderAmountCalculatorService = new OrderAmountCalculatorService($order);
+            $totalOrderAmount = $orderAmountCalculatorService->getOrderTotalAmount();
+            $params['extra_template_vars']['{total_amount}'] = $totalOrderAmount;
+            $params['extra_template_vars']['{currency}'] = $this->context->currency->getSign();
+            $this->addPartialAmountParamToEmail($params, $orderAmountCalculatorService);
+        }
+    }
 
-	/**
-	 * Add partial or accumulative amount to the email parameters
-	 *
-	 * @param $params
-	 *
-	 */
-	private function addPartialAmountParamToEmail($params, $orderAmountCalculatorService) {
-		$requestedAmount = $this->context->cookie->__get('requested_amount');
-		$orderManager = new OrderManager();
-		if ($requestedAmount) {
-			$params['extra_template_vars']['{current_amount}'] = $requestedAmount;
-		} else {
-			if (($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_REFUNDED)) {
-				$params['extra_template_vars']['{current_amount}'] =
-					$orderAmountCalculatorService->getOrderRefundedAmount();
-			}
-			elseif ($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_CAPTURED) {
-				$params['extra_template_vars']['{current_amount}'] =
-					$orderAmountCalculatorService->getOrderCapturedAmount();
-			}
-		}
-	}
+    /**
+     * Add partial or accumulative amount to the email parameters
+     *
+     * @param $params
+     *
+     */
+    private function addPartialAmountParamToEmail($params, $orderAmountCalculatorService)
+    {
+        $requestedAmount = $this->context->cookie->__get('requested_amount');
+        $orderManager = new OrderManager();
+        if ($requestedAmount) {
+            $params['extra_template_vars']['{current_amount}'] = $requestedAmount;
+        } else {
+            if (($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_REFUNDED)) {
+                $params['extra_template_vars']['{current_amount}'] =
+                    $orderAmountCalculatorService->getOrderRefundedAmount();
+            } elseif ($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_CAPTURED) {
+                $params['extra_template_vars']['{current_amount}'] =
+                    $orderAmountCalculatorService->getOrderCapturedAmount();
+            }
+        }
+    }
 }

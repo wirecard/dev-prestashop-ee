@@ -218,9 +218,7 @@ class OrderManager
         $template = '';
         if ($state === self::WIRECARD_OS_PARTIALLY_REFUNDED) {
             $template = self::EMAIL_TEMPLATE_PARTIALLY_REFUNDED;
-        }
-
-        elseif ($state === self::WIRECARD_OS_PARTIALLY_CAPTURED) {
+        } elseif ($state === self::WIRECARD_OS_PARTIALLY_CAPTURED) {
             $template = self::EMAIL_TEMPLATE_PARTIALLY_CAPTURED;
         }
         return $template;
