@@ -18,16 +18,14 @@ trait NumericHelper
      * Return step for postprocessing amount input field
      * @return string
      */
-    public function getStep()
+    public function calculateNumericInputStep()
     {
         $precision = $this->getPsPrecision();
         $step = '1';
         if ($precision > 0) {
             $step = '';
-            for ($i = 0; $i < $precision; $i++) {
-                if ($i > 0) {
-                    $step .= '0';
-                }
+            for ($i = 1; $i < $precision; $i++) {
+                $step .= '0';
             }
             $step = '0.' . $step . '1';
         }
