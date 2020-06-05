@@ -183,8 +183,6 @@ class OrderManager
      */
     private function initializeOrderState($state)
     {
-        $template = $this->getTemplateFromOrderState($state);
-        $sendEmail = $this->sendOrderStateChangeEmail($state);
         $translationKey = $this->getTranslationKeyForOrderState($state);
         $orderState = new \OrderState();
         $orderState->name = array();
@@ -196,8 +194,8 @@ class OrderManager
             );
             $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
-        $orderState->template = $template;
-        $orderState->send_email = $sendEmail;
+        $orderState->template = $this->getTemplateFromOrderState($state);
+        $orderState->send_email = $this->sendOrderStateChangeEmail($state);
         $orderState->color = self::COLOR_LIGHT_BLUE;
         $orderState->hidden = false;
         $orderState->delivery = false;
@@ -218,29 +216,28 @@ class OrderManager
     private function getTemplateFromOrderState($state)
     {
         $template = '';
-        if ($state===self::WIRECARD_OS_PARTIALLY_REFUNDED) {
+        if ($state === self::WIRECARD_OS_PARTIALLY_REFUNDED) {
             $template = self::EMAIL_TEMPLATE_PARTIALLY_REFUNDED;
         }
 
-        if ($state===self::WIRECARD_OS_PARTIALLY_CAPTURED) {
+        elseif ($state === self::WIRECARD_OS_PARTIALLY_CAPTURED) {
             $template = self::EMAIL_TEMPLATE_PARTIALLY_CAPTURED;
         }
         return $template;
     }
 
-
     /**
      * Decide if email should be sent
      *
-     * @param $state
+     * @param string $state
      * @return string
      * @since 2.10.0
      */
     private function sendOrderStateChangeEmail($state)
     {
         $sendEmail = false;
-        if (($state===self::WIRECARD_OS_PARTIALLY_REFUNDED)||
-           ($state===self::WIRECARD_OS_PARTIALLY_CAPTURED)) {
+        if (($state === self::WIRECARD_OS_PARTIALLY_REFUNDED)||
+           ($state === self::WIRECARD_OS_PARTIALLY_CAPTURED)) {
             $sendEmail = true;
         }
 
