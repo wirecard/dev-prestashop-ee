@@ -23,7 +23,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_f7e98eb890f52ffedcbd07
 $_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_d5513aa0eaaf742afe18b76c0bd2f8f2'] = 'void-pending-credit';
 $_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_08544f51e608620a69283f7249b46379'] = 'credit';
 $_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_7fd9e058359b02a865fbc2016731d2d8'] = 'beendet';
-$_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_dac886b21c3c6131970165e65c6334c0'] = 'open';
+$_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_dac886b21c3c6131970165e65c6334c0'] = 'offen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_446740c4fc304cddca21144d8d35aebc'] = 'erfolgreich';
 $_MODULE['<{wirecardpaymentgateway}prestashop>txconstants_708922af03f509c4cd557331c350edec'] = 'ausstehend';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transactionpossibleoperationservice_f49bca788fe6812d21a25b1389ed2b9f'] = 'Transaktion buchen';
