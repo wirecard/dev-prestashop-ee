@@ -19,7 +19,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extension: mbstring, intl, simplexml, dom
-          ini-values: post_max_size=256M, memory_limit=2G, short_open_tag=On
+          ini-values: post_max_size=256M, short_open_tag=On
           coverage: xdebug
           pecl: false
 
