@@ -23,6 +23,7 @@ define('_PS_OS_ERROR_', Configuration::get('PS_OS_ERROR'));
 define('_PS_OS_REFUND_', Configuration::get('PS_OS_REFUND'));
 define('_PS_OS_CANCELED_', Configuration::get('PS_OS_CANCELED'));
 define('_PS_ROOT_DIR_', Configuration::get('PS_ROOT_DIR'));
+define('_PS_MAIL_DIR_', Configuration::get('_PS_MAIL_DIR_'));
 
 
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';

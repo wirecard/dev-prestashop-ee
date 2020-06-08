@@ -20,6 +20,7 @@ if (!defined('_PS_VERSION_')) {
 function upgrade_module_2_10_0($module)
 {
     $module->addUpdateOrderStatuses();
+    $module->addEmailTemplatesToPrestashop();
 
     return true;
 }
