@@ -1205,7 +1205,7 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function hookActionGetExtraMailTemplateVars($params)
     {
-        if ($params['template_vars']['{id_order}']) {
+        if (isset($params['template_vars']['{id_order}'])) {
             $order = new Order($params['template_vars']['{id_order}']);
             $orderAmountCalculatorService = new OrderAmountCalculatorService($order);
             $totalOrderAmount = $orderAmountCalculatorService->getOrderTotalAmount();
