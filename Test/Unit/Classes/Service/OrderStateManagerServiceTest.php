@@ -46,7 +46,7 @@ class OrderStateManagerServiceTest extends \PHPUnit_Framework_TestCase
         $reflection_property = $reflection->getProperty("service");
         $reflection_property->setAccessible(true);
         $orderStateMapper = new GenericOrderStateMapper(new OrderStateMappingDefinition());
-        $reflection_property->setValue($this->object, new OrderState($orderStateMapper));
+        $reflection_property->setValue($this->object, new OrderState($orderStateMapper, 2));
     }
 
 

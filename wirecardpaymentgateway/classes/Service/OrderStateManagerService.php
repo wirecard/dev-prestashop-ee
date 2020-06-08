@@ -16,6 +16,7 @@ use Wirecard\ExtensionOrderStateModule\Domain\Exception\IgnorableStateException;
 use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use WirecardEE\Prestashop\Classes\Config\OrderStateMappingDefinition;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\OrderStateTransferObject;
 
 /**
@@ -25,6 +26,8 @@ use WirecardEE\Prestashop\Helper\OrderStateTransferObject;
  */
 class OrderStateManagerService implements ServiceInterface
 {
+    use NumericHelper;
+
     /**
      * @var OrderState
      */
@@ -42,7 +45,7 @@ class OrderStateManagerService implements ServiceInterface
     public function __construct()
     {
         $orderStateMapper = new GenericOrderStateMapper(new OrderStateMappingDefinition());
-        $this->service = new OrderState($orderStateMapper);
+        $this->service = new OrderState($orderStateMapper, $this->getPrecision());
         $this->logger = new Logger();
     }
 
