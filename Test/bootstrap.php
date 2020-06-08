@@ -7,7 +7,10 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-const _PS_MODULE_DIR_ = 'modules';
+require __DIR__ . '/Stubs/Configuration.php';
+
+define("_PS_MODULE_DIR_", dirname(__DIR__) . "/");
+const _PS_VERSION_ = '9.9.9.9';
 const _PS_PRICE_COMPUTE_PRECISION_ = 2;
 const _DB_PREFIX_ = 'Prefix_';
 const _MYSQL_ENGINE_ = 'mysql';
@@ -15,6 +18,13 @@ const _PS_USE_SQL_SLAVE_ = 'slave';
 
 const EXPECTED_PLUGIN_NAME = 'prestashop-ee+Wirecard';
 const EXPECTED_SHOP_NAME = 'Prestashop';
+define('_PS_OS_PAYMENT_', Configuration::get('PS_OS_PAYMENT'));
+define('_PS_OS_ERROR_', Configuration::get('PS_OS_ERROR'));
+define('_PS_OS_REFUND_', Configuration::get('PS_OS_REFUND'));
+define('_PS_OS_CANCELED_', Configuration::get('PS_OS_CANCELED'));
+define('_PS_ROOT_DIR_', Configuration::get('PS_ROOT_DIR'));
+define('_PS_MAIL_DIR_', Configuration::get('_PS_MAIL_DIR_'));
+
 
 require_once __DIR__ . '/../wirecardpaymentgateway/vendor/autoload.php';
 require_once __DIR__ . '/util/functions.php';
@@ -28,7 +38,6 @@ require __DIR__ . '/Stubs/ModuleAdminController.php';
 require __DIR__ . '/Stubs/Module.php';
 require __DIR__ . '/Stubs/PaymentModule.php';
 require __DIR__ . '/Stubs/Tools.php';
-require __DIR__ . '/Stubs/Configuration.php';
 require __DIR__ . '/Stubs/HelperForm.php';
 require __DIR__ . '/Stubs/Language.php';
 require __DIR__ . '/Stubs/Context.php';
@@ -51,6 +60,8 @@ require __DIR__ . '/Stubs/Validate.php';
 require __DIR__ . '/Stubs/Cookie.php';
 require __DIR__ . '/Stubs/Translate.php';
 require __DIR__ . '/Stubs/DbQuery.php';
+
+require_once __DIR__ . '/../wirecardpaymentgateway/wirecardpaymentgateway.php';
 
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'de';

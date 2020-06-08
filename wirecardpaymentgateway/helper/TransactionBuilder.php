@@ -9,10 +9,9 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\CustomField;
+use Wirecard\PaymentSdk\Entity\CustomFieldCollection;
 use Wirecard\PaymentSdk\Entity\Redirect;
-use WirecardEE\Prestashop\Helper\PaymentProvider;
 use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
@@ -21,6 +20,8 @@ use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 class TransactionBuilder
 {
+    use NumericHelper;
+
     /** @var \WirecardPaymentGateway */
     private $module;
 
@@ -130,7 +131,7 @@ class TransactionBuilder
     {
         $this->transaction->setAmount(
             $this->currencyHelper->getAmount(
-                $this->cart->getOrderTotal(),
+                \Tools::ps_round($this->cart->getOrderTotal(), $this->getPrecision()),
                 $this->currency->iso_code
             )
         );
@@ -258,7 +259,9 @@ class TransactionBuilder
                 $firstName,
                 $lastName
             );
+            return;
         }
+        $this->transaction->setOrderNumber($this->orderId);
     }
 
     /**
@@ -293,5 +296,18 @@ class TransactionBuilder
         $this->orderId = $order->id;
 
         return $order->id;
+    }
+
+    /**
+     * Set context for the transaction
+     *
+     * @param Context $context
+     *
+     * @since 2.10.0
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+        $this->cart = $context->cart;
     }
 }

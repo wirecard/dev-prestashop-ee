@@ -21,7 +21,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary cancel-cc-select" data-dismiss="modal">{lFallback s='cancel' mod='wirecardpaymentgateway'}</button>
-                <button type="button" id="use-new-card" class="btn btn-secondary btn-success" data-dismiss="modal">
+                <button type="button" id="use-new-card" class="btn btn-secondary btn-success" data-dismiss="modal" disabled>
                     {lFallback s='vault_use_card_text' mod='wirecardpaymentgateway'}
                 </button>
             </div>

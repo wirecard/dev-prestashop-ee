@@ -9,9 +9,9 @@
 
 namespace WirecardEE\Prestashop\Classes\Response;
 
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class Cancel

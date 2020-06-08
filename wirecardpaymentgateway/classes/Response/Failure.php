@@ -9,85 +9,62 @@
 
 namespace WirecardEE\Prestashop\Classes\Response;
 
+use Wirecard\PaymentSdk\Entity\Status;
 use Wirecard\PaymentSdk\Entity\StatusCollection;
 use Wirecard\PaymentSdk\Response\FailureResponse;
-use WirecardEE\Prestashop\Classes\ProcessType;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
+use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 
 /**
  * Class Failure
  * @package WirecardEE\Prestashop\Classes\Response
  * @since 2.1.0
  */
-final class Failure implements ProcessablePaymentResponse
+abstract class Failure implements ProcessablePaymentResponse
 {
-    /** @var \Order */
-    private $order;
 
     /** @var FailureResponse */
-    private $response;
+    protected $response;
 
     /** @var ContextService */
-    private $context_service;
+    protected $context_service;
 
     /** @var OrderService */
-    private $order_service;
+    protected $order_service;
 
-    /** @var string */
-    private $processType;
+    /**
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
+     */
+    protected $orderStateManager;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
 
     /**
      * FailureResponseProcessing constructor.
      *
-     * @param \Order $order
+     * @param OrderService $order_service
      * @param FailureResponse $response
-     * @param string $processType
      * @since 2.1.0
      */
-    public function __construct($order, $response, $processType)
+    public function __construct(OrderService $order_service, $response)
     {
-        $this->order = $order;
         $this->response = $response;
-        $this->processType = $processType;
         $this->context_service = new ContextService(\Context::getContext());
-        $this->order_service = new OrderService($order);
+        $this->order_service = $order_service;
+        $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
+        $this->logger = new Logger();
     }
 
     /**
-     * @since 2.1.0
+     * @since 2.10.0
      */
-    public function process()
-    {
-        if ($this->order_service->isOrderState(OrderManager::WIRECARD_OS_STARTING)) {
-            $this->order->setCurrentState(_PS_OS_ERROR_);
-            $this->order->save();
-
-            $this->order_service->updateOrderPaymentTwo($this->response->getData()['transaction-id']);
-        }
-
-        if ($this->processType === ProcessType::PROCESS_BACKEND) {
-            $this->processBackend();
-            return;
-        }
-
-        $cart_clone = $this->order_service->getNewCartDuplicate();
-        $this->context_service->setCart($cart_clone);
-
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->redirectWithError($errors, 'order');
-    }
-
-    private function processBackend()
-    {
-        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
-        $this->context_service->setErrors(
-            \Tools::displayError(
-                join('<br>', $errors)
-            )
-        );
-    }
+    abstract public function process();
 
     /**
      * @param StatusCollection $statuses
@@ -95,14 +72,44 @@ final class Failure implements ProcessablePaymentResponse
      * @return array
      * @since 2.1.0
      */
-    private function getErrorsFromStatusCollection($statuses)
+    protected function getErrorsFromStatusCollection($statuses)
     {
         $error = array();
 
+        /** @var $status Status */
         foreach ($statuses->getIterator() as $status) {
             array_push($error, $status->getDescription());
         }
 
         return $error;
+    }
+
+    /**
+     * @param $processType
+     * @throws \PrestaShopException
+     * @since 2.10.0
+     */
+    protected function processForType($processType)
+    {
+        $currentState = $this->order_service->getLatestOrderStatusFromHistory();
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $currentState,
+            $processType,
+            $this->response->getData(),
+            new OrderAmountCalculatorService($this->order_service->getOrder())
+        );
+        if ($currentState === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
+            $order = $this->order_service->getOrder();
+            $order->setCurrentState($nextState);
+            $order->save();
+            $this->order_service->updateOrderPayment(
+                $this->response->getData()['transaction-id'],
+                $this->response->getRequestedAmount()->getValue()
+            );
+        }
+        $errors = $this->getErrorsFromStatusCollection($this->response->getStatusCollection());
+        $cart_clone = $this->order_service->getNewCartDuplicate();
+        $this->context_service->setCart($cart_clone);
+        $this->context_service->redirectWithError($errors, 'order');
     }
 }

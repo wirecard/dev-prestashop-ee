@@ -9,14 +9,11 @@
 
 namespace WirecardEE\Prestashop\Classes\Response;
 
-use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
-use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
-use WirecardEE\Prestashop\Helper\Service\ContextService;
-use WirecardEE\Prestashop\Helper\Service\OrderService;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
+use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\OrderManager;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Models\Transaction;
 
@@ -32,15 +29,20 @@ abstract class Success implements ProcessablePaymentResponse
     /** @var string */
     const TRANSLATION_FILE = 'success';
 
-    /** @var \Order  */
+    /** @var \Order */
     protected $order;
 
-    /** @var SuccessResponse  */
+    /** @var SuccessResponse */
     protected $response;
 
     /** @var OrderService */
     protected $orderService;
-  
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
     /**
      * SuccessResponseProcessing constructor.
      *
@@ -54,6 +56,7 @@ abstract class Success implements ProcessablePaymentResponse
         $this->response = $response;
 
         $this->orderService = new OrderService($order);
+        $this->logger = new Logger();
     }
 
     /**
@@ -61,27 +64,12 @@ abstract class Success implements ProcessablePaymentResponse
      */
     public function process()
     {
+        $this->beforeProcess();
         $dbManager = new DBTransactionManager();
         //We do this outside of the try block so that if locking fails, we don't attempt to release it
         $dbManager->acquireLock($this->response->getTransactionId(), 30);
         try {
-            if ($this->order->getCurrentState() === \Configuration::get(OrderManager::WIRECARD_OS_STARTING)) {
-                $this->order->setCurrentState(\Configuration::get(OrderManager::WIRECARD_OS_AWAITING));
-                $this->order->save();
-
-                $currency = 'EUR';
-                if (key_exists('currency', $this->response->getData())) {
-                    $currency = $this->response->getData()['currency'];
-                }
-                $amount = new Amount(0, $currency);
-                if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
-                    $amount = $this->response->getRequestedAmount();
-                }
-                $this->orderService->updateOrderPayment($this->response->getTransactionId(), $amount->getValue());
-            }
-
             $amount = $this->response->getRequestedAmount();
-
             $orderManager = new OrderManager();
             $transactionState = $orderManager->getTransactionState($this->response);
 
@@ -96,5 +84,20 @@ abstract class Success implements ProcessablePaymentResponse
         } finally {
             $dbManager->releaseLock($this->response->getTransactionId());
         }
+        $this->afterProcess();
+    }
+
+    /**
+     * @since 2.10.0
+     */
+    protected function beforeProcess()
+    {
+    }
+
+    /**
+     * @since 2.10.0
+     */
+    protected function afterProcess()
+    {
     }
 }

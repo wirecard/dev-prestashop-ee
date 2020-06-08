@@ -7,10 +7,10 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
 use WirecardEE\Prestashop\Classes\Engine\NotificationResponse;
 use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotificationFactory;
-use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
 class WirecardPaymentGatewayNotifyModuleFrontController extends WirecardFrontController
 {
@@ -35,7 +35,6 @@ class WirecardPaymentGatewayNotifyModuleFrontController extends WirecardFrontCon
     public function postProcess()
     {
         $notification = \Tools::file_get_contents('php://input');
-
         try {
             $order = $this->getOrder();
 

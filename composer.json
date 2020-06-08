@@ -1,11 +1,11 @@
 {
   "name": "wirecard/prestashop-ee",
   "description": "Wirecard Payment Processing Gateway plugin for Prestashop",
-  "license": "GPL-3.0-only",
+  "license": "MIT",
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=5.6",
+    "php": ">=7.0",
     "symfony/options-resolver": "^3",
     "wirecard/payment-sdk-php": "4.0.0",
     "php-http/guzzle5-adapter": ">=1.0.1",
@@ -14,7 +14,9 @@
     "wirecard/io-converter": "^1.0",
     "monolog/monolog": "^1.0",
     "ext-json": "*",
-    "symfony/http-foundation": "^3"
+    "symfony/http-foundation": "^3",
+    "wirecard/extension-credentials-module": "dev-master",
+    "wirecard/extension-order-state-module": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "5.7.27",

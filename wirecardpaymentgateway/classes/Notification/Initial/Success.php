@@ -9,13 +9,20 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification\Initial;
 
-use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
-use \WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
+use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
+use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
 
-class Success extends AbstractSuccess implements ProcessablePaymentNotification
+/**
+ * Class Success
+ * @package WirecardEE\Prestashop\Classes\Notification\Initial
+ */
+class Success extends AbstractSuccess
 {
-    public function process()
+    /**
+     * @inheritDoc
+     */
+    public function getOrderStateProcessType()
     {
-        return parent::process();
+        return Constant::PROCESS_TYPE_INITIAL_NOTIFICATION;
     }
 }

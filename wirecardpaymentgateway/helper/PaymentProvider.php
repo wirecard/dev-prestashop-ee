@@ -2,6 +2,7 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 use WirecardEE\Prestashop\Models\Payment;
 use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
@@ -14,7 +15,6 @@ use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
 use WirecardEE\Prestashop\Models\PaymentSepaCreditTransfer;
 use WirecardEE\Prestashop\Models\PaymentSepaDirectDebit;
 use WirecardEE\Prestashop\Models\PaymentSofort;
-use Wirecard\PaymentSdk\Transaction\RatepayInvoiceTransaction;
 
 /**
  * Class PaymentProvider

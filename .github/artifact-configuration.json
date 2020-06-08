@@ -19,7 +19,6 @@
       "phpunit.xml",
       "Rakefile",
       "README.md",
-      "SHOPVERSIONS",
       "wirecardpaymentgateway/codeception.yml"
     ],
     "folder-blacklist": [

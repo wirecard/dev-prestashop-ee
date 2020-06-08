@@ -45,7 +45,7 @@
                     {/foreach}
 
                     {if $transaction.payment_method != "ratepay-invoice"}
-                        <input name="partial-delta-amount" value="{number_format($remaining_delta_amount, 2)}"{$disabled}> {$transaction.currency}
+                        <input type="number" min="0" max="{$remaining_delta_amount}" name="partial-delta-amount" step="{$step}" pattern="{$regex}" value="{number_format($remaining_delta_amount, $precision, '.', '')}"{$disabled} required> {$transaction.currency}
                     {/if}
                 </form>
             {/if}

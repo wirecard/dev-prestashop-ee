@@ -83,6 +83,15 @@ class TranslationBuilder
     file.rewind
     translation_keys += file.read.scan(/new\sAdminControllerTabConfig\(\n.*\n.*\'(.*)\'/).uniq
 
+    file.rewind
+    translation_keys += file.read.scan(/const\sPHRASEAPP_KEY_.*?\s=\s\'(.*)\'\;/).uniq
+
+    file.rewind
+    translation_keys += file.read.scan(/\'TX_TYPE_.*?\'\s=>\s\'(.*)\'\,/).uniq
+
+    file.rewind
+    translation_keys += file.read.scan(/\'TX_STATE_.*?\'\s=>\s\'(.*)\'\,/).uniq
+
     file.close
 
     translation_keys

@@ -9,13 +9,31 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification\PostProcessing;
 
-use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
+use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
 
-class Success extends AbstractSuccess implements ProcessablePaymentNotification
+class Success extends AbstractSuccess
 {
+    /**
+     * @inheritDoc
+     */
+    public function getOrderStateProcessType()
+    {
+        return Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION;
+    }
+
     public function process()
     {
-        return parent::process();
+        parent::process();
+        $this->orderAmountCalculator->markSettledParentAsClosed(
+            $this->notification->getParentTransactionId()
+        );
+        $this->order_service->setOrderAmountCalculatorService(
+            $this->orderAmountCalculator
+        );
+        $this->order_service->createOrderPayment(
+            $this->notification,
+            $this->notification->getRequestedAmount()->getValue()
+        );
     }
 }

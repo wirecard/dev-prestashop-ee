@@ -12,12 +12,12 @@ namespace WirecardEE\Prestashop\Models;
 use Wirecard\PaymentSdk\Entity\Amount;
 use Wirecard\PaymentSdk\Response\Response;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 use WirecardEE\Prestashop\Helper\DBTransactionManager;
 use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use Wirecard\PaymentSdk\Transaction\Transaction as TransactionTypes;
 
 /**
  * Basic Transaction class
@@ -720,19 +720,10 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         return $this->difference($amount, $processedAmount);
     }
 
-    /**
-     * @return bool
-     * @throws \PrestaShopDatabaseException
-     * @throws \PrestaShopException
-     */
-    public function markSettledAsClosed()
+    public function isZeroRemaining()
     {
-        if ($this->isSettled()) {
-            $transactionManager = new DBTransactionManager();
-            $transactionManager->markTransactionClosed($this->getTransactionId());
-            return true;
-        }
-        return false;
+        $remainingAmount = $this->getRemainingAmount();
+        return $this->equals($remainingAmount, 0);
     }
 
     /**
@@ -778,6 +769,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
      * @param OrderService $orderService
      * @return bool
      * @throws \PrestaShopException
+     * @deprecated
      */
     public function updateOrder(
         \Order $order,
@@ -812,17 +804,15 @@ class Transaction extends \ObjectModel implements SettleableTransaction
         }
 
         if (!$updated && $this->isRefundSettledTransitive()) {
-            $order->setCurrentState(_PS_OS_REFUND_);
-            $order->save();
-            $updated = true;
+//            $order->setCurrentState(_PS_OS_REFUND_);
+//            $order->save();
+//            $updated = true;
         }
 
         if ($settled) {
-            $parentTransaction = Transaction::getInitialTransactionForOrder($order->reference);
-            $amount = $parentTransaction->getAmount();
             $orderService->updateOrderPayment(
                 $notification->getTransactionId(),
-                $amount
+                $notification->getRequestedAmount()->getValue()
             );
         }
 

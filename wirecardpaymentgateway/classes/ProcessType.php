@@ -19,4 +19,10 @@ class ProcessType
 
     /** @var string */
     const PROCESS_BACKEND = 'process_backend';
+
+    /** @var string  */
+    const PROCESS_INITIAL_RETURN = "return"; // TODO: delete and pull constants from OS Module.
+    const PROCESS_INITIAL_NOTIFICATION = "notification"; // TODO: delete and pull constants from OS Module.
+    const PROCESS_POST_PROCESSING_RETURN = "initial_return"; // TODO: delete and pull constants from OS Module.
+    const PROCESS_POST_PROCESSING_NOTIFICATION = "initial_return"; // TODO: delete and pull constants from OS Module.
 }

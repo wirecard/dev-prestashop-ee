@@ -1,18 +1,18 @@
 # Wirecard PrestaShop Module
-[![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/wirecard/magento2-ee/master/LICENSE)
-[![PHP v5.6](https://img.shields.io/badge/php-v5.6-yellow.svg)](http://www.php.net)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://raw.githubusercontent.com/wirecard/magento2-ee/master/LICENSE)
 [![PHP v7.0](https://img.shields.io/badge/php-v7.0-yellow.svg)](http://www.php.net)
 [![PHP v7.1](https://img.shields.io/badge/php-v7.1-yellow.svg)](http://www.php.net)
-[![PrestaShop v1.7.6.1](https://img.shields.io/badge/PrestaShop-v1.7.6.1-green.svg)](https://www.prestashop.com/de)
+[![PHP v7.2](https://img.shields.io/badge/php-v7.2-yellow.svg)](http://www.php.net)
+[![PrestaShop v1.7.6.3](https://img.shields.io/badge/PrestaShop-v1.7.6.3-green.svg)](https://www.prestashop.com/de)
 [![PhraseApp](https://img.shields.io/badge/Using-PhraseApp-blue.svg)](https://phraseapp.com)
-
-***
-## Additional Credit Card Configuration Field
-With the new major release of the Wirecard PrestaShop Module comes an updated Credit Card configuration form. **Wirecard Payment Page v2 Address (WPP v2 URL)** has been added as an additional configuration field. **WPP v2 URL** is pre-configured with test data. If you update to the new product version, the Credit Card configuration will adjust automatically. However, we still recommend checking your settings. If you need to change your Credit Card configuration, a tooltip will provide additional information. For further details, or if you have any questions, contact [Wirecard Support](https://github.com/wirecard/prestashop-ee/wiki/Contact-Information).
 
 ***
 ## General Information
 Before you proceed, please read our [General Information](https://github.com/wirecard/prestashop-ee/wiki/Wirecard-Shop-Extensions-General-Information) for more details on Wirecard Shop Extension functionality and features.
+
+***
+## Additional Credit Card Configuration Field
+With the new major release of the Wirecard PrestaShop Module comes an updated Credit Card configuration form. **Wirecard Payment Page v2 Address (WPP v2 URL)** has been added as an additional configuration field. **WPP v2 URL** is pre-configured with test data. If you update to the new product version, the Credit Card configuration will adjust automatically. However, we still recommend checking your settings. If you need to change your Credit Card configuration, a tooltip will provide additional information. For further details, or if you have any questions, contact [Wirecard Support](https://github.com/wirecard/prestashop-ee/wiki/Contact-Information).
 
 ***
 ## Payment Services Directive 2 (PSD2) Compliance 

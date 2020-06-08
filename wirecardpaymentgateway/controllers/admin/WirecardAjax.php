@@ -9,13 +9,13 @@
 
 require dirname(__FILE__) . '/../../vendor/autoload.php';
 
+use Symfony\Component\HttpFoundation\Response;
 use Wirecard\PaymentSdk\Config\Config;
 use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\Logger;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use Symfony\Component\HttpFoundation\Response;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**

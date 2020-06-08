@@ -7,11 +7,10 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use WirecardEE\Prestashop\Helper\TemplateHelper;
 use WirecardEE\Prestashop\Models\CreditCardVault;
-use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 
 /**
@@ -46,7 +45,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
         $this->context->smarty->assign([ 'cards' => $cards ]);
         $html = $this->context->smarty->fetch($templatePath);
 
-        $response = new JsonResponse([ 'html' => $html ]);
+        $response = new JsonResponse([ 'count' => count($cards), 'html' => $html ]);
         $response->send();
     }
 

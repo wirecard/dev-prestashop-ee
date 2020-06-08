@@ -7,11 +7,11 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
-use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
 use WirecardEE\Prestashop\Helper\Form\FormHelper;
-use WirecardEE\Prestashop\Helper\Service\GeneralSettingsService;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
+use WirecardEE\Prestashop\Helper\Service\GeneralSettingsService;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 
 /**
  * Class WirecardGeneralSettingsController

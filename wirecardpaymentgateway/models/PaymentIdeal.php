@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Entity\IdealBic;
+use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 
@@ -78,14 +78,14 @@ class PaymentIdeal extends Payment
                     'name' => 'merchant_account_id',
                     'label'   => $this->getTranslatedString('config_merchant_account_id'),
                     'type'    => 'text',
-                    'default' => '4aeccf39-0d47-47f6-a399-c05c1f2fc819',
+                    'default' => $this->credentialsConfig->getMerchantAccountId(),
                     'required' => true,
                 ),
                 array(
                     'name' => 'secret',
                     'label'   => $this->getTranslatedString('config_merchant_secret'),
                     'type'    => 'text',
-                    'default' => '7a353766-23b5-4992-ae96-cb4232998954',
+                    'default' => $this->credentialsConfig->getSecret(),
                     'required' => true,
                 ),
                 array(
@@ -93,21 +93,21 @@ class PaymentIdeal extends Payment
                     'label'       => $this->getTranslatedString('config_base_url'),
                     'type'        => 'text',
                     'doc' => $this->getTranslatedString('config_base_url_desc'),
-                    'default'     => 'https://api-test.wirecard.com',
+                    'default'     => $this->credentialsConfig->getBaseUrl(),
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_user',
                     'label'   => $this->getTranslatedString('config_http_user'),
                     'type'    => 'text',
-                    'default' => '16390-testing',
+                    'default' => $this->credentialsConfig->getHttpUser(),
                     'required' => true,
                 ),
                 array(
                     'name' => 'http_pass',
                     'label'   => $this->getTranslatedString('config_http_password'),
                     'type'    => 'text',
-                    'default' => '3!3013=D3fD8X7',
+                    'default' => $this->credentialsConfig->getHttpPassword(),
                     'required' => true,
                 ),
                 array(

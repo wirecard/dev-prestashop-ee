@@ -91,11 +91,17 @@ class Configuration
                 return 1;
                 break;
             case 'WIRECARD_OS_AUTHORIZATION':
-                return 0;
+                return 666;
+            case 'WIRECARD_OS_STARTING':
+                return 777;
+            case 'WIRECARD_OS_AWAITING':
+                return 888;
             case 'WIRECARD_PAYMENT_GATEWAY_CREDITCARD_REQUESTOR_CHALLENGE':
                 return '02';
             case 'PS_PRICE_DISPLAY_PRECISION':
                 return 2;
+            case 'PS_ROOT_DIR':
+                return '.';
             default:
                 return $param;
         }

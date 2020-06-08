@@ -7,12 +7,14 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
+use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
-use WirecardEE\Prestashop\Models\Transaction;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
-use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
+use WirecardEE\Prestashop\Helper\TxTranslationHelper;
+use WirecardEE\Prestashop\Models\Transaction;
 
 /**
  * Class WirecardTransactions
@@ -24,6 +26,7 @@ use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
 class WirecardTransactionsController extends ModuleAdminController
 {
     use TranslationHelper;
+    use NumericHelper;
 
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
@@ -33,6 +36,9 @@ class WirecardTransactionsController extends ModuleAdminController
 
     /** @var ContextService */
     protected $context_service;
+
+    /** @var TxTranslationHelper */
+    protected $tx_translation_helper;
 
     public function __construct()
     {
@@ -63,6 +69,45 @@ class WirecardTransactionsController extends ModuleAdminController
 
         parent::__construct();
         $this->tpl_folder = 'backend/';
+        $this->tx_translation_helper =  new TxTranslationHelper();
+    }
+
+    /**
+     * Get the current objects' list form the database and modify it.
+     *
+     * @param int $id_lang Language used for display
+     * @param string|null $order_by ORDER BY clause
+     * @param string|null $order_way Order way (ASC, DESC)
+     * @param int $start Offset in LIMIT clause
+     * @param int|null $limit Row count in LIMIT clause
+     * @param int|bool $id_lang_shop
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function getList(
+        $id_lang,
+        $order_by = null,
+        $order_way = null,
+        $start = 0,
+        $limit = null,
+        $id_lang_shop = false
+    ) {
+        parent::getList(
+            $id_lang,
+            $order_by,
+            $order_way,
+            $start,
+            $limit,
+            $id_lang_shop
+        );
+
+        foreach ($this->_list as $index => $transaction) {
+            $this->_list[$index]['transaction_type'] =
+                $this->tx_translation_helper->translateTxType($transaction['transaction_type']);
+            $this->_list[$index]['transaction_state'] =
+                $this->tx_translation_helper->translateTxState($transaction['transaction_state']);
+        }
     }
 
     /**
@@ -78,7 +123,6 @@ class WirecardTransactionsController extends ModuleAdminController
         $this->validateTransaction($this->object);
         $possibleOperationService = new TransactionPossibleOperationService($this->object);
         $paymentModel = PaymentProvider::getPayment($this->object->getPaymentMethod());
-
         $transactionModel = new Transaction($this->object->tx_id);
 
         // These variables are available in the Smarty context
@@ -89,6 +133,9 @@ class WirecardTransactionsController extends ModuleAdminController
             'possible_operations' => $possibleOperationService->getPossibleOperationList(),
             'transaction'         => $this->object->toViewArray(),
             'remaining_delta_amount' => $transactionModel->getRemainingAmount(),
+            'precision'           => $this->getPrecision(),
+            'step'                => $this->calculateNumericInputStep(),
+            'regex'               => '/^[+]?(?=.?\d)\d*(\.\d{0,' . $this->getPrecision() . '})?$/',
         ];
 
         return parent::renderView();
@@ -116,8 +163,10 @@ class WirecardTransactionsController extends ModuleAdminController
         $delta_amount = Tools::getValue('partial-delta-amount', $parentTransaction->getAmount());
 
         $transactionPostProcessingService = new TransactionPostProcessingService($operation, $transactionId);
-        $transactionPostProcessingService->process($delta_amount);
-        $this->errors = $transactionPostProcessingService->getErrors();
+        $transactionPostProcessingService->process((float)$delta_amount);
+        if (!empty($transactionPostProcessingService->getErrors())) {
+            $this->errors[] = implode("<br />", $transactionPostProcessingService->getErrors());
+        }
 
         return parent::postProcess();
     }

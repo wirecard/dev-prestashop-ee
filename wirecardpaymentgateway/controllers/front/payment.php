@@ -8,12 +8,13 @@
  */
 
 use Wirecard\PaymentSdk\TransactionService;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Helper\TransactionBuilder;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
+use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\PaymentErrorHelper;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\TransactionBuilder;
 
 /**
  * Class WirecardPaymentGatewayPaymentModuleFrontController
@@ -25,6 +26,11 @@ use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
  */
 class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontController
 {
+    /**
+     * @var string
+     */
+    const REDIRECT_LINK_ORDER = 'order';
+
     /** @var TransactionBuilder */
     private $transactionBuilder;
 
@@ -37,6 +43,10 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
     {
         $paymentType = \Tools::getValue('payment_type');
         $errorNotification = \Tools::getValue('error-notification');
+        $errorNotifications = \Tools::jsonDecode($errorNotification);
+        if (!is_array($errorNotifications)) {
+            $errorNotifications = [];
+        }
 
         //remove the cookie if a credit card payment
         $this->context->cookie->__set('pia-enabled', false);
@@ -45,9 +55,9 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
         $operation = $shopConfigService->getField('payment_action');
         $config = (new PaymentConfigurationFactory($shopConfigService))->createConfig();
         $this->transactionBuilder = new TransactionBuilder($paymentType);
+        $this->showErrorMessages($errorNotifications);
 
         try {
-            $this->determineErrorException($errorNotification);
             // Create order and get orderId
             $orderId = $this->determineFinalOrderId();
             $transaction = $this->transactionBuilder->buildTransaction();
@@ -56,25 +66,23 @@ class WirecardPaymentGatewayPaymentModuleFrontController extends WirecardFrontCo
             $this->handleTransactionResponse($response, $orderId);
         } catch (\Exception $exception) {
             $this->errors[] = $exception->getMessage();
-            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+            $this->redirectWithNotifications($this->context->link->getPageLink(self::REDIRECT_LINK_ORDER));
         }
     }
 
-     /**
-     * Check the notification field for an exception trigger
+    /**
+     * Check if error messages exists and if yes, redirect with errors to order page
+     * If error message is a key, key is translated first
      *
-     * @param array $errorNotification
-     *
-     * @return boolean
-     * @throws Exception
-     * @since 2.7.0
+     * @param string[] $errorNotifications
      */
-    private function determineErrorException($errorNotification)
+    private function showErrorMessages($errorNotifications)
     {
-        if ($errorNotification) {
-            throw new Exception($errorNotification);
+        if (count($errorNotifications)) {
+            $paymentErrorHelper = new PaymentErrorHelper();
+            $this->errors = $paymentErrorHelper->getTranslatedErrorMessages($errorNotifications);
+            $this->redirectWithNotifications($this->context->link->getPageLink(self::REDIRECT_LINK_ORDER));
         }
-        return true;
     }
 
     /**

@@ -10,8 +10,8 @@
 namespace WirecardEE\Prestashop\Models;
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use Wirecard\PaymentSdk\Transaction\Operation;
-use Wirecard\PaymentSdk\Transaction\SepaDirectDebitTransaction;
+use WirecardEE\Prestashop\Classes\Config\Credentials\CredentialsConfiguration;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 use WirecardEE\Prestashop\Helper\TemplateHelper;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
@@ -41,6 +41,8 @@ abstract class Payment extends PaymentOption
         'pay' => 'purchase',
         'reserve' => 'authorization',
     ];
+
+    const CREDENTIALS_FILE_NAME = "credentials_config.xml";
 
     /**
      * @var string
@@ -76,6 +78,15 @@ abstract class Payment extends PaymentOption
      */
     protected $action_link;
 
+    /** @var CredentialsConfiguration */
+    protected $credentialsConfig;
+
+    /** @var WirecardLogger $logger */
+    protected $logger;
+
+    /** @var \Customer $customer */
+    protected $customer;
+
     /**
      * WirecardPayment constructor.
      *
@@ -84,8 +95,8 @@ abstract class Payment extends PaymentOption
     public function __construct()
     {
         $context = \Context::getContext();
-        $potentialPath = _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME
-                         . '/views/img/paymenttypes/' . static::TYPE . '.png';
+        $modulePath = _PS_MODULE_DIR_ . \WirecardPaymentGateway::NAME;
+        $potentialPath = $modulePath . '/views/img/paymenttypes/' . static::TYPE . '.png';
         $logoPath = file_exists($potentialPath) ? \Media::getMediaPath($potentialPath) : '';
       
         $this->action_link = $context->link->getModuleLink(
@@ -96,6 +107,7 @@ abstract class Payment extends PaymentOption
         );
 
         $this->name = 'Wirecard Payment Processing Gateway';
+        $this->type = static::TYPE;
         $this->transactionTypes = array('authorization', 'capture');
         $this->configuration = new ShopConfigurationService(static::TYPE);
 
@@ -103,6 +115,13 @@ abstract class Payment extends PaymentOption
         $this->setLogo($logoPath);
         $this->setModuleName('wd-' . static::TYPE);
         $this->setCallToActionText($this->getTranslatedString($this->configuration->getField('title')));
+        $this->customer = $context->customer;
+
+        $this->logger = new WirecardLogger();
+        $this->credentialsConfig = CredentialsConfiguration::getInstance(
+            $modulePath . DIRECTORY_SEPARATOR . self::CREDENTIALS_FILE_NAME,
+            $this->logger
+        )->getConfigByPaymentMethod($this->getType());
     }
 
     /**

@@ -38,7 +38,9 @@ class Db
 
     public static function getRow($query)
     {
-        return $query->return;
+    	if (is_object($query)) {
+		    return $query->return;
+	    }
     }
 
     public static function delete()
