@@ -9,6 +9,7 @@
 
 use WirecardEE\Prestashop\Classes\Service\TransactionPossibleOperationService;
 use WirecardEE\Prestashop\Classes\Service\TransactionPostProcessingService;
+use WirecardEE\Prestashop\Helper\NumericHelper;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
 use WirecardEE\Prestashop\Helper\Service\ContextService;
 use WirecardEE\Prestashop\Helper\TranslationHelper;
@@ -25,6 +26,7 @@ use WirecardEE\Prestashop\Models\Transaction;
 class WirecardTransactionsController extends ModuleAdminController
 {
     use TranslationHelper;
+    use NumericHelper;
 
     /** @var string */
     const TRANSLATION_FILE = "wirecardtransactions";
@@ -131,6 +133,9 @@ class WirecardTransactionsController extends ModuleAdminController
             'possible_operations' => $possibleOperationService->getPossibleOperationList(),
             'transaction'         => $this->object->toViewArray(),
             'remaining_delta_amount' => $transactionModel->getRemainingAmount(),
+            'precision'           => $this->getPrecision(),
+            'step'                => $this->calculateNumericInputStep(),
+            'regex'               => '/^[+]?(?=.?\d)\d*(\.\d{0,' . $this->getPrecision() . '})?$/',
         ];
 
         return parent::renderView();
