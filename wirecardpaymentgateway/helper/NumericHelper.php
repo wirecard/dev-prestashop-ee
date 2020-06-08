@@ -5,6 +5,33 @@ namespace WirecardEE\Prestashop\Helper;
 
 trait NumericHelper
 {
+    /**
+     * Returns Prestashop precision defined in settings
+     * @return int
+     */
+    public function getPrecision()
+    {
+        return (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+    }
+
+    /**
+     * Return step for postprocessing amount input field
+     * @return string
+     */
+    public function calculateNumericInputStep()
+    {
+        $precision = $this->getPrecision();
+        $step = '1';
+        if ($precision > 0) {
+            $step = '';
+            for ($i = 1; $i < $precision; $i++) {
+                $step .= '0';
+            }
+            $step = '0.' . $step . '1';
+        }
+
+        return $step;
+    }
 
     /**
      * Decides whether two float numbers are equal, given a precision.
@@ -19,7 +46,7 @@ trait NumericHelper
     private function equals($firstNumber, $secondNumber, $precision = null)
     {
         if ($precision === null) {
-            $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+            $precision = $this->getPrecision();
         }
         $integerCoefficient = pow(10, $precision);
         $fractionalCoefficient = pow(10, -1 * $precision);
@@ -41,7 +68,7 @@ trait NumericHelper
     private function difference($firstNumber, $secondNumber, $precision = null)
     {
         if ($precision === null) {
-            $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+            $precision = $this->getPrecision();
         }
         $integerCoefficient = pow(10, $precision);
         $firstNumber *= $integerCoefficient;
