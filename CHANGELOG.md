@@ -12,10 +12,10 @@
 *   Upgrade paymentSDK version  
 *   Update Alipay Cross-border logo  
 
-| Overview              | Prestashop version            | PHP 7.0   | PHP 7.1 | PHP 7.2 |  
-|-----------------------|-------------------------------|:---------:|:-------:|:-------:|  
-| **Tested version(s)** | Prestashop 1.7.6.3            | :x:       | :x:     | &#9989; |  
-| **Compatibility**     | Prestashop 1.7.4.0 - 1.7.6.3  | &#9989;   | &#9989; | &#9989; |  
+| Overview              | Prestashop version            | PHP 5.6   | PHP 7.0   | PHP 7.1 | PHP 7.2 |  
+|-----------------------|-------------------------------|:---------:|:---------:|:-------:|:-------:|  
+| **Tested version(s)** | Prestashop 1.7.6.3            | :x:       | :x:       | :x:     | &#9989; |  
+| **Compatibility**     | Prestashop 1.7.4.0 - 1.7.6.3  | &#9989;   | &#9989;   | &#9989; | &#9989; |  
 
 
 ## v2.9.0
