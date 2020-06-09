@@ -38,7 +38,7 @@ class PaymentCreditCardTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Credit Card';
+        $expected = 'Card Payments';
 
         $this->assertEquals($expected, $actual);
     }
