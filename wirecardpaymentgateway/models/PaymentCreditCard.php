@@ -50,7 +50,7 @@ class PaymentCreditCard extends Payment
     {
         parent::__construct();
         $this->type = self::TYPE;
-        $this->name = 'Wirecard Credit Card';
+        $this->name = 'Card payments';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
     }

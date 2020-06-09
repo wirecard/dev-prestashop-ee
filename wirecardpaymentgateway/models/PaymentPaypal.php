@@ -43,7 +43,7 @@ class PaymentPaypal extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'Wirecard PayPal';
+        $this->name = 'PayPal';
         $this->formFields = $this->createFormFields();
     }
 

@@ -45,7 +45,7 @@ class PaymentIdeal extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'Wirecard iDEAL';
+        $this->name = 'iDEAL';
         $this->formFields = $this->createFormFields();
     }
 
