@@ -37,7 +37,7 @@ class PaymentTest extends \PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard PayPal';
+        $expected = 'PayPal';
 
         $this->assertEquals($expected, $actual);
     }

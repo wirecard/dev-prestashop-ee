@@ -46,7 +46,7 @@ class PaymentIdealTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard iDEAL';
+        $expected = 'iDEAL';
 
         $this->assertEquals($expected, $actual);
     }
