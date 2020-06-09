@@ -1,5 +1,23 @@
 # Changelog
 
+## v2.10.0
+
+*   Add PSD2 hint in Credit Card configuration  
+*   Add new email templates for partial post-processing payments  
+*   Improve order state handling  
+*   Improve error handling  
+*   Improve amount handling within payment table  
+*   Improve Credit Card post-processing operations  
+*   Translate transaction state and -type in transaction overview  
+*   Upgrade paymentSDK version  
+*   Update Alipay Cross-border logo  
+
+| Overview              | Prestashop version            | PHP 5.6   | PHP 7.0   | PHP 7.1 | PHP 7.2 |  
+|-----------------------|-------------------------------|:---------:|:---------:|:-------:|:-------:|  
+| **Tested version(s)** | Prestashop 1.7.6.3            | :x:       | :x:       | :x:     | &#9989; |  
+| **Compatibility**     | Prestashop 1.7.4.0 - 1.7.6.3  | &#9989;   | &#9989;   | &#9989; | &#9989; |  
+
+
 ## v2.9.0
 
 *   Enable reading of test payment credentials for all payment methods from a generic xml file

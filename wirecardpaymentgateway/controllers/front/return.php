@@ -7,12 +7,12 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
  */
 
+use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
 use WirecardEE\Prestashop\Classes\Engine\ReturnResponse;
 use WirecardEE\Prestashop\Classes\ProcessType;
-use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Classes\Response\Cancel;
+use WirecardEE\Prestashop\Classes\Response\ProcessablePaymentResponseFactory;
 use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
-use WirecardEE\Prestashop\Classes\Controller\WirecardFrontController;
 
 /**
  * Class WirecardPaymentGatewayReturnModuleFrontController

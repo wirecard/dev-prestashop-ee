@@ -43,7 +43,7 @@ class PaymentPtwentyfourTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Przelewy24';
+        $expected = 'Przelewy24';
 
         $this->assertEquals($expected, $actual);
     }

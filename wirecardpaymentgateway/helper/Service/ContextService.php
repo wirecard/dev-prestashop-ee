@@ -50,6 +50,17 @@ class ContextService
     }
 
     /**
+     * @param int $amount
+     *
+     * @throws \Exception
+     * @since 2.10.0
+     */
+    public function setRequestedAmount($amount)
+    {
+        $this->context->cookie->__set('requested_amount', $amount);
+    }
+
+    /**
      * @param array $errors
      * @param string $controller_name
      * @since 2.1.0

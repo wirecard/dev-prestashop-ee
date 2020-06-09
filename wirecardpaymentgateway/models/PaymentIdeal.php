@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Models;
 
-use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Entity\IdealBic;
+use Wirecard\PaymentSdk\Transaction\IdealTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\SepaCreditTransferTransaction;
 
@@ -45,7 +45,7 @@ class PaymentIdeal extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'Wirecard iDEAL';
+        $this->name = 'iDEAL';
         $this->formFields = $this->createFormFields();
     }
 

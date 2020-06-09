@@ -9,11 +9,14 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Doctrine\Common\Annotations\IndexedReader;
 use Wirecard\PaymentSdk\BackendService;
-use Wirecard\PaymentSdk\Transaction\Transaction;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 use Wirecard\PaymentSdk\Response\SuccessResponse;
+use Wirecard\PaymentSdk\Transaction\Transaction;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
+use WirecardEE\Prestashop\Classes\Finder\OrderFinder;
+use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
+use WirecardEE\Prestashop\Helper\Service\OrderService;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
 
 /**
@@ -25,6 +28,8 @@ class OrderManager
 {
     use TranslationHelper;
 
+    use NumericHelper;
+
     /**
      * @var string
      * @since 2.8.0
@@ -34,17 +39,34 @@ class OrderManager
     const WIRECARD_OS_STARTING = 'WIRECARD_OS_STARTING';
     const WIRECARD_OS_AWAITING = 'WIRECARD_OS_AWAITING';
     const WIRECARD_OS_AUTHORIZATION = 'WIRECARD_OS_AUTHORIZATION';
+    const WIRECARD_OS_PARTIALLY_REFUNDED = "WIRECARD_OS_PARTIAL_REFUNDED";
+    const WIRECARD_OS_PARTIALLY_CAPTURED = "WIRECARD_OS_PARTIAL_CAPTURED";
+
+    const EMAIL_TEMPLATE_PARTIALLY_CAPTURED = 'partially_captured_template';
+    const EMAIL_TEMPLATE_PARTIALLY_REFUNDED = 'partially_refunded_template';
+
+    const PHRASEAPP_KEY_OS_PAYMENT_STARTED = 'order_state_payment_started';
+    const PHRASEAPP_KEY_OS_PAYMENT_AWAITING = 'order_state_payment_awaiting';
+    const PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED = 'order_state_payment_authorized';
+    const PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED = 'order_state_payment_partially_refunded';
+    const PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED = 'order_state_payment_partially_captured';
 
     const ORDER_STATE_TRANSLATION_KEY_MAP = [
-        self::WIRECARD_OS_STARTING => 'order_state_payment_started',
-        self::WIRECARD_OS_AWAITING => 'order_state_payment_awaiting',
-        self::WIRECARD_OS_AUTHORIZATION => 'order_state_payment_authorized'
+        self::WIRECARD_OS_STARTING => self::PHRASEAPP_KEY_OS_PAYMENT_STARTED,
+        self::WIRECARD_OS_AWAITING => self::PHRASEAPP_KEY_OS_PAYMENT_AWAITING,
+        self::WIRECARD_OS_AUTHORIZATION => self::PHRASEAPP_KEY_OS_PAYMENT_AUTHORIZED,
+        self::WIRECARD_OS_PARTIALLY_REFUNDED => self::PHRASEAPP_KEY_OS_PARTIALLY_REFUNDED,
+        self::WIRECARD_OS_PARTIALLY_CAPTURED => self::PHRASEAPP_KEY_OS_PARTIALLY_CAPTURED,
     ];
+
 
     const COLOR_LIGHT_BLUE = 'lightblue';
 
     /** @var \Module|\WirecardPaymentGateway  */
     private $module;
+
+    /** @var OrderService */
+    private $order_service;
 
     /**
      * OrderManager constructor.
@@ -63,7 +85,11 @@ class OrderManager
      * @param \Cart $cart
      * @param string $state
      * @param string $paymentType
-     * @return \Order
+     *
+     * @return int
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
+     * @throws \Exception
      * @since 1.0.0
      */
     public function createOrder($cart, $state, $paymentType)
@@ -73,7 +99,7 @@ class OrderManager
         $this->module->validateOrder(
             $cart->id,
             \Configuration::get($state),
-            $cart->getOrderTotal(true),
+            \Tools::ps_round($cart->getOrderTotal(true), $this->getPrecision()),
             $shopConfigService->getField('title'),
             null,
             array(),
@@ -81,7 +107,11 @@ class OrderManager
             false,
             $cart->secure_key
         );
-
+        $orderReference = $this->module->currentOrderReference;
+        $orderFinder = new OrderFinder();
+        $order = $orderFinder->getOrderByReference($orderReference);
+        $this->order_service = new OrderService($order);
+        $this->order_service->deleteOrderPayment($orderReference);
         return $this->module->currentOrder;
     }
 
@@ -89,6 +119,9 @@ class OrderManager
      * Create a new order state with specific order state name
      *
      * @param string $state
+     *
+     * @throws \PrestaShopDatabaseException
+     * @throws \PrestaShopException
      * @since 1.0.0
      */
     public function createOrderState($state)
@@ -101,6 +134,17 @@ class OrderManager
             $orderState->id = \Configuration::get($state);
             $orderState->update();
         }
+        $toId = $orderState->id;
+
+        $fromId = $this->getCopyLogoId($toId);
+        if ($fromId) {
+            $fromPath = $this->getPaymendLogoPath($fromId);
+
+            if (is_readable($fromPath)) {
+                $toPath = $this->getPaymendLogoPath($toId);
+                copy($fromPath, $toPath);
+            }
+        }
 
         \Configuration::updateValue(
             $state,
@@ -108,12 +152,36 @@ class OrderManager
         );
     }
 
+    private function getPaymendLogoPath($orderStateId)
+    {
+        $dirSep = DIRECTORY_SEPARATOR;
+        return _PS_ROOT_DIR_ . $dirSep . 'img' . $dirSep . 'os' . $dirSep . $orderStateId . '.gif';
+    }
+
+    private function getCopyLogoId($fromId)
+    {
+        $fromId = (int)$fromId;
+        if (!$fromId) {
+            return 0;
+        }
+        $logo_mapping = [
+            (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_REFUNDED) => (int)\Configuration::get('PS_OS_REFUND'),
+            (int)\Configuration::get(self::WIRECARD_OS_PARTIALLY_CAPTURED) => (int)\Configuration::get('PS_OS_PAYMENT'),
+            (int)\Configuration::get(self::WIRECARD_OS_AUTHORIZATION) => (int)\Configuration::get('PS_OS_BANKWIRE'),
+        ];
+        if (isset($logo_mapping[$fromId])) {
+            return (int)$logo_mapping[$fromId];
+        }
+        return 0;
+    }
+
     /**
      * @param string $state
+     * @param $template
+     *
      * @return \OrderState
      * @throws \PrestaShopDatabaseException
      * @throws \PrestaShopException
-     * @throws \Exception
      * @since 2.8.0
      */
     private function initializeOrderState($state)
@@ -129,7 +197,8 @@ class OrderManager
             );
             $orderState->name[$language['id_lang']] = $orderStateInfo;
         }
-        $orderState->send_email = false;
+        $orderState->template = $this->getTemplateFromOrderState($state);
+        $orderState->send_email = $this->sendOrderStateChangeEmail($state);
         $orderState->color = self::COLOR_LIGHT_BLUE;
         $orderState->hidden = false;
         $orderState->delivery = false;
@@ -138,6 +207,42 @@ class OrderManager
         $orderState->invoice = false;
 
         return $orderState;
+    }
+
+    /**
+     * Get template to save in database based on order state
+     *
+     * @param $state
+     * @return string
+     * @since 2.10.0
+     */
+    private function getTemplateFromOrderState($state)
+    {
+        $template = '';
+        if ($state === self::WIRECARD_OS_PARTIALLY_REFUNDED) {
+            $template = self::EMAIL_TEMPLATE_PARTIALLY_REFUNDED;
+        } elseif ($state === self::WIRECARD_OS_PARTIALLY_CAPTURED) {
+            $template = self::EMAIL_TEMPLATE_PARTIALLY_CAPTURED;
+        }
+        return $template;
+    }
+
+    /**
+     * Decide if email should be sent
+     *
+     * @param string $state
+     * @return string
+     * @since 2.10.0
+     */
+    private function sendOrderStateChangeEmail($state)
+    {
+        $sendEmail = false;
+        if (($state === self::WIRECARD_OS_PARTIALLY_REFUNDED)||
+           ($state === self::WIRECARD_OS_PARTIALLY_CAPTURED)) {
+            $sendEmail = true;
+        }
+
+        return $sendEmail;
     }
 
     /**

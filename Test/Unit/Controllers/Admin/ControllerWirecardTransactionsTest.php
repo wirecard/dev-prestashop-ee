@@ -66,7 +66,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
 
         $expected = [
             'current_index' => '1',
-            'payment_method' => 'Wirecard Credit Card',
+            'payment_method' => 'Card payments',
             'possible_operations' => [
                 [
                     'action' => 'refund',
@@ -92,7 +92,10 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
                 'order' => $transaction->getOrderNumber(),
                 'badge' => 'red'
             ],
-            'remaining_delta_amount' => 0,
+            'remaining_delta_amount' => 0.0,
+            'precision' => 2,
+            'step' => '0.01',
+            'regex' => '/^[+]?(?=.?\d)\d*(\.\d{0,2})?$/',
         ];
 
         $this->assertEquals($expected, $this->wirecardTransactionsController->tpl_view_vars);

@@ -46,14 +46,6 @@ class InitialTransaction implements SettleableTransaction
     }
 
     /**
-     * @return bool
-     */
-    public function markSettledAsClosed()
-    {
-        return false;
-    }
-
-    /**
      * @param \Order $order
      * @param SuccessResponse $notification
      * @param OrderManager $orderManager

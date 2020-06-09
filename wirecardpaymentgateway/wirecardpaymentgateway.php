@@ -12,18 +12,20 @@ if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
 
+use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
 use WirecardEE\Prestashop\Classes\Config\Tab\AdminControllerTabConfig;
+use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
+use WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
+use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
+use WirecardEE\Prestashop\Classes\Service\OrderStateManagerService;
 use WirecardEE\Prestashop\Classes\Service\TabManagerService;
+use WirecardEE\Prestashop\Helper\OrderManager;
 use WirecardEE\Prestashop\Helper\PaymentProvider;
+use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Helper\TranslationHelper;
 use WirecardEE\Prestashop\Helper\UrlConfigurationChecker;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
-use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
-use Wirecard\PaymentSdk\Transaction\CreditCardTransaction;
-use WirecardEE\Prestashop\Helper\TranslationHelper;
-use WirecardEE\Prestashop\Classes\Hook\OrderStatusUpdateCommand;
-use WirecardEE\Prestashop\Classes\Hook\BeforeOrderStatusUpdateHandler;
-use WirecardEE\Prestashop\Classes\Constants\ConfigConstants;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
 
 /**
  * Class WirecardPaymentGateway
@@ -45,7 +47,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.9.0';
+    const VERSION = '2.10.0';
 
     /**
      * @var string
@@ -79,6 +81,11 @@ class WirecardPaymentGateway extends PaymentModule
     private $tabManagerService;
 
     /**
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
+     */
+    private $orderStateManagerService;
+
+    /**
      * WirecardPaymentGateway constructor.
      *
      * @since 1.0.0
@@ -90,7 +97,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7', 'max' => '1.7.6.3');
+        $this->ps_versions_compliancy = array('min' => '1.7.4.0', 'max' => '1.7.6.3');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
@@ -136,6 +143,7 @@ class WirecardPaymentGateway extends PaymentModule
             || !$this->registerHook('displayOrderConfirmation')
             || !$this->registerHook('postUpdateOrderStatus')
             || !$this->registerHook('updateOrderStatus')
+            || !$this->registerHook('actionGetExtraMailTemplateVars')
             || !$this->createTable('tx')
             || !$this->createTable('cc')
             || !$this->setDefaults()) {
@@ -150,6 +158,8 @@ class WirecardPaymentGateway extends PaymentModule
         $this->addUpdateOrderStatuses();
 
         $this->installTabs();
+
+        $this->addEmailTemplatesToPrestashop();
 
         return true;
     }
@@ -628,6 +638,13 @@ class WirecardPaymentGateway extends PaymentModule
                         }
                         break;
 
+                    case 'hint':
+                        if (isset($elem['desc'])) {
+                            $elem['desc'] = '<span style="font-style: initial; font-size: 14px">' .
+                                Tools::htmlentitiesDecodeUTF8($elem['desc']). '</span>';
+                        }
+                        break;
+
                     case 'onoff':
                         $elem['type'] = $radioType;
                         $elem['class'] = 't';
@@ -1103,12 +1120,121 @@ class WirecardPaymentGateway extends PaymentModule
     /**
      *  Add or update (if exists) order statuses
      */
-    private function addUpdateOrderStatuses()
+    public function addUpdateOrderStatuses()
     {
         $orderManager = new OrderManager();
         $translationKeys = $orderManager::ORDER_STATE_TRANSLATION_KEY_MAP;
         foreach (array_keys($translationKeys) as $translationKey) {
             $orderManager->createOrderState($translationKey);
+        }
+    }
+
+    /**
+     * @throws \Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException
+     * @since 2.10.0
+     */
+    public function orderStateManager()
+    {
+        if (is_null($this->orderStateManagerService)) {
+            $this->orderStateManagerService = new OrderStateManagerService();
+        }
+
+        return $this->orderStateManagerService;
+    }
+
+    /**
+     * Add email templates to prestashop list of email templates
+     * @return boolean
+     * @since 2.10.0
+     */
+    public function addEmailTemplatesToPrestashop()
+    {
+        $orderManager = new OrderManager();
+        $emailTemplates = [$orderManager::EMAIL_TEMPLATE_PARTIALLY_CAPTURED,
+            $orderManager::EMAIL_TEMPLATE_PARTIALLY_REFUNDED];
+        foreach ($emailTemplates as $emailTemplate) {
+            $this->defineEmailTemplatePathPerLanguage($emailTemplate);
+        }
+
+        return true;
+    }
+
+    /**
+     * Add email templates for each language
+     *
+     * @param string $emailTemplate
+     *
+     * @since 2.10.0
+     */
+    private function defineEmailTemplatePathPerLanguage($emailTemplate)
+    {
+        foreach (\Language::getLanguages(false) as $language) {
+            $this->defineEmailTemplatePath($language['iso_code'], $emailTemplate);
+        }
+    }
+
+    /**
+     * Define the path for the email templates
+     *
+     * @param array $language
+     * @param string $emailTemplate
+     *
+     * @since 2.10.0
+     */
+    private function defineEmailTemplatePath($languageCode, $emailTemplate)
+    {
+        $fileExtensions = ['html', 'txt'];
+        foreach ($fileExtensions as $fileExtension) {
+            $mailTemplatePath = _PS_MODULE_DIR_ . self::NAME . '/' . 'mails' . '/' . $languageCode .
+                                '/' . $emailTemplate . '.' . $fileExtension;
+            if (file_exists($mailTemplatePath)) {
+                \Tools::copy(
+                    $mailTemplatePath,
+                    _PS_MAIL_DIR_ . $languageCode . '/' . $emailTemplate . '.' . $fileExtension
+                );
+            }
+        }
+    }
+
+    /**
+     * Hook into prestashop emails to add new parameters
+     * @param $params
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function hookActionGetExtraMailTemplateVars($params)
+    {
+        if (isset($params['template_vars']['{id_order}'])) {
+            $order = new Order($params['template_vars']['{id_order}']);
+            $orderAmountCalculatorService = new OrderAmountCalculatorService($order);
+            $totalOrderAmount = $orderAmountCalculatorService->getOrderTotalAmount();
+            $params['extra_template_vars']['{total_amount}'] = $totalOrderAmount;
+            $params['extra_template_vars']['{currency}'] = $this->context->currency->getSign();
+            $this->addPartialAmountParamToEmail($params, $orderAmountCalculatorService);
+        }
+    }
+
+    /**
+     * Add partial or accumulative amount to the email parameters
+     *
+     * @param array $params
+     * @param OrderAmountCalculatorService $orderAmountCalculatorService
+     */
+    private function addPartialAmountParamToEmail($params, $orderAmountCalculatorService)
+    {
+        $requestedAmount = $this->context->cookie->__get('requested_amount');
+        $orderManager = new OrderManager();
+        if ($requestedAmount) {
+            $params['extra_template_vars']['{current_amount}'] = $requestedAmount;
+        } else {
+            if (($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_REFUNDED)) {
+                $params['extra_template_vars']['{current_amount}'] =
+                    $orderAmountCalculatorService->getOrderRefundedAmount();
+            } elseif ($params['template'] === $orderManager::EMAIL_TEMPLATE_PARTIALLY_CAPTURED) {
+                $params['extra_template_vars']['{current_amount}'] =
+                    $orderAmountCalculatorService->getOrderCapturedAmount();
+            }
         }
     }
 }

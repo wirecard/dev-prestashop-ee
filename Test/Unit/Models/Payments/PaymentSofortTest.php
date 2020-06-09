@@ -46,7 +46,7 @@ class PaymentSofortTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Wirecard Sofort.';
+        $expected = 'Sofort.';
 
         $this->assertEquals($expected, $actual);
     }

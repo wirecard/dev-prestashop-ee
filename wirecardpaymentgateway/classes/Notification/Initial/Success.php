@@ -9,46 +9,20 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification\Initial;
 
-use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
+use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
-use WirecardEE\Prestashop\Helper\OrderManager;
 
-class Success extends AbstractSuccess implements ProcessablePaymentNotification
+/**
+ * Class Success
+ * @package WirecardEE\Prestashop\Classes\Notification\Initial
+ */
+class Success extends AbstractSuccess
 {
-    public function process()
-    {
-        if (OrderManager::isIgnorable($this->notification)) {
-            return;
-        }
-
-        $order_state = $this->order_manager->orderStateToPrestaShopOrderState($this->notification);
-        $this->order->setCurrentState($order_state);
-        $this->order->save();
-
-        $this->order_service->updateOrderPayment(
-            $this->notification->getTransactionId(),
-            $this->getRestAmount($order_state)
-        );
-
-        parent::process();
-    }
-
     /**
-     * @param string $order_state
-     *
-     * @return float|int
-     * @since 2.7.0
+     * @inheritDoc
      */
-    private function getRestAmount($order_state)
+    public function getOrderStateProcessType()
     {
-        $rest_amount = 0;
-        $payment_processing_state = \Configuration::get('PS_OS_PAYMENT');
-        $requested_amount = $this->notification->getRequestedAmount();
-
-        if ($payment_processing_state === $order_state) {
-            $rest_amount = $requested_amount->getValue();
-        }
-
-        return $rest_amount;
+        return Constant::PROCESS_TYPE_INITIAL_NOTIFICATION;
     }
 }

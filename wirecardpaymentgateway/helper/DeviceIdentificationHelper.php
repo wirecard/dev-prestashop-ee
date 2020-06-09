@@ -9,8 +9,8 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
-use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Helper\Service\ShopConfigurationService;
+use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 
 /**
  * Class DeviceIdentificationHelper

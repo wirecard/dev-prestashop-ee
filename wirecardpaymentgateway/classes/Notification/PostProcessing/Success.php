@@ -9,48 +9,31 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification\PostProcessing;
 
-use WirecardEE\Prestashop\Classes\Notification\ProcessablePaymentNotification;
+use Wirecard\ExtensionOrderStateModule\Domain\Entity\Constant;
 use WirecardEE\Prestashop\Classes\Notification\Success as AbstractSuccess;
-use WirecardEE\Prestashop\Helper\OrderManager;
-use WirecardEE\Prestashop\Helper\Logger as WirecardLogger;
 
-class Success extends AbstractSuccess implements ProcessablePaymentNotification
+class Success extends AbstractSuccess
 {
-    /** @var WirecardLogger  */
-    private $logger;
-
     /**
-     * Success constructor.
-     *
-     * @since 2.7.0
+     * @inheritDoc
      */
-    public function __construct()
+    public function getOrderStateProcessType()
     {
-        $this->logger = new WirecardLogger();
+        return Constant::PROCESS_TYPE_POST_PROCESSING_NOTIFICATION;
     }
 
     public function process()
     {
-        if (OrderManager::isIgnorable($this->notification)) {
-            return;
-        }
         parent::process();
-        try {
-            $parentTransaction = $this->getParentTransaction();
-            $parentTransaction->markSettledAsClosed();
-            $parentTransaction->updateOrder(
-                $this->order,
-                $this->notification,
-                $this->order_manager,
-                $this->order_service
-            );
-        } catch (\Exception $exception) {
-            $this->logger->error(
-                'Error in class:'. __CLASS__ .
-                ' method:' . __METHOD__ .
-                ' exception: ' . $exception->getMessage()
-            );
-            throw $exception;
-        }
+        $this->orderAmountCalculator->markSettledParentAsClosed(
+            $this->notification->getParentTransactionId()
+        );
+        $this->order_service->setOrderAmountCalculatorService(
+            $this->orderAmountCalculator
+        );
+        $this->order_service->createOrderPayment(
+            $this->notification,
+            $this->notification->getRequestedAmount()->getValue()
+        );
     }
 }

@@ -21,6 +21,7 @@ var Constants = {
     CONTAINER_ID: "payment-processing-gateway-credit-card-form",
     PAYMENT_FORM_ID: "form[action*=\"creditcard\"]",
     CREDITCARD_RADIO_ID: "input[name=\"payment-option\"][data-module-name=\"wd-creditcard\"]",
+    PAYMENT_METHODS_RADIO_ID: "input[name=\"payment-option\"]",
     USE_CARD_BUTTON_ID: "#use-new-card",
     DELETE_CARD_BUTTON_ID: "button[data-cardid]",
     STORED_CARD_BUTTON_ID: "#stored-card",
@@ -28,7 +29,12 @@ var Constants = {
     SELECT_TOKEN_RADIO_ID: "input:radio[name='cc-reuse']",
     CARD_LIST_ID: "#wd-card-list",
     CARD_SPINNER_ID: "#card-spinner",
-    NOTIFICATION_ID: "error-notification"
+    NOTIFICATION_ID: "error-notification",
+    NOTIFICATIONS_ID: "#notifications",
+    ERROR_MESSAGE_GENERIC: "error_message_generic",
+    ERROR_WPP: "errorWPP",
+    ERROR_ERRORS: "errors",
+    ERROR_PREFIX: "error_"
 };
 
 var SpinnerState = {
@@ -37,6 +43,9 @@ var SpinnerState = {
 };
 
 jQuery(function () {
+    jQuery(document).on("click", Constants.PAYMENT_METHODS_RADIO_ID, function () {
+        jQuery(Constants.NOTIFICATIONS_ID).hide();
+    });
     jQuery(document).on("click", Constants.CREDITCARD_RADIO_ID, onPaymentMethodSelected);
 });
 
@@ -166,12 +175,18 @@ function onFormDataReceived(formData)
 
     attachFormField($form, "cart_id", formData.field_value_1);
 
-    WPP.seamlessRender({
-        requestData: formData,
-        wrappingDivId: Constants.CONTAINER_ID,
-        onSuccess: onFormRendered,
-        onError: onSeamlessFormError
-    });
+    if (typeof WPP !== "undefined") {
+        WPP.seamlessRender({
+            requestData: formData,
+            wrappingDivId: Constants.CONTAINER_ID,
+            onSuccess: onFormRendered,
+            onError: onSeamlessFormError
+        });
+    } else {
+        onSeamlessFormError({
+            errorWPP: Constants.ERROR_MESSAGE_GENERIC
+        });
+    }
 }
 
 /**
@@ -459,12 +474,22 @@ function onSeamlessFormError(error)
 {
     let $form = jQuery(Constants.PAYMENT_FORM_ID);
     let $errorList = [];
-    error.errors.forEach((item) => {
-        $errorList.push(item.error.description);
+    if (error.hasOwnProperty(Constants.ERROR_ERRORS)) {
+        error.errors.forEach((responseKey) => {
+            $errorList.push(responseKey.error.description);
+        });
+    }
+    if (error.hasOwnProperty(Constants.ERROR_WPP)) {
+        $errorList.push(error.errorWPP);
+    }
+    Object.entries(error).forEach(([responseKey, value]) => {
+        if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
+            $errorList.push(value);
+        }
     });
     let $input = jQuery("<input>").attr({
         type: "hidden",
-        value: $errorList,
+        value: JSON.stringify($errorList),
         name: Constants.NOTIFICATION_ID,
     });
     $form.append($input);

@@ -50,7 +50,7 @@ class PaymentCreditCard extends Payment
     {
         parent::__construct();
         $this->type = self::TYPE;
-        $this->name = 'Wirecard Credit Card';
+        $this->name = 'Card payments';
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
     }
@@ -72,6 +72,12 @@ class PaymentCreditCard extends Payment
                     'type' => 'onoff',
                     'doc' => $this->getTranslatedString('enable_heading_title_creditcard'),
                     'default' => 0,
+                ),
+                array(
+                    'name' => 'psd_two',
+                    'label' => $this->getTranslatedString('config_PSD2_information'),
+                    'type' => 'hint',
+                    'doc' => $this->getTranslatedString('config_PSD2_information_desc_prestashop'),
                 ),
                 array(
                     'name' => 'title',

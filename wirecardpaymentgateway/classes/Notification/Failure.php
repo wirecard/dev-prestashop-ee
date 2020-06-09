@@ -9,7 +9,10 @@
 
 namespace WirecardEE\Prestashop\Classes\Notification;
 
+use Wirecard\ExtensionOrderStateModule\Domain\Exception\OrderStateInvalidArgumentException;
 use Wirecard\PaymentSdk\Response\FailureResponse;
+use WirecardEE\Prestashop\Classes\Service\OrderAmountCalculatorService;
+use WirecardEE\Prestashop\Helper\Logger;
 use WirecardEE\Prestashop\Helper\Service\OrderService;
 
 /**
@@ -17,41 +20,60 @@ use WirecardEE\Prestashop\Helper\Service\OrderService;
  * @since 2.1.0
  * @package WirecardEE\Prestashop\Classes\Notification
  */
-final class Failure implements ProcessablePaymentNotification
+abstract class Failure
 {
-    /** @var \Order  */
-    private $order;
 
-    /** @var FailureResponse  */
+    /** @var FailureResponse */
     private $notification;
 
     /** @var OrderService */
-    private $order_service;
+    private $orderService;
+
+    /**
+     * @var \WirecardEE\Prestashop\Classes\Service\OrderStateManagerService
+     */
+    private $orderStateManager;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
 
     /**
      * FailurePaymentProcessing constructor.
      *
      * @param \Order $order
      * @param FailureResponse $notification
+     * @param bool $isPostProcessing
+     * @throws OrderStateInvalidArgumentException
      * @since 2.1.0
      */
     public function __construct($order, $notification)
     {
-        $this->order = $order;
         $this->notification = $notification;
-        $this->order_service = new OrderService($order);
+        $this->orderService = new OrderService($order);
+        $this->orderStateManager = \Module::getInstanceByName('wirecardpaymentgateway')->orderStateManager();
+        $this->logger = new Logger();
     }
 
     /**
+     * @param $orderStateProcessType
+     * @throws \PrestaShopException
      * @since 2.1.0
      */
-    public function process()
+    protected function processForType($orderStateProcessType)
     {
-        if ($this->order->getCurrentState() !== _PS_OS_ERROR_) {
-            $this->order->setCurrentState(_PS_OS_ERROR_);
-            $this->order->save();
-
-            $this->order_service->updateOrderPayment($this->notification->getData()['transaction-id'], 0);
+        $currentState = $this->orderService->getLatestOrderStatusFromHistory();
+        $order = $this->orderService->getOrder();
+        $nextState = $this->orderStateManager->calculateNextOrderState(
+            $currentState,
+            $orderStateProcessType,
+            $this->notification->getData(),
+            new OrderAmountCalculatorService($order)
+        );
+        if ($nextState) {
+            $order->setCurrentState($nextState);
+            $order->save();
         }
     }
 }
