@@ -40,7 +40,7 @@ class PaymentGuaranteedInvoiceRatepayTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Guaranteed Invoice by Wirecard';
+        $expected = 'Facture avec garantie de paiement par Crédit Agricole';
 
         $this->assertEquals($expected, $actual);
     }

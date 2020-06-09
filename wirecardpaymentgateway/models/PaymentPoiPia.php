@@ -49,7 +49,7 @@ class PaymentPoiPia extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'Payment on Invoice / Payment in Advance';
+        $this->name = 'Paiement sur facture / Paiement à l’avance';
         $this->formFields = $this->createFormFields();
     }
 

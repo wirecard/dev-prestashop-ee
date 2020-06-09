@@ -43,7 +43,7 @@ class PaymentPoiPiaTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Payment on Invoice / Payment in Advance';
+        $expected = 'Paiement sur facture / Paiement à l’avance';
 
         $this->assertEquals($expected, $actual);
     }

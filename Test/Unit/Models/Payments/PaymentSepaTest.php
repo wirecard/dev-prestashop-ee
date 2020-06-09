@@ -41,7 +41,7 @@ class PaymentSepaTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'SEPA Direct Debit';
+        $expected = 'Prélèvement SEPA';
 
         $this->assertEquals($expected, $actual);
     }
