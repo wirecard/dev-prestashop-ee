@@ -71,7 +71,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_9e705c136f4bbbe89fed
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Onderwerp';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_36245276e84306a410a410785ac986b3'] = 'Bijkomende informatie versturen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_7daacf9143e60bd1d97b926e8d0754d6'] = 'Configuratie testen';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_c9406e4099ecf4be23712e1a225de241'] = 'Gegarandeerde betaling';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_c9406e4099ecf4be23712e1a225de241'] = 'Wirecard gegarandeerde betaling door Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Inschakelen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_a09f7dbfdeaf024d64ae6ceae0eb1633'] = 'Wirecard gegarandeerde betaling inschakelen';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_2433374a7348266aa2a46eab61a2fc5b'] = 'Titel';
@@ -267,7 +267,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>form_c071c0ba549c0f561e959f21c00ed
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_b3bfb5ad6ba04daf0f8f1930133d89dd'] = 'iDEAL';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_509a4658ba4b9a50ee9ae034572fdac0'] = 'Sofort.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_174b7e36e60f7ff7eb31f90c5835692b'] = 'Betaling op factuur / voorafbetaling';
-$_MODULE['<{wirecardpaymentgateway}prestashop>form_c9406e4099ecf4be23712e1a225de241'] = 'Gegarandeerde betaling';
+$_MODULE['<{wirecardpaymentgateway}prestashop>form_c9406e4099ecf4be23712e1a225de241'] = 'Wirecard gegarandeerde betaling door Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_2501dccc33780ee0ddf3e5cd3a1e24b7'] = 'Alipay Cross-border';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_528bb6f11eb0ecd727e0fb9869af095d'] = 'Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>form_fdfdc9b072cbb18c8956190275b4786b'] = 'Testresultaat';
