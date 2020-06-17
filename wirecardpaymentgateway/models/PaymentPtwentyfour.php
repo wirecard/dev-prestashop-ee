@@ -43,7 +43,7 @@ class PaymentPtwentyfour extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'Przelewy24';
+        $this->name = $this->getTranslatedString('ptwentyfour');
         $this->formFields = $this->createFormFields();
     }
 

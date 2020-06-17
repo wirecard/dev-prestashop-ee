@@ -42,7 +42,7 @@ class PaymentSepaCreditTransfer extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'SEPA Credit Transfer';
+        $this->name = $this->getTranslatedString('sepact');
         $this->formFields = $this->createFormFields();
         $this->setLoadJs(true);
     }

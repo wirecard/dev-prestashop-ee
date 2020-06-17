@@ -54,6 +54,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>transaction_9569df687ef41624ab7e67
 $_MODULE['<{wirecardpaymentgateway}prestashop>transaction_d7fd63c15bed68f5d747f2283c3a3de2'] = 'Spôsob platby';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transaction_ced02f721e522c9c96aa344901916d43'] = 'Typ transakcie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>transaction_4621508b093588359d89d15019b0c713'] = 'Stav transakcie';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_174b7e36e60f7ff7eb31f90c5835692b'] = 'Platba na faktúru/platba vopred';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_8452d5ec4fb22408e082618a0bb5bfd7'] = 'Povoliť platbu na faktúru/vopred Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
@@ -70,6 +71,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_9e705c136f4bbbe89fed
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Deskriptor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpoipia_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_c9406e4099ecf4be23712e1a225de241'] = 'Zaručená faktúra';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_a09f7dbfdeaf024d64ae6ceae0eb1633'] = 'Povoliť zaručenú faktúru Wirecard';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
@@ -89,6 +91,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_c9
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Deskriptor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentguaranteedinvoiceratepay_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_881646092902e7bb84bb2a78b777164d'] = 'SEPA Inkaso';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_ecb6e37a11364fbac26a423ff26ac01a'] = 'Povoliť prevod Wirecard SEPA Inkaso';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
@@ -111,6 +114,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_3ea9eb5a6ed
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_fa887ca91c63a500cc3114da570e0000'] = 'BIC povolený';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepadirectdebit_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_a0a058baaeef16e88f6bd2ee36c03f6f'] = 'PayPal';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_352028ff330a2809433e98a2b423386c'] = 'Povoliť Wirecard PayPal';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
@@ -128,6 +132,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_9f4e1c7a06c55e117e2b
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Deskriptor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentpaypal_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_b3bfb5ad6ba04daf0f8f1930133d89dd'] = 'iDEAL';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_9a71e77b0ac00ac9e76ddafd97b4650f'] = 'Povoliť Wirecard iDEAL';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
@@ -141,6 +146,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_77de2a7d1e366bd416e2a
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Deskriptor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_3c92742f3c1349e9c46fe4dd5da62a98'] = 'Kreditná karta';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_5fa2e5357af104cba88c6720c60d93f8'] = 'Povoliť kreditnú kartu Wirecard Credit Card';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_407613f07ed882cecea86325feb941f1'] = 'PSD 2';
@@ -170,6 +176,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_3ea9eb5a6ed43324
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_52a9f0f1be1795bbb80faeb35b0d9f57'] = 'Povoliť nákup jedným kliknutím';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_528bb6f11eb0ecd727e0fb9869af095d'] = 'Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_e9696579c40fb2a7daf25594ba555752'] = 'Povoliť Wirecard Przelewy24';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
@@ -183,6 +190,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_77de2a7d1e366bd
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Deskriptor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentptwentyfour_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2501dccc33780ee0ddf3e5cd3a1e24b7'] = 'Alipay Cross-border';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7c98f6003387a22f8930e088861ac1d1'] = 'Povoliť cezhraničné platby Wirecard Alipay Cross-border';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
@@ -196,6 +204,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_77de2a7d1
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_3ea9eb5a6ed433246bc75c7016ac89bc'] = 'Deskriptor';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_36245276e84306a410a410785ac986b3'] = 'Odoslať doplňujúce informácie';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentalipaycrossborder_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_c071c0ba549c0f561e959f21c00ed3c9'] = 'SEPA Úhrada';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_55a80f56439028606204ba2191840898'] = 'Povoliť prevod Wirecard SEPA Úhrada';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_dcf1eada7b5e21500790ee75ebc2be5b'] = 'ID účtu obchodníka (MAID)';
@@ -205,6 +214,7 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_572d91d7
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_ca223103c3b51750b19e5ecd58b67ffb'] = 'Používateľské meno';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_77de2a7d1e366bd416e2a9e186e9f268'] = 'Heslo';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsepacredittransfer_7daacf9143e60bd1d97b926e8d0754d6'] = 'Test – konfigurácia';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_509a4658ba4b9a50ee9ae034572fdac0'] = 'Sofort.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Povoliť';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_5c7d9a41f2be2ec6b71b6ed832159b73'] = 'Povoliť Wirecard Sofort.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentsofort_2433374a7348266aa2a46eab61a2fc5b'] = 'Názov';
