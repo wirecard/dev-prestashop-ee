@@ -297,7 +297,7 @@ abstract class Payment extends PaymentOption
      */
     public function displayName()
     {
-        $paymentName = $this->getName();
+        $paymentName = trim($this->getName());
         $paymentInputName = trim($this->getCallToActionText());
         if ($paymentInputName && ($paymentName !== $paymentInputName)) {
             $paymentName = $paymentName . ' (' . $paymentInputName .')';
