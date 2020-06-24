@@ -176,7 +176,7 @@ class AdditionalInformationBuilder
         $customerPhoneMobile = trim($address->phone_mobile);
 
         $accountHolder = new AccountHolder();
-        $accountHolder->setAddress($this->createAddressData($address, $type));
+        $accountHolder->setAddress($this->createAddressData($address));
         $accountHolder->setEmail($customer->email);
         $accountHolder->setFirstName($customerFirstName);
         $accountHolder->setLastName($customerLastName);
@@ -207,11 +207,10 @@ class AdditionalInformationBuilder
      * Create addressdata for shipping or billing
      *
      * @param \Address $source
-     * @param string $type
      * @return Address
      * @since 1.0.0
      */
-    public function createAddressData($source, $type)
+    public function createAddressData($source)
     {
         $country = new \Country($source->id_country);
 
