@@ -45,7 +45,7 @@ class PaymentIdeal extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'iDEAL';
+        $this->name = $this->getTranslatedString('ideal');
         $this->formFields = $this->createFormFields();
     }
 

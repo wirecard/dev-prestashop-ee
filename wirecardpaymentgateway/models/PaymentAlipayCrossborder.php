@@ -43,7 +43,7 @@ class PaymentAlipayCrossborder extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'Alipay Crossborder';
+        $this->name = $this->getTranslatedString('alipay_crossborder');
         $this->formFields = $this->createFormFields();
     }
 

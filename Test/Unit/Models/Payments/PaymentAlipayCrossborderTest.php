@@ -48,7 +48,7 @@ class PaymentAlipayCrossborderTest extends PHPUnit_Framework_TestCase
     {
         $actual = $this->payment->getName();
 
-        $expected = 'Alipay Crossborder';
+        $expected = 'Alipay Cross-border';
 
         $this->assertEquals($expected, $actual);
     }
