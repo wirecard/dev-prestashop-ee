@@ -78,7 +78,7 @@ function initializeCreditCardEventHandlers()
  */
 function initializeForm(tokenId)
 {
-    tokenId = (typeof tokenId !== 'undefined') ? tokenId : null;
+    tokenId = (typeof tokenId !== "undefined") ? tokenId : null;
 
     getCardList();
     getFormData(tokenId);
@@ -484,13 +484,11 @@ function onSeamlessFormError(error)
     if (error.hasOwnProperty(Constants.ERROR_WPP)) {
         $errorList.push(error.errorWPP);
     }
-    for (let responseKey in error) {
-        if (error.hasOwnProperty(responseKey)) {
-            if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
-                $errorList.push(error[responseKey]);
-            }
+    Object.keys(error).forEach(function (responseKey) {
+        if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
+            $errorList.push(error[responseKey]);
         }
-    }
+    });
 
     let $input = jQuery("<input>").attr({
         type: "hidden",
