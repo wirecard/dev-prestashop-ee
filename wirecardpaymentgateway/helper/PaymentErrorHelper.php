@@ -75,8 +75,7 @@ class PaymentErrorHelper
      */
     private function getUserFrontendLanguage()
     {
-        global $cookie;
-        $id_lang = $cookie->id_lang;
+        $id_lang = $this->cookie->id_lang;
         foreach (Language::getLanguages() as $language) {
             if ($id_lang === (int)$language["id_lang"]) {
                 return $language['iso_code'];

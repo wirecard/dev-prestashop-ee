@@ -12,6 +12,8 @@
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Tools;
+
 /**
  * Class StringHelper
  * @package WirecardEE\Prestashop\Helper
@@ -28,7 +30,7 @@ class StringHelper
      */
     public static function startFrom($value, $prefix)
     {
-        $newString = substr($value, strpos($value, $prefix) + strlen($prefix));
+        $newString = Tools::substr($value, strpos($value, $prefix) + Tools::strlen($prefix));
         return (string) $newString;
     }
 
