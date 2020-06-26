@@ -485,7 +485,8 @@ function onSeamlessFormError(error)
         $errorList.push(error.errorWPP);
     }
     Object.keys(error).forEach(function (responseKey) {
-        if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
+        if (responseKey.indexOf(Constants.ERROR_PREFIX) == 0) {
+            // eslint-disable-next-line security/detect-object-injection
             $errorList.push(error[responseKey]);
         }
     });
