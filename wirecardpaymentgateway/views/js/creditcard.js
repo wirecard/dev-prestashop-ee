@@ -76,8 +76,10 @@ function initializeCreditCardEventHandlers()
  * @param tokenId
  * @since 2.4.0
  */
-function initializeForm(tokenId = null)
+function initializeForm(tokenId)
 {
+    tokenId = (typeof tokenId !== "undefined") ? tokenId : null;
+
     getCardList();
     getFormData(tokenId);
 }
@@ -270,7 +272,7 @@ function onModalHide()
  * @param tokenId
  * @since 2.4.0
  */
-function getFormData(tokenId = null)
+function getFormData(tokenId)
 {
     var formDataRequest = jQuery.ajax({
         url: ccControllerUrl,
@@ -475,18 +477,20 @@ function onSeamlessFormError(error)
     let $form = jQuery(Constants.PAYMENT_FORM_ID);
     let $errorList = [];
     if (error.hasOwnProperty(Constants.ERROR_ERRORS)) {
-        error.errors.forEach((responseKey) => {
+        error.errors.forEach(function (responseKey) {
             $errorList.push(responseKey.error.description);
         });
     }
     if (error.hasOwnProperty(Constants.ERROR_WPP)) {
         $errorList.push(error.errorWPP);
     }
-    Object.entries(error).forEach(([responseKey, value]) => {
-        if (responseKey.startsWith(Constants.ERROR_PREFIX)) {
-            $errorList.push(value);
+    Object.keys(error).forEach(function (responseKey) {
+        if (responseKey.indexOf(Constants.ERROR_PREFIX) === 0) {
+            // eslint-disable-next-line security/detect-object-injection
+            $errorList.push(error[responseKey]);
         }
     });
+
     let $input = jQuery("<input>").attr({
         type: "hidden",
         value: JSON.stringify($errorList),
