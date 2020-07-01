@@ -97,7 +97,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7.4.0', 'max' => '1.7.6.3');
+        $this->ps_versions_compliancy = array('min' => '1.7.4.0', 'max' => '1.7.6.4');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
