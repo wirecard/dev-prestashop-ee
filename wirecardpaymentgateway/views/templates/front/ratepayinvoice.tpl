@@ -9,7 +9,7 @@
  * @license MIT License
 *}
 
-<form id="payment-form" action="{$action_link}" method="POST">
+<form id="payment-form" action="{$action_link|escape:'htmlall':'UTF-8'}" method="POST">
     <script language='JavaScript'>
         var di = {
             t:'{$device_identification|escape:'htmlall':'UTF-8'}',

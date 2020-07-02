@@ -9,7 +9,7 @@
  * @license MIT License
 *}
 
-<form id="payment-form" action="{$action_link}" method="POST">
+<form id="payment-form" action="{$action_link|escape:'htmlall':'UTF-8'}" method="POST">
 <div id="payment-processing-gateway-ideal-form">
     <div class="form-group row">
         <label class="form-control-label required">{lFallback s='bank_label' mod='wirecardpaymentgateway'}</label>
