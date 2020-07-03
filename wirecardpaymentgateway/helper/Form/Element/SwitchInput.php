@@ -195,7 +195,7 @@ class SwitchInput extends BaseElement
         }
 
         $this->initValuesFromData($values);
-        $this->setOptions(array_merge($this->getOptions(), $options));
+        $this->optionHelper->setOptions(array_merge($this->optionHelper->getOptions(), $options));
     }
 
     /**
@@ -246,12 +246,12 @@ class SwitchInput extends BaseElement
      */
     public function build()
     {
-        $this->addOption('label', $this->getLabel());
-        if (!$this->hasOption('id')) {
-            $this->addOption('id', $this->generateUniqueId());
+        $this->optionHelper->addOption('label', $this->getLabel());
+        if (!$this->optionHelper->hasOption('id')) {
+            $this->optionHelper->addOption('id', $this->generateUniqueId());
         }
 
-        $unique_id = $this->getOption('id');
+        $unique_id = $this->optionHelper->getOption('id');
 
         $values = [
             ['id' => "on_{$unique_id}", 'value' => $this->getOnValue(), 'label' => $this->getOnLabel()],
@@ -259,10 +259,10 @@ class SwitchInput extends BaseElement
         ];
 
         if (!empty($this->getDescription())) {
-            $this->addOption('desc', $this->getDescription());
+            $this->optionHelper->addOption('desc', $this->getDescription());
         }
 
-        $this->addOption('values', $values);
+        $this->optionHelper->addOption('values', $values);
 
         return parent::build();
     }

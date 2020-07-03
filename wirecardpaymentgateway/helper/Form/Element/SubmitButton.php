@@ -46,7 +46,7 @@ class SubmitButton extends BaseElement
     public function build()
     {
         parent::build();
-        $this->addOption('title', $this->getLabel());
-        return $this->getOptions();
+        $this->optionHelper->addOption('title', $this->getLabel());
+        return $this->optionHelper->getOptions();
     }
 }

@@ -18,7 +18,7 @@ namespace WirecardEE\Prestashop\Helper;
  * @since 2.5.0
  * @package WirecardEE\Prestashop\Helper
  */
-trait OptionHelper
+class OptionHelper
 {
     /**
      * @var array

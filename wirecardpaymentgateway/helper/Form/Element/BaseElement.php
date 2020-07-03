@@ -23,13 +23,14 @@ use WirecardEE\Prestashop\Helper\OptionHelper;
  */
 abstract class BaseElement implements FormElementInterface
 {
-    use OptionHelper;
-
     /** @var string */
     private $name;
 
     /** @var string */
     private $label;
+
+    /** @var OptionHelper */
+    protected $optionHelper;
 
     /**
      * @return string
@@ -89,10 +90,11 @@ abstract class BaseElement implements FormElementInterface
             throw new Exception("Either 'name' or 'label' property is missing or invalid.");
         }
 
+        $this->optionHelper = new OptionHelper();
         $this->setName($name);
         $this->setLabel($label);
-        $this->addOption('type', $this->getType());
-        $this->addOption('name', $this->getName());
+        $this->optionHelper->addOption('type', $this->getType());
+        $this->optionHelper->addOption('name', $this->getName());
     }
 
     /**
@@ -101,6 +103,6 @@ abstract class BaseElement implements FormElementInterface
      */
     public function build()
     {
-        return $this->getOptions();
+        return $this->optionHelper->getOptions();
     }
 }
