@@ -29,7 +29,7 @@ trait NumericHelper
      */
     public function calculateNumericInputStep()
     {
-        $precision = $this->getPrecision();
+        $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
         $step = '1';
         if ($precision > 0) {
             $step = '';
@@ -55,7 +55,7 @@ trait NumericHelper
     private function equals($firstNumber, $secondNumber, $precision = null)
     {
         if ($precision === null) {
-            $precision = $this->getPrecision();
+            $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
         }
         $integerCoefficient = pow(10, $precision);
         $fractionalCoefficient = pow(10, -1 * $precision);
@@ -77,7 +77,7 @@ trait NumericHelper
     private function difference($firstNumber, $secondNumber, $precision = null)
     {
         if ($precision === null) {
-            $precision = $this->getPrecision();
+            $precision = (int)\Configuration::get('PS_PRICE_DISPLAY_PRECISION');
         }
         $integerCoefficient = pow(10, $precision);
         $firstNumber *= $integerCoefficient;
