@@ -12,7 +12,7 @@ require __DIR__ . '/Stubs/Configuration.php';
 define("_PS_MODULE_DIR_", dirname(__DIR__) . "/");
 const _PS_VERSION_ = '9.9.9.9';
 const _PS_PRICE_COMPUTE_PRECISION_ = 2;
-const _DB_PREFIX_ = 'Prefix_';
+const _DB_PREFIX_ = 'ps_';
 const _MYSQL_ENGINE_ = 'mysql';
 const _PS_USE_SQL_SLAVE_ = 'slave';
 

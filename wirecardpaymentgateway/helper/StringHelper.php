@@ -30,8 +30,7 @@ class StringHelper
      */
     public static function startFrom($value, $prefix)
     {
-        $newString = Tools::substr($value, strpos($value, $prefix) + Tools::strlen($prefix));
-        return (string) $newString;
+        return (string)Tools::substr($value, strpos($value, $prefix) + Tools::strlen($prefix));
     }
 
     /**
