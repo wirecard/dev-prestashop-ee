@@ -6,7 +6,7 @@ CURRENT_DIRECTORY=$PWD
 
 composer install --no-dev
 
-git clone https://github.com/jmcollin/autoindex.git $AUTOINDEX_DIRECTORY
+git clone https://github.com/jmcollin/autoindex.git ${AUTOINDEX_DIRECTORY}
 cp ${PWD}/wirecardpaymentgateway/index.php ${AUTOINDEX_DIRECTORY}/sources/index.php
 cd ${AUTOINDEX_DIRECTORY}
 php index.php ${CURRENT_DIRECTORY}/wirecardpaymentgateway
