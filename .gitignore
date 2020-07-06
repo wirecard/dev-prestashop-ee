@@ -10,3 +10,4 @@ wirecardpaymentgateway.zip
 !.bin/*.*
 wirecardpaymentgateway/translations/*.json
 wirecardpaymentgateway/translations/*.new
+autoindex
