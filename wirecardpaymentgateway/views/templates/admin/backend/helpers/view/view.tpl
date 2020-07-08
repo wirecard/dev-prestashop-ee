@@ -42,13 +42,13 @@
                     <input type="hidden" name="transaction" value="{$transaction.tx|escape:'htmlall':'UTF-8'}" />
 
                     {foreach $possible_operations as $operation}
-                        <button type="submit" name="operation" value="{$operation.action|escape:'htmlall':'UTF-8'}" class="btn btn-primary pointer"{$disabled}>
+                        <button type="submit" name="operation" value="{$operation.action|escape:'htmlall':'UTF-8'}" class="btn btn-primary pointer"{$disabled|escape:'htmlall':'UTF-8'}>
                             {$operation.name|escape:'htmlall':'UTF-8'}
                         </button>
                     {/foreach}
 
                     {if $transaction.payment_method != "ratepay-invoice"}
-                        <input type="number" min="0" max="{$remaining_delta_amount|escape:'htmlall':'UTF-8'}" name="partial-delta-amount" step="{$step|escape:'htmlall':'UTF-8'}" pattern="{$regex|escape:'htmlall':'UTF-8'}" value="{number_format($remaining_delta_amount, $precision, '.', '')}"{$disabled} required> {$transaction.currency|escape:'htmlall':'UTF-8'}
+                        <input type="number" min="0" max="{$remaining_delta_amount|escape:'htmlall':'UTF-8'}" name="partial-delta-amount" step="{$step|escape:'htmlall':'UTF-8'}" pattern="{$regex|escape:'htmlall':'UTF-8'}" value="{number_format($remaining_delta_amount|escape:'htmlall':'UTF-8', $precision|escape:'htmlall':'UTF-8', '.', '')}"{$disabled|escape:'htmlall':'UTF-8'} required> {$transaction.currency|escape:'htmlall':'UTF-8'}
                     {/if}
                 </form>
             {/if}

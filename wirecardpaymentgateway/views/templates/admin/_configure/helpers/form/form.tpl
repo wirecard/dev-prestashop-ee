@@ -38,7 +38,7 @@
                 $('#{$input.id}').on('click', function() {
                     $.ajax({
                         type: 'POST',
-                        url: '{$ajax_configtest_url|escape:'quotes'}',
+                        url: '{$ajax_configtest_url|escape:'quotes':'UTF-8'}',
                         dataType: 'json',
                         data: {
                             action: 'TestConfig',
