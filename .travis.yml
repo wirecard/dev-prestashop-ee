@@ -68,18 +68,20 @@ jobs:
       - bash .bin/upload-logs-and-notify.sh fail
 
   - stage: trigger-white-labelling
-    if: tag IS present AND type = push
+    #if: tag IS present AND type = push
+    if: type = push
     language: php
     php: 7.1
     before_install: skip
     install:
       - rvm install 2.5.3
       - travis_retry gem install bundler -v 2.0.1
-    before_script:
-      - bash .bin/check-release-notes-exist.sh
+    #before_script:
+    #  - bash .bin/check-release-notes-exist.sh
     script:
       - export TMPDIR=/tmp/wirecard
-      - git clone -b master --depth 1 https://$WIRECARD_CEE_GITHUB_TOKEN@github.com/$DEPLOYMENT_PROJECT $TMPDIR
+      #- git clone -b master --depth 1 https://$WIRECARD_CEE_GITHUB_TOKEN@github.com/$DEPLOYMENT_PROJECT $TMPDIR
+      - git clone -b TPWDCEE-7240-travis-to-gha --depth 1 https://$WIRECARD_CEE_GITHUB_TOKEN@github.com/$DEPLOYMENT_PROJECT $TMPDIR
       - cd $TMPDIR && travis_retry bundle install
       - bin/rake trigger_build
     after_script: skip
