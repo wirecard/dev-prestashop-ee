@@ -3,7 +3,7 @@
 [![PHP v7.0](https://img.shields.io/badge/php-v7.0-yellow.svg)](http://www.php.net)
 [![PHP v7.1](https://img.shields.io/badge/php-v7.1-yellow.svg)](http://www.php.net)
 [![PHP v7.2](https://img.shields.io/badge/php-v7.2-yellow.svg)](http://www.php.net)
-[![PrestaShop v1.7.6.3](https://img.shields.io/badge/PrestaShop-v1.7.6.3-green.svg)](https://www.prestashop.com/de)
+[![PrestaShop v1.7.6.7](https://img.shields.io/badge/PrestaShop-v1.7.6.7-green.svg)](https://www.prestashop.com/de)
 [![PhraseApp](https://img.shields.io/badge/Using-PhraseApp-blue.svg)](https://phraseapp.com)
 
 ***
