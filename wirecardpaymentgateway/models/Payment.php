@@ -288,4 +288,20 @@ abstract class Payment extends PaymentOption
     {
         return [];
     }
+
+    /**
+     * Display name of payment method in the transaction table
+     *
+     * @return string
+     * @since 2.11.0
+     */
+    public function displayName()
+    {
+        $paymentName = trim($this->getName());
+        $paymentInputName = trim($this->getCallToActionText());
+        if ($paymentInputName && ($paymentName !== $paymentInputName)) {
+            $paymentName = $paymentName . ' (' . $paymentInputName .')';
+        }
+        return $paymentName;
+    }
 }

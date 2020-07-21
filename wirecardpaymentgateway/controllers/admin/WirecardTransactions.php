@@ -103,10 +103,12 @@ class WirecardTransactionsController extends ModuleAdminController
         );
 
         foreach ($this->_list as $index => $transaction) {
+            $payment = PaymentProvider::getPayment($transaction['paymentmethod']);
             $this->_list[$index]['transaction_type'] =
                 $this->tx_translation_helper->translateTxType($transaction['transaction_type']);
             $this->_list[$index]['transaction_state'] =
                 $this->tx_translation_helper->translateTxState($transaction['transaction_state']);
+            $this->_list[$index]['paymentmethod'] = $payment->displayName();
         }
     }
 

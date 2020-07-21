@@ -44,7 +44,7 @@ class PaymentSofort extends Payment
         parent::__construct();
 
         $this->type = self::TYPE;
-        $this->name = 'Sofort.';
+        $this->name = $this->getTranslatedString('sofortbanking');
         $this->formFields = $this->createFormFields();
 
         $this->setLogo(

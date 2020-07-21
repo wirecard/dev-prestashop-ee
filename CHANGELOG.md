@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.11.0
+
+*   Add compatibility for Prestashop 1.7.6.7
+*   Remove live chat
+*   Fix IE11 Credit Card form loading issues
+*   Display payment method title in the transaction table
+*   Update payment method title's
+*   Update paymentSDK to 4.0.4, to prevent issues with special characters
+
+| Overview              | Prestashop version            | PHP 5.6   | PHP 7.0   | PHP 7.1 | PHP 7.2 |  
+|-----------------------|-------------------------------|:---------:|:---------:|:-------:|:-------:|  
+| **Tested version(s)** | Prestashop 1.7.6.7            | :x:       | :x:       | :x:     | &#9989; |  
+| **Compatibility**     | Prestashop 1.7.4.0 - 1.7.6.7  | &#9989;   | &#9989;   | &#9989; | &#9989; | 
+
 ## v2.10.0
 
 *   Add PSD2 hint in Credit Card configuration  
