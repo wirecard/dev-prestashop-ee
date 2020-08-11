@@ -8,7 +8,6 @@ use WirecardEE\Prestashop\Models\PaymentAlipayCrossborder;
 use WirecardEE\Prestashop\Models\PaymentCreditCard;
 use WirecardEE\Prestashop\Models\PaymentGuaranteedInvoiceRatepay;
 use WirecardEE\Prestashop\Models\PaymentIdeal;
-use WirecardEE\Prestashop\Models\PaymentMasterpass;
 use WirecardEE\Prestashop\Models\PaymentPaypal;
 use WirecardEE\Prestashop\Models\PaymentPoiPia;
 use WirecardEE\Prestashop\Models\PaymentPtwentyfour;
