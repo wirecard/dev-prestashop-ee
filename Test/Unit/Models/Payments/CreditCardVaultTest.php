@@ -23,7 +23,7 @@ class CreditCardVaultTestTest extends PHPUnit_Framework_TestCase
 
     public function testGetUserCards()
     {
-        $this->assertEquals(new \DbQuery(), $this->vault->getUserCards(13));
+        $this->assertEquals(new \DbQuery(), $this->vault->getUserCardsByAddressId(13));
     }
 
     public function testAddCard()
