@@ -31,7 +31,7 @@ class CreditCardVault
     private $logger;
 
     /** @var \Db */
-    private $db;
+    private $database;
 
     /** @var AddressHashHelper */
     private $addressHashHelper;
@@ -41,7 +41,7 @@ class CreditCardVault
         $this->userId = $userId;
         $this->logger = new Logger();
 
-        $this->db = \Db::getInstance();
+        $this->database = \Db::getInstance();
         $this->addressHashHelper = new AddressHashHelper();
     }
 
@@ -62,7 +62,7 @@ class CreditCardVault
             ->where('address_hash = "' . $addressHash . '"');
         $query->orderBy('cc_id');
         try {
-            return $this->db->executeS($query);
+            return $this->database->executeS($query);
         } catch (\PrestaShopDatabaseException $e) {
             return array();
         }
@@ -90,7 +90,7 @@ class CreditCardVault
         }
 
         try {
-            $this->db->insert($this->table, array(
+            $this->database->insert($this->table, array(
                 'masked_pan' => pSQL($maskedPan),
                 'token' => pSQL($token),
                 'user_id' => (int)$this->userId,
@@ -104,12 +104,12 @@ class CreditCardVault
             return 0;
         }
 
-        if ($this->db->getNumberError() > 0) {
-            $this->logger->error(__METHOD__ . $this->db->getMsgError());
+        if ($this->database->getNumberError() > 0) {
+            $this->logger->error(__METHOD__ . $this->database->getMsgError());
             return 0;
         }
 
-        return $this->db->Insert_ID();
+        return $this->database->Insert_ID();
     }
 
     /**
@@ -125,7 +125,7 @@ class CreditCardVault
         $query = new \DbQuery();
         $query->from($this->table)->where('token = "' . pSQL($token) . '"');
 
-        return $this->db->getRow($query);
+        return $this->database->getRow($query);
     }
 
     /**
@@ -138,7 +138,7 @@ class CreditCardVault
      */
     public function deleteCard($id)
     {
-        return $this->db->delete($this->table, 'cc_id = ' . (int)$id . ' AND user_id = ' . (int)$this->userId);
+        return $this->database->delete($this->table, 'cc_id = ' . (int)$id . ' AND user_id = ' . (int)$this->userId);
     }
 
     /**
@@ -150,6 +150,6 @@ class CreditCardVault
      */
     public function updateCardLastUsed($token)
     {
-        return $this->db->update($this->table, ['date_last_used' => date('Y-m-d H:i:s')], 'token=' . $token);
+        return $this->database->update($this->table, ['date_last_used' => date('Y-m-d H:i:s')], 'token=' . $token);
     }
 }
