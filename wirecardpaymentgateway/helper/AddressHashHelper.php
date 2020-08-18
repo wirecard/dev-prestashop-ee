@@ -21,7 +21,7 @@ class AddressHashHelper
         /** @var \Address $address */
         $address = new \Address($addressId);
 
-        return md5($this->formStingToHash($address));
+        return md5($this->formStringForHashing($address));
     }
 
     /**
@@ -29,7 +29,7 @@ class AddressHashHelper
      * @return string mixed
      * @since 2.12.0
      */
-    private function formStingToHash($address)
+    private function formStringForHashing($address)
     {
         return $address->lastname .
             $address->firstname .

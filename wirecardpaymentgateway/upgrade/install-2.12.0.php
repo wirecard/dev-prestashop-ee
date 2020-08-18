@@ -23,7 +23,7 @@ function upgrade_module_2_12_0($module)
 {
     $table = '`' . _DB_PREFIX_ . 'wirecard_payment_gateway_cc`';
     $return = $module->executeSql("DROP INDEX token ON $table", 1061);
-    $return &= $module->executeSql("ALTER TABLE $table ADD `address_hash` VARCHAR(32) NOT NULL AFTER `date_last_used`");
+    $return &= $module->executeSql("ALTER TABLE $table ADD `address_hash` VARCHAR(32) AFTER `date_last_used`");
 
     return $return;
 }
