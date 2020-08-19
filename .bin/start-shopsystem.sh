@@ -53,5 +53,6 @@ done
 
 # install the plugin
 docker-compose exec web /var/www/html/bin/console prestashop:module install wirecardpaymentgateway
-# set unique order number for PayPal transactions
+
+# randomize PayPal orderNumber
 docker-compose exec web bash -c "sed -i 's/ = \$this->orderNumber\;/ = \$this->orderNumber . md5(time())\;/' /var/www/html/modules/wirecardpaymentgateway/vendor/wirecard/payment-sdk-php/src/Transaction/PayPalTransaction.php"
