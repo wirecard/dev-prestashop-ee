@@ -66,7 +66,7 @@ class ControllerWirecardTransactionsTest extends \PHPUnit_Framework_TestCase
 
         $expected = [
             'current_index' => '1',
-            'payment_method' => 'Card payments',
+            'payment_method' => 'Card Payments',
             'possible_operations' => [
                 [
                     'action' => 'refund',
