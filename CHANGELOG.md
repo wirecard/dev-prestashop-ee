@@ -2,7 +2,7 @@
 
 ## v2.12.0
 
-*   Optimize one-click address handling
+*   Optimize One-Click address handling
 *   Remove Masterpass
 
 | Overview              | Prestashop version            | PHP 5.6   | PHP 7.0   | PHP 7.1 | PHP 7.2 |  
