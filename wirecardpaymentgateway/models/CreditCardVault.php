@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Models;
 
+use WirecardEE\Prestashop\Helper\AddressHashHelper;
 use WirecardEE\Prestashop\Helper\Logger;
 
 /**
@@ -26,30 +27,42 @@ class CreditCardVault
 
     private $userId;
 
+    /** @var Logger  */
     private $logger;
+
+    /** @var \Db */
+    private $database;
+
+    /** @var AddressHashHelper */
+    private $addressHashHelper;
 
     public function __construct($userId)
     {
         $this->userId = $userId;
         $this->logger = new Logger();
+
+        $this->database = \Db::getInstance();
+        $this->addressHashHelper = new AddressHashHelper();
     }
 
     /**
      * get all cards by user_id and order them by increment id
      *
+     * @param int $addressId
      * @return array|false|\mysqli_result|null|\PDOStatement|resource
      *
      * @since 1.1.0
      */
-    public function getUserCards($addressId)
+    public function getUserCardsByAddressId($addressId)
     {
+        $addressHash = $this->addressHashHelper->getHashFromAddressId($addressId);
         $query = new \DbQuery();
-        $query->from($this->table)->where('user_id = ' . (int)$this->userId)
-            ->where('(address_id IS NULL OR address_id = ' . (int)$addressId . ')');
+        $query->from($this->table)
+            ->where('user_id = ' . (int)$this->userId)
+            ->where('address_hash = "' . $addressHash . '"');
         $query->orderBy('cc_id');
-
         try {
-            return \Db::getInstance()->executeS($query);
+            return $this->database->executeS($query);
         } catch (\PrestaShopDatabaseException $e) {
             return array();
         }
@@ -68,35 +81,35 @@ class CreditCardVault
      */
     public function addCard($maskedPan, $token, $addressId)
     {
-        $db = \Db::getInstance();
-
-        $existing = $this->getCard($token);
-
-        if ($existing) {
-            $this->updateCardLastUsed($token);
-            return $existing["cc_id"];
+        $userCards = $this->getUserCardsByAddressId($addressId);
+        foreach ($userCards as $userCard) {
+            if ($userCard['token'] === $token) {
+                $this->updateCardLastUsed($token);
+                return $userCard['cc_id'];
+            }
         }
 
         try {
-            $db->insert($this->table, array(
+            $this->database->insert($this->table, array(
                 'masked_pan' => pSQL($maskedPan),
                 'token' => pSQL($token),
                 'user_id' => (int)$this->userId,
                 'address_id' => (int)$addressId,
                 'date_add' => date('Y-m-d H:i:s'),
-                'date_last_used' => date('Y-m-d H:i:s')
+                'date_last_used' => date('Y-m-d H:i:s'),
+                'address_hash' => $this->addressHashHelper->getHashFromAddressId($addressId)
             ));
         } catch (\PrestaShopDatabaseException $e) {
             $this->logger->error(__METHOD__ . $e->getMessage());
             return 0;
         }
 
-        if ($db->getNumberError() > 0) {
-            $this->logger->error(__METHOD__ . $db->getMsgError());
+        if ($this->database->getNumberError() > 0) {
+            $this->logger->error(__METHOD__ . $this->database->getMsgError());
             return 0;
         }
 
-        return $db->Insert_ID();
+        return $this->database->Insert_ID();
     }
 
     /**
@@ -112,7 +125,7 @@ class CreditCardVault
         $query = new \DbQuery();
         $query->from($this->table)->where('token = "' . pSQL($token) . '"');
 
-        return \Db::getInstance()->getRow($query);
+        return $this->database->getRow($query);
     }
 
     /**
@@ -125,9 +138,7 @@ class CreditCardVault
      */
     public function deleteCard($id)
     {
-        $db = \Db::getInstance();
-
-        return $db->delete($this->table, 'cc_id = ' . (int)$id . ' AND user_id = ' . (int)$this->userId);
+        return $this->database->delete($this->table, 'cc_id = ' . (int)$id . ' AND user_id = ' . (int)$this->userId);
     }
 
     /**
@@ -139,7 +150,6 @@ class CreditCardVault
      */
     public function updateCardLastUsed($token)
     {
-        $db = \Db::getInstance();
-        return $db->update($this->table, ['date_last_used' => date('Y-m-d H:i:s')], 'token=' . $token);
+        return $this->database->update($this->table, ['date_last_used' => date('Y-m-d H:i:s')], 'token=' . $token);
     }
 }

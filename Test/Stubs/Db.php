@@ -9,6 +9,8 @@
 
 class Db
 {
+    const INSERT = 1;
+
     protected static $instance;
 
     private $return;
@@ -65,5 +67,34 @@ class Db
     public function update($table, $data, $where = '', $limit = 0, $null_values = false, $use_cache = true, $add_prefix = true)
     {
         return true;
+    }
+
+    /**
+     * Executes an INSERT query.
+     *
+     * @param string $table Table name without prefix
+     * @param array $data Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
+     * @param bool $null_values If we want to use NULL values instead of empty quotes
+     * @param bool $use_cache
+     * @param int $type Must be Db::INSERT or Db::INSERT_IGNORE or Db::REPLACE
+     * @param bool $add_prefix Add or not _DB_PREFIX_ before table name
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     */
+    public function insert($table, $data, $null_values = false, $use_cache = true, $type = Db::INSERT, $add_prefix = true)
+    {
+        return true;
+    }
+
+    public  function getNumberError()
+    {
+        return 0;
+    }
+
+    public function Insert_ID()
+    {
+        return 2;
     }
 }
