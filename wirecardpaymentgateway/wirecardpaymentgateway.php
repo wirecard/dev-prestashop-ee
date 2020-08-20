@@ -50,7 +50,7 @@ class WirecardPaymentGateway extends PaymentModule
      * @var string
      * @since 2.0.0
      */
-    const VERSION = '2.11.0';
+    const VERSION = '2.12.1';
 
     /**
      * @var string
@@ -100,7 +100,7 @@ class WirecardPaymentGateway extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = array('min' => '1.7.4.0', 'max' => '1.7.6.3');
+        $this->ps_versions_compliancy = array('min' => '1.7.4.0', 'max' => '1.7.6.7');
         $this->bootstrap = true;
         $this->controllers = array(
             'payment',
@@ -832,11 +832,12 @@ class WirecardPaymentGateway extends PaymentModule
             'cc' => array(
                 "cc_id" => array( "INT(10) UNSIGNED", "NOT NULL", "AUTO_INCREMENT" ),
                 "user_id" => array( "INT(10)", "NOT NULL" ),
-                "token" => array( "VARCHAR(20)", "NOT NULL", "UNIQUE" ),
+                "token" => array( "VARCHAR(20)", "NOT NULL"),
                 "address_id" => array( "INT(10)", "NULL" ),
                 "masked_pan" => array( "VARCHAR(30)", "NOT NULL" ),
                 "date_add" => array("DATETIME", "NULL"),
-                "date_last_used" => array("DATETIME", "NULL")
+                "date_last_used" => array("DATETIME", "NULL"),
+                "address_hash" => array("VARCHAR(32)", "NOT NULL")
             ) );
 
         return $defs[$name];

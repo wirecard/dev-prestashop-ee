@@ -99,6 +99,16 @@ class WirecardGeneralSettingsController extends ModuleAdminController
 
         $this->fields_form = $formHelper->buildForm();
 
+        $this->show_form_cancel_button = false;
+
+        $this->fields_form['buttons'] = array(
+            array(
+                'href' => $this->tpl_form_vars['back_url'],
+                'title' => $this->trans('Cancel', array(), 'Admin.Actions'),
+                'icon' => 'process-icon-cancel'
+            )
+        );
+
         $this->fields_value = $formHelper->getFormValues();
 
         return parent::renderForm();

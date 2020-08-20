@@ -149,8 +149,8 @@ $_MODULE['<{wirecardpaymentgateway}prestashop>paymentideal_7daacf9143e60bd1d97b9
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_3c92742f3c1349e9c46fe4dd5da62a98'] = 'Carte';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_9e61d8d6a6cb85af0cc80f49d19a95aa'] = 'Activer';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_5fa2e5357af104cba88c6720c60d93f8'] = 'Activer Carte';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_407613f07ed882cecea86325feb941f1'] = 'PSD 2';
-$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_63e9b741aabec947c93795d52fd863f2'] = 'With regard to PSD 2 requirements, you should request certain personal information from your consumers during <a target=\"_blank\" href=\'https://github.com/wirecard/prestashop-ee/wiki/PrestaShop-Checkout\'>checkout</a> to reduce the risk of transactions being rejected.';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_407613f07ed882cecea86325feb941f1'] = 'DSP 2';
+$_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_63e9b741aabec947c93795d52fd863f2'] = 'Compte tenu des dispositions de la DSP 2, il vous faut demander certaines informations personnelles à vos clients <a target=\"_blank\" href=\'https://github.com/wirecard/prestashop-ee/wiki/Checkout-PrestaShop\'>lors du paiement</a> afin de réduire le risque de rejet des transactions.';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_2433374a7348266aa2a46eab61a2fc5b'] = 'Désignation';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_8d423243b839a03c23c5e6fd082f1cee'] = 'Carte';
 $_MODULE['<{wirecardpaymentgateway}prestashop>paymentcreditcard_dcf1eada7b5e21500790ee75ebc2be5b'] = 'MAID (Identifiant de compte marchand)';

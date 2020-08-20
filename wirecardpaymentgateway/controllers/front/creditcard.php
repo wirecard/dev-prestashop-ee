@@ -43,8 +43,7 @@ class WirecardPaymentGatewayCreditCardModuleFrontController extends ModuleFrontC
     public function displayAjaxListStoredCards()
     {
         $templatePath = TemplateHelper::getFrontendTemplatePath('creditcard_list');
-        $cards = $this->credit_card_vault_model->getUserCards($this->context->cart->id_address_invoice);
-
+        $cards = $this->credit_card_vault_model->getUserCardsByAddressId($this->context->cart->id_address_invoice);
         $this->context->smarty->assign([ 'cards' => $cards ]);
         $html = $this->context->smarty->fetch($templatePath);
 

@@ -15,7 +15,6 @@ namespace WirecardEE\Prestashop\Classes\Service;
 use \Exception;
 use \Tools;
 use Wirecard\PaymentSdk\BackendService;
-use Wirecard\PaymentSdk\Transaction\MasterpassTransaction;
 use Wirecard\PaymentSdk\Transaction\Operation;
 use Wirecard\PaymentSdk\Transaction\PayPalTransaction;
 use WirecardEE\Prestashop\Classes\Config\PaymentConfigurationFactory;
@@ -113,8 +112,7 @@ class TransactionPossibleOperationService implements ServiceInterface
         $isParent = empty($this->transaction->getParentTransactionId());
         $possibleOperations = $this->filterBasedOnType($possibleOperations, $isParent);
 
-        // We no longer support Masterpass
-        if ($returnTemplateFormat && $this->transaction->getPaymentMethod() !== MasterpassTransaction::NAME) {
+        if ($returnTemplateFormat) {
             $possibleOperations = $this->getOperationsForTemplate($possibleOperations);
         }
 
