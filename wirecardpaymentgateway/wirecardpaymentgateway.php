@@ -10,7 +10,7 @@
  * @license MIT License
  */
 
-$autoloadPath = __DIR__ . '/vendor/autoload.php';
+$autoloadPath = dirname(__FILE__) . '/vendor/autoload.php';
 if (file_exists($autoloadPath)) {
     require_once $autoloadPath;
 }
