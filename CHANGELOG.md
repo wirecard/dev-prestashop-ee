@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.12.1
+
+*   Marketplace plugin adjustments
+
+| Overview              | Prestashop version            | PHP 5.6   | PHP 7.0   | PHP 7.1 | PHP 7.2 |  
+|-----------------------|-------------------------------|:---------:|:---------:|:-------:|:-------:|  
+| **Tested version(s)** | Prestashop 1.7.6.7            | :x:       | :x:       | :x:     | &#9989; |  
+| **Compatibility**     | Prestashop 1.7.4.0 - 1.7.6.7  | &#9989;   | &#9989;   | &#9989; | &#9989; |
+
 ## v2.12.0
 
 *   Optimize One-Click address handling
