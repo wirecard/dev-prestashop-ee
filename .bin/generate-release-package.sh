@@ -12,4 +12,4 @@ cd ${AUTOINDEX_DIRECTORY}
 php index.php ${CURRENT_DIRECTORY}/wirecardpaymentgateway
 cd ${CURRENT_DIRECTORY}
 
-zip -qr ${TARGET_DIRECTORY}.zip ${TARGET_DIRECTORY} -x "*tests*" -x "*Test*" -x "*codeception*"
+zip -qr ${TARGET_DIRECTORY}.zip ${TARGET_DIRECTORY} -x "*test*" -x "*Test*" -x "*codeception*"
