@@ -4,6 +4,9 @@
 * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
 * - License can be found under:
 * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
 *}
 
 {extends file="helpers/view/view.tpl"}
@@ -25,7 +28,7 @@
                     {$transaction.type|escape:'htmlall':'UTF-8'}
                 </b>
                 |
-                <b class="badge" style="color: white; background-color: {$transaction.badge}">
+                <b class="badge" style="color: white; background-color: {$transaction.badge|escape:'htmlall':'UTF-8'}">
                     {$transaction.status|escape:'htmlall':'UTF-8'}
                 </b>
             </div>
@@ -36,16 +39,16 @@
                     {assign var="disabled" value=" disabled"}
                 {/if}
                 <form method="post" class="post-processing">
-                    <input type="hidden" name="transaction" value="{$transaction.tx}" />
+                    <input type="hidden" name="transaction" value="{$transaction.tx|escape:'htmlall':'UTF-8'}" />
 
                     {foreach $possible_operations as $operation}
-                        <button type="submit" name="operation" value="{$operation.action}" class="btn btn-primary pointer"{$disabled}>
-                            {$operation.name}
+                        <button type="submit" name="operation" value="{$operation.action|escape:'htmlall':'UTF-8'}" class="btn btn-primary pointer"{$disabled|escape:'htmlall':'UTF-8'}>
+                            {$operation.name|escape:'htmlall':'UTF-8'}
                         </button>
                     {/foreach}
 
                     {if $transaction.payment_method != "ratepay-invoice"}
-                        <input type="number" min="0" max="{$remaining_delta_amount}" name="partial-delta-amount" step="{$step}" pattern="{$regex}" value="{number_format($remaining_delta_amount, $precision, '.', '')}"{$disabled} required> {$transaction.currency}
+                        <input type="number" min="0" max="{$remaining_delta_amount|escape:'htmlall':'UTF-8'}" name="partial-delta-amount" step="{$step|escape:'htmlall':'UTF-8'}" pattern="{$regex|escape:'htmlall':'UTF-8'}" value="{number_format($remaining_delta_amount|escape:'htmlall':'UTF-8', $precision|escape:'htmlall':'UTF-8', '.', '')}"{$disabled|escape:'htmlall':'UTF-8'} required> {$transaction.currency|escape:'htmlall':'UTF-8'}
                     {/if}
                 </form>
             {/if}

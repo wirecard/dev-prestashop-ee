@@ -5,10 +5,14 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 namespace WirecardEE\Prestashop\Helper;
 
+use Tools;
 use WirecardEE\Prestashop\Classes\Constants\TxConstants as TxConst;
 
 /**
@@ -32,7 +36,7 @@ class TxTranslationHelper
      */
     public function translateTxType($transactionType)
     {
-        $transactionType = TxConst::TX_TYPE . strtoupper(str_replace('-', '_', $transactionType));
+        $transactionType = TxConst::TX_TYPE . Tools::strtoupper(str_replace('-', '_', $transactionType));
         $translatedTxType = $this->getTranslatedString(TxConst::TX_TYPE_KEYS[$transactionType]);
         return $translatedTxType;
     }
@@ -47,7 +51,7 @@ class TxTranslationHelper
      */
     public function translateTxState($transactionState)
     {
-        $transactionState = TxConst::TX_STATE. strtoupper($transactionState);
+        $transactionState = TxConst::TX_STATE. Tools::strtoupper($transactionState);
         $translatedTxState = $this->getTranslatedString(TxConst::TX_STATE_KEYS[$transactionState]);
         return $translatedTxState;
     }

@@ -79,7 +79,6 @@ class BaseElementTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
         $this->assertEquals(['name' => self::DEFAULT_ARG_NAME, 'type' => null], $result);
-        $this->assertEquals($this->baseElement->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
     }
 }

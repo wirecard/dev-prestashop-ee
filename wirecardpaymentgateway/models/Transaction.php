@@ -5,6 +5,9 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 namespace WirecardEE\Prestashop\Models;
@@ -758,7 +761,7 @@ class Transaction extends \ObjectModel implements SettleableTransaction
 
     private function isOrderStateCancel($orderState)
     {
-        return intval($orderState) === intval(_PS_OS_CANCELED_);
+        return (int) $orderState === (int) _PS_OS_CANCELED_;
     }
 
 

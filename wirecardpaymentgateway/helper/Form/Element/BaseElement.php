@@ -1,11 +1,13 @@
 <?php
-
 /**
  * Shop System Extensions:
  * - Terms of Use can be found at:
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 namespace WirecardEE\Prestashop\Helper\Form\Element;
@@ -21,13 +23,14 @@ use WirecardEE\Prestashop\Helper\OptionHelper;
  */
 abstract class BaseElement implements FormElementInterface
 {
-    use OptionHelper;
-
     /** @var string */
     private $name;
 
     /** @var string */
     private $label;
+
+    /** @var OptionHelper */
+    protected $optionHelper;
 
     /**
      * @return string
@@ -87,10 +90,11 @@ abstract class BaseElement implements FormElementInterface
             throw new Exception("Either 'name' or 'label' property is missing or invalid.");
         }
 
+        $this->optionHelper = new OptionHelper();
         $this->setName($name);
         $this->setLabel($label);
-        $this->addOption('type', $this->getType());
-        $this->addOption('name', $this->getName());
+        $this->optionHelper->addOption('type', $this->getType());
+        $this->optionHelper->addOption('name', $this->getName());
     }
 
     /**
@@ -99,6 +103,6 @@ abstract class BaseElement implements FormElementInterface
      */
     public function build()
     {
-        return $this->getOptions();
+        return $this->optionHelper->getOptions();
     }
 }

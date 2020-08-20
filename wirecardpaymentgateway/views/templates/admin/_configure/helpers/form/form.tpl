@@ -4,6 +4,9 @@
 * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
 * - License can be found under:
 * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
 *}
 
 {extends file="helpers/form/form.tpl"}
@@ -35,7 +38,7 @@
                 $('#{$input.id}').on('click', function() {
                     $.ajax({
                         type: 'POST',
-                        url: '{$ajax_configtest_url|escape:'quotes'}',
+                        url: '{$ajax_configtest_url|escape:'quotes':'UTF-8'}',
                         dataType: 'json',
                         data: {
                             action: 'TestConfig',

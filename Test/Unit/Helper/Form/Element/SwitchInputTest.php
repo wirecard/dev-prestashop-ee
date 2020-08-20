@@ -64,7 +64,6 @@ class SwitchInputTest extends \PHPUnit_Framework_TestCase
         $result = $this->switchInput->build();
         $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
-        $this->assertEquals($this->switchInput->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
         $this->assertArrayHasKey("label", $result);
         $this->assertArrayHasKey("values", $result);
