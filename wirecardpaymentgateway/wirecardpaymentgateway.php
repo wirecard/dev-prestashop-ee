@@ -96,7 +96,7 @@ class WirecardPaymentGateway extends PaymentModule
     public function __construct()
     {
         $this->name = 'wirecardpaymentgateway';
-        $this->version = '2.10.0';
+        $this->version = '2.12.1';
         $this->tab = 'payments_gateways';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
