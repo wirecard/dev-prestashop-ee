@@ -9,6 +9,7 @@
 
 namespace WirecardEE\Prestashop\Test\Helper;
 
+use Wirecard\PaymentSdk\TransactionService;
 use WirecardEE\Prestashop\Helper\OptionHelper;
 
 /**
@@ -25,7 +26,8 @@ class OptionHelperTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->optionHelper = $this->getMockForTrait(OptionHelper::class);
+        $this->optionHelper = \Mockery::mock(OptionHelper::class)
+            ->makePartial();
     }
 
     /**

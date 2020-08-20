@@ -5,6 +5,9 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 namespace WirecardEE\Prestashop\Helper;
@@ -176,7 +179,7 @@ class CustomerHelper
         $pastDate = $pastDate->format(DateTime::ISO8601);
 
         $sql = "SELECT COUNT(*) AS count
-                FROM ps_orders
+                FROM " . _DB_PREFIX_ . "orders
                 WHERE valid=1 AND current_state IN (".implode(',', $this->validOrderStates).")
                               AND date_add >= '$pastDate' AND date_add < NOW() AND id_customer=$customer_id";
 

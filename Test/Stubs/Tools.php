@@ -53,7 +53,12 @@ class Tools
 
     public static function substr($string, $start, $length = null)
     {
-        return substr($string, $start, $length);
+        if ($length) {
+            $result = substr($string, $start, $length);
+        } else {
+            $result = substr($string, $start);
+        }
+        return $result;
     }
 
     public static function strlen($string)

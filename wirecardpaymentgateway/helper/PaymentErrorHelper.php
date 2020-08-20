@@ -5,6 +5,9 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 namespace WirecardEE\Prestashop\Helper;
@@ -72,8 +75,7 @@ class PaymentErrorHelper
      */
     private function getUserFrontendLanguage()
     {
-        global $cookie;
-        $id_lang = $cookie->id_lang;
+        $id_lang = $this->cookie->id_lang;
         foreach (Language::getLanguages() as $language) {
             if ($id_lang === (int)$language["id_lang"]) {
                 return $language['iso_code'];

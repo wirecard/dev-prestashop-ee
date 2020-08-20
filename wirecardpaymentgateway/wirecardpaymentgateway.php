@@ -5,6 +5,9 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 $autoloadPath = __DIR__ . '/vendor/autoload.php';
@@ -92,8 +95,8 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function __construct()
     {
-        $this->name = self::NAME;
-        $this->version = self::VERSION;
+        $this->name = 'wirecardpaymentgateway';
+        $this->version = '2.12.1';
         $this->tab = 'payments_gateways';
         $this->author = 'Wirecard';
         $this->need_instance = 0;
@@ -1086,6 +1089,7 @@ class WirecardPaymentGateway extends PaymentModule
     private function initTabs()
     {
         //Transaction Overview tab on the side menu
+        $tabsConfig = [];
         $tabsConfig[] = new AdminControllerTabConfig(
             $this->name,
             'heading_title_transaction_details',

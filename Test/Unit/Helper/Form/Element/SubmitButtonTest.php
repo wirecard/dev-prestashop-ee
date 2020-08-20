@@ -67,7 +67,6 @@ class SubmitButtonTest extends \PHPUnit_Framework_TestCase
             'type' => $this->submitButton->getType()
         ];
         $this->assertEquals($expectedResult, $result);
-        $this->assertEquals($this->submitButton->getOptions(), $result);
         $this->assertArrayHasKey("name", $result);
         $this->assertArrayHasKey("title", $result);
     }

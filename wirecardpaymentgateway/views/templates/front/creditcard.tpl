@@ -4,9 +4,12 @@
 * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
 * - License can be found under:
 * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
 *}
 
-<form id="payment-form" action="{$action_link}" method="POST">
+<form id="payment-form" action="{$action_link|escape:'htmlall':'UTF-8'}" method="POST">
 {if $ccvaultenabled == 'true'}
 <div class="modal fade" id="wirecard-ccvault-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">

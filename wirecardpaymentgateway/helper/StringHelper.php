@@ -5,9 +5,14 @@
  * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
  * - License can be found under:
  * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 namespace WirecardEE\Prestashop\Helper;
+
+use Tools;
 
 /**
  * Class StringHelper
@@ -25,8 +30,7 @@ class StringHelper
      */
     public static function startFrom($value, $prefix)
     {
-        $newString = substr($value, strpos($value, $prefix) + strlen($prefix));
-        return strval($newString);
+        return (string)Tools::substr($value, strpos($value, $prefix) + Tools::strlen($prefix));
     }
 
     /**
@@ -38,6 +42,6 @@ class StringHelper
      */
     public static function replaceWith($value, $searchList = ['-'], $replacementList = ['_'])
     {
-        return strval(str_replace($searchList, $replacementList, $value));
+        return (string) str_replace($searchList, $replacementList, $value);
     }
 }

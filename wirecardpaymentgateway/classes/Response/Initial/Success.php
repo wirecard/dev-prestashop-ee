@@ -1,10 +1,13 @@
 <?php
 /**
  * Shop System Extensions:
- *  - Terms of Use can be found at:
- *  https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
- *  - License can be found under:
- *  https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * - Terms of Use can be found at:
+ * https://github.com/wirecard/prestashop-ee/blob/master/_TERMS_OF_USE
+ * - License can be found under:
+ * https://github.com/wirecard/prestashop-ee/blob/master/LICENSE
+ * @author Wirecard AG
+ * @copyright Copyright (c) 2020 Wirecard AG, Einsteinring 35, 85609 Aschheim, Germany
+ * @license MIT License
  */
 
 namespace WirecardEE\Prestashop\Classes\Response\Initial;
@@ -82,10 +85,6 @@ class Success extends SuccessAbstract
             $this->order->setCurrentState($nextState);
             $this->order->save();
         }
-
-        if ($order_status === \Configuration::get(OrderManager::WIRECARD_OS_STARTING) && $nextState) {
-            $this->onOrderStateStarted();
-        }
     }
 
     /**
@@ -104,20 +103,6 @@ class Success extends SuccessAbstract
             . $this->order->id . '&key='
             . $this->customer->secure_key
         );
-    }
-
-    private function onOrderStateStarted()
-    {
-        $currency = 'EUR';
-        if (key_exists('currency', $this->response->getData())) {
-            $currency = $this->response->getData()['currency'];
-        }
-        $amount = new Amount(0, $currency);
-        if ($this->response->getTransactionType() !== TransactionTypes::TYPE_AUTHORIZATION) {
-            $amount = $this->response->getRequestedAmount();
-        }
-        //TODO: integrate feature
-        //$this->orderService->addTransactionIdToOrderPayment($this->response->getTransactionId());
     }
 
     /**
